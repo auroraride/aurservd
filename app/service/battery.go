@@ -534,7 +534,7 @@ func (s *batteryService) Allocate(bat *ent.Asset, sub *ent.Subscribe, transferTy
 
 	// 判定是否自动入库
 	var autoIn bool
-	if transferType == model.AssetTransferTypeExchange {
+	if transferType == model.AssetTransferTypeExchange || transferType == model.AssetTransferTypeTransfer {
 		autoIn = true
 	}
 

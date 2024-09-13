@@ -6,6 +6,7 @@
 package service
 
 import (
+	"context"
 	"math"
 	"strconv"
 	"time"
@@ -89,9 +90,17 @@ func (s *batteryBmsService) SyncPutin(sn string, cab *ent.Cabinet, ordinal int) 
 		Ordinal:   ordinal,
 	})
 	if err != nil {
-		zap.L().Error("电池信息获取失败", zap.Error(err))
+		zap.L().Error("电池信息创建失败", zap.Error(err))
 		return
 	}
+
+	// 查询电池有无调拨单 如果无调拨单 则更新电池信息
+	at, _ := NewAssetTransfer().QueryTransferByAssetID(context.Background(), bat.ID)
+	if at == nil {
+		zap.L().Error("电池调拨查询失败", zap.Error(err))
+		return
+	}
+
 	// if time.Since(bat.UpdatedAt).Seconds() < 20 {
 	// 	rid := ""
 	// 	if bat.RiderID != nil {
