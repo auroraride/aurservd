@@ -551,7 +551,7 @@ func (s *intelligentCabinetService) OpenBind(req *model.CabinetOpenBindReq) {
 		snag.Panic("电池编码有变动, 请刷新后重试")
 	}
 	// 判定
-	if exists, _ := sub.QueryBattery().Where(asset.LocationsType(model.AssetLocationsTypeRider.Value()), asset.LocationsID(rd.ID)).Exist(s.ctx); exists {
+	if exists, _ := sub.QueryBattery().Where(asset.TypeIn(model.AssetTypeNonSmartBattery.Value(), model.AssetTypeSmartBattery.Value())).Exist(s.ctx); exists {
 		snag.Panic("该骑手当前有绑定的电池")
 	}
 	// 查找电池
@@ -570,7 +570,7 @@ func (s *intelligentCabinetService) OpenBind(req *model.CabinetOpenBindReq) {
 		snag.Panic("仓门开启失败")
 	}
 	// 绑定
-	err = NewBattery().Bind(bat, sub, rd)
+	err = NewBattery(s.operator).Bind(bat, sub, rd)
 	if err != nil {
 		snag.Panic(err)
 	}

@@ -1077,11 +1077,12 @@ func (s *assetService) QueryID(id uint64) (*ent.Asset, error) {
 	return s.orm.Query().WithModel().Where(asset.ID(id), asset.CheckAtIsNil()).First(s.ctx)
 }
 
-// QueryRiderID 通过骑手ID查询资产
+// QueryRiderID 通过骑手ID查询电池资产
 func (s *assetService) QueryRiderID(id uint64) (*ent.Asset, error) {
 	return s.orm.Query().WithModel().Where(
 		asset.LocationsID(id),
 		asset.LocationsType(model.AssetLocationsTypeRider.Value()),
+		asset.TypeIn(model.AssetTypeSmartBattery.Value(), model.AssetTypeNonSmartBattery.Value()),
 		asset.CheckAtIsNil(),
 	).First(s.ctx)
 }

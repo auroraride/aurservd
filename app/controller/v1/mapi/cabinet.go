@@ -228,7 +228,7 @@ func (*cabinet) Maintain(c echo.Context) (err error) {
 // @Success		200				{object}	model.StatusResponse		"请求成功"
 func (*cabinet) OpenBind(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.CabinetOpenBindReq](c)
-	service.NewIntelligentCabinet(ctx.Modifier).OpenBind(req)
+	service.NewIntelligentCabinet(ctx.Modifier, ctx.Operator).OpenBind(req)
 	return ctx.SendResponse()
 }
 
