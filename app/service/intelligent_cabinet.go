@@ -494,7 +494,7 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
 	return
 }
 
-func (s *intelligentCabinetService) Operate(operator *logging.Operator, cab *ent.Cabinet, op cabdef.Operate, req *model.CabinetDoorOperateReq) (success bool) {
+func (s *intelligentCabinetService) Operate(operator *logging.Operator, cab *ent.Cabinet, op cabdef.Operate, req *model.CabinetDoorOperateReq) (success bool, data []*cabdef.BinOperateResult) {
 	now := time.Now()
 	br := cab.Brand
 	ordinal := *req.Index + 1
@@ -529,12 +529,11 @@ func (s *intelligentCabinetService) Operate(operator *logging.Operator, cab *ent
 		Remark:  req.Remark,
 	}
 
-	var data []*cabdef.BinOperateResult
 	data, err = adapter.Post[[]*cabdef.BinOperateResult](s.GetCabinetAdapterUrlX(cab, "/operate/bin"), operator.GetAdapterUserX(), payload)
 	zap.L().Info("电柜操作", zap.Bool("success", success), log.Payload(data), zap.Error(err))
 
 	success = err == nil
-	return
+	return success, data
 }
 
 func (s *intelligentCabinetService) Deactivate(operator *logging.Operator, cab *ent.Cabinet, payload *cabdef.BinDeactivateRequest) (success bool) {
@@ -605,7 +604,7 @@ func (s *intelligentCabinetService) OpenBind(req *model.CabinetOpenBindReq) {
 		snag.Panic("未找到电池信息")
 	}
 	// 开门
-	success := s.Operate(logging.GetOperatorX(s.modifier), cab, cabdef.OperateDoorOpen, &model.CabinetDoorOperateReq{
+	success, _ := s.Operate(logging.GetOperatorX(s.modifier), cab, cabdef.OperateDoorOpen, &model.CabinetDoorOperateReq{
 		ID:        req.ID,
 		Index:     req.Index,
 		Remark:    req.Remark,

@@ -2204,3 +2204,15 @@ func (s *assetTransferService) QueryTransferByAssetID(ctx context.Context, id ui
 	}
 	return item, nil
 }
+
+// 通过SN 获取调拨信息
+func (s *assetTransferService) QueryTransferBySN(ctx context.Context, sn string) (res *ent.AssetTransfer, err error) {
+	item, _ := s.orm.QueryNotDeleted().
+		Where(assettransfer.HasTransferDetailsWith(assettransferdetails.HasAssetWith(asset.Sn(sn))), assettransfer.Status(model.AssetTransferStatusDelivering.Value())).
+		Order(ent.Desc(assettransfer.FieldCreatedAt)).
+		First(ctx)
+	if item == nil {
+		return nil, errors.New("调拨单不存在或已入库")
+	}
+	return item, nil
+}

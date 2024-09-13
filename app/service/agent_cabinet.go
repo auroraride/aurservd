@@ -199,6 +199,13 @@ func (s *agentCabinetService) BinOpen(ac *app.AgentContext, req *model.AgentBinO
 		snag.Panic(err)
 	}
 
+	NewCabinetMgr().BinOperateAssetTransfer(&logging.Operator{
+		ID:    ac.Agent.ID,
+		Name:  ac.Agent.Name,
+		Phone: ac.Agent.Phone,
+		Type:  model.OperatorTypeAgent,
+	}, cab, results)
+
 	return results
 }
 
