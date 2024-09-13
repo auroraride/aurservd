@@ -455,16 +455,6 @@ func (s *businessRiderService) Preprocess(bt model.BusinessType, sub *ent.Subscr
 		}
 	}
 
-	// 如果是后台操作 查询订阅绑定电池信息
-	// if s.operator.Type == model.OperatorTypeManager && (bt == model.BusinessTypeUnsubscribe || bt == model.BusinessTypePause) {
-	// 	// 查询订阅绑定电池
-	// 	b, _ := ent.Database.Asset.QueryNotDeleted().Where(asset.SubscribeID(sub.ID), asset.TypeIn(model.AssetTypeSmartBattery.Value(), model.AssetTypeNonSmartBattery.Value())).First(s.ctx)
-	// 	if b == nil {
-	// 		snag.Panic("电池查询失败")
-	// 	}
-	// 	s.battery = b
-	// }
-
 }
 
 // doTask 处理电柜任务
