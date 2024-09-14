@@ -81,7 +81,8 @@ func (s *cabinetMgrService) Maintain(operator *logging.Operator, req *model.Cabi
 }
 
 // BinOperate 仓位操作
-func (s *cabinetMgrService) BinOperate(operator *logging.Operator, id uint64, data any) bool {
+// waitClose 是否等待关闭仓门（仅开仓动作有效）
+func (s *cabinetMgrService) BinOperate(operator *logging.Operator, id uint64, data any, waitClose bool) bool {
 	if operator.Type != model.OperatorTypeManager && operator.Type != model.OperatorTypeMaintainer {
 		snag.Panic("无权限操作")
 	}
@@ -103,7 +104,7 @@ func (s *cabinetMgrService) BinOperate(operator *logging.Operator, id uint64, da
 		case model.CabinetDoorOperateUnlock:
 			op = cabdef.OperateBinEnable
 		}
-		success, results := NewIntelligentCabinet().Operate(operator, cab, op, req)
+		success, results := NewIntelligentCabinet().Operate(operator, cab, op, req, waitClose)
 		if op == cabdef.OperateDoorOpen {
 			s.BinOperateAssetTransfer(operator, cab, results)
 		}
@@ -133,7 +134,7 @@ func (s *cabinetMgrService) BinOperateAssetTransfer(operator *logging.Operator, 
 			after = result.After
 		}
 
-		if after != nil {
+		if before != nil && after != nil {
 			var fromLocationType, toLocationType model.AssetLocationsType
 			var fromLocationID, toLocationID uint64
 			var sn string

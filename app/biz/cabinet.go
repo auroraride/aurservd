@@ -696,7 +696,8 @@ func (b *cabinetBiz) Operate(assetSignInfo definition.AssetSignInfo, req *model.
 }
 
 // BinOperate 仓位操作
-func (b *cabinetBiz) BinOperate(assetSignInfo definition.AssetSignInfo, req *model.MaintainerBinOperateReq) error {
+// waitClose 是否等待关闭仓门（仅开仓动作有效）
+func (b *cabinetBiz) BinOperate(assetSignInfo definition.AssetSignInfo, req *model.MaintainerBinOperateReq, waitClose bool) error {
 	// 校验权限并获取操作人
 	cab, operator, err := b.operatable(assetSignInfo, req.Serial, req.Lng, req.Lat, true)
 	if err != nil {
@@ -744,7 +745,7 @@ func (b *cabinetBiz) BinOperate(assetSignInfo definition.AssetSignInfo, req *mod
 		}
 	}
 
-	if !service.NewCabinetMgr().BinOperate(operator, cab.ID, op) {
+	if !service.NewCabinetMgr().BinOperate(operator, cab.ID, op, waitClose) {
 		return errors.New("操作失败")
 	}
 
