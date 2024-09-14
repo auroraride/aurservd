@@ -105,8 +105,6 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 		key      = s.exchangeCacheKey(uid)
 	)
 
-	// success := silk.Bool(false)
-	// message := silk.String("")
 	success := atomic.NewBool(false)
 	message := atomic.NewString("")
 
@@ -183,85 +181,88 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 			duration += result.Duration
 			stopAt = silk.Pointer(result.StopAt.AsTime())
 
+			// todo 失败的第二步骤逻辑处理
+
 			// 如果成功并且是智能柜, 记录电池编码
-			if result.Success && cab.Intelligent {
-				after := result.After
-				before := result.Before
+			if result.Success {
+				if cab.Intelligent {
+					after := result.After
+					before := result.Before
 
-				// 记录用户放入的电池
-				if result.Step == model.ExchangeStepPutInto.Uint32() && after != nil {
-					putin = after.BatterySn
-					empty = &model.BinInfo{
-						Index:       int(after.Ordinal) - 1,
-						Electricity: model.BatterySoc(after.Current),
-						Voltage:     after.Voltage,
+					// 记录用户放入的电池
+					if result.Step == model.ExchangeStepPutInto.Uint32() && after != nil {
+						putin = after.BatterySn
+						empty = &model.BinInfo{
+							Index:       int(after.Ordinal) - 1,
+							Electricity: model.BatterySoc(after.Current),
+							Voltage:     after.Voltage,
+						}
+
+						// 清除旧电池分配信息
+						err = NewBattery(s.operator).Unallocate(old, model.AssetLocationsTypeCabinet, cab.ID, model.AssetTransferTypeExchange)
+						if err != nil {
+							return
+						}
+
+						go bs.RiderBusiness(true, putin, s.rider, cab, int(after.Ordinal))
 					}
 
-					// 清除旧电池分配信息
-					err = NewBattery(s.operator).Unallocate(old, model.AssetLocationsTypeCabinet, cab.ID, model.AssetTransferTypeExchange)
-					if err != nil {
-						return
+					// 记录用户取走的电池
+					// 判定第三步是否成功, 只要柜门开启就把电池绑定到骑手 - BY: 曹博文
+					if result.Step == model.ExchangeStepOpenFull.Uint32() && before != nil {
+						putout = before.BatterySn
+
+						go bs.RiderBusiness(false, putout, s.rider, cab, int(before.Ordinal))
+
+						// 更新新电池信息
+						bat, _ := bs.LoadOrCreate(putout)
+						if bat != nil {
+							_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
+								return NewBattery(s.operator).Allocate(bat, sub, model.AssetTransferTypeExchange)
+							})
+						}
+					}
+				} else {
+					if result.Step == model.ExchangeStepPutInto.Uint32() {
+						at, _ := ent.Database.Asset.QueryNotDeleted().Where(
+							asset.Type(model.AssetTypeNonSmartBattery.Value()),
+							asset.LocationsType(model.AssetLocationsTypeRider.Value()),
+							asset.LocationsID(s.rider.ID),
+						).WithModel().First(s.ctx)
+						if at == nil {
+							zap.L().Error(fmt.Sprintf("换电-放电 非智能柜未找到电池信息 %s", cab.Serial))
+							return
+						}
+						// 清除旧电池分配信息
+						err = NewBattery(s.operator).Unallocate(at, model.AssetLocationsTypeCabinet, cab.ID, model.AssetTransferTypeExchange)
+						if err != nil {
+							zap.L().Error("换电-放电 非智能柜清除电池分配信息失败", zap.Error(err))
+							return
+						}
 					}
 
-					go bs.RiderBusiness(true, putin, s.rider, cab, int(after.Ordinal))
-				}
-
-				// 记录用户取走的电池
-				// 判定第三步是否成功, 只要柜门开启就把电池绑定到骑手 - BY: 曹博文
-				if result.Step == model.ExchangeStepOpenFull.Uint32() && before != nil {
-					putout = before.BatterySn
-
-					go bs.RiderBusiness(false, putout, s.rider, cab, int(before.Ordinal))
-
-					// 更新新电池信息
-					bat, _ := bs.LoadOrCreate(putout)
-					if bat != nil {
+					if result.Step == model.ExchangeStepOpenFull.Uint32() {
+						var modelID uint64
+						models, _ := cab.QueryModels().All(s.ctx)
+						if len(models) > 0 {
+							modelID = models[0].ID
+						}
+						locationsType := model.AssetLocationsTypeCabinet
+						newBattery, _ := NewAsset().QueryNonSmartBattery(&model.QueryAssetReq{
+							LocationsType: &locationsType,
+							LocationsID:   silk.UInt64(cab.ID),
+							ModelID:       modelID,
+						})
+						if newBattery == nil {
+							zap.L().Error(fmt.Sprintf("换电-取电 非智能柜未找到电池信息 %s", cab.Serial))
+							return
+						}
 						_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
-							return NewBattery(s.operator).Allocate(bat, sub, model.AssetTransferTypeExchange)
+							return NewBattery(s.operator).Allocate(newBattery, sub, model.AssetTransferTypeExchange)
 						})
 					}
 				}
-			} else {
-				if result.Step == model.ExchangeStepPutInto.Uint32() {
-					at, _ := ent.Database.Asset.QueryNotDeleted().Where(
-						asset.Type(model.AssetTypeNonSmartBattery.Value()),
-						asset.LocationsType(model.AssetLocationsTypeRider.Value()),
-						asset.LocationsID(s.rider.ID),
-					).WithModel().First(s.ctx)
-					if at == nil {
-						zap.L().Error(fmt.Sprintf("换电-放电 非智能柜未找到电池信息 %s", cab.Serial))
-						return
-					}
-					// 清除旧电池分配信息
-					err = NewBattery(s.operator).Unallocate(at, model.AssetLocationsTypeCabinet, cab.ID, model.AssetTransferTypeExchange)
-					if err != nil {
-						zap.L().Error("换电-放电 非智能柜清除电池分配信息失败", zap.Error(err))
-						return
-					}
-				}
-
-				if result.Step == model.ExchangeStepOpenFull.Uint32() {
-					var modelID uint64
-					models, _ := cab.QueryModels().All(s.ctx)
-					if len(models) > 0 {
-						modelID = models[0].ID
-					}
-					locationsType := model.AssetLocationsTypeCabinet
-					newBattery, _ := NewAsset().QueryNonSmartBattery(&model.QueryAssetReq{
-						LocationsType: &locationsType,
-						LocationsID:   silk.UInt64(cab.ID),
-						ModelID:       modelID,
-					})
-					if newBattery == nil {
-						zap.L().Error(fmt.Sprintf("换电-取电 非智能柜未找到电池信息 %s", cab.Serial))
-						return
-					}
-					_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
-						return NewBattery(s.operator).Allocate(newBattery, sub, model.AssetTransferTypeExchange)
-					})
-				}
 			}
-
 			// 缓存结果
 			ar.Redis.RPush(s.ctx, key, result)
 		},
@@ -472,7 +473,6 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
 		bat, _ = ent.Database.Asset.QueryNotDeleted().Where(
 			asset.LocationsType(model.AssetLocationsTypeCabinet.Value()),
 			asset.HasCabinetWith(cabinet.Serial(cab.Serial)),
-			// asset.Ordinal(b.Ordinal),
 		).WithModel().First(s.ctx)
 		if bat == nil {
 			zap.L().Error("未找到电池信息")
