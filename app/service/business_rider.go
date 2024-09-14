@@ -538,7 +538,7 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 
 			// 需要进行业务出入库
 			if s.cabinetID != nil || s.storeID != nil || s.subscribe.StationID != nil || s.ebikeStoreID != nil || s.batStoreID != nil {
-				err = NewStock(s.modifier, s.operator).RiderBusiness(
+				err = NewAsset(s.modifier, s.operator).RiderBusiness(
 					&model.StockBusinessReq{
 						RiderID:           s.subscribe.RiderID,
 						Model:             s.subscribe.Model,
@@ -767,10 +767,6 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 		}
 		// 后台操作设置电池编码
 		if s.battery != nil && s.cabinet == nil {
-			// snag.PanicIfError(
-			// 	NewBattery(s.modifier).Allocate(s.battery, s.subscribe, model.AssetTransferTypeActive),
-			// )
-			//
 			err = s.battery.Update().SetSubscribeID(s.subscribe.ID).SetNillableOrdinal(nil).Exec(s.ctx)
 			if err != nil {
 				snag.Panic(err)
