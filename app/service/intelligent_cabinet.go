@@ -241,10 +241,16 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 				}
 
 				if result.Step == model.ExchangeStepOpenFull.Uint32() {
+					var modelID uint64
+					models, _ := cab.QueryModels().All(s.ctx)
+					if len(models) > 0 {
+						modelID = models[0].ID
+					}
 					locationsType := model.AssetLocationsTypeCabinet
 					newBattery, _ := NewAsset().QueryNonSmartBattery(&model.QueryAssetReq{
 						LocationsType: &locationsType,
 						LocationsID:   silk.UInt64(cab.ID),
+						ModelID:       modelID,
 					})
 					if newBattery == nil {
 						zap.L().Error(fmt.Sprintf("换电-取电 非智能柜未找到电池信息 %s", cab.Serial))

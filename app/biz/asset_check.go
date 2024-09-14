@@ -75,7 +75,7 @@ func (b *assetCheckBiz) GetAssetBySN(assetSignInfo definition.AssetSignInfo, req
 		}
 
 		newReq.LocationsType = model.AssetLocationsTypeStore
-		newReq.LocationsID = ep.Edges.Store.ID
+		newReq.LocationsID = ep.Edges.DutyStore.ID
 	}
 	if assetSignInfo.Agent != nil {
 		if req.StationID == nil {
@@ -148,7 +148,7 @@ func (b *assetCheckBiz) Create(assetSignInfo definition.AssetSignInfo, req *defi
 			return nil, errors.New("未找到店员上班信息")
 		}
 
-		newReq.LocationsID = ep.Edges.Store.ID
+		newReq.LocationsID = ep.Edges.DutyStore.ID
 		newReq.OperatorID = assetSignInfo.Employee.ID
 		newReq.OperatorType = model.OperatorTypeEmployee
 		md = model.Modifier{
@@ -226,7 +226,7 @@ func (b *assetCheckBiz) List(assetSignInfo definition.AssetSignInfo, req *defini
 			return nil, errors.New("未找到店员上班信息")
 		}
 
-		newReq.LocationsID = silk.UInt64(ep.Edges.Store.ID)
+		newReq.LocationsID = silk.UInt64(ep.Edges.DutyStore.ID)
 	}
 	if assetSignInfo.Agent != nil {
 		sType := model.AssetLocationsTypeStation

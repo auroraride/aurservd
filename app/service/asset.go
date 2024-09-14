@@ -277,7 +277,7 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 		// 获取标题对应id
 		for i := 1; i < len(title)-3; i++ {
 			// 判定属性值是否存在
-			if b, _ := ent.Database.AssetAttributeValues.Query().Where(assetattributevalues.AttributeID(titleID[i-2]), assetattributevalues.AssetID(save.ID)).Exist(ctx.Request().Context()); b {
+			if b, _ := ent.Database.AssetAttributeValues.Query().Where(assetattributevalues.AttributeID(titleID[i-1]), assetattributevalues.AssetID(save.ID)).Exist(ctx.Request().Context()); b {
 				failed = append(failed, fmt.Sprintf("属性值重复:%s", strings.Join(columns, ",")))
 				continue
 			}
@@ -1089,13 +1089,14 @@ func (s *assetService) QueryRiderID(id uint64) (*ent.Asset, error) {
 
 // QueryNonSmartBattery 查询一个符合条件的非智能电池
 func (s *assetService) QueryNonSmartBattery(req *model.QueryAssetReq) (bat *ent.Asset, err error) {
-	q := s.orm.Query().WithModel().Where(asset.Type(model.AssetTypeNonSmartBattery.Value()), asset.CheckAtIsNil()).Limit(1)
+	q := s.orm.Query().WithModel().Where(asset.Type(model.AssetTypeNonSmartBattery.Value()), asset.CheckAtIsNil(), asset.Status(model.AssetStatusStock.Value())).Limit(1)
 	if req.LocationsType != nil {
 		q.Where(asset.LocationsType(req.LocationsType.Value()))
 	}
 	if req.LocationsID != nil {
 		q.Where(asset.LocationsID(*req.LocationsID))
 	}
+	q.Where(asset.ModelID(req.ModelID))
 	item, _ := q.First(s.ctx)
 	if item == nil {
 		return nil, errors.New("未找到符合条件的非智能电池")

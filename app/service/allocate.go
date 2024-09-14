@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
+	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/pkg/silk"
@@ -204,9 +205,16 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 			locationsType = model.AssetLocationsTypeStation
 			locationsID = *sub.StationID
 		}
+
+		md := ent.Database.BatteryModel.Query().Where(batterymodel.Model(sub.Model)).FirstX(s.ctx)
+		if md == nil {
+			snag.Panic("未找到电池型号")
+			return model.AllocateCreateRes{}
+		}
 		bat, _ = NewAsset().QueryNonSmartBattery(&model.QueryAssetReq{
 			LocationsType: &locationsType,
 			LocationsID:   &locationsID,
+			ModelID:       md.ID,
 		})
 	} else {
 		// 智能电池

@@ -440,6 +440,16 @@ func ReasonHasSuffix(v string) predicate.AssetMaintenance {
 	return predicate.AssetMaintenance(sql.FieldHasSuffix(FieldReason, v))
 }
 
+// ReasonIsNil applies the IsNil predicate on the "reason" field.
+func ReasonIsNil() predicate.AssetMaintenance {
+	return predicate.AssetMaintenance(sql.FieldIsNull(FieldReason))
+}
+
+// ReasonNotNil applies the NotNil predicate on the "reason" field.
+func ReasonNotNil() predicate.AssetMaintenance {
+	return predicate.AssetMaintenance(sql.FieldNotNull(FieldReason))
+}
+
 // ReasonEqualFold applies the EqualFold predicate on the "reason" field.
 func ReasonEqualFold(v string) predicate.AssetMaintenance {
 	return predicate.AssetMaintenance(sql.FieldEqualFold(FieldReason, v))
@@ -503,6 +513,16 @@ func ContentHasPrefix(v string) predicate.AssetMaintenance {
 // ContentHasSuffix applies the HasSuffix predicate on the "content" field.
 func ContentHasSuffix(v string) predicate.AssetMaintenance {
 	return predicate.AssetMaintenance(sql.FieldHasSuffix(FieldContent, v))
+}
+
+// ContentIsNil applies the IsNil predicate on the "content" field.
+func ContentIsNil() predicate.AssetMaintenance {
+	return predicate.AssetMaintenance(sql.FieldIsNull(FieldContent))
+}
+
+// ContentNotNil applies the NotNil predicate on the "content" field.
+func ContentNotNil() predicate.AssetMaintenance {
+	return predicate.AssetMaintenance(sql.FieldNotNull(FieldContent))
 }
 
 // ContentEqualFold applies the EqualFold predicate on the "content" field.
