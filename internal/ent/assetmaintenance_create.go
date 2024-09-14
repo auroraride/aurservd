@@ -128,9 +128,25 @@ func (amc *AssetMaintenanceCreate) SetReason(s string) *AssetMaintenanceCreate {
 	return amc
 }
 
+// SetNillableReason sets the "reason" field if the given value is not nil.
+func (amc *AssetMaintenanceCreate) SetNillableReason(s *string) *AssetMaintenanceCreate {
+	if s != nil {
+		amc.SetReason(*s)
+	}
+	return amc
+}
+
 // SetContent sets the "content" field.
 func (amc *AssetMaintenanceCreate) SetContent(s string) *AssetMaintenanceCreate {
 	amc.mutation.SetContent(s)
+	return amc
+}
+
+// SetNillableContent sets the "content" field if the given value is not nil.
+func (amc *AssetMaintenanceCreate) SetNillableContent(s *string) *AssetMaintenanceCreate {
+	if s != nil {
+		amc.SetContent(*s)
+	}
 	return amc
 }
 
@@ -238,12 +254,6 @@ func (amc *AssetMaintenanceCreate) check() error {
 	}
 	if _, ok := amc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "AssetMaintenance.updated_at"`)}
-	}
-	if _, ok := amc.mutation.Reason(); !ok {
-		return &ValidationError{Name: "reason", err: errors.New(`ent: missing required field "AssetMaintenance.reason"`)}
-	}
-	if _, ok := amc.mutation.Content(); !ok {
-		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "AssetMaintenance.content"`)}
 	}
 	if _, ok := amc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "AssetMaintenance.status"`)}
@@ -527,6 +537,12 @@ func (u *AssetMaintenanceUpsert) UpdateReason() *AssetMaintenanceUpsert {
 	return u
 }
 
+// ClearReason clears the value of the "reason" field.
+func (u *AssetMaintenanceUpsert) ClearReason() *AssetMaintenanceUpsert {
+	u.SetNull(assetmaintenance.FieldReason)
+	return u
+}
+
 // SetContent sets the "content" field.
 func (u *AssetMaintenanceUpsert) SetContent(v string) *AssetMaintenanceUpsert {
 	u.Set(assetmaintenance.FieldContent, v)
@@ -536,6 +552,12 @@ func (u *AssetMaintenanceUpsert) SetContent(v string) *AssetMaintenanceUpsert {
 // UpdateContent sets the "content" field to the value that was provided on create.
 func (u *AssetMaintenanceUpsert) UpdateContent() *AssetMaintenanceUpsert {
 	u.SetExcluded(assetmaintenance.FieldContent)
+	return u
+}
+
+// ClearContent clears the value of the "content" field.
+func (u *AssetMaintenanceUpsert) ClearContent() *AssetMaintenanceUpsert {
+	u.SetNull(assetmaintenance.FieldContent)
 	return u
 }
 
@@ -738,6 +760,13 @@ func (u *AssetMaintenanceUpsertOne) UpdateReason() *AssetMaintenanceUpsertOne {
 	})
 }
 
+// ClearReason clears the value of the "reason" field.
+func (u *AssetMaintenanceUpsertOne) ClearReason() *AssetMaintenanceUpsertOne {
+	return u.Update(func(s *AssetMaintenanceUpsert) {
+		s.ClearReason()
+	})
+}
+
 // SetContent sets the "content" field.
 func (u *AssetMaintenanceUpsertOne) SetContent(v string) *AssetMaintenanceUpsertOne {
 	return u.Update(func(s *AssetMaintenanceUpsert) {
@@ -749,6 +778,13 @@ func (u *AssetMaintenanceUpsertOne) SetContent(v string) *AssetMaintenanceUpsert
 func (u *AssetMaintenanceUpsertOne) UpdateContent() *AssetMaintenanceUpsertOne {
 	return u.Update(func(s *AssetMaintenanceUpsert) {
 		s.UpdateContent()
+	})
+}
+
+// ClearContent clears the value of the "content" field.
+func (u *AssetMaintenanceUpsertOne) ClearContent() *AssetMaintenanceUpsertOne {
+	return u.Update(func(s *AssetMaintenanceUpsert) {
+		s.ClearContent()
 	})
 }
 
@@ -1120,6 +1156,13 @@ func (u *AssetMaintenanceUpsertBulk) UpdateReason() *AssetMaintenanceUpsertBulk 
 	})
 }
 
+// ClearReason clears the value of the "reason" field.
+func (u *AssetMaintenanceUpsertBulk) ClearReason() *AssetMaintenanceUpsertBulk {
+	return u.Update(func(s *AssetMaintenanceUpsert) {
+		s.ClearReason()
+	})
+}
+
 // SetContent sets the "content" field.
 func (u *AssetMaintenanceUpsertBulk) SetContent(v string) *AssetMaintenanceUpsertBulk {
 	return u.Update(func(s *AssetMaintenanceUpsert) {
@@ -1131,6 +1174,13 @@ func (u *AssetMaintenanceUpsertBulk) SetContent(v string) *AssetMaintenanceUpser
 func (u *AssetMaintenanceUpsertBulk) UpdateContent() *AssetMaintenanceUpsertBulk {
 	return u.Update(func(s *AssetMaintenanceUpsert) {
 		s.UpdateContent()
+	})
+}
+
+// ClearContent clears the value of the "content" field.
+func (u *AssetMaintenanceUpsertBulk) ClearContent() *AssetMaintenanceUpsertBulk {
+	return u.Update(func(s *AssetMaintenanceUpsert) {
+		s.ClearContent()
 	})
 }
 

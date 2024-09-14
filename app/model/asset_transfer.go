@@ -297,4 +297,5 @@ type BatteryTransferReq struct {
 	ToLocationType   AssetLocationsType
 	ToLocationID     uint64
 	Details          []AssetTransferCreateDetail
+	In               bool
 }

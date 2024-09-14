@@ -104,7 +104,9 @@ func (s *cabinetMgrService) BinOperate(operator *logging.Operator, id uint64, da
 			op = cabdef.OperateBinEnable
 		}
 		success, results := NewIntelligentCabinet().Operate(operator, cab, op, req)
-		s.BinOperateAssetTransfer(operator, cab, results)
+		if op == cabdef.OperateDoorOpen {
+			s.BinOperateAssetTransfer(operator, cab, results)
+		}
 		return success
 	case *model.CabinetBinDeactivateReq:
 		return NewIntelligentCabinet().Deactivate(operator, cab, &cabdef.BinDeactivateRequest{
@@ -124,7 +126,6 @@ func (s *cabinetMgrService) BinOperateAssetTransfer(operator *logging.Operator, 
 	if operator.Type == model.OperatorTypeMaintainer || operator.Type == model.OperatorTypeEmployee || operator.Type == model.OperatorTypeAgent {
 		// 根据返回数据更新仓位状态
 		var before, after *cabdef.BinInfo
-
 		for _, result := range data {
 			if before == nil {
 				before = result.Before
@@ -138,6 +139,7 @@ func (s *cabinetMgrService) BinOperateAssetTransfer(operator *logging.Operator, 
 			var sn string
 			var assetType model.AssetType
 			var modelID uint64
+			var in bool
 			// 非智能柜根据电池在位判定电池资产变化
 			if !cab.Intelligent && before.BatteryExists != after.BatteryExists {
 				assetType = model.AssetTypeNonSmartBattery
@@ -151,6 +153,7 @@ func (s *cabinetMgrService) BinOperateAssetTransfer(operator *logging.Operator, 
 					toLocationType, toLocationID = s.OperatorAssetLocation(operator, cab)
 					fromLocationType = model.AssetLocationsTypeCabinet
 					fromLocationID = cab.ID
+					in = false
 				}
 
 				// 电池放入
@@ -159,10 +162,12 @@ func (s *cabinetMgrService) BinOperateAssetTransfer(operator *logging.Operator, 
 					fromLocationType, fromLocationID = s.OperatorAssetLocation(operator, cab)
 					toLocationType = model.AssetLocationsTypeCabinet
 					toLocationID = cab.ID
+					in = true
 					// 查找电池数量是否满足
 					bat, _ := NewAsset().QueryNonSmartBattery(&model.QueryAssetReq{
 						LocationsID:   silk.UInt64(fromLocationID),
 						LocationsType: &fromLocationType,
+						ModelID:       modelID,
 					})
 					// todo 这里应该上报异常 因为非智能电池不知道插入哪一个 所以没办法根据原来的位置找到电池
 					if bat == nil {
@@ -181,6 +186,7 @@ func (s *cabinetMgrService) BinOperateAssetTransfer(operator *logging.Operator, 
 							Num:       silk.UInt(1),
 						},
 					},
+					In: in,
 				})
 				if err != nil {
 					zap.L().Error("电池调拨失败", zap.Error(err))
@@ -197,6 +203,7 @@ func (s *cabinetMgrService) BinOperateAssetTransfer(operator *logging.Operator, 
 					fromLocationType = model.AssetLocationsTypeCabinet
 					fromLocationID = cab.ID
 					sn = before.BatterySN
+					in = false
 				}
 				if after.BatterySN != "" {
 					// 电池放入 查询运维/站点/门店 如果有电池 从运维调拨到电柜
@@ -205,6 +212,7 @@ func (s *cabinetMgrService) BinOperateAssetTransfer(operator *logging.Operator, 
 					toLocationType = model.AssetLocationsTypeCabinet
 					toLocationID = cab.ID
 					sn = after.BatterySN
+					in = true
 				}
 				err := s.BatteryTransfer(operator, model.BatteryTransferReq{
 					FromLocationType: fromLocationType,
@@ -217,6 +225,7 @@ func (s *cabinetMgrService) BinOperateAssetTransfer(operator *logging.Operator, 
 							SN:        silk.String(sn),
 						},
 					},
+					In: in,
 				})
 				if err != nil {
 					zap.L().Error("电池调拨失败", zap.Error(err))
@@ -280,13 +289,18 @@ func (s *cabinetMgrService) GetBattery(operator *logging.Operator, cab *ent.Cabi
 
 // BatteryTransfer 电池调拨
 func (s *cabinetMgrService) BatteryTransfer(operator *logging.Operator, req model.BatteryTransferReq) error {
+	var reason string
+	reason = "操作取出电池"
+	if req.In {
+		reason = "操作放入电池"
+	}
 	_, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
 		FromLocationType:  &req.FromLocationType,
 		FromLocationID:    &req.FromLocationID,
 		ToLocationType:    req.ToLocationType,
 		ToLocationID:      req.ToLocationID,
 		Details:           req.Details,
-		Reason:            operator.Name + "操作取出电池",
+		Reason:            reason,
 		AssetTransferType: model.AssetTransferTypeTransfer,
 		OperatorID:        operator.ID,
 		OperatorType:      operator.Type,

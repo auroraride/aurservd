@@ -145,6 +145,12 @@ func (amu *AssetMaintenanceUpdate) SetNillableReason(s *string) *AssetMaintenanc
 	return amu
 }
 
+// ClearReason clears the value of the "reason" field.
+func (amu *AssetMaintenanceUpdate) ClearReason() *AssetMaintenanceUpdate {
+	amu.mutation.ClearReason()
+	return amu
+}
+
 // SetContent sets the "content" field.
 func (amu *AssetMaintenanceUpdate) SetContent(s string) *AssetMaintenanceUpdate {
 	amu.mutation.SetContent(s)
@@ -156,6 +162,12 @@ func (amu *AssetMaintenanceUpdate) SetNillableContent(s *string) *AssetMaintenan
 	if s != nil {
 		amu.SetContent(*s)
 	}
+	return amu
+}
+
+// ClearContent clears the value of the "content" field.
+func (amu *AssetMaintenanceUpdate) ClearContent() *AssetMaintenanceUpdate {
+	amu.mutation.ClearContent()
 	return amu
 }
 
@@ -327,8 +339,14 @@ func (amu *AssetMaintenanceUpdate) sqlSave(ctx context.Context) (n int, err erro
 	if value, ok := amu.mutation.Reason(); ok {
 		_spec.SetField(assetmaintenance.FieldReason, field.TypeString, value)
 	}
+	if amu.mutation.ReasonCleared() {
+		_spec.ClearField(assetmaintenance.FieldReason, field.TypeString)
+	}
 	if value, ok := amu.mutation.Content(); ok {
 		_spec.SetField(assetmaintenance.FieldContent, field.TypeString, value)
+	}
+	if amu.mutation.ContentCleared() {
+		_spec.ClearField(assetmaintenance.FieldContent, field.TypeString)
 	}
 	if value, ok := amu.mutation.Status(); ok {
 		_spec.SetField(assetmaintenance.FieldStatus, field.TypeUint8, value)
@@ -573,6 +591,12 @@ func (amuo *AssetMaintenanceUpdateOne) SetNillableReason(s *string) *AssetMainte
 	return amuo
 }
 
+// ClearReason clears the value of the "reason" field.
+func (amuo *AssetMaintenanceUpdateOne) ClearReason() *AssetMaintenanceUpdateOne {
+	amuo.mutation.ClearReason()
+	return amuo
+}
+
 // SetContent sets the "content" field.
 func (amuo *AssetMaintenanceUpdateOne) SetContent(s string) *AssetMaintenanceUpdateOne {
 	amuo.mutation.SetContent(s)
@@ -584,6 +608,12 @@ func (amuo *AssetMaintenanceUpdateOne) SetNillableContent(s *string) *AssetMaint
 	if s != nil {
 		amuo.SetContent(*s)
 	}
+	return amuo
+}
+
+// ClearContent clears the value of the "content" field.
+func (amuo *AssetMaintenanceUpdateOne) ClearContent() *AssetMaintenanceUpdateOne {
+	amuo.mutation.ClearContent()
 	return amuo
 }
 
@@ -785,8 +815,14 @@ func (amuo *AssetMaintenanceUpdateOne) sqlSave(ctx context.Context) (_node *Asse
 	if value, ok := amuo.mutation.Reason(); ok {
 		_spec.SetField(assetmaintenance.FieldReason, field.TypeString, value)
 	}
+	if amuo.mutation.ReasonCleared() {
+		_spec.ClearField(assetmaintenance.FieldReason, field.TypeString)
+	}
 	if value, ok := amuo.mutation.Content(); ok {
 		_spec.SetField(assetmaintenance.FieldContent, field.TypeString, value)
+	}
+	if amuo.mutation.ContentCleared() {
+		_spec.ClearField(assetmaintenance.FieldContent, field.TypeString)
 	}
 	if value, ok := amuo.mutation.Status(); ok {
 		_spec.SetField(assetmaintenance.FieldStatus, field.TypeUint8, value)

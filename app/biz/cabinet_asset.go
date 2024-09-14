@@ -90,7 +90,7 @@ func (b *cabinetAssetBiz) assetsFilter(q *ent.CabinetQuery, req *definition.Cabi
 		q.Where(cabinet.NameContainsFold(*req.Name))
 	}
 	if req.Sn != nil {
-		q.Where(cabinet.SnContainsFold(*req.Sn))
+		q.Where(cabinet.SerialContainsFold(*req.Sn))
 	}
 	if req.Start != nil && req.End != nil {
 		start := tools.NewTime().ParseDateStringX(*req.Start)

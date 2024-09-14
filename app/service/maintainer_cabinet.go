@@ -47,7 +47,7 @@ func (s *maintainerCabinetService) List(cityIDs []uint64, req *model.MaintainerC
 		q.Where(
 			cabinet.Or(
 				cabinet.NameContainsFold(*req.Keyword),
-				cabinet.SnContainsFold(*req.Keyword),
+				cabinet.SerialContains(*req.Keyword),
 			),
 		)
 	}
