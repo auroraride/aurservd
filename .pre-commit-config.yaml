@@ -12,14 +12,14 @@ repos:
         entry: bash ./swagfmt.sh
         language: system
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: 77c7147
+    rev: ed71474
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-added-large-files
   - repo: https://github.com/golangci/golangci-lint
-    rev: ad4a6b2
+    rev: dcb6a57
     hooks:
       - id: golangci-lint
         name: golangci-lint

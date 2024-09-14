@@ -62,5 +62,5 @@ func (*cabinet) Operate(c echo.Context) (err error) {
 // @Success	200					{object}	model.StatusResponse			"请求成功"
 func (*cabinet) BinOperate(c echo.Context) (err error) {
 	ctx, req := app.WarestoreContextAndBinding[model.MaintainerBinOperateReq](c)
-	return ctx.SendResponse(biz.NewCabinet().BinOperate(definition.AssetSignInfo{Employee: ctx.Employee}, req))
+	return ctx.SendResponse(biz.NewCabinet().BinOperate(definition.AssetSignInfo{Employee: ctx.Employee}, req, true))
 }

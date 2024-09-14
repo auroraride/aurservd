@@ -500,7 +500,9 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
 	return
 }
 
-func (s *intelligentCabinetService) Operate(operator *logging.Operator, cab *ent.Cabinet, op cabdef.Operate, req *model.CabinetDoorOperateReq) (success bool, data []*cabdef.BinOperateResult) {
+// Operate 操作电柜
+// waitClose 是否等待关闭仓门（仅开仓动作有效）
+func (s *intelligentCabinetService) Operate(operator *logging.Operator, cab *ent.Cabinet, op cabdef.Operate, req *model.CabinetDoorOperateReq, waitClose bool) (success bool, data []*cabdef.BinOperateResult) {
 	now := time.Now()
 	br := cab.Brand
 	ordinal := *req.Index + 1
@@ -535,7 +537,12 @@ func (s *intelligentCabinetService) Operate(operator *logging.Operator, cab *ent
 		Remark:  req.Remark,
 	}
 
-	data, err = adapter.Post[[]*cabdef.BinOperateResult](s.GetCabinetAdapterUrlX(cab, "/operate/bin"), operator.GetAdapterUserX(), payload)
+	apiUrl := "/operate/bin"
+	if op == cabdef.OperateDoorOpen && waitClose {
+		apiUrl = "/operate/bin/open-close"
+	}
+
+	data, err = adapter.Post[[]*cabdef.BinOperateResult](s.GetCabinetAdapterUrlX(cab, apiUrl), operator.GetAdapterUserX(), payload)
 	zap.L().Info("电柜操作", zap.Bool("success", success), log.Payload(data), zap.Error(err))
 
 	success = err == nil
@@ -615,7 +622,7 @@ func (s *intelligentCabinetService) OpenBind(req *model.CabinetOpenBindReq) {
 		Index:     req.Index,
 		Remark:    req.Remark,
 		Operation: silk.Pointer(model.CabinetDoorOperateOpen),
-	})
+	}, false)
 	if !success {
 		snag.Panic("仓门开启失败")
 	}
