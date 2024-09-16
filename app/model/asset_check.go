@@ -149,8 +149,8 @@ type AssetCheckAbnormal struct {
 	LocationsName     string           `json:"locationsName"`     // 理论位置名称
 	RealLocationsName string           `json:"realLocationsName"` // 实际位置名称
 	Status            string           `json:"status"`            // 处理状态 0:未处理 1:已入库 2:已出库 3:已报废
-	OperatorName      string           `json:"OperatorName"`      // 操作人名称
-	OperatorAt        string           `json:"OperatorAt"`        // 操作时间
+	OperatorName      string           `json:"operatorName"`      // 操作人名称
+	OperatorAt        string           `json:"operatorAt"`        // 操作时间
 	AssetType         AssetType        `json:"assetType"`         // 资产类型 1:电车 2:电池
 }
 

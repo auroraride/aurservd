@@ -78,7 +78,7 @@ func (*cabinet) Operate(c echo.Context) (err error) {
 // @Success	200					{object}	model.MaintainerBinOperateReq	"请求成功"
 func (*cabinet) BinOperate(c echo.Context) (err error) {
 	ctx, req := app.MaintainerContextAndBinding[model.MaintainerBinOperateReq](c)
-	service.NewMaintainerCabinet().BinOperate(ctx.Maintainer, ctx.CityIDs(), req)
+	service.NewMaintainerCabinet().BinOperate(ctx.Maintainer, ctx.CityIDs(), req, true)
 	return ctx.SendResponse()
 }
 

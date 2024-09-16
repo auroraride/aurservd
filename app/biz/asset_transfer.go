@@ -164,6 +164,7 @@ func (b *assetTransferBiz) Transfer(assetSignInfo definition.AssetSignInfo, req 
 				return errors.New("当前未上班")
 			}
 			req.FromLocationID = loc.WarehouseID
+			newReq.FromLocationID = req.FromLocationID
 		} else {
 			newReq.FromLocationID = req.FromLocationID
 		}
@@ -225,6 +226,7 @@ func (b *assetTransferBiz) Transfer(assetSignInfo definition.AssetSignInfo, req 
 		newReq.FromLocationType = &sType
 		if req.FromLocationID == nil {
 			req.FromLocationID = silk.UInt64(assetSignInfo.Maintainer.ID)
+			newReq.FromLocationID = req.FromLocationID
 		} else {
 			newReq.FromLocationID = req.FromLocationID
 		}
@@ -260,22 +262,28 @@ func (b *assetTransferBiz) TransferForUse(assetSignInfo definition.AssetSignInfo
 	}
 	var md model.Modifier
 
-	newReq := model.AssetTransferCreateReq{
-		FromLocationType:  req.FromLocationType,
-		FromLocationID:    req.FromLocationID,
-		ToLocationType:    req.ToLocationType,
-		ToLocationID:      req.ToLocationID,
-		Details:           req.Details,
-		Reason:            req.Reason,
-		AssetTransferType: model.AssetTransferTypeTransfer,
-		OperatorType:      model.OperatorTypeMaintainer,
-		OperatorID:        assetSignInfo.Maintainer.ID,
-		AutoIn:            true,
-	}
-
+	// 接收资产map
+	var receiveMap = make(map[uint64][]*model.AssetTransferReceiveDetail)
+	// 未调拨资产切片
+	var notTransferSlice []string
 	for _, v := range req.Details {
 		if v.AssetType != model.AssetTypeSmartBattery && v.AssetType != model.AssetTypeNonSmartBattery {
 			return errors.New("运维端当前只支持电池调拨")
+		}
+		if v.SN != nil {
+			// 查询是否已经调拨
+			at, _ := service.NewAssetTransfer().QueryTransferBySN(b.ctx, *v.SN)
+			if at != nil {
+				receiveMap[at.ID] = append(receiveMap[at.ID], &model.AssetTransferReceiveDetail{
+					SN:         v.SN,
+					AssetType:  v.AssetType,
+					MaterialID: v.MaterialID,
+					ModelID:    v.ModelID,
+					Num:        v.Num,
+				})
+			} else {
+				notTransferSlice = append(notTransferSlice, *v.SN)
+			}
 		}
 	}
 
@@ -290,12 +298,46 @@ func (b *assetTransferBiz) TransferForUse(assetSignInfo definition.AssetSignInfo
 		return err
 	}
 
-	_, failed, err := service.NewAssetTransfer().Transfer(b.ctx, &newReq, &md)
-	if err != nil {
-		return err
+	if len(notTransferSlice) > 0 {
+		newReq := model.AssetTransferCreateReq{
+			FromLocationType:  req.FromLocationType,
+			FromLocationID:    req.FromLocationID,
+			ToLocationType:    req.ToLocationType,
+			ToLocationID:      req.ToLocationID,
+			Details:           req.Details,
+			Reason:            req.Reason,
+			AssetTransferType: model.AssetTransferTypeTransfer,
+			OperatorType:      model.OperatorTypeMaintainer,
+			OperatorID:        assetSignInfo.Maintainer.ID,
+			AutoIn:            true,
+		}
+		_, failed, err := service.NewAssetTransfer().Transfer(b.ctx, &newReq, &md)
+		if err != nil {
+			return err
+		}
+		if len(failed) > 0 {
+			return errors.New(failed[0])
+		}
 	}
-	if len(failed) > 0 {
-		return errors.New(failed[0])
+	if len(receiveMap) > 0 {
+		assetTransferReceiveReq := make([]model.AssetTransferReceiveReq, 0)
+		for k, v := range receiveMap {
+			assetTransferReceiveDetail := make([]model.AssetTransferReceiveDetail, 0)
+			for _, vl := range v {
+				d := vl
+				assetTransferReceiveDetail = append(assetTransferReceiveDetail, *d)
+			}
+			assetTransferReceiveReq = append(assetTransferReceiveReq, model.AssetTransferReceiveReq{
+				ID:     k,
+				Detail: assetTransferReceiveDetail,
+			})
+		}
+		err = NewAssetTransfer().TransferReceive(assetSignInfo, &definition.AssetTransferReceiveBatchReq{
+			AssetTransferReceive: assetTransferReceiveReq,
+		})
+		if err != nil {
+			return err
+		}
 	}
 
 	return

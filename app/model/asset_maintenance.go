@@ -48,9 +48,9 @@ type AssetMaintenanceListRes struct {
 	CabinetSn     string                   `json:"cabinetSn"`     // 电柜编号
 	Reason        string                   `json:"reason"`        // 维护理由
 	Content       string                   `json:"content"`       // 维护内容
-	OperatorName  string                   `json:"OperatorName"`  // 维护人
+	OperatorName  string                   `json:"operatorName"`  // 维护人
 	CreatedAt     string                   `json:"createdAt"`     // 维护时间
-	OperatorPhone string                   `json:"OperatorPhone"` // 维护人电话
+	OperatorPhone string                   `json:"operatorPhone"` // 维护人电话
 	Status        string                   `json:"status"`        // 维修状态  1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护
 	Details       []AssetMaintenanceDetail `json:"details"`       // 维护详情
 

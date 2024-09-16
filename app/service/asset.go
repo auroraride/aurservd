@@ -29,6 +29,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
+	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
 
@@ -277,7 +278,7 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 		// 获取标题对应id
 		for i := 1; i < len(title)-3; i++ {
 			// 判定属性值是否存在
-			if b, _ := ent.Database.AssetAttributeValues.Query().Where(assetattributevalues.AttributeID(titleID[i-2]), assetattributevalues.AssetID(save.ID)).Exist(ctx.Request().Context()); b {
+			if b, _ := ent.Database.AssetAttributeValues.Query().Where(assetattributevalues.AttributeID(titleID[i-1]), assetattributevalues.AssetID(save.ID)).Exist(ctx.Request().Context()); b {
 				failed = append(failed, fmt.Sprintf("属性值重复:%s", strings.Join(columns, ",")))
 				continue
 			}
@@ -1089,13 +1090,14 @@ func (s *assetService) QueryRiderID(id uint64) (*ent.Asset, error) {
 
 // QueryNonSmartBattery 查询一个符合条件的非智能电池
 func (s *assetService) QueryNonSmartBattery(req *model.QueryAssetReq) (bat *ent.Asset, err error) {
-	q := s.orm.Query().WithModel().Where(asset.Type(model.AssetTypeNonSmartBattery.Value()), asset.CheckAtIsNil()).Limit(1)
+	q := s.orm.Query().WithModel().Where(asset.Type(model.AssetTypeNonSmartBattery.Value()), asset.CheckAtIsNil(), asset.Status(model.AssetStatusStock.Value())).Limit(1)
 	if req.LocationsType != nil {
 		q.Where(asset.LocationsType(req.LocationsType.Value()))
 	}
 	if req.LocationsID != nil {
 		q.Where(asset.LocationsID(*req.LocationsID))
 	}
+	q.Where(asset.ModelID(req.ModelID))
 	item, _ := q.First(s.ctx)
 	if item == nil {
 		return nil, errors.New("未找到符合条件的非智能电池")
@@ -1169,4 +1171,203 @@ func (s *assetService) StoreCurrent(id uint64) []model.InventoryNum {
 		Scan(s.ctx, &ins)
 
 	return ins
+}
+
+// RiderBusiness 骑手业务 电池 / 电车 出入库
+// 此方法操作库存
+func (s *assetService) RiderBusiness(req *model.StockBusinessReq) (err error) {
+	if req.StoreID == nil && req.EbikeStoreID == nil && req.BatStoreID == nil && req.CabinetID == nil && req.EnterpriseID == nil && req.StationID == nil {
+		err = errors.New("参数校验错误")
+		return
+	}
+
+	// 如果是骑手自己操作 激活和取消寄存拿走电池 会有电柜任务已经执行调拨
+	if s.operator.Type == model.OperatorTypeRider && req.CabinetID != nil && (req.AssetTransferType == model.AssetTransferTypeActive || req.AssetTransferType == model.AssetTransferTypeContinue) {
+		return
+	}
+
+	// 查询资产
+	var ebikeInfo *ent.Asset
+	var batteryInfo *ent.Asset
+	var fromLocationType model.AssetLocationsType
+	var fromLocationID uint64
+	var toLocationType model.AssetLocationsType
+	var toLocationID uint64
+	details := make([]model.AssetTransferCreateDetail, 0)
+	ebikeDetails := make([]model.AssetTransferCreateDetail, 0)
+	assetType := model.AssetTypeSmartBattery
+
+	if req.Ebike != nil {
+		ebikeInfo, _ = NewAsset().QuerySn(req.Ebike.Sn)
+		if ebikeInfo == nil {
+			err = errors.New("电车不存在")
+			return
+		}
+	}
+
+	if req.Battery != nil {
+		if req.Battery.SN == "" {
+			batteryInfo, _ = NewAsset().QueryID(req.Battery.ID)
+		} else {
+			batteryInfo, _ = NewAsset().QuerySn(req.Battery.SN)
+		}
+		if batteryInfo == nil {
+			err = errors.New("电池不存在")
+			return
+		}
+	}
+	var storeID uint64
+	if req.StoreID != nil {
+		storeID = *req.StoreID
+	}
+	if req.BatStoreID != nil {
+		storeID = *req.BatStoreID
+	}
+
+	// 激活和取消寄存 需要判定非智能库存
+	if req.Battery == nil && (req.AssetTransferType == model.AssetTransferTypeActive || req.AssetTransferType == model.AssetTransferTypeContinue) {
+
+		if req.StoreID != nil || req.BatStoreID != nil {
+			batteryInfo, _ = s.CheckBusinessBattery(req, model.AssetLocationsTypeStore, storeID)
+		}
+		// 团签业务
+		if req.CabinetID == nil && req.EnterpriseID != nil && req.StationID != nil {
+			batteryInfo, _ = s.CheckBusinessBattery(req, model.AssetLocationsTypeStation, *req.StationID)
+		}
+
+		// 电柜业务
+		if req.CabinetID != nil {
+			batteryInfo, _ = s.CheckBusinessBattery(req, model.AssetLocationsTypeCabinet, *req.CabinetID)
+		}
+		if batteryInfo == nil {
+			err = errors.New("电池库存不足")
+			return
+		}
+	}
+	if batteryInfo != nil && batteryInfo.Type == model.AssetTypeNonSmartBattery.Value() {
+		assetType = model.AssetTypeNonSmartBattery
+	}
+	switch req.AssetTransferType {
+	case model.AssetTransferTypeActive, model.AssetTransferTypeContinue:
+		// 激活和取消寄存 某个位置的库存调拨到骑手
+		toLocationType = model.AssetLocationsTypeRider
+		toLocationID = req.RiderID
+		if batteryInfo != nil {
+			fromLocationType = model.AssetLocationsType(batteryInfo.LocationsType)
+			fromLocationID = batteryInfo.LocationsID
+		}
+		if ebikeInfo != nil {
+			fromLocationType = model.AssetLocationsType(ebikeInfo.LocationsType)
+			fromLocationID = ebikeInfo.LocationsID
+		}
+	case model.AssetTransferTypePause, model.AssetTransferTypeUnSubscribe:
+		// 寄存和退租 骑手的库存调拨到某个位置
+		fromLocationType = model.AssetLocationsTypeRider
+		fromLocationID = req.RiderID
+		if req.BatStoreID != nil || req.StoreID != nil {
+			toLocationType = model.AssetLocationsTypeStore
+			toLocationID = storeID
+		}
+		if req.CabinetID != nil {
+			toLocationType = model.AssetLocationsTypeCabinet
+			toLocationID = *req.CabinetID
+		}
+		if req.EnterpriseID != nil && req.StationID != nil {
+			toLocationType = model.AssetLocationsTypeStation
+			toLocationID = *req.StationID
+		}
+	default:
+		return errors.New("业务类型错误")
+	}
+
+	if ebikeInfo != nil {
+		ebikeDetails = append(ebikeDetails, model.AssetTransferCreateDetail{
+			AssetType: model.AssetTypeEbike,
+			SN:        silk.String(ebikeInfo.Sn),
+		})
+	}
+	if batteryInfo != nil {
+		if assetType == model.AssetTypeSmartBattery {
+			details = append(details, model.AssetTransferCreateDetail{
+				AssetType: assetType,
+				SN:        silk.String(batteryInfo.Sn),
+			})
+		} else {
+			details = append(details, model.AssetTransferCreateDetail{
+				AssetType: assetType,
+				Num:       silk.UInt(1),
+				ModelID:   batteryInfo.ModelID,
+			})
+		}
+	}
+
+	if len(details) != 0 {
+		// 创建调拨单
+		_, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
+			FromLocationType:  &fromLocationType,
+			FromLocationID:    &fromLocationID,
+			ToLocationType:    toLocationType,
+			ToLocationID:      toLocationID,
+			Details:           details,
+			Reason:            req.AssetTransferType.String() + "骑手业务",
+			AssetTransferType: req.AssetTransferType,
+			OperatorID:        s.operator.ID,
+			OperatorType:      s.operator.Type,
+			AutoIn:            true,
+			SkipLimit:         true,
+		}, &model.Modifier{
+			ID:    s.operator.ID,
+			Name:  s.operator.Name,
+			Phone: s.operator.Phone,
+		})
+		if err != nil {
+			return err
+		}
+		if len(failed) > 0 {
+			return errors.New(failed[0])
+		}
+	}
+
+	if len(ebikeDetails) != 0 {
+		// 电车创建调拨单
+		_, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
+			FromLocationType:  &fromLocationType,
+			FromLocationID:    &fromLocationID,
+			ToLocationType:    toLocationType,
+			ToLocationID:      toLocationID,
+			Details:           ebikeDetails,
+			Reason:            req.AssetTransferType.String() + "骑手业务",
+			AssetTransferType: req.AssetTransferType,
+			OperatorID:        s.operator.ID,
+			OperatorType:      s.operator.Type,
+			AutoIn:            true,
+			SkipLimit:         true,
+		}, &model.Modifier{
+			ID:    s.operator.ID,
+			Name:  s.operator.Name,
+			Phone: s.operator.Phone,
+		})
+		if err != nil {
+			return err
+		}
+		if len(failed) > 0 {
+			return errors.New(failed[0])
+		}
+	}
+	return
+}
+
+// CheckBusinessBattery 激活和取消寄存非智能电池数量判定
+func (s *assetService) CheckBusinessBattery(req *model.StockBusinessReq, locationsType model.AssetLocationsType, locationsID uint64) (batteryInfo *ent.Asset, err error) {
+	// 判定非智能电池库存
+	batteryInfo, _ = NewAsset().CheckAsset(locationsType, locationsID, req.Model)
+	if batteryInfo == nil {
+		err = errors.New("电池库存不足")
+		return
+	}
+	if batteryInfo.Edges.Model == nil {
+		err = errors.New("电池型号不存在")
+		return
+	}
+	return batteryInfo, nil
 }

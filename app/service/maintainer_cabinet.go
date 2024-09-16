@@ -47,7 +47,7 @@ func (s *maintainerCabinetService) List(cityIDs []uint64, req *model.MaintainerC
 		q.Where(
 			cabinet.Or(
 				cabinet.NameContainsFold(*req.Keyword),
-				cabinet.SnContainsFold(*req.Keyword),
+				cabinet.SerialContains(*req.Keyword),
 			),
 		)
 	}
@@ -186,7 +186,7 @@ func (s *maintainerCabinetService) Operate(m *ent.Maintainer, cities []uint64, r
 }
 
 // BinOperate 仓位操作
-func (s *maintainerCabinetService) BinOperate(m *ent.Maintainer, cities []uint64, req *model.MaintainerBinOperateReq) bool {
+func (s *maintainerCabinetService) BinOperate(m *ent.Maintainer, cities []uint64, req *model.MaintainerBinOperateReq, waitClose bool) bool {
 	// 校验权限并获取操作人
 	cab, operator := s.operatable(m, cities, req.Serial, req.Lng, req.Lat, true)
 
@@ -231,7 +231,7 @@ func (s *maintainerCabinetService) BinOperate(m *ent.Maintainer, cities []uint64
 		}
 	}
 
-	return NewCabinetMgr().BinOperate(operator, cab.ID, op)
+	return NewCabinetMgr().BinOperate(operator, cab.ID, op, waitClose)
 }
 
 // Pause 暂停维护

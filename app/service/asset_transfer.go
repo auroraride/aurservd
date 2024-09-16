@@ -138,6 +138,7 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 				SN:         v.SN,
 				Num:        v.Num,
 				MaterialID: v.MaterialID,
+				ModelID:    v.ModelID,
 			})
 		}
 		err = s.TransferReceive(ctx, &model.AssetTransferReceiveBatchReq{
@@ -2196,6 +2197,18 @@ func (s *assetTransferService) Modify(ctx context.Context, req *model.AssetTrans
 func (s *assetTransferService) QueryTransferByAssetID(ctx context.Context, id uint64) (res *ent.AssetTransfer, err error) {
 	item, _ := s.orm.QueryNotDeleted().
 		Where(assettransfer.HasTransferDetailsWith(assettransferdetails.AssetID(id)), assettransfer.Status(model.AssetTransferStatusDelivering.Value())).
+		Order(ent.Desc(assettransfer.FieldCreatedAt)).
+		First(ctx)
+	if item == nil {
+		return nil, errors.New("调拨单不存在或已入库")
+	}
+	return item, nil
+}
+
+// QueryTransferBySN 获取调拨信息
+func (s *assetTransferService) QueryTransferBySN(ctx context.Context, sn string) (res *ent.AssetTransfer, err error) {
+	item, _ := s.orm.QueryNotDeleted().
+		Where(assettransfer.HasTransferDetailsWith(assettransferdetails.HasAssetWith(asset.Sn(sn))), assettransfer.Status(model.AssetTransferStatusDelivering.Value())).
 		Order(ent.Desc(assettransfer.FieldCreatedAt)).
 		First(ctx)
 	if item == nil {

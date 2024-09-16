@@ -455,16 +455,6 @@ func (s *businessRiderService) Preprocess(bt model.BusinessType, sub *ent.Subscr
 		}
 	}
 
-	// 如果是后台操作 查询订阅绑定电池信息
-	// if s.operator.Type == model.OperatorTypeManager && (bt == model.BusinessTypeUnsubscribe || bt == model.BusinessTypePause) {
-	// 	// 查询订阅绑定电池
-	// 	b, _ := ent.Database.Asset.QueryNotDeleted().Where(asset.SubscribeID(sub.ID), asset.TypeIn(model.AssetTypeSmartBattery.Value(), model.AssetTypeNonSmartBattery.Value())).First(s.ctx)
-	// 	if b == nil {
-	// 		snag.Panic("电池查询失败")
-	// 	}
-	// 	s.battery = b
-	// }
-
 }
 
 // doTask 处理电柜任务
@@ -548,7 +538,7 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 
 			// 需要进行业务出入库
 			if s.cabinetID != nil || s.storeID != nil || s.subscribe.StationID != nil || s.ebikeStoreID != nil || s.batStoreID != nil {
-				err = NewStock(s.modifier, s.operator).RiderBusiness(
+				err = NewAsset(s.modifier, s.operator).RiderBusiness(
 					&model.StockBusinessReq{
 						RiderID:           s.subscribe.RiderID,
 						Model:             s.subscribe.Model,
@@ -777,10 +767,6 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 		}
 		// 后台操作设置电池编码
 		if s.battery != nil && s.cabinet == nil {
-			// snag.PanicIfError(
-			// 	NewBattery(s.modifier).Allocate(s.battery, s.subscribe, model.AssetTransferTypeActive),
-			// )
-			//
 			err = s.battery.Update().SetSubscribeID(s.subscribe.ID).SetNillableOrdinal(nil).Exec(s.ctx)
 			if err != nil {
 				snag.Panic(err)
