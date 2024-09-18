@@ -79,7 +79,7 @@ func (s *maintainerCabinetService) Detail(req *model.MaintainerCabinetDetailReq)
 		ID:   b.ID,
 		Name: b.Name,
 	}
-	// 查找当前维护信息
+	// 查找当前最新维护信息
 	res.Maintenance = NewAssetMaintenance().QueryByID(cab.ID)
 
 	return
