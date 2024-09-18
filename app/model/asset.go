@@ -72,6 +72,7 @@ type AssetListRes struct {
 	Remark         string                    `json:"remark"`           // 备注
 	Attribute      map[uint64]AssetAttribute `json:"attribute"`        // 属性
 	Status         AssetStatus               `json:"status"`           // 资产状态
+	Rto            string                    `json:"rto"`              // 电车是否赠送
 }
 
 // AssetBatchCreateReq 批量创建资产请求
