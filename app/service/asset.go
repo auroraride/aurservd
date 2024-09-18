@@ -889,6 +889,15 @@ func (s *assetService) DetailForList(item *ent.Asset) *model.AssetListRes {
 		Remark:         item.Remark,
 	}
 
+	// 电车赠送状态
+	res.Rto = "未赠送"
+	if item.RtoRiderID != nil {
+		r, _ := item.QueryRtoRider().First(context.Background())
+		if r != nil {
+			res.Rto = "[赠送]-" + r.Name + "-" + r.Phone
+		}
+	}
+
 	attributeValue, _ := item.QueryValues().WithAttribute().All(context.Background())
 	assetAttributeMap := make(map[uint64]model.AssetAttribute)
 	for _, v := range attributeValue {
