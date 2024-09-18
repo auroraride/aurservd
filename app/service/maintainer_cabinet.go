@@ -7,6 +7,7 @@ package service
 
 import (
 	"context"
+	"errors"
 
 	"github.com/LucaTheHacker/go-haversine"
 
@@ -85,34 +86,52 @@ func (s *maintainerCabinetService) Detail(req *model.MaintainerCabinetDetailReq)
 	return
 }
 
-// 校验权限并获取操作人
-func (s *maintainerCabinetService) operatable(m *ent.Maintainer, cities []uint64, serial string, lng, lat float64, maintenance bool) (*ent.Cabinet, *logging.Operator) {
+// Operatable 校验权限并获取操作人
+func (s *maintainerCabinetService) Operatable(m any, cities []uint64, serial string, lng, lat float64, maintenance bool) (cab *ent.Cabinet, operator *logging.Operator, err error) {
+	operator, err = logging.GetOperator(m)
+	if err != nil {
+		return
+	}
+
 	// 查找维护中的电柜
-	cab, _ := s.orm.QueryNotDeleted().Where(
+	cab, _ = s.orm.QueryNotDeleted().Where(
 		cabinet.CityIDIn(cities...),
 		cabinet.Serial(serial),
 	).First(s.ctx)
 	if cab == nil {
-		snag.Panic("未找到电柜")
+		err = errors.New("未找到电柜")
+		return
 	}
 
 	// 判定距离
 	distance := haversine.Distance(haversine.NewCoordinates(lat, lng), haversine.NewCoordinates(cab.Lat, cab.Lng)).Kilometers() * 1000.0
 	if distance > 100 {
-		snag.Panic("距离过远")
+		err = errors.New("距离过远")
+		return
 	}
 
 	// 判定维护
 	if maintenance && cab.Status != model.CabinetStatusMaintenance.Value() {
-		snag.Panic("电柜必须维护")
+		err = errors.New("电柜必须维护")
+		return
 	}
 
-	return cab, logging.GetOperatorX(m)
+	return
+}
+
+// OperatableX 校验权限并获取操作人
+// 如有错误则panic
+func (s *maintainerCabinetService) OperatableX(m any, cities []uint64, serial string, lng, lat float64, maintenance bool) (*ent.Cabinet, *logging.Operator) {
+	cab, operator, err := s.Operatable(m, cities, serial, lng, lat, maintenance)
+	if err != nil {
+		snag.Panic(err)
+	}
+	return cab, operator
 }
 
 func (s *maintainerCabinetService) Operate(m *ent.Maintainer, cities []uint64, req *model.MaintainerCabinetOperateReq) {
 	// 校验权限并获取操作人
-	cab, operator := s.operatable(m, cities, req.Serial, req.Lng, req.Lat, req.Operate.NeedMaintenance())
+	cab, operator := s.OperatableX(m, cities, req.Serial, req.Lng, req.Lat, req.Operate.NeedMaintenance())
 
 	switch req.Operate {
 	case model.MaintainerCabinetOperateInterrupt:
@@ -188,7 +207,7 @@ func (s *maintainerCabinetService) Operate(m *ent.Maintainer, cities []uint64, r
 // BinOperate 仓位操作
 func (s *maintainerCabinetService) BinOperate(m *ent.Maintainer, cities []uint64, req *model.MaintainerBinOperateReq, waitClose bool) bool {
 	// 校验权限并获取操作人
-	cab, operator := s.operatable(m, cities, req.Serial, req.Lng, req.Lat, true)
+	cab, operator := s.OperatableX(m, cities, req.Serial, req.Lng, req.Lat, true)
 
 	var op any
 	switch req.Operate {
@@ -237,7 +256,7 @@ func (s *maintainerCabinetService) BinOperate(m *ent.Maintainer, cities []uint64
 // Pause 暂停维护
 func (s *maintainerCabinetService) Pause(m *ent.Maintainer, cities []uint64, req *model.MaintainerCabinetPauseReq) {
 	// 校验权限并获取操作人
-	cab, operator := s.operatable(m, cities, req.Serial, req.Lng, req.Lat, false)
+	cab, operator := s.OperatableX(m, cities, req.Serial, req.Lng, req.Lat, false)
 
 	// 查询维保单
 	mt := NewAssetMaintenance().QueryMaintenanceByCabinetID(cab.ID)
