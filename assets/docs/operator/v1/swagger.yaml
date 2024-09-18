@@ -84,7 +84,6 @@ definitions:
         - $ref: '#/definitions/model.AssetLocationsType'
         description: 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维
     required:
-    - fromLocationID
     - toLocationID
     - toLocationType
     type: object
@@ -413,12 +412,6 @@ definitions:
     type: object
   model.AssetMaintenanceListRes:
     properties:
-      OperatorName:
-        description: 维护人
-        type: string
-      OperatorPhone:
-        description: 维护人电话
-        type: string
       cabinetName:
         description: 电柜名称
         type: string
@@ -439,6 +432,12 @@ definitions:
       id:
         description: ID
         type: integer
+      operatorName:
+        description: 维护人
+        type: string
+      operatorPhone:
+        description: 维护人电话
+        type: string
       reason:
         description: 维护理由
         type: string

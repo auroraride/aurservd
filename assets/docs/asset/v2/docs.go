@@ -876,6 +876,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "integer",
+                        "description": "盘点详情ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "操作参数",
                         "name": "body",
                         "in": "body",
@@ -1451,7 +1458,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "type": "int"
+                            "$ref": "#/definitions/model.AssetNumRes"
                         }
                     }
                 }
@@ -6196,14 +6203,6 @@ const docTemplate = `{
         "model.AssetCheckAbnormal": {
             "type": "object",
             "properties": {
-                "OperatorAt": {
-                    "description": "操作时间",
-                    "type": "string"
-                },
-                "OperatorName": {
-                    "description": "操作人名称",
-                    "type": "string"
-                },
                 "assetId": {
                     "description": "资产ID",
                     "type": "integer"
@@ -6220,6 +6219,10 @@ const docTemplate = `{
                     "description": "品牌",
                     "type": "string"
                 },
+                "id": {
+                    "description": "盘点详情ID",
+                    "type": "integer"
+                },
                 "locationsName": {
                     "description": "理论位置名称",
                     "type": "string"
@@ -6230,6 +6233,14 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "名称",
+                    "type": "string"
+                },
+                "operatorAt": {
+                    "description": "操作时间",
+                    "type": "string"
+                },
+                "operatorName": {
+                    "description": "操作人名称",
                     "type": "string"
                 },
                 "realLocationsName": {
@@ -6845,14 +6856,6 @@ const docTemplate = `{
         "model.AssetMaintenanceListRes": {
             "type": "object",
             "properties": {
-                "OperatorName": {
-                    "description": "维护人",
-                    "type": "string"
-                },
-                "OperatorPhone": {
-                    "description": "维护人电话",
-                    "type": "string"
-                },
                 "cabinetName": {
                     "description": "电柜名称",
                     "type": "string"
@@ -6879,6 +6882,14 @@ const docTemplate = `{
                 "id": {
                     "description": "ID",
                     "type": "integer"
+                },
+                "operatorName": {
+                    "description": "维护人",
+                    "type": "string"
+                },
+                "operatorPhone": {
+                    "description": "维护人电话",
+                    "type": "string"
                 },
                 "reason": {
                     "description": "维护理由",
@@ -6972,6 +6983,15 @@ const docTemplate = `{
                 "remark": {
                     "description": "备注",
                     "type": "string"
+                }
+            }
+        },
+        "model.AssetNumRes": {
+            "type": "object",
+            "properties": {
+                "num": {
+                    "description": "有效数量",
+                    "type": "integer"
                 }
             }
         },

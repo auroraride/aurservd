@@ -101,6 +101,7 @@ func (*assetCheck) AssetDetailList(c echo.Context) (err error) {
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string								true	"管理员校验token"
+// @Param	id						path		uint64								true	"盘点详情ID"
 // @Param	body					body		model.AssetCheckAbnormalOperateReq	true	"操作参数"
 // @Success	200						{object}	model.StatusResponse				"请求成功"
 func (*assetCheck) AbnormalOperate(c echo.Context) (err error) {

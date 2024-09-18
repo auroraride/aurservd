@@ -111,7 +111,6 @@ definitions:
         - $ref: '#/definitions/model.AssetLocationsType'
         description: 调拨后位置类型  1:仓库 2:门店 3:站点 4:运维
     required:
-    - fromLocationID
     - toLocationID
     - toLocationType
     type: object
@@ -429,12 +428,6 @@ definitions:
     type: object
   model.AssetCheckAbnormal:
     properties:
-      OperatorAt:
-        description: 操作时间
-        type: string
-      OperatorName:
-        description: 操作人名称
-        type: string
       assetId:
         description: 资产ID
         type: integer
@@ -445,6 +438,9 @@ definitions:
       brand:
         description: 品牌
         type: string
+      id:
+        description: 盘点详情ID
+        type: integer
       locationsName:
         description: 理论位置名称
         type: string
@@ -453,6 +449,12 @@ definitions:
         type: string
       name:
         description: 名称
+        type: string
+      operatorAt:
+        description: 操作时间
+        type: string
+      operatorName:
+        description: 操作人名称
         type: string
       realLocationsName:
         description: 实际位置名称
