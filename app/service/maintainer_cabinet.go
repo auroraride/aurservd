@@ -247,28 +247,27 @@ func (s *maintainerCabinetService) Pause(m *ent.Maintainer, cities []uint64, req
 	}
 	switch req.Status {
 	case model.AssetMaintenanceStatusPause:
-		// 暂停维护
-		NewCabinetMgr().Maintain(operator, &model.CabinetMaintainReq{
-			ID:       cab.ID,
-			Maintain: silk.Bool(false),
-		})
 		// 更新维保数据
 		err := mt.Update().SetStatus(model.AssetMaintenanceStatusPause.Value()).Exec(context.Background())
 		if err != nil {
 			snag.Panic(err)
 		}
-
-	case model.AssetMaintenanceStatusUnder:
-		// 继续维护
+		// 暂停维护
 		NewCabinetMgr().Maintain(operator, &model.CabinetMaintainReq{
 			ID:       cab.ID,
-			Maintain: silk.Bool(true),
+			Maintain: silk.Bool(false),
 		})
+
+	case model.AssetMaintenanceStatusUnder:
 		// 更新维保数据
 		err := mt.Update().SetStatus(model.AssetMaintenanceStatusUnder.Value()).Exec(context.Background())
 		if err != nil {
 			snag.Panic(err)
 		}
-
+		// 继续维护
+		NewCabinetMgr().Maintain(operator, &model.CabinetMaintainReq{
+			ID:       cab.ID,
+			Maintain: silk.Bool(true),
+		})
 	}
 }
