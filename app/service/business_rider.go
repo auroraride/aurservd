@@ -577,7 +577,8 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 			bin, bat, err = s.doTask()
 			if err != nil {
 				zap.L().Error("骑手业务取出电池后任务执行失败: "+doReq.Type.String(), zap.Error(err))
-				return
+				// 凯信电柜延时上报bug导致,所以业务需要继续执行绑定电池  正常情况需要return
+				// return
 			}
 			b, _ := NewAsset().QueryID(bat.ID)
 			if b == nil {

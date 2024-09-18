@@ -703,6 +703,7 @@ func (b *warestoreBiz) assetsForWarehouse(amId uint64, req *definition.Warestore
 		q.Where(warehouse.ID(*req.WarehouseID))
 	}
 
+	wIds := make([]uint64, 0)
 	// 查询仓管人员负责的仓库信息
 	am, _ := ent.Database.AssetManager.QueryNotDeleted().WithBelongWarehouses().
 		Where(
@@ -711,12 +712,12 @@ func (b *warestoreBiz) assetsForWarehouse(amId uint64, req *definition.Warestore
 			assetmanager.HasBelongWarehousesWith(warehouse.DeletedAtIsNil()),
 		).First(b.ctx)
 	if am != nil && len(am.Edges.BelongWarehouses) != 0 {
-		wIds := make([]uint64, 0)
 		for _, wh := range am.Edges.BelongWarehouses {
 			wIds = append(wIds, wh.ID)
 		}
-		q.Where(warehouse.IDIn(wIds...))
+
 	}
+	q.Where(warehouse.IDIn(wIds...))
 
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Warehouse) *definition.WarestoreAssetRes {
 		// 查询仓库资产详情
@@ -747,24 +748,18 @@ func (b *warestoreBiz) assetsForStore(epId uint64, req *definition.WarestoreAsse
 		q.Where(store.CityID(*req.CityID))
 	}
 
+	sIds := make([]uint64, 0)
 	ep, _ := ent.Database.Employee.QueryNotDeleted().WithStores().WithGroup().
 		Where(
 			employee.ID(epId),
-			employee.HasStoresWith(store.DeletedAtIsNil()),
 		).First(b.ctx)
 	if ep != nil {
-		// 判断是配置的门店集合还是门店数据
-		if ep.Edges.Group != nil {
-			q.Where(store.GroupID(ep.Edges.Group.ID))
-		} else {
-			sIds := make([]uint64, 0)
-			for _, st := range ep.Edges.Stores {
-				sIds = append(sIds, st.ID)
-			}
-			q.Where(store.IDIn(sIds...))
+		for _, st := range ep.Edges.Stores {
+			sIds = append(sIds, st.ID)
 		}
-
 	}
+
+	q.Where(store.IDIn(sIds...))
 
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Store) *definition.WarestoreAssetRes {
 		// 查询仓库资产详情

@@ -140,6 +140,7 @@ type AssetCheckListRes struct {
 
 // AssetCheckAbnormal 异常资产
 type AssetCheckAbnormal struct {
+	ID                uint64           `json:"id"`                // 盘点详情ID
 	AssetID           uint64           `json:"assetId"`           // 资产ID
 	Name              string           `json:"name"`              // 名称
 	Model             string           `json:"model"`             // 型号

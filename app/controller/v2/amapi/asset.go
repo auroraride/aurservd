@@ -129,9 +129,9 @@ func (*assets) Export(c echo.Context) (err error) {
 // @Tags	资产
 // @Accept	json
 // @Produce	json
-// @Param	X-Asset-Manager-Token	header	string				true	"管理员校验token"
-// @Param	query					query	model.AssetFilter	true	"查询参数"
-// @Success	200						int		model.AssetNumRes	"请求成功"
+// @Param	X-Asset-Manager-Token	header		string				true	"管理员校验token"
+// @Param	query					query		model.AssetFilter	true	"查询参数"
+// @Success	200						{object}	model.AssetNumRes	"请求成功"
 func (*assets) Count(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.AssetFilter](c)
 	return ctx.SendResponse(service.NewAsset().Count(ctx.Request().Context(), req))
