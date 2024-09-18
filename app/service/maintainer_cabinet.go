@@ -237,7 +237,7 @@ func (s *maintainerCabinetService) BinOperate(m *ent.Maintainer, cities []uint64
 // Pause 暂停维护
 func (s *maintainerCabinetService) Pause(m *ent.Maintainer, cities []uint64, req *model.MaintainerCabinetPauseReq) {
 	// 校验权限并获取操作人
-	cab, operator := s.operatable(m, cities, req.Serial, req.Lng, req.Lat, true)
+	cab, operator := s.operatable(m, cities, req.Serial, req.Lng, req.Lat, false)
 
 	// 查询维保单
 	mt := NewAssetMaintenance().QueryMaintenanceByCabinetID(cab.ID)

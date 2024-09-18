@@ -190,6 +190,7 @@ func (b *employeeBiz) Modify(req *definition.EmployeeModifyReq) error {
 		emu.SetPassword(password)
 	}
 	if req.GroupID != nil {
+		emu.ClearStores()
 		emu.SetGroupID(*req.GroupID)
 		// 查询集合组、更新到配置门店ids
 		sids := make([]uint64, 0)
@@ -198,10 +199,13 @@ func (b *employeeBiz) Modify(req *definition.EmployeeModifyReq) error {
 			sids = append(sids, s.ID)
 		}
 		emu.AddStoreIDs(sids...)
+	} else {
+		emu.ClearGroupID().ClearStores()
+		if len(req.StoreIDs) != 0 {
+			emu.AddStoreIDs(req.StoreIDs...)
+		}
 	}
-	if len(req.StoreIDs) != 0 {
-		emu.AddStoreIDs(req.StoreIDs...)
-	}
+
 	if req.Enable != nil {
 		emu.SetEnable(*req.Enable)
 	}
