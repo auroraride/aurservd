@@ -194,9 +194,13 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 	if len(attr) == 0 {
 		return nil, errors.New("电车属性未配置")
 	}
-	rows, sns, failed, err := s.GetXlsxRows(ctx, 1, len(s.getEbikeColumns(ctx.Request().Context())), 1)
-	if err != nil || len(failed) != 0 {
-		return failed, err
+	var (
+		rows [][]string
+		sns  []string
+	)
+	rows, sns, failed, err = s.GetXlsxRows(ctx, 1, len(s.getEbikeColumns(ctx.Request().Context())), 1)
+	if err != nil {
+		failed = append(failed, err.Error())
 	}
 
 	// 获取所有型号
@@ -289,6 +293,7 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 				Exec(ctx.Request().Context())
 			if err != nil {
 				failed = append(failed, fmt.Sprintf("保存失败:%s", strings.Join(columns, ",")))
+				continue
 			}
 		}
 		// 仓库分组加入物资id
@@ -304,18 +309,17 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 				SN:        &vl,
 			})
 		}
-		_, failed, err = NewAssetTransfer().Transfer(context.Background(), &model.AssetTransferCreateReq{
+		var fs []string
+		_, fs, err = NewAssetTransfer().Transfer(context.Background(), &model.AssetTransferCreateReq{
 			ToLocationType:    model.AssetLocationsTypeWarehouse,
 			ToLocationID:      k,
 			Reason:            "初始入库",
 			AssetTransferType: model.AssetTransferTypeInitial,
 			Details:           details,
 		}, modifier)
+		failed = append(failed, fs...)
 		if err != nil {
-			return failed, err
-		}
-		if len(failed) > 0 {
-			return failed, errors.New(failed[0])
+			failed = append(failed, fmt.Sprintf("调拨单创建失败: %v", err))
 		}
 	}
 
@@ -325,9 +329,13 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 // BatchCreateBattery 批量创建电池
 // 0-城市:city 1-电池编号:sn 2-仓库:warehouse
 func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modifier) (failed []string, err error) {
-	rows, sns, failed, err := s.BaseService.GetXlsxRows(ctx, 1, 3, 1)
-	if err != nil || len(failed) != 0 {
-		return failed, err
+	var (
+		rows [][]string
+		sns  []string
+	)
+	rows, sns, failed, err = s.BaseService.GetXlsxRows(ctx, 1, 3, 1)
+	if err != nil {
+		failed = append(failed, err.Error())
 	}
 	// 查重
 	items, _ := s.orm.QueryNotDeleted().Where(asset.SnIn(sns...), asset.Type(model.AssetTypeSmartBattery.Value())).All(s.ctx)
@@ -428,6 +436,7 @@ func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modi
 			Save(s.ctx)
 		if err != nil {
 			failed = append(failed, fmt.Sprintf("%s保存失败: %v", sn, err))
+			continue
 		}
 
 		// 仓库分组加入物资id
@@ -443,18 +452,17 @@ func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modi
 				SN:        &vl,
 			})
 		}
-		_, failed, err = NewAssetTransfer().Transfer(context.Background(), &model.AssetTransferCreateReq{
+		var fs []string
+		_, fs, err = NewAssetTransfer().Transfer(context.Background(), &model.AssetTransferCreateReq{
 			ToLocationType:    model.AssetLocationsTypeWarehouse,
 			ToLocationID:      k,
 			Reason:            "初始入库",
 			AssetTransferType: model.AssetTransferTypeInitial,
 			Details:           details,
 		}, modifier)
+		failed = append(failed, fs...)
 		if err != nil {
-			return failed, err
-		}
-		if len(failed) > 0 {
-			return failed, errors.New(failed[0])
+			failed = append(failed, fmt.Sprintf("调拨单创建失败: %v", err))
 		}
 	}
 

@@ -606,7 +606,7 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 				})
 			}
 
-			err = NewAssetTransfer(s.operator).TransferReceive(s.ctx, &model.AssetTransferReceiveBatchReq{
+			err = NewAssetTransfer(s.operator).TransferReceive(context.Background(), &model.AssetTransferReceiveBatchReq{
 				OperateType: s.operator.Type,
 				AssetTransferReceive: []model.AssetTransferReceiveReq{
 					{
