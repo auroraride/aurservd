@@ -285,7 +285,7 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 			err = ent.Database.AssetAttributeValues.Create().
 				SetValue(columns[i]).
 				SetAssetID(save.ID).
-				SetAttributeID(titleID[i-2]).
+				SetAttributeID(titleID[i-1]).
 				Exec(ctx.Request().Context())
 			if err != nil {
 				failed = append(failed, fmt.Sprintf("保存失败:%s", strings.Join(columns, ",")))
