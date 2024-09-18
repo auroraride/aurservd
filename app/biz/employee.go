@@ -113,15 +113,6 @@ func (b *employeeBiz) detail(item *ent.Employee) definition.EmployeeListRes {
 			ID:   gp.ID,
 			Name: gp.Name,
 		}
-		stis := make([]*definition.StoreInfo, 0)
-		all, _ := ent.Database.Store.QueryNotDeleted().Where(store.GroupID(gp.ID)).All(b.ctx)
-		for _, s := range all {
-			stis = append(stis, &definition.StoreInfo{
-				ID:   s.ID,
-				Name: s.Name,
-			})
-		}
-		res.Stores = stis
 	}
 
 	return res
@@ -144,6 +135,14 @@ func (b *employeeBiz) Create(req *definition.EmployeeCreateReq) (err error) {
 
 	if req.GroupID != 0 {
 		emc.SetGroupID(req.GroupID)
+		// 查询集合组、更新到配置门店ids
+		sids := make([]uint64, 0)
+		sts, _ := ent.Database.Store.QueryNotDeleted().Where(store.GroupID(req.GroupID)).All(b.ctx)
+		for _, s := range sts {
+			sids = append(sids, s.ID)
+		}
+		emc.AddStoreIDs(sids...)
+
 	}
 	if len(req.StoreIDs) != 0 {
 		emc.AddStoreIDs(req.StoreIDs...)
@@ -192,6 +191,13 @@ func (b *employeeBiz) Modify(req *definition.EmployeeModifyReq) error {
 	}
 	if req.GroupID != nil {
 		emu.SetGroupID(*req.GroupID)
+		// 查询集合组、更新到配置门店ids
+		sids := make([]uint64, 0)
+		sts, _ := ent.Database.Store.QueryNotDeleted().Where(store.GroupID(*req.GroupID)).All(b.ctx)
+		for _, s := range sts {
+			sids = append(sids, s.ID)
+		}
+		emu.AddStoreIDs(sids...)
 	}
 	if len(req.StoreIDs) != 0 {
 		emu.AddStoreIDs(req.StoreIDs...)

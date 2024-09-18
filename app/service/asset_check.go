@@ -657,6 +657,7 @@ func (s *assetCheckService) ListAbnormal(ctx context.Context, req *model.AssetCh
 		}
 
 		res = append(res, &model.AssetCheckAbnormal{
+			ID:                v.ID,
 			AssetID:           v.AssetID,
 			Name:              name,
 			Model:             modelName,

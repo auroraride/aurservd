@@ -960,7 +960,7 @@ func (s *cabinetService) Interrupt(operator *logging.Operator, req *model.Cabine
 
 // BindCabinet 团签绑定电柜
 func (s *cabinetService) BindCabinet(req *model.EnterpriseBindCabinetReq) {
-	if req.EnterpriseID == 0 && req.StationID == 0 && req.StoreID == 0 {
+	if req.EnterpriseID == nil && req.StationID == nil && req.StoreID == nil {
 		snag.Panic("绑定参数有误")
 	}
 	// 判断电柜是否被绑定
@@ -973,7 +973,7 @@ func (s *cabinetService) BindCabinet(req *model.EnterpriseBindCabinetReq) {
 		snag.Panic("电柜已被绑定")
 	}
 	// 电柜绑定
-	s.orm.UpdateOneID(req.ID).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).SetStoreID(req.StoreID).SaveX(s.ctx)
+	s.orm.UpdateOneID(req.ID).SetNillableEnterpriseID(req.EnterpriseID).SetNillableStationID(req.StationID).SetNillableStoreID(req.StoreID).SaveX(s.ctx)
 }
 
 // UnbindCabinet 解绑电柜

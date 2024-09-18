@@ -678,12 +678,6 @@ definitions:
     type: object
   model.AssetCheckAbnormal:
     properties:
-      OperatorAt:
-        description: 操作时间
-        type: string
-      OperatorName:
-        description: 操作人名称
-        type: string
       assetId:
         description: 资产ID
         type: integer
@@ -694,6 +688,9 @@ definitions:
       brand:
         description: 品牌
         type: string
+      id:
+        description: 盘点详情ID
+        type: integer
       locationsName:
         description: 理论位置名称
         type: string
@@ -702,6 +699,12 @@ definitions:
         type: string
       name:
         description: 名称
+        type: string
+      operatorAt:
+        description: 操作时间
+        type: string
+      operatorName:
+        description: 操作人名称
         type: string
       realLocationsName:
         description: 实际位置名称
@@ -1136,12 +1139,6 @@ definitions:
     type: object
   model.AssetMaintenanceListRes:
     properties:
-      OperatorName:
-        description: 维护人
-        type: string
-      OperatorPhone:
-        description: 维护人电话
-        type: string
       cabinetName:
         description: 电柜名称
         type: string
@@ -1162,6 +1159,12 @@ definitions:
       id:
         description: ID
         type: integer
+      operatorName:
+        description: 维护人
+        type: string
+      operatorPhone:
+        description: 维护人电话
+        type: string
       reason:
         description: 维护理由
         type: string
@@ -1230,6 +1233,12 @@ definitions:
       remark:
         description: 备注
         type: string
+    type: object
+  model.AssetNumRes:
+    properties:
+      num:
+        description: 有效数量
+        type: integer
     type: object
   model.AssetScrapBatchRestoreReq:
     properties:
@@ -2834,6 +2843,11 @@ paths:
         name: X-Asset-Manager-Token
         required: true
         type: string
+      - description: 盘点详情ID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: 操作参数
         in: body
         name: body
@@ -3183,7 +3197,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            type: int
+            $ref: '#/definitions/model.AssetNumRes'
       summary: 查询有效的资产数量
       tags:
       - 资产

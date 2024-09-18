@@ -2215,7 +2215,6 @@ const docTemplate = `{
         "definition.AssetTransferCreateReq": {
             "type": "object",
             "required": [
-                "fromLocationID",
                 "toLocationID",
                 "toLocationType"
             ],
@@ -2713,14 +2712,6 @@ const docTemplate = `{
         "model.AssetCheckAbnormal": {
             "type": "object",
             "properties": {
-                "OperatorAt": {
-                    "description": "操作时间",
-                    "type": "string"
-                },
-                "OperatorName": {
-                    "description": "操作人名称",
-                    "type": "string"
-                },
                 "assetId": {
                     "description": "资产ID",
                     "type": "integer"
@@ -2737,6 +2728,10 @@ const docTemplate = `{
                     "description": "品牌",
                     "type": "string"
                 },
+                "id": {
+                    "description": "盘点详情ID",
+                    "type": "integer"
+                },
                 "locationsName": {
                     "description": "理论位置名称",
                     "type": "string"
@@ -2747,6 +2742,14 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "名称",
+                    "type": "string"
+                },
+                "operatorAt": {
+                    "description": "操作时间",
+                    "type": "string"
+                },
+                "operatorName": {
+                    "description": "操作人名称",
                     "type": "string"
                 },
                 "realLocationsName": {

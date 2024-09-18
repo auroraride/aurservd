@@ -1816,7 +1816,6 @@ const docTemplate = `{
         "definition.AssetTransferCreateReq": {
             "type": "object",
             "required": [
-                "fromLocationID",
                 "toLocationID",
                 "toLocationType"
             ],
@@ -2318,14 +2317,6 @@ const docTemplate = `{
         "model.AssetMaintenanceListRes": {
             "type": "object",
             "properties": {
-                "OperatorName": {
-                    "description": "维护人",
-                    "type": "string"
-                },
-                "OperatorPhone": {
-                    "description": "维护人电话",
-                    "type": "string"
-                },
                 "cabinetName": {
                     "description": "电柜名称",
                     "type": "string"
@@ -2352,6 +2343,14 @@ const docTemplate = `{
                 "id": {
                     "description": "ID",
                     "type": "integer"
+                },
+                "operatorName": {
+                    "description": "维护人",
+                    "type": "string"
+                },
+                "operatorPhone": {
+                    "description": "维护人电话",
+                    "type": "string"
                 },
                 "reason": {
                     "description": "维护理由",
