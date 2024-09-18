@@ -160,7 +160,7 @@ func (s *assetMaintenanceService) List(ctx context.Context, req *model.AssetMain
 		}
 		if item.Edges.Cabinet != nil {
 			res.CabinetName = item.Edges.Cabinet.Name
-			res.CabinetSn = item.Edges.Cabinet.Sn
+			res.CabinetSn = item.Edges.Cabinet.Serial
 		}
 		err := ent.Database.AssetMaintenanceDetails.QueryNotDeleted().Select(assetmaintenancedetails.FieldMaterialID).Where(assetmaintenancedetails.MaintenanceID(item.ID)).GroupBy(assetmaintenancedetails.FieldMaterialID).Aggregate(ent.Count()).
 			Scan(context.Background(), &result)
