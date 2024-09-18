@@ -835,6 +835,8 @@ func (s *assetCheckService) AssetCheckAbnormalOperate(ctx context.Context, req *
 			Details:           make([]model.AssetTransferCreateDetail, 0),
 			Reason:            "盘盈入库",
 			AssetTransferType: model.AssetTransferTypeTransfer,
+			OperatorID:        modifier.ID,
+			OperatorType:      model.OperatorTypeAssetManager,
 		}
 		if item.Edges.Asset == nil {
 			return fmt.Errorf("未找到对应的资产")

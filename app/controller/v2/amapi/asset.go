@@ -53,7 +53,7 @@ func (*assets) Detail(c echo.Context) (err error) {
 // @Success	200						{object}	model.StatusResponse	"请求成功"
 func (*assets) Create(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.AssetCreateReq](c)
-	return ctx.SendResponse(service.NewAsset().Create(ctx.Request().Context(), req, ctx.Modifier))
+	return ctx.SendResponse(service.NewAsset(ctx.Operator).Create(ctx.Request().Context(), req, ctx.Modifier))
 }
 
 // Update
@@ -85,7 +85,7 @@ func (*assets) Update(c echo.Context) (err error) {
 // @Success	200						{object}	model.StatusResponse	"请求成功"
 func (*assets) BatchCreate(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.AssetBatchCreateReq](c)
-	return ctx.SendResponse(service.NewAsset().BatchCreate(ctx, req, ctx.Modifier))
+	return ctx.SendResponse(service.NewAsset(ctx.Operator).BatchCreate(ctx, req, ctx.Modifier))
 }
 
 // Template
