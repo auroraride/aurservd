@@ -141,6 +141,8 @@ func (s *assetService) Create(ctx context.Context, req *model.AssetCreateReq, mo
 				SN:        req.SN,
 			},
 		},
+		OperatorID:   modifier.ID,
+		OperatorType: model.OperatorTypeAssetManager,
 	}, modifier)
 	if err != nil {
 		return err
@@ -316,6 +318,8 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 			Reason:            "初始入库",
 			AssetTransferType: model.AssetTransferTypeInitial,
 			Details:           details,
+			OperatorID:        modifier.ID,
+			OperatorType:      model.OperatorTypeAssetManager,
 		}, modifier)
 		failed = append(failed, fs...)
 		if err != nil {
@@ -459,6 +463,8 @@ func (s *assetService) BatchCreateBattery(ctx echo.Context, modifier *model.Modi
 			Reason:            "初始入库",
 			AssetTransferType: model.AssetTransferTypeInitial,
 			Details:           details,
+			OperatorID:        modifier.ID,
+			OperatorType:      model.OperatorTypeAssetManager,
 		}, modifier)
 		failed = append(failed, fs...)
 		if err != nil {

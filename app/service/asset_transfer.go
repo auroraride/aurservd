@@ -1811,7 +1811,7 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 		Where(
 			assettransfer.StatusNEQ(model.AssetTransferStatusCancel.Value()),
 		).WithTransferDetails(func(query *ent.AssetTransferDetailsQuery) {
-		query.WithInOperateAgent().WithInOperateManager().WithInOperateStore().WithInOperateMaintainer().WithInOperateCabinet().WithInOperateRider().
+		query.WithInOperateAgent().WithInOperateManager().WithInOperateStore().WithInOperateMaintainer().WithInOperateCabinet().WithInOperateRider().WithInOperateAssetManager().
 			WithAsset(func(query *ent.AssetQuery) {
 				query.WithMaterial().WithCity().WithModel().WithBrand()
 			})
