@@ -194,7 +194,7 @@ func (s *assetMaintenanceService) QueryMaintenanceByCabinetID(cabId uint64) *ent
 
 // QueryByID 通过电柜ID查询维保
 func (s *assetMaintenanceService) QueryByID(cabId uint64) (res model.AssetMaintenanceRes) {
-	mt, _ := s.orm.QueryNotDeleted().Where(assetmaintenance.CabinetID(cabId)).First(context.Background())
+	mt, _ := s.orm.QueryNotDeleted().Where(assetmaintenance.CabinetID(cabId)).Order(ent.Desc(assetmaintenance.FieldID)).First(context.Background())
 	if mt == nil {
 		return
 	}
