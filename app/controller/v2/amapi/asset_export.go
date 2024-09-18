@@ -1,4 +1,4 @@
-package assetapi
+package amapi
 
 type export struct{}
 

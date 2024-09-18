@@ -1,4 +1,4 @@
-package assetapi
+package amapi
 
 import (
 	"github.com/labstack/echo/v4"

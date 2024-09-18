@@ -2,7 +2,7 @@
 //
 // Created at 2024-08-19, by aurb
 
-package assetapi
+package amapi
 
 import (
 	"sort"

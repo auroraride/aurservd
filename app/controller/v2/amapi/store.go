@@ -2,7 +2,7 @@
 //
 // Created at 2024-08-01, by aurb
 
-package assetapi
+package amapi
 
 import (
 	"github.com/labstack/echo/v4"
