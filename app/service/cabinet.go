@@ -62,10 +62,19 @@ func NewCabinetWithModifier(m *model.Modifier) *cabinetService {
 }
 
 // QueryOne 查询单个电柜
-func (s *cabinetService) QueryOne(id uint64) *ent.Cabinet {
+func (s *cabinetService) QueryOne(id uint64) (*ent.Cabinet, error) {
 	c, _ := s.orm.QueryNotDeleted().Where(cabinet.ID(id)).First(s.ctx)
 	if c == nil {
-		snag.Panic("未找到电柜")
+		return c, errors.New("未找到电柜")
+	}
+	return c, nil
+}
+
+// QueryOneX 查询单个电柜X
+func (s *cabinetService) QueryOneX(id uint64) *ent.Cabinet {
+	c, err := s.QueryOne(id)
+	if err != nil {
+		snag.Panic(err)
 	}
 	return c
 }
@@ -430,7 +439,7 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
 	opId := shortuuid.New()
 	now := time.Now()
 	// 查找柜子和仓位
-	item := s.QueryOne(req.ID)
+	item := s.QueryOneX(req.ID)
 	if len(item.Bin) < *req.Index {
 		err = errors.New("柜门不存在")
 		return
@@ -669,7 +678,7 @@ func (s *cabinetService) dataDetail(item *ent.Cabinet) model.CabinetDataRes {
 
 // Transfer 电柜初始化调拨
 func (s *cabinetService) Transfer(req *model.CabinetTransferReq) {
-	cab := s.QueryOne(req.CabinetID)
+	cab := s.QueryOneX(req.CabinetID)
 	if cab.Transferred {
 		snag.Panic("电柜已初始化过")
 	}
@@ -964,7 +973,7 @@ func (s *cabinetService) BindCabinet(req *model.EnterpriseBindCabinetReq) {
 		snag.Panic("绑定参数有误")
 	}
 	// 判断电柜是否被绑定
-	cab := s.QueryOne(req.ID)
+	cab := s.QueryOneX(req.ID)
 	if cab.Status == uint8(model.CabinetStatusNormal) {
 		snag.Panic("运营中的电柜不能绑定")
 	}

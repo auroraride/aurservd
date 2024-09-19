@@ -91,7 +91,7 @@ func (s *businessRiderService) SetCabinet(cab *ent.Cabinet) *businessRiderServic
 // SetCabinetID 设置电柜
 func (s *businessRiderService) SetCabinetID(id *uint64) *businessRiderService {
 	if id != nil {
-		s.SetCabinet(NewCabinet().QueryOne(*id))
+		s.SetCabinet(NewCabinet().QueryOneX(*id))
 	}
 	return s
 }

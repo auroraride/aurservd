@@ -171,7 +171,7 @@ func (s *reserveService) Create(req *model.ReserveCreateReq) *model.ReserveUnfin
 	}
 
 	// 判断电柜是否可预约
-	cab := NewCabinet().QueryOne(req.CabinetID)
+	cab := NewCabinet().QueryOneX(req.CabinetID)
 	// 同步电柜并返回电柜详情
 	NewCabinet().Sync(cab)
 	// 预约限制城市

@@ -44,14 +44,19 @@ func NewCabinetMgrWithModifier(m *model.Modifier) *cabinetMgrService {
 }
 
 // Maintain 设置电柜操作维护
-func (s *cabinetMgrService) Maintain(operator *logging.Operator, req *model.CabinetMaintainReq) (detail *model.CabinetDetailRes) {
+func (s *cabinetMgrService) Maintain(operator *logging.Operator, req *model.CabinetMaintainReq) (detail *model.CabinetDetailRes, err error) {
 	if req.Maintain == nil {
-		snag.Panic("参数请求错误")
+		return nil, errors.New("参数请求错误")
 	}
-	cab := NewCabinet().QueryOne(req.ID)
+
+	var cab *ent.Cabinet
+	cab, err = NewCabinet().QueryOne(req.ID)
+	if err != nil {
+		return nil, err
+	}
 
 	if model.CabinetStatus(cab.Status) == model.CabinetStatusPending {
-		snag.Panic("未投放电柜无法操作")
+		return nil, errors.New("未投放电柜无法操作")
 	}
 
 	status := model.CabinetStatusNormal
@@ -61,9 +66,9 @@ func (s *cabinetMgrService) Maintain(operator *logging.Operator, req *model.Cabi
 
 	detail = NewCabinet().Detail(cab)
 
-	_, err := cab.Update().SetStatus(status.Value()).Save(s.ctx)
+	_, err = cab.Update().SetStatus(status.Value()).Save(s.ctx)
 	if err != nil {
-		snag.Panic(err)
+		return nil, err
 	}
 
 	detail.Status = status
@@ -80,6 +85,15 @@ func (s *cabinetMgrService) Maintain(operator *logging.Operator, req *model.Cabi
 	return
 }
 
+// MaintainX 设置电柜操作维护X
+func (s *cabinetMgrService) MaintainX(operator *logging.Operator, req *model.CabinetMaintainReq) (detail *model.CabinetDetailRes) {
+	d, err := s.Maintain(operator, req)
+	if err != nil {
+		snag.Panic(err)
+	}
+	return d
+}
+
 // BinOperate 仓位操作
 // waitClose 是否等待关闭仓门（仅开仓动作有效）
 func (s *cabinetMgrService) BinOperate(operator *logging.Operator, id uint64, data any, waitClose bool) bool {
@@ -87,7 +101,7 @@ func (s *cabinetMgrService) BinOperate(operator *logging.Operator, id uint64, da
 		snag.Panic("无权限操作")
 	}
 
-	cab := NewCabinet().QueryOne(id)
+	cab := NewCabinet().QueryOneX(id)
 
 	if model.CabinetStatus(cab.Status) != model.CabinetStatusMaintenance {
 		snag.Panic("非操作维护中不可操作")
@@ -332,7 +346,7 @@ func (s *cabinetMgrService) Reboot(req *model.IDPostReq) bool {
 	now := time.Now()
 	opId := shortuuid.New()
 
-	cab := NewCabinetWithModifier(s.modifier).QueryOne(req.ID)
+	cab := NewCabinetWithModifier(s.modifier).QueryOneX(req.ID)
 
 	if model.CabinetStatus(cab.Status) != model.CabinetStatusMaintenance {
 		snag.Panic("非操作维护中不可操作")
