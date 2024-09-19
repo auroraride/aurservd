@@ -282,16 +282,16 @@ func (s *assetService) BatchCreateEbike(ctx echo.Context, modifier *model.Modifi
 			continue
 		}
 		// 获取标题对应id
-		for i := 1; i < len(title)-3; i++ {
+		for i := 0; i < len(title)-3; i++ {
 			// 判定属性值是否存在
-			if b, _ := ent.Database.AssetAttributeValues.Query().Where(assetattributevalues.AttributeID(titleID[i-1]), assetattributevalues.AssetID(save.ID)).Exist(ctx.Request().Context()); b {
+			if b, _ := ent.Database.AssetAttributeValues.Query().Where(assetattributevalues.AttributeID(titleID[i]), assetattributevalues.AssetID(save.ID)).Exist(ctx.Request().Context()); b {
 				failed = append(failed, fmt.Sprintf("属性值重复:%s", strings.Join(columns, ",")))
 				continue
 			}
 			err = ent.Database.AssetAttributeValues.Create().
-				SetValue(columns[i]).
+				SetValue(columns[3+i]).
 				SetAssetID(save.ID).
-				SetAttributeID(titleID[i-1]).
+				SetAttributeID(titleID[i]).
 				Exec(ctx.Request().Context())
 			if err != nil {
 				failed = append(failed, fmt.Sprintf("保存失败:%s", strings.Join(columns, ",")))
