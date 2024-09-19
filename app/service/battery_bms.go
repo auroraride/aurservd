@@ -82,11 +82,8 @@ func (s *batteryBmsService) SyncPutout(cab *ent.Cabinet, ordinal int) {
 
 // SyncPutin 同步消息 - 放入电柜中
 func (s *batteryBmsService) SyncPutin(sn string, cab *ent.Cabinet, ordinal int) (bat *ent.Asset, err error) {
-	// 这里创建电池信息  电池已经绑定在电柜下了
-	bat, err = NewBattery().LoadOrCreate(sn, &model.BatteryInCabinet{
-		CabinetID: cab.ID,
-		Ordinal:   ordinal,
-	})
+	// 查询电池
+	bat, err = NewBattery().QuerySn(sn)
 	if err != nil {
 		zap.L().Error("电池信息创建失败", zap.Error(err))
 		return
