@@ -1607,19 +1607,40 @@ func (s *assetTransferService) GetTransferBySN(assetSignInfo definition.AssetSig
 // Flow 电池流转明细
 func (s *assetTransferService) Flow(ctx context.Context, req *model.AssetTransferFlowReq) (res *model.PaginationRes) {
 	q := ent.Database.AssetTransferDetails.QueryNotDeleted().
+		// Modify(func(sel *sql.Selector) {
+		// 	// 去重
+		// 	sel.FromExpr(sql.Raw("(SELECT DISTINCT ON sn * FROM asset_transfer_details) asset_transfer_details"))
+		// }).
 		Where(
 			assettransferdetails.IsIn(true),
 			assettransferdetails.HasTransferWith(
 				assettransfer.StatusNEQ(model.AssetTransferStatusCancel.Value()),
 			),
 			assettransferdetails.HasAssetWith(
-				asset.SnContains(req.SN),
+				// asset.SnContains(req.SN),
+				asset.Sn(req.SN),
 			),
-		).WithTransfer(func(query *ent.AssetTransferQuery) {
-		query.
-			WithFromLocationOperator().WithFromLocationStation().WithFromLocationStore().WithFromLocationWarehouse().WithFromLocationCabinet().WithFromLocationRider().
-			WithToLocationOperator().WithToLocationStation().WithToLocationStore().WithToLocationWarehouse().WithToLocationCabinet().WithToLocationRider()
-	}).WithInOperateAgent().WithInOperateManager().WithInOperateStore().WithInOperateMaintainer().WithInOperateCabinet().WithInOperateRider().
+		).
+		WithTransfer(func(query *ent.AssetTransferQuery) {
+			query.WithFromLocationOperator().
+				WithFromLocationStation().
+				WithFromLocationStore().
+				WithFromLocationWarehouse().
+				WithFromLocationCabinet().
+				WithFromLocationRider().
+				WithToLocationOperator().
+				WithToLocationStation().
+				WithToLocationStore().
+				WithToLocationWarehouse().
+				WithToLocationCabinet().
+				WithToLocationRider()
+		}).
+		WithInOperateAgent().
+		WithInOperateManager().
+		WithInOperateStore().
+		WithInOperateMaintainer().
+		WithInOperateCabinet().
+		WithInOperateRider().
 		Order(ent.Desc(assettransferdetails.FieldID))
 	if req.Start != nil && req.End != nil {
 		start := tools.NewTime().ParseDateStringX(*req.Start)
