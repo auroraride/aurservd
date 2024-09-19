@@ -2990,6 +2990,36 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetTypeCabinetAccessory": "电柜配件",
+                            "AssetTypeEbike": "电车",
+                            "AssetTypeEbikeAccessory": "电车配件",
+                            "AssetTypeNonSmartBattery": "非智能电池",
+                            "AssetTypeOtherAccessory": "其它配件",
+                            "AssetTypeSmartBattery": "智能电池"
+                        },
+                        "x-enum-varnames": [
+                            "AssetTypeEbike",
+                            "AssetTypeSmartBattery",
+                            "AssetTypeNonSmartBattery",
+                            "AssetTypeCabinetAccessory",
+                            "AssetTypeEbikeAccessory",
+                            "AssetTypeOtherAccessory"
+                        ],
+                        "description": "物资类型",
+                        "name": "assetType",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
@@ -5129,6 +5159,10 @@ const docTemplate = `{
                 },
                 "remark": {
                     "description": "备注",
+                    "type": "string"
+                },
+                "rto": {
+                    "description": "电车是否赠送",
                     "type": "string"
                 },
                 "sn": {
