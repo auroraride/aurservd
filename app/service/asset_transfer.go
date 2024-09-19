@@ -984,6 +984,15 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 		)
 	}
 
+	if req.InStart != nil && req.InEnd != nil {
+		q.Where(
+			assettransfer.HasTransferDetailsWith(
+				assettransferdetails.InTimeAtGTE(tools.NewTime().ParseDateStringX(*req.OutStart)),
+				assettransferdetails.InTimeAtLTE(tools.NewTime().ParseNextDateStringX(*req.OutEnd)),
+			),
+		)
+	}
+
 }
 
 // TransferDetail 调拨详情
@@ -1207,8 +1216,8 @@ func (s *assetTransferService) TransferDetail(ctx context.Context, req *model.As
 func (s *assetTransferService) GetOperaterInfo(item *ent.AssetTransferDetails) string {
 	switch model.OperatorType(item.InOperateType) {
 	case model.OperatorTypeAssetManager:
-		if item.Edges.InOperateManager != nil {
-			return "[仓管]" + item.Edges.InOperateManager.Name
+		if item.Edges.InOperateAssetManager != nil {
+			return "[仓管]" + item.Edges.InOperateAssetManager.Name
 		}
 	case model.OperatorTypeEmployee:
 		if item.Edges.InOperateStore != nil {
