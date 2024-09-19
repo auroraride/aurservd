@@ -1006,7 +1006,7 @@ func (s *assetTransferService) TransferDetail(ctx context.Context, req *model.As
 	otherAccNameAstMap := make(map[string]*model.TransferAssetDetail)
 
 	atds, err := ent.Database.AssetTransferDetails.QueryNotDeleted().
-		WithInOperateAgent().WithInOperateManager().WithInOperateStore().WithInOperateMaintainer().WithInOperateCabinet().WithInOperateRider().
+		WithInOperateAgent().WithInOperateAssetManager().WithInOperateStore().WithInOperateMaintainer().WithInOperateCabinet().WithInOperateRider().
 		Where(
 			assettransferdetails.TransferID(req.ID),
 			assettransferdetails.HasAssetWith(
