@@ -31,7 +31,7 @@ var (
 
 func main() {
 	ds := []string{
-		"./app/controller/v2/assetapi",
+		"./app/controller/v2/amapi",
 	}
 	m := make(map[string]*assetpermission.Group)
 	for _, d := range ds {
