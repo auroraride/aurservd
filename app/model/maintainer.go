@@ -85,6 +85,7 @@ type MaintainerCabinetOperateReq struct {
 	Content string                         `json:"content"` // 维保内容（取消维护 必填）
 	Details []AssetMaintenanceCreateDetail `json:"details"` // 维保使用配件
 	Status  AssetMaintenanceStatus         `json:"status"`  // 维修状态 1:维修中 2:已维修 3:维修失败 4:已取消 5:暂停维护
+	Mini    bool                           `json:"mini"`    // 是否小程序门店、代理调用电柜
 }
 
 type MaintainerBinOperateReq struct {
