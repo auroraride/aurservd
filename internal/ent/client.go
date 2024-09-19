@@ -2678,15 +2678,15 @@ func (c *AssetCheckClient) QueryCheckDetails(ac *AssetCheck) *AssetCheckDetailsQ
 	return query
 }
 
-// QueryOperateManager queries the operate_manager edge of a AssetCheck.
-func (c *AssetCheckClient) QueryOperateManager(ac *AssetCheck) *AssetManagerQuery {
+// QueryOperateAssetManager queries the operate_asset_manager edge of a AssetCheck.
+func (c *AssetCheckClient) QueryOperateAssetManager(ac *AssetCheck) *AssetManagerQuery {
 	query := (&AssetManagerClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ac.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assetcheck.Table, assetcheck.FieldID, id),
 			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, assetcheck.OperateManagerTable, assetcheck.OperateManagerColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheck.OperateAssetManagerTable, assetcheck.OperateAssetManagerColumn),
 		)
 		fromV = sqlgraph.Neighbors(ac.driver.Dialect(), step)
 		return fromV, nil
@@ -2694,15 +2694,15 @@ func (c *AssetCheckClient) QueryOperateManager(ac *AssetCheck) *AssetManagerQuer
 	return query
 }
 
-// QueryOperateStore queries the operate_store edge of a AssetCheck.
-func (c *AssetCheckClient) QueryOperateStore(ac *AssetCheck) *StoreQuery {
-	query := (&StoreClient{config: c.config}).Query()
+// QueryOperateEmployee queries the operate_employee edge of a AssetCheck.
+func (c *AssetCheckClient) QueryOperateEmployee(ac *AssetCheck) *EmployeeQuery {
+	query := (&EmployeeClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ac.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assetcheck.Table, assetcheck.FieldID, id),
-			sqlgraph.To(store.Table, store.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, assetcheck.OperateStoreTable, assetcheck.OperateStoreColumn),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheck.OperateEmployeeTable, assetcheck.OperateEmployeeColumn),
 		)
 		fromV = sqlgraph.Neighbors(ac.driver.Dialect(), step)
 		return fromV, nil

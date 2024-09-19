@@ -51,10 +51,10 @@ const (
 	FieldEndAt = "end_at"
 	// EdgeCheckDetails holds the string denoting the check_details edge name in mutations.
 	EdgeCheckDetails = "check_details"
-	// EdgeOperateManager holds the string denoting the operate_manager edge name in mutations.
-	EdgeOperateManager = "operate_manager"
-	// EdgeOperateStore holds the string denoting the operate_store edge name in mutations.
-	EdgeOperateStore = "operate_store"
+	// EdgeOperateAssetManager holds the string denoting the operate_asset_manager edge name in mutations.
+	EdgeOperateAssetManager = "operate_asset_manager"
+	// EdgeOperateEmployee holds the string denoting the operate_employee edge name in mutations.
+	EdgeOperateEmployee = "operate_employee"
 	// EdgeOperateAgent holds the string denoting the operate_agent edge name in mutations.
 	EdgeOperateAgent = "operate_agent"
 	// EdgeWarehouse holds the string denoting the warehouse edge name in mutations.
@@ -72,20 +72,20 @@ const (
 	CheckDetailsInverseTable = "asset_check_details"
 	// CheckDetailsColumn is the table column denoting the check_details relation/edge.
 	CheckDetailsColumn = "check_id"
-	// OperateManagerTable is the table that holds the operate_manager relation/edge.
-	OperateManagerTable = "asset_check"
-	// OperateManagerInverseTable is the table name for the AssetManager entity.
+	// OperateAssetManagerTable is the table that holds the operate_asset_manager relation/edge.
+	OperateAssetManagerTable = "asset_check"
+	// OperateAssetManagerInverseTable is the table name for the AssetManager entity.
 	// It exists in this package in order to avoid circular dependency with the "assetmanager" package.
-	OperateManagerInverseTable = "asset_manager"
-	// OperateManagerColumn is the table column denoting the operate_manager relation/edge.
-	OperateManagerColumn = "operate_id"
-	// OperateStoreTable is the table that holds the operate_store relation/edge.
-	OperateStoreTable = "asset_check"
-	// OperateStoreInverseTable is the table name for the Store entity.
-	// It exists in this package in order to avoid circular dependency with the "store" package.
-	OperateStoreInverseTable = "store"
-	// OperateStoreColumn is the table column denoting the operate_store relation/edge.
-	OperateStoreColumn = "operate_id"
+	OperateAssetManagerInverseTable = "asset_manager"
+	// OperateAssetManagerColumn is the table column denoting the operate_asset_manager relation/edge.
+	OperateAssetManagerColumn = "operate_id"
+	// OperateEmployeeTable is the table that holds the operate_employee relation/edge.
+	OperateEmployeeTable = "asset_check"
+	// OperateEmployeeInverseTable is the table name for the Employee entity.
+	// It exists in this package in order to avoid circular dependency with the "employee" package.
+	OperateEmployeeInverseTable = "employee"
+	// OperateEmployeeColumn is the table column denoting the operate_employee relation/edge.
+	OperateEmployeeColumn = "operate_id"
 	// OperateAgentTable is the table that holds the operate_agent relation/edge.
 	OperateAgentTable = "asset_check"
 	// OperateAgentInverseTable is the table name for the Agent entity.
@@ -260,17 +260,17 @@ func ByCheckDetails(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
-// ByOperateManagerField orders the results by operate_manager field.
-func ByOperateManagerField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByOperateAssetManagerField orders the results by operate_asset_manager field.
+func ByOperateAssetManagerField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newOperateManagerStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newOperateAssetManagerStep(), sql.OrderByField(field, opts...))
 	}
 }
 
-// ByOperateStoreField orders the results by operate_store field.
-func ByOperateStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByOperateEmployeeField orders the results by operate_employee field.
+func ByOperateEmployeeField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newOperateStoreStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newOperateEmployeeStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -308,18 +308,18 @@ func newCheckDetailsStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.O2M, false, CheckDetailsTable, CheckDetailsColumn),
 	)
 }
-func newOperateManagerStep() *sqlgraph.Step {
+func newOperateAssetManagerStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(OperateManagerInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, OperateManagerTable, OperateManagerColumn),
+		sqlgraph.To(OperateAssetManagerInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, OperateAssetManagerTable, OperateAssetManagerColumn),
 	)
 }
-func newOperateStoreStep() *sqlgraph.Step {
+func newOperateEmployeeStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(OperateStoreInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, OperateStoreTable, OperateStoreColumn),
+		sqlgraph.To(OperateEmployeeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, OperateEmployeeTable, OperateEmployeeColumn),
 	)
 }
 func newOperateAgentStep() *sqlgraph.Step {

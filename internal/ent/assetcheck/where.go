@@ -888,21 +888,21 @@ func HasCheckDetailsWith(preds ...predicate.AssetCheckDetails) predicate.AssetCh
 	})
 }
 
-// HasOperateManager applies the HasEdge predicate on the "operate_manager" edge.
-func HasOperateManager() predicate.AssetCheck {
+// HasOperateAssetManager applies the HasEdge predicate on the "operate_asset_manager" edge.
+func HasOperateAssetManager() predicate.AssetCheck {
 	return predicate.AssetCheck(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, OperateManagerTable, OperateManagerColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, OperateAssetManagerTable, OperateAssetManagerColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasOperateManagerWith applies the HasEdge predicate on the "operate_manager" edge with a given conditions (other predicates).
-func HasOperateManagerWith(preds ...predicate.AssetManager) predicate.AssetCheck {
+// HasOperateAssetManagerWith applies the HasEdge predicate on the "operate_asset_manager" edge with a given conditions (other predicates).
+func HasOperateAssetManagerWith(preds ...predicate.AssetManager) predicate.AssetCheck {
 	return predicate.AssetCheck(func(s *sql.Selector) {
-		step := newOperateManagerStep()
+		step := newOperateAssetManagerStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -911,21 +911,21 @@ func HasOperateManagerWith(preds ...predicate.AssetManager) predicate.AssetCheck
 	})
 }
 
-// HasOperateStore applies the HasEdge predicate on the "operate_store" edge.
-func HasOperateStore() predicate.AssetCheck {
+// HasOperateEmployee applies the HasEdge predicate on the "operate_employee" edge.
+func HasOperateEmployee() predicate.AssetCheck {
 	return predicate.AssetCheck(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, OperateStoreTable, OperateStoreColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, OperateEmployeeTable, OperateEmployeeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasOperateStoreWith applies the HasEdge predicate on the "operate_store" edge with a given conditions (other predicates).
-func HasOperateStoreWith(preds ...predicate.Store) predicate.AssetCheck {
+// HasOperateEmployeeWith applies the HasEdge predicate on the "operate_employee" edge with a given conditions (other predicates).
+func HasOperateEmployeeWith(preds ...predicate.Employee) predicate.AssetCheck {
 	return predicate.AssetCheck(func(s *sql.Selector) {
-		step := newOperateStoreStep()
+		step := newOperateEmployeeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

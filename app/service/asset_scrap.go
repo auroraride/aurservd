@@ -166,7 +166,7 @@ func (s *assetScrapService) filter(ctx context.Context, q *ent.AssetScrapQuery, 
 
 	}
 	if req.SN != nil {
-		q.Where(assetscrap.HasScrapDetailsWith(assetscrapdetails.HasAssetWith(asset.Sn(*req.SN))))
+		q.Where(assetscrap.HasScrapDetailsWith(assetscrapdetails.HasAssetWith(asset.SnContains(*req.SN))))
 	}
 	if req.ModelID != nil {
 		q.Where(assetscrap.HasScrapDetailsWith(assetscrapdetails.HasAssetWith(asset.ModelID(*req.ModelID))))

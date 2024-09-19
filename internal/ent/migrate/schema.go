@@ -526,7 +526,7 @@ var (
 		{Name: "battery_num_real", Type: field.TypeUint, Nullable: true, Comment: "实盘电池数量"},
 		{Name: "ebike_num", Type: field.TypeUint, Nullable: true, Comment: "应盘电车数量"},
 		{Name: "ebike_num_real", Type: field.TypeUint, Nullable: true, Comment: "实盘电车数量"},
-		{Name: "operate_type", Type: field.TypeUint8, Nullable: true, Comment: "盘点角色类型 1:资产后台 2:门店 3:代理"},
+		{Name: "operate_type", Type: field.TypeUint8, Nullable: true, Comment: "盘点角色类型 1:门店 3:代理 6:资产后台"},
 		{Name: "locations_type", Type: field.TypeUint8, Nullable: true, Comment: "盘点位置类型 1:仓库 2:门店 3:代理"},
 		{Name: "start_at", Type: field.TypeTime, Nullable: true, Comment: "盘点开始时间"},
 		{Name: "end_at", Type: field.TypeTime, Nullable: true, Comment: "盘点结束时间"},
@@ -540,15 +540,15 @@ var (
 		PrimaryKey: []*schema.Column{AssetCheckColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "asset_check_asset_manager_operate_manager",
+				Symbol:     "asset_check_asset_manager_operate_asset_manager",
 				Columns:    []*schema.Column{AssetCheckColumns[16]},
 				RefColumns: []*schema.Column{AssetManagerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "asset_check_store_operate_store",
+				Symbol:     "asset_check_employee_operate_employee",
 				Columns:    []*schema.Column{AssetCheckColumns[16]},
-				RefColumns: []*schema.Column{StoreColumns[0]},
+				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
@@ -7635,7 +7635,7 @@ func init() {
 		Table: "asset_attributes",
 	}
 	AssetCheckTable.ForeignKeys[0].RefTable = AssetManagerTable
-	AssetCheckTable.ForeignKeys[1].RefTable = StoreTable
+	AssetCheckTable.ForeignKeys[1].RefTable = EmployeeTable
 	AssetCheckTable.ForeignKeys[2].RefTable = AgentTable
 	AssetCheckTable.ForeignKeys[3].RefTable = WarehouseTable
 	AssetCheckTable.ForeignKeys[4].RefTable = StoreTable
