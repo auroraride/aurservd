@@ -470,7 +470,7 @@ func RiderBatteryDo(ctx context.Context, modifier *model.Modifier) {
 						ModelID:   silk.UInt64(m.ID),
 					},
 				},
-				Reason:            "骑手绑定非智能系统初始入库",
+				Reason:            "初始入库-骑手绑定非智能电池",
 				AssetTransferType: model.AssetTransferTypeInitial,
 				OperatorID:        modifier.ID,
 				OperatorType:      model.OperatorTypeAssetManager,
@@ -490,7 +490,7 @@ func RiderBatteryDo(ctx context.Context, modifier *model.Modifier) {
 			if d == nil {
 				continue
 			}
-			err = ent.Database.Asset.Update().Where(asset.ID(d.AssetID)).SetSubscribeID(subd.ID).Exec(ctx)
+			err = ent.Database.Asset.Update().Where(asset.ID(d.AssetID)).SetSubscribeID(subd.ID).SetCityID(subd.City.ID).Exec(ctx)
 			if err != nil {
 				continue
 			}

@@ -1972,6 +1972,7 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 		// 入库操作人
 		if item.Edges.TransferDetails != nil {
 			// 其它物资类型有很多记录 所以只取第一条
+
 			details := item.Edges.TransferDetails[0]
 			if details != nil {
 				if details.InTimeAt != nil {
@@ -2021,11 +2022,15 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 						if details.Edges.Asset.Edges.Model != nil {
 							assetName = "[" + details.Edges.Asset.Edges.Model.Model + "]" + details.Edges.Asset.Sn
 						}
+					case model.AssetTypeNonSmartBattery:
+						if details.Edges.Asset.Edges.Model != nil {
+							assetName = "[" + details.Edges.Asset.Edges.Model.Model + "]"
+						}
 					case model.AssetTypeEbike:
 						if details.Edges.Asset.Edges.Brand != nil {
 							assetName = "[" + details.Edges.Asset.Edges.Brand.Name + "]" + details.Edges.Asset.Sn
 						}
-					case model.AssetTypeNonSmartBattery, model.AssetTypeCabinetAccessory, model.AssetTypeEbikeAccessory, model.AssetTypeOtherAccessory:
+					case model.AssetTypeCabinetAccessory, model.AssetTypeEbikeAccessory, model.AssetTypeOtherAccessory:
 						if details.Edges.Asset.Edges.Material != nil {
 							assetName = details.Edges.Asset.Edges.Material.Name
 						}
