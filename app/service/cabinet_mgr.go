@@ -83,7 +83,7 @@ func (s *cabinetMgrService) Maintain(operator *logging.Operator, req *model.Cabi
 // BinOperate 仓位操作
 // waitClose 是否等待关闭仓门（仅开仓动作有效）
 func (s *cabinetMgrService) BinOperate(operator *logging.Operator, id uint64, data any, waitClose bool) bool {
-	if operator.Type != model.OperatorTypeManager && operator.Type != model.OperatorTypeMaintainer {
+	if operator.Type != model.OperatorTypeManager && operator.Type != model.OperatorTypeMaintainer && operator.Type != model.OperatorTypeEmployee {
 		snag.Panic("无权限操作")
 	}
 
@@ -197,16 +197,35 @@ func (s *cabinetMgrService) BinOperateAssetTransfer(operator *logging.Operator, 
 			// 智能电柜根据电池编码判定电池资产变化
 			if cab.Intelligent && before.BatterySN != after.BatterySN {
 				assetType = model.AssetTypeSmartBattery
-				// 记录取出电池状态变动，产生调拨单
-				if before.BatterySN != "" {
+				switch {
+				case before.BatterySN != "" && after.BatterySN != "":
+					// 电池替换
+					s.BatteryReplace(operator, cab, before, after)
+				case before.BatterySN != "" && after.BatterySN == "":
 					// 电池取出
 					toLocationType, toLocationID = s.OperatorAssetLocation(operator, cab)
 					fromLocationType = model.AssetLocationsTypeCabinet
 					fromLocationID = cab.ID
 					sn = before.BatterySN
 					in = false
-				}
-				if after.BatterySN != "" {
+
+					err := s.BatteryTransfer(operator, model.BatteryTransferReq{
+						FromLocationType: fromLocationType,
+						FromLocationID:   fromLocationID,
+						ToLocationType:   toLocationType,
+						ToLocationID:     toLocationID,
+						Details: []model.AssetTransferCreateDetail{
+							{
+								AssetType: assetType,
+								SN:        silk.String(sn),
+							},
+						},
+						In: in,
+					})
+					if err != nil {
+						zap.L().Error("电池调拨失败", zap.Error(err))
+					}
+				case before.BatterySN == "" && after.BatterySN != "":
 					// 电池放入 查询运维/站点/门店 如果有电池 从运维调拨到电柜
 					// 如果没有电池 从电池原本位置调拨到电柜
 					fromLocationType, fromLocationID, _ = s.GetBattery(operator, cab, after.BatterySN)
@@ -214,23 +233,104 @@ func (s *cabinetMgrService) BinOperateAssetTransfer(operator *logging.Operator, 
 					toLocationID = cab.ID
 					sn = after.BatterySN
 					in = true
-				}
-				err := s.BatteryTransfer(operator, model.BatteryTransferReq{
-					FromLocationType: fromLocationType,
-					FromLocationID:   fromLocationID,
-					ToLocationType:   toLocationType,
-					ToLocationID:     toLocationID,
-					Details: []model.AssetTransferCreateDetail{
-						{
-							AssetType: assetType,
-							SN:        silk.String(sn),
+					err := s.BatteryTransfer(operator, model.BatteryTransferReq{
+						FromLocationType: fromLocationType,
+						FromLocationID:   fromLocationID,
+						ToLocationType:   toLocationType,
+						ToLocationID:     toLocationID,
+						Details: []model.AssetTransferCreateDetail{
+							{
+								AssetType: assetType,
+								SN:        silk.String(sn),
+							},
 						},
-					},
-					In: in,
-				})
-				if err != nil {
-					zap.L().Error("电池调拨失败", zap.Error(err))
+						In: in,
+					})
+					if err != nil {
+						zap.L().Error("电池调拨失败", zap.Error(err))
+					}
 				}
+
+				// // 记录取出电池状态变动，产生调拨单
+				// if before.BatterySN != "" {
+				// 	// 电池取出
+				// 	toLocationType, toLocationID = s.OperatorAssetLocation(operator, cab)
+				// 	fromLocationType = model.AssetLocationsTypeCabinet
+				// 	fromLocationID = cab.ID
+				// 	sn = before.BatterySN
+				// 	in = false
+				// }
+				// if after.BatterySN != "" {
+				// 	// 电池放入 查询运维/站点/门店 如果有电池 从运维调拨到电柜
+				// 	// 如果没有电池 从电池原本位置调拨到电柜
+				// 	fromLocationType, fromLocationID, _ = s.GetBattery(operator, cab, after.BatterySN)
+				// 	toLocationType = model.AssetLocationsTypeCabinet
+				// 	toLocationID = cab.ID
+				// 	sn = after.BatterySN
+				// 	in = true
+				// }
+
+			}
+		}
+	}
+}
+
+// BatteryReplace 电池替换
+func (s *cabinetMgrService) BatteryReplace(operator *logging.Operator, cab *ent.Cabinet, before, after *cabdef.BinInfo) {
+	// 智能电柜根据电池编码判定电池资产变化
+	if cab.Intelligent && before.BatterySN != after.BatterySN {
+		assetType := model.AssetTypeSmartBattery
+		var beforeFromLocationType, beforeToLocationType, afterFromLocationType, afterToLocationType model.AssetLocationsType
+		var beforeFromLocationID, beforeToLocationID, afterFromLocationID, afterToLocationID uint64
+		var sn string
+		var in bool
+		switch {
+		case before.BatterySN != "" && after.BatterySN != "":
+			// 电池取出调拨
+			beforeToLocationType, beforeToLocationID = s.OperatorAssetLocation(operator, cab)
+			beforeFromLocationType = model.AssetLocationsTypeCabinet
+			beforeFromLocationID = cab.ID
+			sn = before.BatterySN
+			in = false
+
+			err := s.BatteryTransfer(operator, model.BatteryTransferReq{
+				FromLocationType: beforeFromLocationType,
+				FromLocationID:   beforeFromLocationID,
+				ToLocationType:   beforeToLocationType,
+				ToLocationID:     beforeToLocationID,
+				Details: []model.AssetTransferCreateDetail{
+					{
+						AssetType: assetType,
+						SN:        silk.String(sn),
+					},
+				},
+				In: in,
+			})
+			if err != nil {
+				zap.L().Error("电池取出调拨失败", zap.Error(err))
+			}
+
+			// 电池放入调拨
+			afterFromLocationType, afterFromLocationID, _ = s.GetBattery(operator, cab, after.BatterySN)
+			afterToLocationType = model.AssetLocationsTypeCabinet
+			afterToLocationID = cab.ID
+			sn = after.BatterySN
+			in = true
+			err = s.BatteryTransfer(operator, model.BatteryTransferReq{
+				FromLocationType: afterFromLocationType,
+				FromLocationID:   afterFromLocationID,
+				ToLocationType:   afterToLocationType,
+				ToLocationID:     afterToLocationID,
+				Details: []model.AssetTransferCreateDetail{
+					{
+						AssetType: assetType,
+						SN:        silk.String(sn),
+					},
+				},
+				In: in,
+			})
+			if err != nil {
+				zap.L().Error("电池放入调拨失败", zap.Error(err))
 			}
 		}
 	}

@@ -242,7 +242,7 @@ func (au *AgentUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (au *AgentUpdate) check() error {
-	if _, ok := au.mutation.EnterpriseID(); au.mutation.EnterpriseCleared() && !ok {
+	if au.mutation.EnterpriseCleared() && len(au.mutation.EnterpriseIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Agent.enterprise"`)
 	}
 	return nil
@@ -618,7 +618,7 @@ func (auo *AgentUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (auo *AgentUpdateOne) check() error {
-	if _, ok := auo.mutation.EnterpriseID(); auo.mutation.EnterpriseCleared() && !ok {
+	if auo.mutation.EnterpriseCleared() && len(auo.mutation.EnterpriseIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Agent.enterprise"`)
 	}
 	return nil

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -85,7 +86,7 @@ func (orq *OrderRefundQuery) QueryOrder() *OrderQuery {
 // First returns the first OrderRefund entity from the query.
 // Returns a *NotFoundError when no OrderRefund was found.
 func (orq *OrderRefundQuery) First(ctx context.Context) (*OrderRefund, error) {
-	nodes, err := orq.Limit(1).All(setContextOp(ctx, orq.ctx, "First"))
+	nodes, err := orq.Limit(1).All(setContextOp(ctx, orq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +109,7 @@ func (orq *OrderRefundQuery) FirstX(ctx context.Context) *OrderRefund {
 // Returns a *NotFoundError when no OrderRefund ID was found.
 func (orq *OrderRefundQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = orq.Limit(1).IDs(setContextOp(ctx, orq.ctx, "FirstID")); err != nil {
+	if ids, err = orq.Limit(1).IDs(setContextOp(ctx, orq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -131,7 +132,7 @@ func (orq *OrderRefundQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one OrderRefund entity is found.
 // Returns a *NotFoundError when no OrderRefund entities are found.
 func (orq *OrderRefundQuery) Only(ctx context.Context) (*OrderRefund, error) {
-	nodes, err := orq.Limit(2).All(setContextOp(ctx, orq.ctx, "Only"))
+	nodes, err := orq.Limit(2).All(setContextOp(ctx, orq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +160,7 @@ func (orq *OrderRefundQuery) OnlyX(ctx context.Context) *OrderRefund {
 // Returns a *NotFoundError when no entities are found.
 func (orq *OrderRefundQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = orq.Limit(2).IDs(setContextOp(ctx, orq.ctx, "OnlyID")); err != nil {
+	if ids, err = orq.Limit(2).IDs(setContextOp(ctx, orq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -184,7 +185,7 @@ func (orq *OrderRefundQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of OrderRefunds.
 func (orq *OrderRefundQuery) All(ctx context.Context) ([]*OrderRefund, error) {
-	ctx = setContextOp(ctx, orq.ctx, "All")
+	ctx = setContextOp(ctx, orq.ctx, ent.OpQueryAll)
 	if err := orq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -206,7 +207,7 @@ func (orq *OrderRefundQuery) IDs(ctx context.Context) (ids []uint64, err error) 
 	if orq.ctx.Unique == nil && orq.path != nil {
 		orq.Unique(true)
 	}
-	ctx = setContextOp(ctx, orq.ctx, "IDs")
+	ctx = setContextOp(ctx, orq.ctx, ent.OpQueryIDs)
 	if err = orq.Select(orderrefund.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -224,7 +225,7 @@ func (orq *OrderRefundQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (orq *OrderRefundQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, orq.ctx, "Count")
+	ctx = setContextOp(ctx, orq.ctx, ent.OpQueryCount)
 	if err := orq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -242,7 +243,7 @@ func (orq *OrderRefundQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (orq *OrderRefundQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, orq.ctx, "Exist")
+	ctx = setContextOp(ctx, orq.ctx, ent.OpQueryExist)
 	switch _, err := orq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -276,8 +277,9 @@ func (orq *OrderRefundQuery) Clone() *OrderRefundQuery {
 		predicates: append([]predicate.OrderRefund{}, orq.predicates...),
 		withOrder:  orq.withOrder.Clone(),
 		// clone intermediate query.
-		sql:  orq.sql.Clone(),
-		path: orq.path,
+		sql:       orq.sql.Clone(),
+		path:      orq.path,
+		modifiers: append([]func(*sql.Selector){}, orq.modifiers...),
 	}
 }
 
@@ -560,7 +562,7 @@ func (orgb *OrderRefundGroupBy) Aggregate(fns ...AggregateFunc) *OrderRefundGrou
 
 // Scan applies the selector query and scans the result into the given value.
 func (orgb *OrderRefundGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, orgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, orgb.build.ctx, ent.OpQueryGroupBy)
 	if err := orgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -608,7 +610,7 @@ func (ors *OrderRefundSelect) Aggregate(fns ...AggregateFunc) *OrderRefundSelect
 
 // Scan applies the selector query and scans the result into the given value.
 func (ors *OrderRefundSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ors.ctx, "Select")
+	ctx = setContextOp(ctx, ors.ctx, ent.OpQuerySelect)
 	if err := ors.prepareQuery(ctx); err != nil {
 		return err
 	}

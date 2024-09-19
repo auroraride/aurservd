@@ -189,10 +189,10 @@ func (rfuu *RiderFollowUpUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (rfuu *RiderFollowUpUpdate) check() error {
-	if _, ok := rfuu.mutation.ManagerID(); rfuu.mutation.ManagerCleared() && !ok {
+	if rfuu.mutation.ManagerCleared() && len(rfuu.mutation.ManagerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "RiderFollowUp.manager"`)
 	}
-	if _, ok := rfuu.mutation.RiderID(); rfuu.mutation.RiderCleared() && !ok {
+	if rfuu.mutation.RiderCleared() && len(rfuu.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "RiderFollowUp.rider"`)
 	}
 	return nil
@@ -490,10 +490,10 @@ func (rfuuo *RiderFollowUpUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (rfuuo *RiderFollowUpUpdateOne) check() error {
-	if _, ok := rfuuo.mutation.ManagerID(); rfuuo.mutation.ManagerCleared() && !ok {
+	if rfuuo.mutation.ManagerCleared() && len(rfuuo.mutation.ManagerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "RiderFollowUp.manager"`)
 	}
-	if _, ok := rfuuo.mutation.RiderID(); rfuuo.mutation.RiderCleared() && !ok {
+	if rfuuo.mutation.RiderCleared() && len(rfuuo.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "RiderFollowUp.rider"`)
 	}
 	return nil

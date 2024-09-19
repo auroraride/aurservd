@@ -292,7 +292,7 @@ func (esc *EnterpriseStationCreate) check() error {
 	if _, ok := esc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "EnterpriseStation.name"`)}
 	}
-	if _, ok := esc.mutation.EnterpriseID(); !ok {
+	if len(esc.mutation.EnterpriseIDs()) == 0 {
 		return &ValidationError{Name: "enterprise", err: errors.New(`ent: missing required edge "EnterpriseStation.enterprise"`)}
 	}
 	return nil

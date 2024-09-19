@@ -213,7 +213,7 @@ func (prc *PromotionReferralsCreate) check() error {
 	if _, ok := prc.mutation.ReferredMemberID(); !ok {
 		return &ValidationError{Name: "referred_member_id", err: errors.New(`ent: missing required field "PromotionReferrals.referred_member_id"`)}
 	}
-	if _, ok := prc.mutation.ReferredMemberID(); !ok {
+	if len(prc.mutation.ReferredMemberIDs()) == 0 {
 		return &ValidationError{Name: "referred_member", err: errors.New(`ent: missing required edge "PromotionReferrals.referred_member"`)}
 	}
 	return nil

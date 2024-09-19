@@ -885,10 +885,10 @@ func (sc *SubscribeCreate) check() error {
 	if _, ok := sc.mutation.Intelligent(); !ok {
 		return &ValidationError{Name: "intelligent", err: errors.New(`ent: missing required field "Subscribe.intelligent"`)}
 	}
-	if _, ok := sc.mutation.CityID(); !ok {
+	if len(sc.mutation.CityIDs()) == 0 {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Subscribe.city"`)}
 	}
-	if _, ok := sc.mutation.RiderID(); !ok {
+	if len(sc.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Subscribe.rider"`)}
 	}
 	return nil

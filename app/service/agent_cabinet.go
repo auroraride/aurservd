@@ -42,7 +42,7 @@ func (s *agentCabinetService) detail(ac *app.AgentContext, item *ent.Cabinet, ln
 		Name:       item.Name,
 		Status:     item.Status,
 		Health:     item.Health,
-		Permission: model.AgentCabinetPermissionView,
+		Permission: model.AgentCabinetPermissionAll,
 		Address:    item.Address,
 		Lng:        item.Lng,
 		Lat:        item.Lat,
@@ -146,10 +146,11 @@ func (s *agentCabinetService) Operable(ac *app.AgentContext, id uint64, lng, lat
 
 	if cab == nil {
 		snag.Panic("未找到有效电柜")
+		return nil
 	}
 
 	// 暂时屏蔽电柜控制权限
-	snag.Panic("无权限操作")
+	// snag.Panic("无权限操作")
 
 	ed := ac.Enterprise.Distance
 	if ed < 0 || (ed > 0 && haversine.Distance(haversine.NewCoordinates(lat, lng), haversine.NewCoordinates(cab.Lat, cab.Lng)).Kilometers()*1000.0 > ed) {

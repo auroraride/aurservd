@@ -383,10 +383,10 @@ func (ac *AllocateCreate) check() error {
 	if _, ok := ac.mutation.Model(); !ok {
 		return &ValidationError{Name: "model", err: errors.New(`ent: missing required field "Allocate.model"`)}
 	}
-	if _, ok := ac.mutation.RiderID(); !ok {
+	if len(ac.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Allocate.rider"`)}
 	}
-	if _, ok := ac.mutation.SubscribeID(); !ok {
+	if len(ac.mutation.SubscribeIDs()) == 0 {
 		return &ValidationError{Name: "subscribe", err: errors.New(`ent: missing required edge "Allocate.subscribe"`)}
 	}
 	return nil

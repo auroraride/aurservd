@@ -357,10 +357,10 @@ func (au *AttendanceUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (au *AttendanceUpdate) check() error {
-	if _, ok := au.mutation.StoreID(); au.mutation.StoreCleared() && !ok {
+	if au.mutation.StoreCleared() && len(au.mutation.StoreIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Attendance.store"`)
 	}
-	if _, ok := au.mutation.EmployeeID(); au.mutation.EmployeeCleared() && !ok {
+	if au.mutation.EmployeeCleared() && len(au.mutation.EmployeeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Attendance.employee"`)
 	}
 	return nil
@@ -881,10 +881,10 @@ func (auo *AttendanceUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (auo *AttendanceUpdateOne) check() error {
-	if _, ok := auo.mutation.StoreID(); auo.mutation.StoreCleared() && !ok {
+	if auo.mutation.StoreCleared() && len(auo.mutation.StoreIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Attendance.store"`)
 	}
-	if _, ok := auo.mutation.EmployeeID(); auo.mutation.EmployeeCleared() && !ok {
+	if auo.mutation.EmployeeCleared() && len(auo.mutation.EmployeeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Attendance.employee"`)
 	}
 	return nil

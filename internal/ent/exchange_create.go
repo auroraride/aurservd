@@ -487,13 +487,13 @@ func (ec *ExchangeCreate) check() error {
 	if _, ok := ec.mutation.Message(); !ok {
 		return &ValidationError{Name: "message", err: errors.New(`ent: missing required field "Exchange.message"`)}
 	}
-	if _, ok := ec.mutation.SubscribeID(); !ok {
+	if len(ec.mutation.SubscribeIDs()) == 0 {
 		return &ValidationError{Name: "subscribe", err: errors.New(`ent: missing required edge "Exchange.subscribe"`)}
 	}
-	if _, ok := ec.mutation.CityID(); !ok {
+	if len(ec.mutation.CityIDs()) == 0 {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Exchange.city"`)}
 	}
-	if _, ok := ec.mutation.RiderID(); !ok {
+	if len(ec.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Exchange.rider"`)}
 	}
 	return nil

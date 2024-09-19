@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -420,7 +421,7 @@ func (sq *StockQuery) QueryStation() *EnterpriseStationQuery {
 // First returns the first Stock entity from the query.
 // Returns a *NotFoundError when no Stock was found.
 func (sq *StockQuery) First(ctx context.Context) (*Stock, error) {
-	nodes, err := sq.Limit(1).All(setContextOp(ctx, sq.ctx, "First"))
+	nodes, err := sq.Limit(1).All(setContextOp(ctx, sq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -443,7 +444,7 @@ func (sq *StockQuery) FirstX(ctx context.Context) *Stock {
 // Returns a *NotFoundError when no Stock ID was found.
 func (sq *StockQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = sq.Limit(1).IDs(setContextOp(ctx, sq.ctx, "FirstID")); err != nil {
+	if ids, err = sq.Limit(1).IDs(setContextOp(ctx, sq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -466,7 +467,7 @@ func (sq *StockQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Stock entity is found.
 // Returns a *NotFoundError when no Stock entities are found.
 func (sq *StockQuery) Only(ctx context.Context) (*Stock, error) {
-	nodes, err := sq.Limit(2).All(setContextOp(ctx, sq.ctx, "Only"))
+	nodes, err := sq.Limit(2).All(setContextOp(ctx, sq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -494,7 +495,7 @@ func (sq *StockQuery) OnlyX(ctx context.Context) *Stock {
 // Returns a *NotFoundError when no entities are found.
 func (sq *StockQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = sq.Limit(2).IDs(setContextOp(ctx, sq.ctx, "OnlyID")); err != nil {
+	if ids, err = sq.Limit(2).IDs(setContextOp(ctx, sq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -519,7 +520,7 @@ func (sq *StockQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Stocks.
 func (sq *StockQuery) All(ctx context.Context) ([]*Stock, error) {
-	ctx = setContextOp(ctx, sq.ctx, "All")
+	ctx = setContextOp(ctx, sq.ctx, ent.OpQueryAll)
 	if err := sq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -541,7 +542,7 @@ func (sq *StockQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if sq.ctx.Unique == nil && sq.path != nil {
 		sq.Unique(true)
 	}
-	ctx = setContextOp(ctx, sq.ctx, "IDs")
+	ctx = setContextOp(ctx, sq.ctx, ent.OpQueryIDs)
 	if err = sq.Select(stock.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -559,7 +560,7 @@ func (sq *StockQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (sq *StockQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, sq.ctx, "Count")
+	ctx = setContextOp(ctx, sq.ctx, ent.OpQueryCount)
 	if err := sq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -577,7 +578,7 @@ func (sq *StockQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (sq *StockQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, sq.ctx, "Exist")
+	ctx = setContextOp(ctx, sq.ctx, ent.OpQueryExist)
 	switch _, err := sq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -625,8 +626,9 @@ func (sq *StockQuery) Clone() *StockQuery {
 		withEnterprise: sq.withEnterprise.Clone(),
 		withStation:    sq.withStation.Clone(),
 		// clone intermediate query.
-		sql:  sq.sql.Clone(),
-		path: sq.path,
+		sql:       sq.sql.Clone(),
+		path:      sq.path,
+		modifiers: append([]func(*sql.Selector){}, sq.modifiers...),
 	}
 }
 
@@ -1700,7 +1702,7 @@ func (sgb *StockGroupBy) Aggregate(fns ...AggregateFunc) *StockGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (sgb *StockGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, sgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, sgb.build.ctx, ent.OpQueryGroupBy)
 	if err := sgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1748,7 +1750,7 @@ func (ss *StockSelect) Aggregate(fns ...AggregateFunc) *StockSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ss *StockSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ss.ctx, "Select")
+	ctx = setContextOp(ctx, ss.ctx, ent.OpQuerySelect)
 	if err := ss.prepareQuery(ctx); err != nil {
 		return err
 	}

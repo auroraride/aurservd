@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -110,7 +111,7 @@ func (pbcq *PromotionBankCardQuery) QueryWithdrawals() *PromotionWithdrawalQuery
 // First returns the first PromotionBankCard entity from the query.
 // Returns a *NotFoundError when no PromotionBankCard was found.
 func (pbcq *PromotionBankCardQuery) First(ctx context.Context) (*PromotionBankCard, error) {
-	nodes, err := pbcq.Limit(1).All(setContextOp(ctx, pbcq.ctx, "First"))
+	nodes, err := pbcq.Limit(1).All(setContextOp(ctx, pbcq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +134,7 @@ func (pbcq *PromotionBankCardQuery) FirstX(ctx context.Context) *PromotionBankCa
 // Returns a *NotFoundError when no PromotionBankCard ID was found.
 func (pbcq *PromotionBankCardQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = pbcq.Limit(1).IDs(setContextOp(ctx, pbcq.ctx, "FirstID")); err != nil {
+	if ids, err = pbcq.Limit(1).IDs(setContextOp(ctx, pbcq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -156,7 +157,7 @@ func (pbcq *PromotionBankCardQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one PromotionBankCard entity is found.
 // Returns a *NotFoundError when no PromotionBankCard entities are found.
 func (pbcq *PromotionBankCardQuery) Only(ctx context.Context) (*PromotionBankCard, error) {
-	nodes, err := pbcq.Limit(2).All(setContextOp(ctx, pbcq.ctx, "Only"))
+	nodes, err := pbcq.Limit(2).All(setContextOp(ctx, pbcq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -184,7 +185,7 @@ func (pbcq *PromotionBankCardQuery) OnlyX(ctx context.Context) *PromotionBankCar
 // Returns a *NotFoundError when no entities are found.
 func (pbcq *PromotionBankCardQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = pbcq.Limit(2).IDs(setContextOp(ctx, pbcq.ctx, "OnlyID")); err != nil {
+	if ids, err = pbcq.Limit(2).IDs(setContextOp(ctx, pbcq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -209,7 +210,7 @@ func (pbcq *PromotionBankCardQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of PromotionBankCards.
 func (pbcq *PromotionBankCardQuery) All(ctx context.Context) ([]*PromotionBankCard, error) {
-	ctx = setContextOp(ctx, pbcq.ctx, "All")
+	ctx = setContextOp(ctx, pbcq.ctx, ent.OpQueryAll)
 	if err := pbcq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -231,7 +232,7 @@ func (pbcq *PromotionBankCardQuery) IDs(ctx context.Context) (ids []uint64, err 
 	if pbcq.ctx.Unique == nil && pbcq.path != nil {
 		pbcq.Unique(true)
 	}
-	ctx = setContextOp(ctx, pbcq.ctx, "IDs")
+	ctx = setContextOp(ctx, pbcq.ctx, ent.OpQueryIDs)
 	if err = pbcq.Select(promotionbankcard.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -249,7 +250,7 @@ func (pbcq *PromotionBankCardQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (pbcq *PromotionBankCardQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, pbcq.ctx, "Count")
+	ctx = setContextOp(ctx, pbcq.ctx, ent.OpQueryCount)
 	if err := pbcq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -267,7 +268,7 @@ func (pbcq *PromotionBankCardQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (pbcq *PromotionBankCardQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, pbcq.ctx, "Exist")
+	ctx = setContextOp(ctx, pbcq.ctx, ent.OpQueryExist)
 	switch _, err := pbcq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -302,8 +303,9 @@ func (pbcq *PromotionBankCardQuery) Clone() *PromotionBankCardQuery {
 		withMember:      pbcq.withMember.Clone(),
 		withWithdrawals: pbcq.withWithdrawals.Clone(),
 		// clone intermediate query.
-		sql:  pbcq.sql.Clone(),
-		path: pbcq.path,
+		sql:       pbcq.sql.Clone(),
+		path:      pbcq.path,
+		modifiers: append([]func(*sql.Selector){}, pbcq.modifiers...),
 	}
 }
 
@@ -640,7 +642,7 @@ func (pbcgb *PromotionBankCardGroupBy) Aggregate(fns ...AggregateFunc) *Promotio
 
 // Scan applies the selector query and scans the result into the given value.
 func (pbcgb *PromotionBankCardGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, pbcgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, pbcgb.build.ctx, ent.OpQueryGroupBy)
 	if err := pbcgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -688,7 +690,7 @@ func (pbcs *PromotionBankCardSelect) Aggregate(fns ...AggregateFunc) *PromotionB
 
 // Scan applies the selector query and scans the result into the given value.
 func (pbcs *PromotionBankCardSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, pbcs.ctx, "Select")
+	ctx = setContextOp(ctx, pbcs.ctx, ent.OpQuerySelect)
 	if err := pbcs.prepareQuery(ctx); err != nil {
 		return err
 	}

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -85,7 +86,7 @@ func (caq *CouponAssemblyQuery) QueryTemplate() *CouponTemplateQuery {
 // First returns the first CouponAssembly entity from the query.
 // Returns a *NotFoundError when no CouponAssembly was found.
 func (caq *CouponAssemblyQuery) First(ctx context.Context) (*CouponAssembly, error) {
-	nodes, err := caq.Limit(1).All(setContextOp(ctx, caq.ctx, "First"))
+	nodes, err := caq.Limit(1).All(setContextOp(ctx, caq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +109,7 @@ func (caq *CouponAssemblyQuery) FirstX(ctx context.Context) *CouponAssembly {
 // Returns a *NotFoundError when no CouponAssembly ID was found.
 func (caq *CouponAssemblyQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = caq.Limit(1).IDs(setContextOp(ctx, caq.ctx, "FirstID")); err != nil {
+	if ids, err = caq.Limit(1).IDs(setContextOp(ctx, caq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -131,7 +132,7 @@ func (caq *CouponAssemblyQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one CouponAssembly entity is found.
 // Returns a *NotFoundError when no CouponAssembly entities are found.
 func (caq *CouponAssemblyQuery) Only(ctx context.Context) (*CouponAssembly, error) {
-	nodes, err := caq.Limit(2).All(setContextOp(ctx, caq.ctx, "Only"))
+	nodes, err := caq.Limit(2).All(setContextOp(ctx, caq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +160,7 @@ func (caq *CouponAssemblyQuery) OnlyX(ctx context.Context) *CouponAssembly {
 // Returns a *NotFoundError when no entities are found.
 func (caq *CouponAssemblyQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = caq.Limit(2).IDs(setContextOp(ctx, caq.ctx, "OnlyID")); err != nil {
+	if ids, err = caq.Limit(2).IDs(setContextOp(ctx, caq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -184,7 +185,7 @@ func (caq *CouponAssemblyQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of CouponAssemblies.
 func (caq *CouponAssemblyQuery) All(ctx context.Context) ([]*CouponAssembly, error) {
-	ctx = setContextOp(ctx, caq.ctx, "All")
+	ctx = setContextOp(ctx, caq.ctx, ent.OpQueryAll)
 	if err := caq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -206,7 +207,7 @@ func (caq *CouponAssemblyQuery) IDs(ctx context.Context) (ids []uint64, err erro
 	if caq.ctx.Unique == nil && caq.path != nil {
 		caq.Unique(true)
 	}
-	ctx = setContextOp(ctx, caq.ctx, "IDs")
+	ctx = setContextOp(ctx, caq.ctx, ent.OpQueryIDs)
 	if err = caq.Select(couponassembly.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -224,7 +225,7 @@ func (caq *CouponAssemblyQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (caq *CouponAssemblyQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, caq.ctx, "Count")
+	ctx = setContextOp(ctx, caq.ctx, ent.OpQueryCount)
 	if err := caq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -242,7 +243,7 @@ func (caq *CouponAssemblyQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (caq *CouponAssemblyQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, caq.ctx, "Exist")
+	ctx = setContextOp(ctx, caq.ctx, ent.OpQueryExist)
 	switch _, err := caq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -276,8 +277,9 @@ func (caq *CouponAssemblyQuery) Clone() *CouponAssemblyQuery {
 		predicates:   append([]predicate.CouponAssembly{}, caq.predicates...),
 		withTemplate: caq.withTemplate.Clone(),
 		// clone intermediate query.
-		sql:  caq.sql.Clone(),
-		path: caq.path,
+		sql:       caq.sql.Clone(),
+		path:      caq.path,
+		modifiers: append([]func(*sql.Selector){}, caq.modifiers...),
 	}
 }
 
@@ -560,7 +562,7 @@ func (cagb *CouponAssemblyGroupBy) Aggregate(fns ...AggregateFunc) *CouponAssemb
 
 // Scan applies the selector query and scans the result into the given value.
 func (cagb *CouponAssemblyGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, cagb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, cagb.build.ctx, ent.OpQueryGroupBy)
 	if err := cagb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -608,7 +610,7 @@ func (cas *CouponAssemblySelect) Aggregate(fns ...AggregateFunc) *CouponAssembly
 
 // Scan applies the selector query and scans the result into the given value.
 func (cas *CouponAssemblySelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, cas.ctx, "Select")
+	ctx = setContextOp(ctx, cas.ctx, ent.OpQuerySelect)
 	if err := cas.prepareQuery(ctx); err != nil {
 		return err
 	}

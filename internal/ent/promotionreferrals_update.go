@@ -238,7 +238,7 @@ func (pru *PromotionReferralsUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (pru *PromotionReferralsUpdate) check() error {
-	if _, ok := pru.mutation.ReferredMemberID(); pru.mutation.ReferredMemberCleared() && !ok {
+	if pru.mutation.ReferredMemberCleared() && len(pru.mutation.ReferredMemberIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PromotionReferrals.referred_member"`)
 	}
 	return nil
@@ -636,7 +636,7 @@ func (pruo *PromotionReferralsUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (pruo *PromotionReferralsUpdateOne) check() error {
-	if _, ok := pruo.mutation.ReferredMemberID(); pruo.mutation.ReferredMemberCleared() && !ok {
+	if pruo.mutation.ReferredMemberCleared() && len(pruo.mutation.ReferredMemberIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PromotionReferrals.referred_member"`)
 	}
 	return nil

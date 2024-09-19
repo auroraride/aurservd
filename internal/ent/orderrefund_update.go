@@ -280,7 +280,7 @@ func (oru *OrderRefundUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (oru *OrderRefundUpdate) check() error {
-	if _, ok := oru.mutation.OrderID(); oru.mutation.OrderCleared() && !ok {
+	if oru.mutation.OrderCleared() && len(oru.mutation.OrderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "OrderRefund.order"`)
 	}
 	return nil
@@ -674,7 +674,7 @@ func (oruo *OrderRefundUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (oruo *OrderRefundUpdateOne) check() error {
-	if _, ok := oruo.mutation.OrderID(); oruo.mutation.OrderCleared() && !ok {
+	if oruo.mutation.OrderCleared() && len(oruo.mutation.OrderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "OrderRefund.order"`)
 	}
 	return nil

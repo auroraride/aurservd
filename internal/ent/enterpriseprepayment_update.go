@@ -209,7 +209,7 @@ func (epu *EnterprisePrepaymentUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (epu *EnterprisePrepaymentUpdate) check() error {
-	if _, ok := epu.mutation.EnterpriseID(); epu.mutation.EnterpriseCleared() && !ok {
+	if epu.mutation.EnterpriseCleared() && len(epu.mutation.EnterpriseIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterprisePrepayment.enterprise"`)
 	}
 	return nil
@@ -530,7 +530,7 @@ func (epuo *EnterprisePrepaymentUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (epuo *EnterprisePrepaymentUpdateOne) check() error {
-	if _, ok := epuo.mutation.EnterpriseID(); epuo.mutation.EnterpriseCleared() && !ok {
+	if epuo.mutation.EnterpriseCleared() && len(epuo.mutation.EnterpriseIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterprisePrepayment.enterprise"`)
 	}
 	return nil

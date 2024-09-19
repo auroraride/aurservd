@@ -406,13 +406,13 @@ func (bc *BusinessCreate) check() error {
 	if _, ok := bc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Business.type"`)}
 	}
-	if _, ok := bc.mutation.RiderID(); !ok {
+	if len(bc.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Business.rider"`)}
 	}
-	if _, ok := bc.mutation.CityID(); !ok {
+	if len(bc.mutation.CityIDs()) == 0 {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Business.city"`)}
 	}
-	if _, ok := bc.mutation.SubscribeID(); !ok {
+	if len(bc.mutation.SubscribeIDs()) == 0 {
 		return &ValidationError{Name: "subscribe", err: errors.New(`ent: missing required edge "Business.subscribe"`)}
 	}
 	return nil

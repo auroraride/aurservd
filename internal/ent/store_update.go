@@ -729,10 +729,10 @@ func (su *StoreUpdate) check() error {
 			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "Store.phone": %w`, err)}
 		}
 	}
-	if _, ok := su.mutation.CityID(); su.mutation.CityCleared() && !ok {
+	if su.mutation.CityCleared() && len(su.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Store.city"`)
 	}
-	if _, ok := su.mutation.BranchID(); su.mutation.BranchCleared() && !ok {
+	if su.mutation.BranchCleared() && len(su.mutation.BranchIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Store.branch"`)
 	}
 	return nil
@@ -1994,10 +1994,10 @@ func (suo *StoreUpdateOne) check() error {
 			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "Store.phone": %w`, err)}
 		}
 	}
-	if _, ok := suo.mutation.CityID(); suo.mutation.CityCleared() && !ok {
+	if suo.mutation.CityCleared() && len(suo.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Store.city"`)
 	}
-	if _, ok := suo.mutation.BranchID(); suo.mutation.BranchCleared() && !ok {
+	if suo.mutation.BranchCleared() && len(suo.mutation.BranchIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Store.branch"`)
 	}
 	return nil

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -110,7 +111,7 @@ func (esq *EnterpriseStatementQuery) QueryBills() *EnterpriseBillQuery {
 // First returns the first EnterpriseStatement entity from the query.
 // Returns a *NotFoundError when no EnterpriseStatement was found.
 func (esq *EnterpriseStatementQuery) First(ctx context.Context) (*EnterpriseStatement, error) {
-	nodes, err := esq.Limit(1).All(setContextOp(ctx, esq.ctx, "First"))
+	nodes, err := esq.Limit(1).All(setContextOp(ctx, esq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +134,7 @@ func (esq *EnterpriseStatementQuery) FirstX(ctx context.Context) *EnterpriseStat
 // Returns a *NotFoundError when no EnterpriseStatement ID was found.
 func (esq *EnterpriseStatementQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = esq.Limit(1).IDs(setContextOp(ctx, esq.ctx, "FirstID")); err != nil {
+	if ids, err = esq.Limit(1).IDs(setContextOp(ctx, esq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -156,7 +157,7 @@ func (esq *EnterpriseStatementQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one EnterpriseStatement entity is found.
 // Returns a *NotFoundError when no EnterpriseStatement entities are found.
 func (esq *EnterpriseStatementQuery) Only(ctx context.Context) (*EnterpriseStatement, error) {
-	nodes, err := esq.Limit(2).All(setContextOp(ctx, esq.ctx, "Only"))
+	nodes, err := esq.Limit(2).All(setContextOp(ctx, esq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -184,7 +185,7 @@ func (esq *EnterpriseStatementQuery) OnlyX(ctx context.Context) *EnterpriseState
 // Returns a *NotFoundError when no entities are found.
 func (esq *EnterpriseStatementQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = esq.Limit(2).IDs(setContextOp(ctx, esq.ctx, "OnlyID")); err != nil {
+	if ids, err = esq.Limit(2).IDs(setContextOp(ctx, esq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -209,7 +210,7 @@ func (esq *EnterpriseStatementQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of EnterpriseStatements.
 func (esq *EnterpriseStatementQuery) All(ctx context.Context) ([]*EnterpriseStatement, error) {
-	ctx = setContextOp(ctx, esq.ctx, "All")
+	ctx = setContextOp(ctx, esq.ctx, ent.OpQueryAll)
 	if err := esq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -231,7 +232,7 @@ func (esq *EnterpriseStatementQuery) IDs(ctx context.Context) (ids []uint64, err
 	if esq.ctx.Unique == nil && esq.path != nil {
 		esq.Unique(true)
 	}
-	ctx = setContextOp(ctx, esq.ctx, "IDs")
+	ctx = setContextOp(ctx, esq.ctx, ent.OpQueryIDs)
 	if err = esq.Select(enterprisestatement.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -249,7 +250,7 @@ func (esq *EnterpriseStatementQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (esq *EnterpriseStatementQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, esq.ctx, "Count")
+	ctx = setContextOp(ctx, esq.ctx, ent.OpQueryCount)
 	if err := esq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -267,7 +268,7 @@ func (esq *EnterpriseStatementQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (esq *EnterpriseStatementQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, esq.ctx, "Exist")
+	ctx = setContextOp(ctx, esq.ctx, ent.OpQueryExist)
 	switch _, err := esq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -302,8 +303,9 @@ func (esq *EnterpriseStatementQuery) Clone() *EnterpriseStatementQuery {
 		withEnterprise: esq.withEnterprise.Clone(),
 		withBills:      esq.withBills.Clone(),
 		// clone intermediate query.
-		sql:  esq.sql.Clone(),
-		path: esq.path,
+		sql:       esq.sql.Clone(),
+		path:      esq.path,
+		modifiers: append([]func(*sql.Selector){}, esq.modifiers...),
 	}
 }
 
@@ -638,7 +640,7 @@ func (esgb *EnterpriseStatementGroupBy) Aggregate(fns ...AggregateFunc) *Enterpr
 
 // Scan applies the selector query and scans the result into the given value.
 func (esgb *EnterpriseStatementGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, esgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, esgb.build.ctx, ent.OpQueryGroupBy)
 	if err := esgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -686,7 +688,7 @@ func (ess *EnterpriseStatementSelect) Aggregate(fns ...AggregateFunc) *Enterpris
 
 // Scan applies the selector query and scans the result into the given value.
 func (ess *EnterpriseStatementSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ess.ctx, "Select")
+	ctx = setContextOp(ctx, ess.ctx, ent.OpQuerySelect)
 	if err := ess.prepareQuery(ctx); err != nil {
 		return err
 	}

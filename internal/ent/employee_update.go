@@ -577,7 +577,7 @@ func (eu *EmployeeUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (eu *EmployeeUpdate) check() error {
-	if _, ok := eu.mutation.CityID(); eu.mutation.CityCleared() && !ok {
+	if eu.mutation.CityCleared() && len(eu.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Employee.city"`)
 	}
 	return nil
@@ -1611,7 +1611,7 @@ func (euo *EmployeeUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (euo *EmployeeUpdateOne) check() error {
-	if _, ok := euo.mutation.CityID(); euo.mutation.CityCleared() && !ok {
+	if euo.mutation.CityCleared() && len(euo.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Employee.city"`)
 	}
 	return nil

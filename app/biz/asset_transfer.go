@@ -65,7 +65,7 @@ func (b *assetTransferBiz) TransferList(assetSignInfo definition.AssetSignInfo, 
 func (b *assetTransferBiz) TransferDetail(assetSignInfo definition.AssetSignInfo, req *model.AssetTransferDetailReq) (res *definition.TransferDetailRes, err error) {
 	var t *ent.AssetTransfer
 	t, err = ent.Database.AssetTransfer.QueryNotDeleted().WithTransferDetails().
-		WithOutOperateAgent().WithOutOperateManager().WithOutOperateStore().WithOutOperateMaintainer().WithOutOperateAssetManager().
+		WithOutOperateAgent().WithOutOperateManager().WithOutOperateEmployee().WithOutOperateMaintainer().WithOutOperateAssetManager().
 		WithFromLocationWarehouse().WithFromLocationStore().WithFromLocationStation().WithFromLocationOperator().
 		WithToLocationWarehouse().WithToLocationStore().WithToLocationStation().WithToLocationOperator().
 		Where(assettransfer.ID(req.ID)).First(b.ctx)

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -133,7 +134,7 @@ func (srq *SubscribeReminderQuery) QueryRider() *RiderQuery {
 // First returns the first SubscribeReminder entity from the query.
 // Returns a *NotFoundError when no SubscribeReminder was found.
 func (srq *SubscribeReminderQuery) First(ctx context.Context) (*SubscribeReminder, error) {
-	nodes, err := srq.Limit(1).All(setContextOp(ctx, srq.ctx, "First"))
+	nodes, err := srq.Limit(1).All(setContextOp(ctx, srq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -156,7 +157,7 @@ func (srq *SubscribeReminderQuery) FirstX(ctx context.Context) *SubscribeReminde
 // Returns a *NotFoundError when no SubscribeReminder ID was found.
 func (srq *SubscribeReminderQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = srq.Limit(1).IDs(setContextOp(ctx, srq.ctx, "FirstID")); err != nil {
+	if ids, err = srq.Limit(1).IDs(setContextOp(ctx, srq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -179,7 +180,7 @@ func (srq *SubscribeReminderQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one SubscribeReminder entity is found.
 // Returns a *NotFoundError when no SubscribeReminder entities are found.
 func (srq *SubscribeReminderQuery) Only(ctx context.Context) (*SubscribeReminder, error) {
-	nodes, err := srq.Limit(2).All(setContextOp(ctx, srq.ctx, "Only"))
+	nodes, err := srq.Limit(2).All(setContextOp(ctx, srq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -207,7 +208,7 @@ func (srq *SubscribeReminderQuery) OnlyX(ctx context.Context) *SubscribeReminder
 // Returns a *NotFoundError when no entities are found.
 func (srq *SubscribeReminderQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = srq.Limit(2).IDs(setContextOp(ctx, srq.ctx, "OnlyID")); err != nil {
+	if ids, err = srq.Limit(2).IDs(setContextOp(ctx, srq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -232,7 +233,7 @@ func (srq *SubscribeReminderQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of SubscribeReminders.
 func (srq *SubscribeReminderQuery) All(ctx context.Context) ([]*SubscribeReminder, error) {
-	ctx = setContextOp(ctx, srq.ctx, "All")
+	ctx = setContextOp(ctx, srq.ctx, ent.OpQueryAll)
 	if err := srq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -254,7 +255,7 @@ func (srq *SubscribeReminderQuery) IDs(ctx context.Context) (ids []uint64, err e
 	if srq.ctx.Unique == nil && srq.path != nil {
 		srq.Unique(true)
 	}
-	ctx = setContextOp(ctx, srq.ctx, "IDs")
+	ctx = setContextOp(ctx, srq.ctx, ent.OpQueryIDs)
 	if err = srq.Select(subscribereminder.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -272,7 +273,7 @@ func (srq *SubscribeReminderQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (srq *SubscribeReminderQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, srq.ctx, "Count")
+	ctx = setContextOp(ctx, srq.ctx, ent.OpQueryCount)
 	if err := srq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -290,7 +291,7 @@ func (srq *SubscribeReminderQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (srq *SubscribeReminderQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, srq.ctx, "Exist")
+	ctx = setContextOp(ctx, srq.ctx, ent.OpQueryExist)
 	switch _, err := srq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -326,8 +327,9 @@ func (srq *SubscribeReminderQuery) Clone() *SubscribeReminderQuery {
 		withPlan:      srq.withPlan.Clone(),
 		withRider:     srq.withRider.Clone(),
 		// clone intermediate query.
-		sql:  srq.sql.Clone(),
-		path: srq.path,
+		sql:       srq.sql.Clone(),
+		path:      srq.path,
+		modifiers: append([]func(*sql.Selector){}, srq.modifiers...),
 	}
 }
 
@@ -716,7 +718,7 @@ func (srgb *SubscribeReminderGroupBy) Aggregate(fns ...AggregateFunc) *Subscribe
 
 // Scan applies the selector query and scans the result into the given value.
 func (srgb *SubscribeReminderGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, srgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, srgb.build.ctx, ent.OpQueryGroupBy)
 	if err := srgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -764,7 +766,7 @@ func (srs *SubscribeReminderSelect) Aggregate(fns ...AggregateFunc) *SubscribeRe
 
 // Scan applies the selector query and scans the result into the given value.
 func (srs *SubscribeReminderSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, srs.ctx, "Select")
+	ctx = setContextOp(ctx, srs.ctx, ent.OpQuerySelect)
 	if err := srs.prepareQuery(ctx); err != nil {
 		return err
 	}

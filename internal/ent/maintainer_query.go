@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -110,7 +111,7 @@ func (mq *MaintainerQuery) QueryAsset() *AssetQuery {
 // First returns the first Maintainer entity from the query.
 // Returns a *NotFoundError when no Maintainer was found.
 func (mq *MaintainerQuery) First(ctx context.Context) (*Maintainer, error) {
-	nodes, err := mq.Limit(1).All(setContextOp(ctx, mq.ctx, "First"))
+	nodes, err := mq.Limit(1).All(setContextOp(ctx, mq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +134,7 @@ func (mq *MaintainerQuery) FirstX(ctx context.Context) *Maintainer {
 // Returns a *NotFoundError when no Maintainer ID was found.
 func (mq *MaintainerQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = mq.Limit(1).IDs(setContextOp(ctx, mq.ctx, "FirstID")); err != nil {
+	if ids, err = mq.Limit(1).IDs(setContextOp(ctx, mq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -156,7 +157,7 @@ func (mq *MaintainerQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Maintainer entity is found.
 // Returns a *NotFoundError when no Maintainer entities are found.
 func (mq *MaintainerQuery) Only(ctx context.Context) (*Maintainer, error) {
-	nodes, err := mq.Limit(2).All(setContextOp(ctx, mq.ctx, "Only"))
+	nodes, err := mq.Limit(2).All(setContextOp(ctx, mq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -184,7 +185,7 @@ func (mq *MaintainerQuery) OnlyX(ctx context.Context) *Maintainer {
 // Returns a *NotFoundError when no entities are found.
 func (mq *MaintainerQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = mq.Limit(2).IDs(setContextOp(ctx, mq.ctx, "OnlyID")); err != nil {
+	if ids, err = mq.Limit(2).IDs(setContextOp(ctx, mq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -209,7 +210,7 @@ func (mq *MaintainerQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Maintainers.
 func (mq *MaintainerQuery) All(ctx context.Context) ([]*Maintainer, error) {
-	ctx = setContextOp(ctx, mq.ctx, "All")
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryAll)
 	if err := mq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -231,7 +232,7 @@ func (mq *MaintainerQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if mq.ctx.Unique == nil && mq.path != nil {
 		mq.Unique(true)
 	}
-	ctx = setContextOp(ctx, mq.ctx, "IDs")
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryIDs)
 	if err = mq.Select(maintainer.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -249,7 +250,7 @@ func (mq *MaintainerQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (mq *MaintainerQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, mq.ctx, "Count")
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryCount)
 	if err := mq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -267,7 +268,7 @@ func (mq *MaintainerQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (mq *MaintainerQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, mq.ctx, "Exist")
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryExist)
 	switch _, err := mq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -302,8 +303,9 @@ func (mq *MaintainerQuery) Clone() *MaintainerQuery {
 		withCities: mq.withCities.Clone(),
 		withAsset:  mq.withAsset.Clone(),
 		// clone intermediate query.
-		sql:  mq.sql.Clone(),
-		path: mq.path,
+		sql:       mq.sql.Clone(),
+		path:      mq.path,
+		modifiers: append([]func(*sql.Selector){}, mq.modifiers...),
 	}
 }
 
@@ -668,7 +670,7 @@ func (mgb *MaintainerGroupBy) Aggregate(fns ...AggregateFunc) *MaintainerGroupBy
 
 // Scan applies the selector query and scans the result into the given value.
 func (mgb *MaintainerGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, mgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, mgb.build.ctx, ent.OpQueryGroupBy)
 	if err := mgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -716,7 +718,7 @@ func (ms *MaintainerSelect) Aggregate(fns ...AggregateFunc) *MaintainerSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ms *MaintainerSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ms.ctx, "Select")
+	ctx = setContextOp(ctx, ms.ctx, ent.OpQuerySelect)
 	if err := ms.prepareQuery(ctx); err != nil {
 		return err
 	}

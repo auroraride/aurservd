@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -157,7 +158,7 @@ func (epq *EnterprisePriceQuery) QueryEnterprise() *EnterpriseQuery {
 // First returns the first EnterprisePrice entity from the query.
 // Returns a *NotFoundError when no EnterprisePrice was found.
 func (epq *EnterprisePriceQuery) First(ctx context.Context) (*EnterprisePrice, error) {
-	nodes, err := epq.Limit(1).All(setContextOp(ctx, epq.ctx, "First"))
+	nodes, err := epq.Limit(1).All(setContextOp(ctx, epq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -180,7 +181,7 @@ func (epq *EnterprisePriceQuery) FirstX(ctx context.Context) *EnterprisePrice {
 // Returns a *NotFoundError when no EnterprisePrice ID was found.
 func (epq *EnterprisePriceQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = epq.Limit(1).IDs(setContextOp(ctx, epq.ctx, "FirstID")); err != nil {
+	if ids, err = epq.Limit(1).IDs(setContextOp(ctx, epq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -203,7 +204,7 @@ func (epq *EnterprisePriceQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one EnterprisePrice entity is found.
 // Returns a *NotFoundError when no EnterprisePrice entities are found.
 func (epq *EnterprisePriceQuery) Only(ctx context.Context) (*EnterprisePrice, error) {
-	nodes, err := epq.Limit(2).All(setContextOp(ctx, epq.ctx, "Only"))
+	nodes, err := epq.Limit(2).All(setContextOp(ctx, epq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -231,7 +232,7 @@ func (epq *EnterprisePriceQuery) OnlyX(ctx context.Context) *EnterprisePrice {
 // Returns a *NotFoundError when no entities are found.
 func (epq *EnterprisePriceQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = epq.Limit(2).IDs(setContextOp(ctx, epq.ctx, "OnlyID")); err != nil {
+	if ids, err = epq.Limit(2).IDs(setContextOp(ctx, epq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -256,7 +257,7 @@ func (epq *EnterprisePriceQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of EnterprisePrices.
 func (epq *EnterprisePriceQuery) All(ctx context.Context) ([]*EnterprisePrice, error) {
-	ctx = setContextOp(ctx, epq.ctx, "All")
+	ctx = setContextOp(ctx, epq.ctx, ent.OpQueryAll)
 	if err := epq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -278,7 +279,7 @@ func (epq *EnterprisePriceQuery) IDs(ctx context.Context) (ids []uint64, err err
 	if epq.ctx.Unique == nil && epq.path != nil {
 		epq.Unique(true)
 	}
-	ctx = setContextOp(ctx, epq.ctx, "IDs")
+	ctx = setContextOp(ctx, epq.ctx, ent.OpQueryIDs)
 	if err = epq.Select(enterpriseprice.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -296,7 +297,7 @@ func (epq *EnterprisePriceQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (epq *EnterprisePriceQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, epq.ctx, "Count")
+	ctx = setContextOp(ctx, epq.ctx, ent.OpQueryCount)
 	if err := epq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -314,7 +315,7 @@ func (epq *EnterprisePriceQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (epq *EnterprisePriceQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, epq.ctx, "Exist")
+	ctx = setContextOp(ctx, epq.ctx, ent.OpQueryExist)
 	switch _, err := epq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -351,8 +352,9 @@ func (epq *EnterprisePriceQuery) Clone() *EnterprisePriceQuery {
 		withAgreement:  epq.withAgreement.Clone(),
 		withEnterprise: epq.withEnterprise.Clone(),
 		// clone intermediate query.
-		sql:  epq.sql.Clone(),
-		path: epq.path,
+		sql:       epq.sql.Clone(),
+		path:      epq.path,
+		modifiers: append([]func(*sql.Selector){}, epq.modifiers...),
 	}
 }
 
@@ -800,7 +802,7 @@ func (epgb *EnterprisePriceGroupBy) Aggregate(fns ...AggregateFunc) *EnterpriseP
 
 // Scan applies the selector query and scans the result into the given value.
 func (epgb *EnterprisePriceGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, epgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, epgb.build.ctx, ent.OpQueryGroupBy)
 	if err := epgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -848,7 +850,7 @@ func (eps *EnterprisePriceSelect) Aggregate(fns ...AggregateFunc) *EnterprisePri
 
 // Scan applies the selector query and scans the result into the given value.
 func (eps *EnterprisePriceSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, eps.ctx, "Select")
+	ctx = setContextOp(ctx, eps.ctx, ent.OpQuerySelect)
 	if err := eps.prepareQuery(ctx); err != nil {
 		return err
 	}

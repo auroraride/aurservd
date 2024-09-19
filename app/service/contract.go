@@ -551,7 +551,7 @@ func (s *contractService) Update(c *ent.Contract) (err error) {
 	defer func() {
 		if v := recover(); v != nil {
 			err = fmt.Errorf("%v", v)
-			zap.L().Error("合同关联更新失败", zap.Error(err), zap.Uint64("id", c.ID))
+			zap.L().Error("合同关联更新失败", zap.Error(err), zap.Uint64("id", c.ID), zap.Stack("stack"))
 			return
 		}
 	}()

@@ -392,7 +392,7 @@ func (ec *EbikeCreate) check() error {
 	if _, ok := ec.mutation.ExFactory(); !ok {
 		return &ValidationError{Name: "ex_factory", err: errors.New(`ent: missing required field "Ebike.ex_factory"`)}
 	}
-	if _, ok := ec.mutation.BrandID(); !ok {
+	if len(ec.mutation.BrandIDs()) == 0 {
 		return &ValidationError{Name: "brand", err: errors.New(`ent: missing required edge "Ebike.brand"`)}
 	}
 	return nil

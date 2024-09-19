@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -61,7 +62,7 @@ func (rpdq *RiderPhoneDeviceQuery) Order(o ...riderphonedevice.OrderOption) *Rid
 // First returns the first RiderPhoneDevice entity from the query.
 // Returns a *NotFoundError when no RiderPhoneDevice was found.
 func (rpdq *RiderPhoneDeviceQuery) First(ctx context.Context) (*RiderPhoneDevice, error) {
-	nodes, err := rpdq.Limit(1).All(setContextOp(ctx, rpdq.ctx, "First"))
+	nodes, err := rpdq.Limit(1).All(setContextOp(ctx, rpdq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +85,7 @@ func (rpdq *RiderPhoneDeviceQuery) FirstX(ctx context.Context) *RiderPhoneDevice
 // Returns a *NotFoundError when no RiderPhoneDevice ID was found.
 func (rpdq *RiderPhoneDeviceQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = rpdq.Limit(1).IDs(setContextOp(ctx, rpdq.ctx, "FirstID")); err != nil {
+	if ids, err = rpdq.Limit(1).IDs(setContextOp(ctx, rpdq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -107,7 +108,7 @@ func (rpdq *RiderPhoneDeviceQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one RiderPhoneDevice entity is found.
 // Returns a *NotFoundError when no RiderPhoneDevice entities are found.
 func (rpdq *RiderPhoneDeviceQuery) Only(ctx context.Context) (*RiderPhoneDevice, error) {
-	nodes, err := rpdq.Limit(2).All(setContextOp(ctx, rpdq.ctx, "Only"))
+	nodes, err := rpdq.Limit(2).All(setContextOp(ctx, rpdq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +136,7 @@ func (rpdq *RiderPhoneDeviceQuery) OnlyX(ctx context.Context) *RiderPhoneDevice 
 // Returns a *NotFoundError when no entities are found.
 func (rpdq *RiderPhoneDeviceQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = rpdq.Limit(2).IDs(setContextOp(ctx, rpdq.ctx, "OnlyID")); err != nil {
+	if ids, err = rpdq.Limit(2).IDs(setContextOp(ctx, rpdq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -160,7 +161,7 @@ func (rpdq *RiderPhoneDeviceQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of RiderPhoneDevices.
 func (rpdq *RiderPhoneDeviceQuery) All(ctx context.Context) ([]*RiderPhoneDevice, error) {
-	ctx = setContextOp(ctx, rpdq.ctx, "All")
+	ctx = setContextOp(ctx, rpdq.ctx, ent.OpQueryAll)
 	if err := rpdq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -182,7 +183,7 @@ func (rpdq *RiderPhoneDeviceQuery) IDs(ctx context.Context) (ids []uint64, err e
 	if rpdq.ctx.Unique == nil && rpdq.path != nil {
 		rpdq.Unique(true)
 	}
-	ctx = setContextOp(ctx, rpdq.ctx, "IDs")
+	ctx = setContextOp(ctx, rpdq.ctx, ent.OpQueryIDs)
 	if err = rpdq.Select(riderphonedevice.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -200,7 +201,7 @@ func (rpdq *RiderPhoneDeviceQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (rpdq *RiderPhoneDeviceQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, rpdq.ctx, "Count")
+	ctx = setContextOp(ctx, rpdq.ctx, ent.OpQueryCount)
 	if err := rpdq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -218,7 +219,7 @@ func (rpdq *RiderPhoneDeviceQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (rpdq *RiderPhoneDeviceQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, rpdq.ctx, "Exist")
+	ctx = setContextOp(ctx, rpdq.ctx, ent.OpQueryExist)
 	switch _, err := rpdq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -251,8 +252,9 @@ func (rpdq *RiderPhoneDeviceQuery) Clone() *RiderPhoneDeviceQuery {
 		inters:     append([]Interceptor{}, rpdq.inters...),
 		predicates: append([]predicate.RiderPhoneDevice{}, rpdq.predicates...),
 		// clone intermediate query.
-		sql:  rpdq.sql.Clone(),
-		path: rpdq.path,
+		sql:       rpdq.sql.Clone(),
+		path:      rpdq.path,
+		modifiers: append([]func(*sql.Selector){}, rpdq.modifiers...),
 	}
 }
 
@@ -477,7 +479,7 @@ func (rpdgb *RiderPhoneDeviceGroupBy) Aggregate(fns ...AggregateFunc) *RiderPhon
 
 // Scan applies the selector query and scans the result into the given value.
 func (rpdgb *RiderPhoneDeviceGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, rpdgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, rpdgb.build.ctx, ent.OpQueryGroupBy)
 	if err := rpdgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -525,7 +527,7 @@ func (rpds *RiderPhoneDeviceSelect) Aggregate(fns ...AggregateFunc) *RiderPhoneD
 
 // Scan applies the selector query and scans the result into the given value.
 func (rpds *RiderPhoneDeviceSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, rpds.ctx, "Select")
+	ctx = setContextOp(ctx, rpds.ctx, ent.OpQuerySelect)
 	if err := rpds.prepareQuery(ctx); err != nil {
 		return err
 	}

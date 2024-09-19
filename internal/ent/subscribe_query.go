@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -492,7 +493,7 @@ func (sq *SubscribeQuery) QueryEnterprisePrice() *EnterprisePriceQuery {
 // First returns the first Subscribe entity from the query.
 // Returns a *NotFoundError when no Subscribe was found.
 func (sq *SubscribeQuery) First(ctx context.Context) (*Subscribe, error) {
-	nodes, err := sq.Limit(1).All(setContextOp(ctx, sq.ctx, "First"))
+	nodes, err := sq.Limit(1).All(setContextOp(ctx, sq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -515,7 +516,7 @@ func (sq *SubscribeQuery) FirstX(ctx context.Context) *Subscribe {
 // Returns a *NotFoundError when no Subscribe ID was found.
 func (sq *SubscribeQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = sq.Limit(1).IDs(setContextOp(ctx, sq.ctx, "FirstID")); err != nil {
+	if ids, err = sq.Limit(1).IDs(setContextOp(ctx, sq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -538,7 +539,7 @@ func (sq *SubscribeQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Subscribe entity is found.
 // Returns a *NotFoundError when no Subscribe entities are found.
 func (sq *SubscribeQuery) Only(ctx context.Context) (*Subscribe, error) {
-	nodes, err := sq.Limit(2).All(setContextOp(ctx, sq.ctx, "Only"))
+	nodes, err := sq.Limit(2).All(setContextOp(ctx, sq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -566,7 +567,7 @@ func (sq *SubscribeQuery) OnlyX(ctx context.Context) *Subscribe {
 // Returns a *NotFoundError when no entities are found.
 func (sq *SubscribeQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = sq.Limit(2).IDs(setContextOp(ctx, sq.ctx, "OnlyID")); err != nil {
+	if ids, err = sq.Limit(2).IDs(setContextOp(ctx, sq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -591,7 +592,7 @@ func (sq *SubscribeQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Subscribes.
 func (sq *SubscribeQuery) All(ctx context.Context) ([]*Subscribe, error) {
-	ctx = setContextOp(ctx, sq.ctx, "All")
+	ctx = setContextOp(ctx, sq.ctx, ent.OpQueryAll)
 	if err := sq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -613,7 +614,7 @@ func (sq *SubscribeQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if sq.ctx.Unique == nil && sq.path != nil {
 		sq.Unique(true)
 	}
-	ctx = setContextOp(ctx, sq.ctx, "IDs")
+	ctx = setContextOp(ctx, sq.ctx, ent.OpQueryIDs)
 	if err = sq.Select(subscribe.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -631,7 +632,7 @@ func (sq *SubscribeQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (sq *SubscribeQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, sq.ctx, "Count")
+	ctx = setContextOp(ctx, sq.ctx, ent.OpQueryCount)
 	if err := sq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -649,7 +650,7 @@ func (sq *SubscribeQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (sq *SubscribeQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, sq.ctx, "Exist")
+	ctx = setContextOp(ctx, sq.ctx, ent.OpQueryExist)
 	switch _, err := sq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -700,8 +701,9 @@ func (sq *SubscribeQuery) Clone() *SubscribeQuery {
 		withBattery:         sq.withBattery.Clone(),
 		withEnterprisePrice: sq.withEnterprisePrice.Clone(),
 		// clone intermediate query.
-		sql:  sq.sql.Clone(),
-		path: sq.path,
+		sql:       sq.sql.Clone(),
+		path:      sq.path,
+		modifiers: append([]func(*sql.Selector){}, sq.modifiers...),
 	}
 }
 
@@ -1906,7 +1908,7 @@ func (sgb *SubscribeGroupBy) Aggregate(fns ...AggregateFunc) *SubscribeGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (sgb *SubscribeGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, sgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, sgb.build.ctx, ent.OpQueryGroupBy)
 	if err := sgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1954,7 +1956,7 @@ func (ss *SubscribeSelect) Aggregate(fns ...AggregateFunc) *SubscribeSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ss *SubscribeSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ss.ctx, "Select")
+	ctx = setContextOp(ctx, ss.ctx, ent.OpQuerySelect)
 	if err := ss.prepareQuery(ctx); err != nil {
 		return err
 	}

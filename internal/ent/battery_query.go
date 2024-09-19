@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -110,7 +111,7 @@ func (bq *BatteryQuery) QueryFlows() *BatteryFlowQuery {
 // First returns the first Battery entity from the query.
 // Returns a *NotFoundError when no Battery was found.
 func (bq *BatteryQuery) First(ctx context.Context) (*Battery, error) {
-	nodes, err := bq.Limit(1).All(setContextOp(ctx, bq.ctx, "First"))
+	nodes, err := bq.Limit(1).All(setContextOp(ctx, bq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +134,7 @@ func (bq *BatteryQuery) FirstX(ctx context.Context) *Battery {
 // Returns a *NotFoundError when no Battery ID was found.
 func (bq *BatteryQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = bq.Limit(1).IDs(setContextOp(ctx, bq.ctx, "FirstID")); err != nil {
+	if ids, err = bq.Limit(1).IDs(setContextOp(ctx, bq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -156,7 +157,7 @@ func (bq *BatteryQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Battery entity is found.
 // Returns a *NotFoundError when no Battery entities are found.
 func (bq *BatteryQuery) Only(ctx context.Context) (*Battery, error) {
-	nodes, err := bq.Limit(2).All(setContextOp(ctx, bq.ctx, "Only"))
+	nodes, err := bq.Limit(2).All(setContextOp(ctx, bq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -184,7 +185,7 @@ func (bq *BatteryQuery) OnlyX(ctx context.Context) *Battery {
 // Returns a *NotFoundError when no entities are found.
 func (bq *BatteryQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = bq.Limit(2).IDs(setContextOp(ctx, bq.ctx, "OnlyID")); err != nil {
+	if ids, err = bq.Limit(2).IDs(setContextOp(ctx, bq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -209,7 +210,7 @@ func (bq *BatteryQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Batteries.
 func (bq *BatteryQuery) All(ctx context.Context) ([]*Battery, error) {
-	ctx = setContextOp(ctx, bq.ctx, "All")
+	ctx = setContextOp(ctx, bq.ctx, ent.OpQueryAll)
 	if err := bq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -231,7 +232,7 @@ func (bq *BatteryQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if bq.ctx.Unique == nil && bq.path != nil {
 		bq.Unique(true)
 	}
-	ctx = setContextOp(ctx, bq.ctx, "IDs")
+	ctx = setContextOp(ctx, bq.ctx, ent.OpQueryIDs)
 	if err = bq.Select(battery.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -249,7 +250,7 @@ func (bq *BatteryQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (bq *BatteryQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, bq.ctx, "Count")
+	ctx = setContextOp(ctx, bq.ctx, ent.OpQueryCount)
 	if err := bq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -267,7 +268,7 @@ func (bq *BatteryQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (bq *BatteryQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, bq.ctx, "Exist")
+	ctx = setContextOp(ctx, bq.ctx, ent.OpQueryExist)
 	switch _, err := bq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -302,8 +303,9 @@ func (bq *BatteryQuery) Clone() *BatteryQuery {
 		withCity:   bq.withCity.Clone(),
 		withFlows:  bq.withFlows.Clone(),
 		// clone intermediate query.
-		sql:  bq.sql.Clone(),
-		path: bq.path,
+		sql:       bq.sql.Clone(),
+		path:      bq.path,
+		modifiers: append([]func(*sql.Selector){}, bq.modifiers...),
 	}
 }
 
@@ -642,7 +644,7 @@ func (bgb *BatteryGroupBy) Aggregate(fns ...AggregateFunc) *BatteryGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (bgb *BatteryGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, bgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, bgb.build.ctx, ent.OpQueryGroupBy)
 	if err := bgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -690,7 +692,7 @@ func (bs *BatterySelect) Aggregate(fns ...AggregateFunc) *BatterySelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (bs *BatterySelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, bs.ctx, "Select")
+	ctx = setContextOp(ctx, bs.ctx, ent.OpQuerySelect)
 	if err := bs.prepareQuery(ctx); err != nil {
 		return err
 	}

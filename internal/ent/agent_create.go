@@ -223,7 +223,7 @@ func (ac *AgentCreate) check() error {
 	if _, ok := ac.mutation.Super(); !ok {
 		return &ValidationError{Name: "super", err: errors.New(`ent: missing required field "Agent.super"`)}
 	}
-	if _, ok := ac.mutation.EnterpriseID(); !ok {
+	if len(ac.mutation.EnterpriseIDs()) == 0 {
 		return &ValidationError{Name: "enterprise", err: errors.New(`ent: missing required edge "Agent.enterprise"`)}
 	}
 	return nil

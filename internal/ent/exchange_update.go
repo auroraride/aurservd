@@ -627,13 +627,13 @@ func (eu *ExchangeUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (eu *ExchangeUpdate) check() error {
-	if _, ok := eu.mutation.SubscribeID(); eu.mutation.SubscribeCleared() && !ok {
+	if eu.mutation.SubscribeCleared() && len(eu.mutation.SubscribeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Exchange.subscribe"`)
 	}
-	if _, ok := eu.mutation.CityID(); eu.mutation.CityCleared() && !ok {
+	if eu.mutation.CityCleared() && len(eu.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Exchange.city"`)
 	}
-	if _, ok := eu.mutation.RiderID(); eu.mutation.RiderCleared() && !ok {
+	if eu.mutation.RiderCleared() && len(eu.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Exchange.rider"`)
 	}
 	return nil
@@ -1619,13 +1619,13 @@ func (euo *ExchangeUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (euo *ExchangeUpdateOne) check() error {
-	if _, ok := euo.mutation.SubscribeID(); euo.mutation.SubscribeCleared() && !ok {
+	if euo.mutation.SubscribeCleared() && len(euo.mutation.SubscribeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Exchange.subscribe"`)
 	}
-	if _, ok := euo.mutation.CityID(); euo.mutation.CityCleared() && !ok {
+	if euo.mutation.CityCleared() && len(euo.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Exchange.city"`)
 	}
-	if _, ok := euo.mutation.RiderID(); euo.mutation.RiderCleared() && !ok {
+	if euo.mutation.RiderCleared() && len(euo.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Exchange.rider"`)
 	}
 	return nil

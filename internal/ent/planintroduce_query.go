@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -85,7 +86,7 @@ func (piq *PlanIntroduceQuery) QueryBrand() *EbikeBrandQuery {
 // First returns the first PlanIntroduce entity from the query.
 // Returns a *NotFoundError when no PlanIntroduce was found.
 func (piq *PlanIntroduceQuery) First(ctx context.Context) (*PlanIntroduce, error) {
-	nodes, err := piq.Limit(1).All(setContextOp(ctx, piq.ctx, "First"))
+	nodes, err := piq.Limit(1).All(setContextOp(ctx, piq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +109,7 @@ func (piq *PlanIntroduceQuery) FirstX(ctx context.Context) *PlanIntroduce {
 // Returns a *NotFoundError when no PlanIntroduce ID was found.
 func (piq *PlanIntroduceQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = piq.Limit(1).IDs(setContextOp(ctx, piq.ctx, "FirstID")); err != nil {
+	if ids, err = piq.Limit(1).IDs(setContextOp(ctx, piq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -131,7 +132,7 @@ func (piq *PlanIntroduceQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one PlanIntroduce entity is found.
 // Returns a *NotFoundError when no PlanIntroduce entities are found.
 func (piq *PlanIntroduceQuery) Only(ctx context.Context) (*PlanIntroduce, error) {
-	nodes, err := piq.Limit(2).All(setContextOp(ctx, piq.ctx, "Only"))
+	nodes, err := piq.Limit(2).All(setContextOp(ctx, piq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +160,7 @@ func (piq *PlanIntroduceQuery) OnlyX(ctx context.Context) *PlanIntroduce {
 // Returns a *NotFoundError when no entities are found.
 func (piq *PlanIntroduceQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = piq.Limit(2).IDs(setContextOp(ctx, piq.ctx, "OnlyID")); err != nil {
+	if ids, err = piq.Limit(2).IDs(setContextOp(ctx, piq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -184,7 +185,7 @@ func (piq *PlanIntroduceQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of PlanIntroduces.
 func (piq *PlanIntroduceQuery) All(ctx context.Context) ([]*PlanIntroduce, error) {
-	ctx = setContextOp(ctx, piq.ctx, "All")
+	ctx = setContextOp(ctx, piq.ctx, ent.OpQueryAll)
 	if err := piq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -206,7 +207,7 @@ func (piq *PlanIntroduceQuery) IDs(ctx context.Context) (ids []uint64, err error
 	if piq.ctx.Unique == nil && piq.path != nil {
 		piq.Unique(true)
 	}
-	ctx = setContextOp(ctx, piq.ctx, "IDs")
+	ctx = setContextOp(ctx, piq.ctx, ent.OpQueryIDs)
 	if err = piq.Select(planintroduce.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -224,7 +225,7 @@ func (piq *PlanIntroduceQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (piq *PlanIntroduceQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, piq.ctx, "Count")
+	ctx = setContextOp(ctx, piq.ctx, ent.OpQueryCount)
 	if err := piq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -242,7 +243,7 @@ func (piq *PlanIntroduceQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (piq *PlanIntroduceQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, piq.ctx, "Exist")
+	ctx = setContextOp(ctx, piq.ctx, ent.OpQueryExist)
 	switch _, err := piq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -276,8 +277,9 @@ func (piq *PlanIntroduceQuery) Clone() *PlanIntroduceQuery {
 		predicates: append([]predicate.PlanIntroduce{}, piq.predicates...),
 		withBrand:  piq.withBrand.Clone(),
 		// clone intermediate query.
-		sql:  piq.sql.Clone(),
-		path: piq.path,
+		sql:       piq.sql.Clone(),
+		path:      piq.path,
+		modifiers: append([]func(*sql.Selector){}, piq.modifiers...),
 	}
 }
 
@@ -563,7 +565,7 @@ func (pigb *PlanIntroduceGroupBy) Aggregate(fns ...AggregateFunc) *PlanIntroduce
 
 // Scan applies the selector query and scans the result into the given value.
 func (pigb *PlanIntroduceGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, pigb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, pigb.build.ctx, ent.OpQueryGroupBy)
 	if err := pigb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -611,7 +613,7 @@ func (pis *PlanIntroduceSelect) Aggregate(fns ...AggregateFunc) *PlanIntroduceSe
 
 // Scan applies the selector query and scans the result into the given value.
 func (pis *PlanIntroduceSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, pis.ctx, "Select")
+	ctx = setContextOp(ctx, pis.ctx, ent.OpQuerySelect)
 	if err := pis.prepareQuery(ctx); err != nil {
 		return err
 	}

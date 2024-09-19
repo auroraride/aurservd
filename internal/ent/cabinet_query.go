@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -326,7 +327,7 @@ func (cq *CabinetQuery) QueryEnterprise() *EnterpriseQuery {
 // First returns the first Cabinet entity from the query.
 // Returns a *NotFoundError when no Cabinet was found.
 func (cq *CabinetQuery) First(ctx context.Context) (*Cabinet, error) {
-	nodes, err := cq.Limit(1).All(setContextOp(ctx, cq.ctx, "First"))
+	nodes, err := cq.Limit(1).All(setContextOp(ctx, cq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -349,7 +350,7 @@ func (cq *CabinetQuery) FirstX(ctx context.Context) *Cabinet {
 // Returns a *NotFoundError when no Cabinet ID was found.
 func (cq *CabinetQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = cq.Limit(1).IDs(setContextOp(ctx, cq.ctx, "FirstID")); err != nil {
+	if ids, err = cq.Limit(1).IDs(setContextOp(ctx, cq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -372,7 +373,7 @@ func (cq *CabinetQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Cabinet entity is found.
 // Returns a *NotFoundError when no Cabinet entities are found.
 func (cq *CabinetQuery) Only(ctx context.Context) (*Cabinet, error) {
-	nodes, err := cq.Limit(2).All(setContextOp(ctx, cq.ctx, "Only"))
+	nodes, err := cq.Limit(2).All(setContextOp(ctx, cq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -400,7 +401,7 @@ func (cq *CabinetQuery) OnlyX(ctx context.Context) *Cabinet {
 // Returns a *NotFoundError when no entities are found.
 func (cq *CabinetQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = cq.Limit(2).IDs(setContextOp(ctx, cq.ctx, "OnlyID")); err != nil {
+	if ids, err = cq.Limit(2).IDs(setContextOp(ctx, cq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -425,7 +426,7 @@ func (cq *CabinetQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Cabinets.
 func (cq *CabinetQuery) All(ctx context.Context) ([]*Cabinet, error) {
-	ctx = setContextOp(ctx, cq.ctx, "All")
+	ctx = setContextOp(ctx, cq.ctx, ent.OpQueryAll)
 	if err := cq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -447,7 +448,7 @@ func (cq *CabinetQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if cq.ctx.Unique == nil && cq.path != nil {
 		cq.Unique(true)
 	}
-	ctx = setContextOp(ctx, cq.ctx, "IDs")
+	ctx = setContextOp(ctx, cq.ctx, ent.OpQueryIDs)
 	if err = cq.Select(cabinet.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -465,7 +466,7 @@ func (cq *CabinetQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (cq *CabinetQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, cq.ctx, "Count")
+	ctx = setContextOp(ctx, cq.ctx, ent.OpQueryCount)
 	if err := cq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -483,7 +484,7 @@ func (cq *CabinetQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (cq *CabinetQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, cq.ctx, "Exist")
+	ctx = setContextOp(ctx, cq.ctx, ent.OpQueryExist)
 	switch _, err := cq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -527,8 +528,9 @@ func (cq *CabinetQuery) Clone() *CabinetQuery {
 		withStation:      cq.withStation.Clone(),
 		withEnterprise:   cq.withEnterprise.Clone(),
 		// clone intermediate query.
-		sql:  cq.sql.Clone(),
-		path: cq.path,
+		sql:       cq.sql.Clone(),
+		path:      cq.path,
+		modifiers: append([]func(*sql.Selector){}, cq.modifiers...),
 	}
 }
 
@@ -1386,7 +1388,7 @@ func (cgb *CabinetGroupBy) Aggregate(fns ...AggregateFunc) *CabinetGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (cgb *CabinetGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, cgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, cgb.build.ctx, ent.OpQueryGroupBy)
 	if err := cgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1434,7 +1436,7 @@ func (cs *CabinetSelect) Aggregate(fns ...AggregateFunc) *CabinetSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (cs *CabinetSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, cs.ctx, "Select")
+	ctx = setContextOp(ctx, cs.ctx, ent.OpQuerySelect)
 	if err := cs.prepareQuery(ctx); err != nil {
 		return err
 	}

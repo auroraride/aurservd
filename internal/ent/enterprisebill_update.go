@@ -404,19 +404,19 @@ func (ebu *EnterpriseBillUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (ebu *EnterpriseBillUpdate) check() error {
-	if _, ok := ebu.mutation.RiderID(); ebu.mutation.RiderCleared() && !ok {
+	if ebu.mutation.RiderCleared() && len(ebu.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.rider"`)
 	}
-	if _, ok := ebu.mutation.CityID(); ebu.mutation.CityCleared() && !ok {
+	if ebu.mutation.CityCleared() && len(ebu.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.city"`)
 	}
-	if _, ok := ebu.mutation.EnterpriseID(); ebu.mutation.EnterpriseCleared() && !ok {
+	if ebu.mutation.EnterpriseCleared() && len(ebu.mutation.EnterpriseIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.enterprise"`)
 	}
-	if _, ok := ebu.mutation.StatementID(); ebu.mutation.StatementCleared() && !ok {
+	if ebu.mutation.StatementCleared() && len(ebu.mutation.StatementIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.statement"`)
 	}
-	if _, ok := ebu.mutation.SubscribeID(); ebu.mutation.SubscribeCleared() && !ok {
+	if ebu.mutation.SubscribeCleared() && len(ebu.mutation.SubscribeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.subscribe"`)
 	}
 	return nil
@@ -1068,19 +1068,19 @@ func (ebuo *EnterpriseBillUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (ebuo *EnterpriseBillUpdateOne) check() error {
-	if _, ok := ebuo.mutation.RiderID(); ebuo.mutation.RiderCleared() && !ok {
+	if ebuo.mutation.RiderCleared() && len(ebuo.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.rider"`)
 	}
-	if _, ok := ebuo.mutation.CityID(); ebuo.mutation.CityCleared() && !ok {
+	if ebuo.mutation.CityCleared() && len(ebuo.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.city"`)
 	}
-	if _, ok := ebuo.mutation.EnterpriseID(); ebuo.mutation.EnterpriseCleared() && !ok {
+	if ebuo.mutation.EnterpriseCleared() && len(ebuo.mutation.EnterpriseIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.enterprise"`)
 	}
-	if _, ok := ebuo.mutation.StatementID(); ebuo.mutation.StatementCleared() && !ok {
+	if ebuo.mutation.StatementCleared() && len(ebuo.mutation.StatementIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.statement"`)
 	}
-	if _, ok := ebuo.mutation.SubscribeID(); ebuo.mutation.SubscribeCleared() && !ok {
+	if ebuo.mutation.SubscribeCleared() && len(ebuo.mutation.SubscribeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.subscribe"`)
 	}
 	return nil

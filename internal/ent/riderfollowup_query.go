@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -109,7 +110,7 @@ func (rfuq *RiderFollowUpQuery) QueryRider() *RiderQuery {
 // First returns the first RiderFollowUp entity from the query.
 // Returns a *NotFoundError when no RiderFollowUp was found.
 func (rfuq *RiderFollowUpQuery) First(ctx context.Context) (*RiderFollowUp, error) {
-	nodes, err := rfuq.Limit(1).All(setContextOp(ctx, rfuq.ctx, "First"))
+	nodes, err := rfuq.Limit(1).All(setContextOp(ctx, rfuq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +133,7 @@ func (rfuq *RiderFollowUpQuery) FirstX(ctx context.Context) *RiderFollowUp {
 // Returns a *NotFoundError when no RiderFollowUp ID was found.
 func (rfuq *RiderFollowUpQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = rfuq.Limit(1).IDs(setContextOp(ctx, rfuq.ctx, "FirstID")); err != nil {
+	if ids, err = rfuq.Limit(1).IDs(setContextOp(ctx, rfuq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -155,7 +156,7 @@ func (rfuq *RiderFollowUpQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one RiderFollowUp entity is found.
 // Returns a *NotFoundError when no RiderFollowUp entities are found.
 func (rfuq *RiderFollowUpQuery) Only(ctx context.Context) (*RiderFollowUp, error) {
-	nodes, err := rfuq.Limit(2).All(setContextOp(ctx, rfuq.ctx, "Only"))
+	nodes, err := rfuq.Limit(2).All(setContextOp(ctx, rfuq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -183,7 +184,7 @@ func (rfuq *RiderFollowUpQuery) OnlyX(ctx context.Context) *RiderFollowUp {
 // Returns a *NotFoundError when no entities are found.
 func (rfuq *RiderFollowUpQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = rfuq.Limit(2).IDs(setContextOp(ctx, rfuq.ctx, "OnlyID")); err != nil {
+	if ids, err = rfuq.Limit(2).IDs(setContextOp(ctx, rfuq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -208,7 +209,7 @@ func (rfuq *RiderFollowUpQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of RiderFollowUps.
 func (rfuq *RiderFollowUpQuery) All(ctx context.Context) ([]*RiderFollowUp, error) {
-	ctx = setContextOp(ctx, rfuq.ctx, "All")
+	ctx = setContextOp(ctx, rfuq.ctx, ent.OpQueryAll)
 	if err := rfuq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -230,7 +231,7 @@ func (rfuq *RiderFollowUpQuery) IDs(ctx context.Context) (ids []uint64, err erro
 	if rfuq.ctx.Unique == nil && rfuq.path != nil {
 		rfuq.Unique(true)
 	}
-	ctx = setContextOp(ctx, rfuq.ctx, "IDs")
+	ctx = setContextOp(ctx, rfuq.ctx, ent.OpQueryIDs)
 	if err = rfuq.Select(riderfollowup.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -248,7 +249,7 @@ func (rfuq *RiderFollowUpQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (rfuq *RiderFollowUpQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, rfuq.ctx, "Count")
+	ctx = setContextOp(ctx, rfuq.ctx, ent.OpQueryCount)
 	if err := rfuq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -266,7 +267,7 @@ func (rfuq *RiderFollowUpQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (rfuq *RiderFollowUpQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, rfuq.ctx, "Exist")
+	ctx = setContextOp(ctx, rfuq.ctx, ent.OpQueryExist)
 	switch _, err := rfuq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -301,8 +302,9 @@ func (rfuq *RiderFollowUpQuery) Clone() *RiderFollowUpQuery {
 		withManager: rfuq.withManager.Clone(),
 		withRider:   rfuq.withRider.Clone(),
 		// clone intermediate query.
-		sql:  rfuq.sql.Clone(),
-		path: rfuq.path,
+		sql:       rfuq.sql.Clone(),
+		path:      rfuq.path,
+		modifiers: append([]func(*sql.Selector){}, rfuq.modifiers...),
 	}
 }
 
@@ -638,7 +640,7 @@ func (rfugb *RiderFollowUpGroupBy) Aggregate(fns ...AggregateFunc) *RiderFollowU
 
 // Scan applies the selector query and scans the result into the given value.
 func (rfugb *RiderFollowUpGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, rfugb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, rfugb.build.ctx, ent.OpQueryGroupBy)
 	if err := rfugb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -686,7 +688,7 @@ func (rfus *RiderFollowUpSelect) Aggregate(fns ...AggregateFunc) *RiderFollowUpS
 
 // Scan applies the selector query and scans the result into the given value.
 func (rfus *RiderFollowUpSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, rfus.ctx, "Select")
+	ctx = setContextOp(ctx, rfus.ctx, ent.OpQuerySelect)
 	if err := rfus.prepareQuery(ctx); err != nil {
 		return err
 	}

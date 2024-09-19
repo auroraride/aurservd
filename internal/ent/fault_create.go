@@ -315,7 +315,7 @@ func (fc *FaultCreate) check() error {
 	if _, ok := fc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Fault.type"`)}
 	}
-	if _, ok := fc.mutation.CityID(); !ok {
+	if len(fc.mutation.CityIDs()) == 0 {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Fault.city"`)}
 	}
 	return nil

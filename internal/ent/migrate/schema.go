@@ -1046,7 +1046,7 @@ var (
 		{Name: "to_location_type", Type: field.TypeUint8, Nullable: true, Comment: "目标位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手"},
 		{Name: "out_num", Type: field.TypeUint, Nullable: true, Comment: "调出数量"},
 		{Name: "in_num", Type: field.TypeUint, Nullable: true, Comment: "调入数量"},
-		{Name: "out_operate_type", Type: field.TypeUint8, Nullable: true, Comment: "出库角色类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手"},
+		{Name: "out_operate_type", Type: field.TypeUint8, Nullable: true, Comment: "出库角色类型 0:业务后台 1:门店 2:代理 3:运维 4:电柜 5:骑手 6:资产后台"},
 		{Name: "out_time_at", Type: field.TypeTime, Nullable: true, Comment: "出库时间"},
 		{Name: "reason", Type: field.TypeString, Nullable: true, Comment: "调拨事由"},
 		{Name: "type", Type: field.TypeUint8, Nullable: true, Comment: "调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租"},
@@ -1139,9 +1139,9 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "asset_transfer_store_out_operate_store",
+				Symbol:     "asset_transfer_employee_out_operate_employee",
 				Columns:    []*schema.Column{AssetTransferColumns[19]},
-				RefColumns: []*schema.Column{StoreColumns[0]},
+				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
@@ -7705,7 +7705,7 @@ func init() {
 	AssetTransferTable.ForeignKeys[10].RefTable = MaintainerTable
 	AssetTransferTable.ForeignKeys[11].RefTable = WarehouseTable
 	AssetTransferTable.ForeignKeys[12].RefTable = AssetManagerTable
-	AssetTransferTable.ForeignKeys[13].RefTable = StoreTable
+	AssetTransferTable.ForeignKeys[13].RefTable = EmployeeTable
 	AssetTransferTable.ForeignKeys[14].RefTable = AgentTable
 	AssetTransferTable.ForeignKeys[15].RefTable = MaintainerTable
 	AssetTransferTable.ForeignKeys[16].RefTable = CabinetTable

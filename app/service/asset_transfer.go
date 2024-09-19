@@ -503,7 +503,7 @@ func (s *assetTransferService) initialTransferWithSN(ctx context.Context, req mo
 // TransferList 调拨列表
 func (s *assetTransferService) TransferList(ctx context.Context, req *model.AssetTransferListReq) (res *model.PaginationRes, err error) {
 	q := ent.Database.AssetTransfer.QueryNotDeleted().WithTransferDetails().
-		WithOutOperateAgent().WithOutOperateManager().WithOutOperateStore().WithOutOperateMaintainer().WithOutOperateRider().WithOutOperateCabinet().WithOutOperateAssetManager().
+		WithOutOperateAgent().WithOutOperateManager().WithOutOperateEmployee().WithOutOperateMaintainer().WithOutOperateRider().WithOutOperateCabinet().WithOutOperateAssetManager().
 		WithFromLocationWarehouse().WithFromLocationStore().WithFromLocationStation().WithFromLocationOperator().WithFromLocationRider().WithFromLocationCabinet().
 		WithToLocationWarehouse().WithToLocationStore().WithToLocationStation().WithToLocationOperator().WithToLocationRider().WithToLocationCabinet()
 	s.filter(ctx, q, &req.AssetTransferFilter)
@@ -602,8 +602,8 @@ func (s *assetTransferService) TransferInfo(atu *model.AssetTransferUserId, item
 				res.OutOperateName = "[仓管]" + item.Edges.OutOperateAssetManager.Name
 			}
 		case model.OperatorTypeEmployee:
-			if item.Edges.OutOperateStore != nil {
-				res.OutOperateName = "[门店]" + item.Edges.OutOperateStore.Name
+			if item.Edges.OutOperateEmployee != nil {
+				res.OutOperateName = "[门店]" + item.Edges.OutOperateEmployee.Name
 			}
 		case model.OperatorTypeAgent:
 			if item.Edges.OutOperateAgent != nil {
@@ -987,8 +987,8 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 	if req.InStart != nil && req.InEnd != nil {
 		q.Where(
 			assettransfer.HasTransferDetailsWith(
-				assettransferdetails.InTimeAtGTE(tools.NewTime().ParseDateStringX(*req.OutStart)),
-				assettransferdetails.InTimeAtLTE(tools.NewTime().ParseNextDateStringX(*req.OutEnd)),
+				assettransferdetails.InTimeAtGTE(tools.NewTime().ParseDateStringX(*req.InStart)),
+				assettransferdetails.InTimeAtLTE(tools.NewTime().ParseNextDateStringX(*req.InEnd)),
 			),
 		)
 	}
@@ -1753,8 +1753,8 @@ func (s *assetTransferService) flowDetail(ctx context.Context, item *ent.AssetTr
 					}
 				}
 			case model.OperatorTypeEmployee:
-				if item.Edges.Transfer.Edges.OutOperateStore != nil {
-					fromoperateName = "[门店]" + item.Edges.Transfer.Edges.OutOperateStore.Name
+				if item.Edges.Transfer.Edges.OutOperateEmployee != nil {
+					fromoperateName = "[门店]" + item.Edges.Transfer.Edges.OutOperateEmployee.Name
 				}
 			case model.OperatorTypeAgent:
 				if item.Edges.Transfer.Edges.OutOperateAgent != nil {
@@ -1824,7 +1824,7 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 	}).WithTransfer(func(query *ent.AssetTransferQuery) {
 		query.WithFromLocationOperator().WithFromLocationStation().WithFromLocationStore().WithFromLocationWarehouse().WithFromLocationCabinet().WithFromLocationRider().
 			WithToLocationOperator().WithToLocationStation().WithToLocationStore().WithToLocationWarehouse().WithToLocationCabinet().WithToLocationRider().
-			WithOutOperateAgent().WithOutOperateManager().WithOutOperateStore().WithOutOperateMaintainer().WithOutOperateCabinet().WithOutOperateRider().WithOutOperateAssetManager()
+			WithOutOperateAgent().WithOutOperateManager().WithOutOperateEmployee().WithOutOperateMaintainer().WithOutOperateCabinet().WithOutOperateRider().WithOutOperateAssetManager()
 	}).Order(ent.Desc(assettransferdetails.FieldCreatedAt))
 
 	if req.Start != nil && req.End != nil {
@@ -2041,8 +2041,8 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 						}
 					}
 				case model.OperatorTypeEmployee:
-					if transfer.Edges.OutOperateStore != nil {
-						fromOperateName = "[门店]" + transfer.Edges.OutOperateStore.Name
+					if transfer.Edges.OutOperateEmployee != nil {
+						fromOperateName = "[门店]" + transfer.Edges.OutOperateEmployee.Name
 					}
 				case model.OperatorTypeAgent:
 					if transfer.Edges.OutOperateAgent != nil {

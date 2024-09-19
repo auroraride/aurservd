@@ -1307,21 +1307,21 @@ func HasOutOperateAssetManagerWith(preds ...predicate.AssetManager) predicate.As
 	})
 }
 
-// HasOutOperateStore applies the HasEdge predicate on the "out_operate_store" edge.
-func HasOutOperateStore() predicate.AssetTransfer {
+// HasOutOperateEmployee applies the HasEdge predicate on the "out_operate_employee" edge.
+func HasOutOperateEmployee() predicate.AssetTransfer {
 	return predicate.AssetTransfer(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, OutOperateStoreTable, OutOperateStoreColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, OutOperateEmployeeTable, OutOperateEmployeeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasOutOperateStoreWith applies the HasEdge predicate on the "out_operate_store" edge with a given conditions (other predicates).
-func HasOutOperateStoreWith(preds ...predicate.Store) predicate.AssetTransfer {
+// HasOutOperateEmployeeWith applies the HasEdge predicate on the "out_operate_employee" edge with a given conditions (other predicates).
+func HasOutOperateEmployeeWith(preds ...predicate.Employee) predicate.AssetTransfer {
 	return predicate.AssetTransfer(func(s *sql.Selector) {
-		step := newOutOperateStoreStep()
+		step := newOutOperateEmployeeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

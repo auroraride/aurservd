@@ -152,7 +152,7 @@ func (pmcc *PromotionMemberCommissionCreate) check() error {
 	if _, ok := pmcc.mutation.CommissionID(); !ok {
 		return &ValidationError{Name: "commission_id", err: errors.New(`ent: missing required field "PromotionMemberCommission.commission_id"`)}
 	}
-	if _, ok := pmcc.mutation.CommissionID(); !ok {
+	if len(pmcc.mutation.CommissionIDs()) == 0 {
 		return &ValidationError{Name: "commission", err: errors.New(`ent: missing required edge "PromotionMemberCommission.commission"`)}
 	}
 	return nil

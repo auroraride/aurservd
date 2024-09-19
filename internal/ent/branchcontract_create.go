@@ -294,7 +294,7 @@ func (bcc *BranchContractCreate) check() error {
 	if _, ok := bcc.mutation.Sheets(); !ok {
 		return &ValidationError{Name: "sheets", err: errors.New(`ent: missing required field "BranchContract.sheets"`)}
 	}
-	if _, ok := bcc.mutation.BranchID(); !ok {
+	if len(bcc.mutation.BranchIDs()) == 0 {
 		return &ValidationError{Name: "branch", err: errors.New(`ent: missing required edge "BranchContract.branch"`)}
 	}
 	return nil

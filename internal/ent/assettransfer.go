@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -58,7 +59,7 @@ type AssetTransfer struct {
 	InNum uint `json:"in_num,omitempty"`
 	// 出库人id
 	OutOperateID *uint64 `json:"out_operate_id,omitempty"`
-	// 出库角色类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手
+	// 出库角色类型 0:业务后台 1:门店 2:代理 3:运维 4:电柜 5:骑手 6:资产后台
 	OutOperateType *uint8 `json:"out_operate_type,omitempty"`
 	// 出库时间
 	OutTimeAt *time.Time `json:"out_time_at,omitempty"`
@@ -102,8 +103,8 @@ type AssetTransferEdges struct {
 	ToLocationWarehouse *Warehouse `json:"to_location_warehouse,omitempty"`
 	// OutOperateAssetManager holds the value of the out_operate_asset_manager edge.
 	OutOperateAssetManager *AssetManager `json:"out_operate_asset_manager,omitempty"`
-	// OutOperateStore holds the value of the out_operate_store edge.
-	OutOperateStore *Store `json:"out_operate_store,omitempty"`
+	// OutOperateEmployee holds the value of the out_operate_employee edge.
+	OutOperateEmployee *Employee `json:"out_operate_employee,omitempty"`
 	// OutOperateAgent holds the value of the out_operate_agent edge.
 	OutOperateAgent *Agent `json:"out_operate_agent,omitempty"`
 	// OutOperateMaintainer holds the value of the out_operate_maintainer edge.
@@ -271,15 +272,15 @@ func (e AssetTransferEdges) OutOperateAssetManagerOrErr() (*AssetManager, error)
 	return nil, &NotLoadedError{edge: "out_operate_asset_manager"}
 }
 
-// OutOperateStoreOrErr returns the OutOperateStore value or an error if the edge
+// OutOperateEmployeeOrErr returns the OutOperateEmployee value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e AssetTransferEdges) OutOperateStoreOrErr() (*Store, error) {
-	if e.OutOperateStore != nil {
-		return e.OutOperateStore, nil
+func (e AssetTransferEdges) OutOperateEmployeeOrErr() (*Employee, error) {
+	if e.OutOperateEmployee != nil {
+		return e.OutOperateEmployee, nil
 	} else if e.loadedTypes[14] {
-		return nil, &NotFoundError{label: store.Label}
+		return nil, &NotFoundError{label: employee.Label}
 	}
-	return nil, &NotLoadedError{edge: "out_operate_store"}
+	return nil, &NotLoadedError{edge: "out_operate_employee"}
 }
 
 // OutOperateAgentOrErr returns the OutOperateAgent value or an error if the edge
@@ -578,9 +579,9 @@ func (at *AssetTransfer) QueryOutOperateAssetManager() *AssetManagerQuery {
 	return NewAssetTransferClient(at.config).QueryOutOperateAssetManager(at)
 }
 
-// QueryOutOperateStore queries the "out_operate_store" edge of the AssetTransfer entity.
-func (at *AssetTransfer) QueryOutOperateStore() *StoreQuery {
-	return NewAssetTransferClient(at.config).QueryOutOperateStore(at)
+// QueryOutOperateEmployee queries the "out_operate_employee" edge of the AssetTransfer entity.
+func (at *AssetTransfer) QueryOutOperateEmployee() *EmployeeQuery {
+	return NewAssetTransferClient(at.config).QueryOutOperateEmployee(at)
 }
 
 // QueryOutOperateAgent queries the "out_operate_agent" edge of the AssetTransfer entity.

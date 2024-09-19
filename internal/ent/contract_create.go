@@ -366,7 +366,7 @@ func (cc *ContractCreate) check() error {
 	if _, ok := cc.mutation.Effective(); !ok {
 		return &ValidationError{Name: "effective", err: errors.New(`ent: missing required field "Contract.effective"`)}
 	}
-	if _, ok := cc.mutation.RiderID(); !ok {
+	if len(cc.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Contract.rider"`)}
 	}
 	return nil

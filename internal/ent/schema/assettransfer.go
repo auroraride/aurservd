@@ -68,7 +68,7 @@ func (AssetTransfer) Fields() []ent.Field {
 		field.Uint("out_num").Optional().Comment("调出数量"),
 		field.Uint("in_num").Optional().Comment("调入数量"),
 		field.Uint64("out_operate_id").Optional().Nillable().Comment("出库人id"),
-		field.Uint8("out_operate_type").Optional().Nillable().Comment("出库角色类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手"),
+		field.Uint8("out_operate_type").Optional().Nillable().Comment("出库角色类型 0:业务后台 1:门店 2:代理 3:运维 4:电柜 5:骑手 6:资产后台"),
 		field.Time("out_time_at").Optional().Nillable().Comment("出库时间"),
 		field.String("reason").Optional().Comment("调拨事由"),
 		field.Uint8("type").Optional().Comment("调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租"),
@@ -95,12 +95,13 @@ func (AssetTransfer) Edges() []ent.Edge {
 		edge.To("to_location_warehouse", Warehouse.Type).Unique().Field("to_location_id"),       // 关联仓库
 		// 出库关联操作人员
 		edge.To("out_operate_asset_manager", AssetManager.Type).Unique().Field("out_operate_id"), // 资产后台
-		edge.To("out_operate_store", Store.Type).Unique().Field("out_operate_id"),                // 门店
-		edge.To("out_operate_agent", Agent.Type).Unique().Field("out_operate_id"),                // 代理
-		edge.To("out_operate_maintainer", Maintainer.Type).Unique().Field("out_operate_id"),      // 运维
-		edge.To("out_operate_cabinet", Cabinet.Type).Unique().Field("out_operate_id"),            // 电柜
-		edge.To("out_operate_rider", Rider.Type).Unique().Field("out_operate_id"),                // 骑手
-		edge.To("out_operate_manager", Manager.Type).Unique().Field("out_operate_id"),            // 业务后台
+		// edge.To("out_operate_store", Store.Type).Unique().Field("out_operate_id"),                // 门店
+		edge.To("out_operate_employee", Employee.Type).Unique().Field("out_operate_id"),     // 店员
+		edge.To("out_operate_agent", Agent.Type).Unique().Field("out_operate_id"),           // 代理
+		edge.To("out_operate_maintainer", Maintainer.Type).Unique().Field("out_operate_id"), // 运维
+		edge.To("out_operate_cabinet", Cabinet.Type).Unique().Field("out_operate_id"),       // 电柜
+		edge.To("out_operate_rider", Rider.Type).Unique().Field("out_operate_id"),           // 骑手
+		edge.To("out_operate_manager", Manager.Type).Unique().Field("out_operate_id"),       // 业务后台
 	}
 }
 

@@ -524,10 +524,10 @@ func (au *AllocateUpdate) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Allocate.type": %w`, err)}
 		}
 	}
-	if _, ok := au.mutation.RiderID(); au.mutation.RiderCleared() && !ok {
+	if au.mutation.RiderCleared() && len(au.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Allocate.rider"`)
 	}
-	if _, ok := au.mutation.SubscribeID(); au.mutation.SubscribeCleared() && !ok {
+	if au.mutation.SubscribeCleared() && len(au.mutation.SubscribeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Allocate.subscribe"`)
 	}
 	return nil
@@ -1428,10 +1428,10 @@ func (auo *AllocateUpdateOne) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Allocate.type": %w`, err)}
 		}
 	}
-	if _, ok := auo.mutation.RiderID(); auo.mutation.RiderCleared() && !ok {
+	if auo.mutation.RiderCleared() && len(auo.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Allocate.rider"`)
 	}
-	if _, ok := auo.mutation.SubscribeID(); auo.mutation.SubscribeCleared() && !ok {
+	if auo.mutation.SubscribeCleared() && len(auo.mutation.SubscribeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Allocate.subscribe"`)
 	}
 	return nil

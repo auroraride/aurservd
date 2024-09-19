@@ -262,10 +262,10 @@ func (epc *EnterprisePriceCreate) check() error {
 	if _, ok := epc.mutation.Intelligent(); !ok {
 		return &ValidationError{Name: "intelligent", err: errors.New(`ent: missing required field "EnterprisePrice.intelligent"`)}
 	}
-	if _, ok := epc.mutation.CityID(); !ok {
+	if len(epc.mutation.CityIDs()) == 0 {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "EnterprisePrice.city"`)}
 	}
-	if _, ok := epc.mutation.EnterpriseID(); !ok {
+	if len(epc.mutation.EnterpriseIDs()) == 0 {
 		return &ValidationError{Name: "enterprise", err: errors.New(`ent: missing required edge "EnterprisePrice.enterprise"`)}
 	}
 	return nil

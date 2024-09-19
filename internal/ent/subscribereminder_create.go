@@ -251,13 +251,13 @@ func (src *SubscribeReminderCreate) check() error {
 	if _, ok := src.mutation.Fee(); !ok {
 		return &ValidationError{Name: "fee", err: errors.New(`ent: missing required field "SubscribeReminder.fee"`)}
 	}
-	if _, ok := src.mutation.SubscribeID(); !ok {
+	if len(src.mutation.SubscribeIDs()) == 0 {
 		return &ValidationError{Name: "subscribe", err: errors.New(`ent: missing required edge "SubscribeReminder.subscribe"`)}
 	}
-	if _, ok := src.mutation.PlanID(); !ok {
+	if len(src.mutation.PlanIDs()) == 0 {
 		return &ValidationError{Name: "plan", err: errors.New(`ent: missing required edge "SubscribeReminder.plan"`)}
 	}
-	if _, ok := src.mutation.RiderID(); !ok {
+	if len(src.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "SubscribeReminder.rider"`)}
 	}
 	return nil

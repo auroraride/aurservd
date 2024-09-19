@@ -265,7 +265,7 @@ func (wc *WarehouseCreate) check() error {
 	if _, ok := wc.mutation.Sn(); !ok {
 		return &ValidationError{Name: "sn", err: errors.New(`ent: missing required field "Warehouse.sn"`)}
 	}
-	if _, ok := wc.mutation.CityID(); !ok {
+	if len(wc.mutation.CityIDs()) == 0 {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Warehouse.city"`)}
 	}
 	return nil

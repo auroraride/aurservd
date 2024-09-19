@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -109,7 +110,7 @@ func (epq *EnterprisePrepaymentQuery) QueryAgent() *AgentQuery {
 // First returns the first EnterprisePrepayment entity from the query.
 // Returns a *NotFoundError when no EnterprisePrepayment was found.
 func (epq *EnterprisePrepaymentQuery) First(ctx context.Context) (*EnterprisePrepayment, error) {
-	nodes, err := epq.Limit(1).All(setContextOp(ctx, epq.ctx, "First"))
+	nodes, err := epq.Limit(1).All(setContextOp(ctx, epq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +133,7 @@ func (epq *EnterprisePrepaymentQuery) FirstX(ctx context.Context) *EnterprisePre
 // Returns a *NotFoundError when no EnterprisePrepayment ID was found.
 func (epq *EnterprisePrepaymentQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = epq.Limit(1).IDs(setContextOp(ctx, epq.ctx, "FirstID")); err != nil {
+	if ids, err = epq.Limit(1).IDs(setContextOp(ctx, epq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -155,7 +156,7 @@ func (epq *EnterprisePrepaymentQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one EnterprisePrepayment entity is found.
 // Returns a *NotFoundError when no EnterprisePrepayment entities are found.
 func (epq *EnterprisePrepaymentQuery) Only(ctx context.Context) (*EnterprisePrepayment, error) {
-	nodes, err := epq.Limit(2).All(setContextOp(ctx, epq.ctx, "Only"))
+	nodes, err := epq.Limit(2).All(setContextOp(ctx, epq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -183,7 +184,7 @@ func (epq *EnterprisePrepaymentQuery) OnlyX(ctx context.Context) *EnterprisePrep
 // Returns a *NotFoundError when no entities are found.
 func (epq *EnterprisePrepaymentQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = epq.Limit(2).IDs(setContextOp(ctx, epq.ctx, "OnlyID")); err != nil {
+	if ids, err = epq.Limit(2).IDs(setContextOp(ctx, epq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -208,7 +209,7 @@ func (epq *EnterprisePrepaymentQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of EnterprisePrepayments.
 func (epq *EnterprisePrepaymentQuery) All(ctx context.Context) ([]*EnterprisePrepayment, error) {
-	ctx = setContextOp(ctx, epq.ctx, "All")
+	ctx = setContextOp(ctx, epq.ctx, ent.OpQueryAll)
 	if err := epq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -230,7 +231,7 @@ func (epq *EnterprisePrepaymentQuery) IDs(ctx context.Context) (ids []uint64, er
 	if epq.ctx.Unique == nil && epq.path != nil {
 		epq.Unique(true)
 	}
-	ctx = setContextOp(ctx, epq.ctx, "IDs")
+	ctx = setContextOp(ctx, epq.ctx, ent.OpQueryIDs)
 	if err = epq.Select(enterpriseprepayment.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -248,7 +249,7 @@ func (epq *EnterprisePrepaymentQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (epq *EnterprisePrepaymentQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, epq.ctx, "Count")
+	ctx = setContextOp(ctx, epq.ctx, ent.OpQueryCount)
 	if err := epq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -266,7 +267,7 @@ func (epq *EnterprisePrepaymentQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (epq *EnterprisePrepaymentQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, epq.ctx, "Exist")
+	ctx = setContextOp(ctx, epq.ctx, ent.OpQueryExist)
 	switch _, err := epq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -301,8 +302,9 @@ func (epq *EnterprisePrepaymentQuery) Clone() *EnterprisePrepaymentQuery {
 		withEnterprise: epq.withEnterprise.Clone(),
 		withAgent:      epq.withAgent.Clone(),
 		// clone intermediate query.
-		sql:  epq.sql.Clone(),
-		path: epq.path,
+		sql:       epq.sql.Clone(),
+		path:      epq.path,
+		modifiers: append([]func(*sql.Selector){}, epq.modifiers...),
 	}
 }
 
@@ -641,7 +643,7 @@ func (epgb *EnterprisePrepaymentGroupBy) Aggregate(fns ...AggregateFunc) *Enterp
 
 // Scan applies the selector query and scans the result into the given value.
 func (epgb *EnterprisePrepaymentGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, epgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, epgb.build.ctx, ent.OpQueryGroupBy)
 	if err := epgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -689,7 +691,7 @@ func (eps *EnterprisePrepaymentSelect) Aggregate(fns ...AggregateFunc) *Enterpri
 
 // Scan applies the selector query and scans the result into the given value.
 func (eps *EnterprisePrepaymentSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, eps.ctx, "Select")
+	ctx = setContextOp(ctx, eps.ctx, ent.OpQuerySelect)
 	if err := eps.prepareQuery(ctx); err != nil {
 		return err
 	}

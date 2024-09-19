@@ -302,10 +302,10 @@ func (epu *EnterprisePriceUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (epu *EnterprisePriceUpdate) check() error {
-	if _, ok := epu.mutation.CityID(); epu.mutation.CityCleared() && !ok {
+	if epu.mutation.CityCleared() && len(epu.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterprisePrice.city"`)
 	}
-	if _, ok := epu.mutation.EnterpriseID(); epu.mutation.EnterpriseCleared() && !ok {
+	if epu.mutation.EnterpriseCleared() && len(epu.mutation.EnterpriseIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterprisePrice.enterprise"`)
 	}
 	return nil
@@ -784,10 +784,10 @@ func (epuo *EnterprisePriceUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (epuo *EnterprisePriceUpdateOne) check() error {
-	if _, ok := epuo.mutation.CityID(); epuo.mutation.CityCleared() && !ok {
+	if epuo.mutation.CityCleared() && len(epuo.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterprisePrice.city"`)
 	}
-	if _, ok := epuo.mutation.EnterpriseID(); epuo.mutation.EnterpriseCleared() && !ok {
+	if epuo.mutation.EnterpriseCleared() && len(epuo.mutation.EnterpriseIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterprisePrice.enterprise"`)
 	}
 	return nil

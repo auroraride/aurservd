@@ -307,13 +307,13 @@ func (sru *SubscribeReminderUpdate) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "SubscribeReminder.type": %w`, err)}
 		}
 	}
-	if _, ok := sru.mutation.SubscribeID(); sru.mutation.SubscribeCleared() && !ok {
+	if sru.mutation.SubscribeCleared() && len(sru.mutation.SubscribeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SubscribeReminder.subscribe"`)
 	}
-	if _, ok := sru.mutation.PlanID(); sru.mutation.PlanCleared() && !ok {
+	if sru.mutation.PlanCleared() && len(sru.mutation.PlanIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SubscribeReminder.plan"`)
 	}
-	if _, ok := sru.mutation.RiderID(); sru.mutation.RiderCleared() && !ok {
+	if sru.mutation.RiderCleared() && len(sru.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SubscribeReminder.rider"`)
 	}
 	return nil
@@ -773,13 +773,13 @@ func (sruo *SubscribeReminderUpdateOne) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "SubscribeReminder.type": %w`, err)}
 		}
 	}
-	if _, ok := sruo.mutation.SubscribeID(); sruo.mutation.SubscribeCleared() && !ok {
+	if sruo.mutation.SubscribeCleared() && len(sruo.mutation.SubscribeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SubscribeReminder.subscribe"`)
 	}
-	if _, ok := sruo.mutation.PlanID(); sruo.mutation.PlanCleared() && !ok {
+	if sruo.mutation.PlanCleared() && len(sruo.mutation.PlanIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SubscribeReminder.plan"`)
 	}
-	if _, ok := sruo.mutation.RiderID(); sruo.mutation.RiderCleared() && !ok {
+	if sruo.mutation.RiderCleared() && len(sruo.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SubscribeReminder.rider"`)
 	}
 	return nil

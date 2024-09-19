@@ -81,8 +81,8 @@ const (
 	EdgeToLocationWarehouse = "to_location_warehouse"
 	// EdgeOutOperateAssetManager holds the string denoting the out_operate_asset_manager edge name in mutations.
 	EdgeOutOperateAssetManager = "out_operate_asset_manager"
-	// EdgeOutOperateStore holds the string denoting the out_operate_store edge name in mutations.
-	EdgeOutOperateStore = "out_operate_store"
+	// EdgeOutOperateEmployee holds the string denoting the out_operate_employee edge name in mutations.
+	EdgeOutOperateEmployee = "out_operate_employee"
 	// EdgeOutOperateAgent holds the string denoting the out_operate_agent edge name in mutations.
 	EdgeOutOperateAgent = "out_operate_agent"
 	// EdgeOutOperateMaintainer holds the string denoting the out_operate_maintainer edge name in mutations.
@@ -193,13 +193,13 @@ const (
 	OutOperateAssetManagerInverseTable = "asset_manager"
 	// OutOperateAssetManagerColumn is the table column denoting the out_operate_asset_manager relation/edge.
 	OutOperateAssetManagerColumn = "out_operate_id"
-	// OutOperateStoreTable is the table that holds the out_operate_store relation/edge.
-	OutOperateStoreTable = "asset_transfer"
-	// OutOperateStoreInverseTable is the table name for the Store entity.
-	// It exists in this package in order to avoid circular dependency with the "store" package.
-	OutOperateStoreInverseTable = "store"
-	// OutOperateStoreColumn is the table column denoting the out_operate_store relation/edge.
-	OutOperateStoreColumn = "out_operate_id"
+	// OutOperateEmployeeTable is the table that holds the out_operate_employee relation/edge.
+	OutOperateEmployeeTable = "asset_transfer"
+	// OutOperateEmployeeInverseTable is the table name for the Employee entity.
+	// It exists in this package in order to avoid circular dependency with the "employee" package.
+	OutOperateEmployeeInverseTable = "employee"
+	// OutOperateEmployeeColumn is the table column denoting the out_operate_employee relation/edge.
+	OutOperateEmployeeColumn = "out_operate_id"
 	// OutOperateAgentTable is the table that holds the out_operate_agent relation/edge.
 	OutOperateAgentTable = "asset_transfer"
 	// OutOperateAgentInverseTable is the table name for the Agent entity.
@@ -486,10 +486,10 @@ func ByOutOperateAssetManagerField(field string, opts ...sql.OrderTermOption) Or
 	}
 }
 
-// ByOutOperateStoreField orders the results by out_operate_store field.
-func ByOutOperateStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByOutOperateEmployeeField orders the results by out_operate_employee field.
+func ByOutOperateEmployeeField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newOutOperateStoreStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newOutOperateEmployeeStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -625,11 +625,11 @@ func newOutOperateAssetManagerStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, false, OutOperateAssetManagerTable, OutOperateAssetManagerColumn),
 	)
 }
-func newOutOperateStoreStep() *sqlgraph.Step {
+func newOutOperateEmployeeStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(OutOperateStoreInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, OutOperateStoreTable, OutOperateStoreColumn),
+		sqlgraph.To(OutOperateEmployeeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, OutOperateEmployeeTable, OutOperateEmployeeColumn),
 	)
 }
 func newOutOperateAgentStep() *sqlgraph.Step {

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -372,7 +373,7 @@ func (oq *OrderQuery) QueryEbike() *AssetQuery {
 // First returns the first Order entity from the query.
 // Returns a *NotFoundError when no Order was found.
 func (oq *OrderQuery) First(ctx context.Context) (*Order, error) {
-	nodes, err := oq.Limit(1).All(setContextOp(ctx, oq.ctx, "First"))
+	nodes, err := oq.Limit(1).All(setContextOp(ctx, oq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -395,7 +396,7 @@ func (oq *OrderQuery) FirstX(ctx context.Context) *Order {
 // Returns a *NotFoundError when no Order ID was found.
 func (oq *OrderQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = oq.Limit(1).IDs(setContextOp(ctx, oq.ctx, "FirstID")); err != nil {
+	if ids, err = oq.Limit(1).IDs(setContextOp(ctx, oq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -418,7 +419,7 @@ func (oq *OrderQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Order entity is found.
 // Returns a *NotFoundError when no Order entities are found.
 func (oq *OrderQuery) Only(ctx context.Context) (*Order, error) {
-	nodes, err := oq.Limit(2).All(setContextOp(ctx, oq.ctx, "Only"))
+	nodes, err := oq.Limit(2).All(setContextOp(ctx, oq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -446,7 +447,7 @@ func (oq *OrderQuery) OnlyX(ctx context.Context) *Order {
 // Returns a *NotFoundError when no entities are found.
 func (oq *OrderQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = oq.Limit(2).IDs(setContextOp(ctx, oq.ctx, "OnlyID")); err != nil {
+	if ids, err = oq.Limit(2).IDs(setContextOp(ctx, oq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -471,7 +472,7 @@ func (oq *OrderQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Orders.
 func (oq *OrderQuery) All(ctx context.Context) ([]*Order, error) {
-	ctx = setContextOp(ctx, oq.ctx, "All")
+	ctx = setContextOp(ctx, oq.ctx, ent.OpQueryAll)
 	if err := oq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -493,7 +494,7 @@ func (oq *OrderQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if oq.ctx.Unique == nil && oq.path != nil {
 		oq.Unique(true)
 	}
-	ctx = setContextOp(ctx, oq.ctx, "IDs")
+	ctx = setContextOp(ctx, oq.ctx, ent.OpQueryIDs)
 	if err = oq.Select(order.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -511,7 +512,7 @@ func (oq *OrderQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (oq *OrderQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, oq.ctx, "Count")
+	ctx = setContextOp(ctx, oq.ctx, ent.OpQueryCount)
 	if err := oq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -529,7 +530,7 @@ func (oq *OrderQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (oq *OrderQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, oq.ctx, "Exist")
+	ctx = setContextOp(ctx, oq.ctx, ent.OpQueryExist)
 	switch _, err := oq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -575,8 +576,9 @@ func (oq *OrderQuery) Clone() *OrderQuery {
 		withCoupons:    oq.withCoupons.Clone(),
 		withEbike:      oq.withEbike.Clone(),
 		// clone intermediate query.
-		sql:  oq.sql.Clone(),
-		path: oq.path,
+		sql:       oq.sql.Clone(),
+		path:      oq.path,
+		modifiers: append([]func(*sql.Selector){}, oq.modifiers...),
 	}
 }
 
@@ -1499,7 +1501,7 @@ func (ogb *OrderGroupBy) Aggregate(fns ...AggregateFunc) *OrderGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ogb *OrderGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ogb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, ogb.build.ctx, ent.OpQueryGroupBy)
 	if err := ogb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1547,7 +1549,7 @@ func (os *OrderSelect) Aggregate(fns ...AggregateFunc) *OrderSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (os *OrderSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, os.ctx, "Select")
+	ctx = setContextOp(ctx, os.ctx, ent.OpQuerySelect)
 	if err := os.prepareQuery(ctx); err != nil {
 		return err
 	}
