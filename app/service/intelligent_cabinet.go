@@ -594,7 +594,7 @@ func (s *intelligentCabinetService) OpenBind(req *model.CabinetOpenBindReq) {
 		snag.Panic("非智能电柜套餐, 无法操作")
 	}
 	// 查询电柜
-	cab := NewCabinet().QueryOneX(req.ID)
+	cab := NewCabinet().QueryOne(req.ID)
 	if !cab.Intelligent {
 		snag.Panic("非智能电柜, 无法操作")
 	}

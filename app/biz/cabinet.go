@@ -30,6 +30,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/es"
 	"github.com/auroraride/aurservd/pkg/cache"
@@ -590,8 +591,8 @@ func (b *cabinetBiz) ECExport(modifier *model.Modifier, req *definition.CabinetE
 func (b *cabinetBiz) checkSignInfo(assetSignInfo definition.AssetSignInfo, serial string) (err error) {
 	switch {
 	case assetSignInfo.Employee != nil:
-		var eCab *ent.Cabinet
-		eCab, _ = b.orm.QueryNotDeleted().Where(
+		eCab, _ := b.orm.QueryNotDeleted().Where(
+			cabinet.Serial(serial),
 			cabinet.HasStoreWith(
 				store.HasEmployeesWith(
 					employee.ID(assetSignInfo.Employee.ID),
@@ -599,28 +600,22 @@ func (b *cabinetBiz) checkSignInfo(assetSignInfo definition.AssetSignInfo, seria
 			),
 		).First(b.ctx)
 		if eCab == nil {
-			return errors.New("门店电柜信息未找到")
-		}
-
-		if eCab.Serial != serial {
-			return errors.New("当前门店未拥有该电柜操作权限")
+			return errors.New("当前店员所属门店无该电柜操作权限")
 		}
 
 	case assetSignInfo.Agent != nil:
-		var eCab *ent.Cabinet
-		eCab, _ = b.orm.QueryNotDeleted().Where(
-			cabinet.HasEnterpriseWith(
-				enterprise.HasAgentsWith(
-					agent.ID(assetSignInfo.Agent.ID),
+		eCab, _ := b.orm.QueryNotDeleted().Where(
+			cabinet.Serial(serial),
+			cabinet.HasStationWith(
+				enterprisestation.HasEnterpriseWith(
+					enterprise.HasAgentsWith(
+						agent.ID(assetSignInfo.Agent.ID),
+					),
 				),
 			),
 		).First(b.ctx)
 		if eCab == nil {
-			return errors.New("代理电柜信息未找到")
-		}
-
-		if eCab.Serial != serial {
-			return errors.New("当前代理未拥有该电柜操作权限")
+			return errors.New("当前代理所属站点无该电柜操作权限")
 		}
 
 	}
@@ -631,17 +626,16 @@ func (b *cabinetBiz) checkSignInfo(assetSignInfo definition.AssetSignInfo, seria
 func (b *cabinetBiz) Detail(assetSignInfo definition.AssetSignInfo, serial string) (res model.MaintainerCabinetDetailRes, err error) {
 	err = b.checkSignInfo(assetSignInfo, serial)
 	if err != nil {
-		return
+		return res, err
 	}
-	res = service.NewMaintainerCabinet().Detail(&model.MaintainerCabinetDetailReq{
-		Serial: serial,
-	})
+
+	service.NewMaintainerCabinet().Detail(&model.MaintainerCabinetDetailReq{Serial: serial})
 
 	return
 }
 
 // Operate 电柜操作
-func (b *cabinetBiz) Operate(assetSignInfo definition.AssetSignInfo, req *model.MaintainerCabinetOperateReq) (err error) {
+func (b *cabinetBiz) Operate(assetSignInfo definition.AssetSignInfo, req *model.MaintainerCabinetOperateReq) error {
 	switch {
 	case assetSignInfo.Employee != nil:
 		// 查询店员管理的门店所在城市ids
@@ -662,7 +656,8 @@ func (b *cabinetBiz) Operate(assetSignInfo definition.AssetSignInfo, req *model.
 				cityIds = append(cityIds, s.Edges.City.ID)
 			}
 		}
-		return service.NewMaintainerCabinet().Operate(assetSignInfo.Employee, cityIds, req)
+		req.Mini = true
+		service.NewMaintainerCabinet().Operate(assetSignInfo.Employee, cityIds, req)
 	case assetSignInfo.Agent != nil:
 		// 查询代理关联的企业站点城市ids
 		cityIds := make([]uint64, 0)
@@ -686,17 +681,18 @@ func (b *cabinetBiz) Operate(assetSignInfo definition.AssetSignInfo, req *model.
 				}
 			}
 		}
-
-		return service.NewMaintainerCabinet().Operate(assetSignInfo.Agent, cityIds, req)
+		req.Mini = true
+		service.NewMaintainerCabinet().Operate(assetSignInfo.Agent, cityIds, req)
 	default:
 		return errors.New("无效操作人员")
-	}
 
+	}
+	return nil
 }
 
 // BinOperate 仓位操作
 // waitClose 是否等待关闭仓门（仅开仓动作有效）
-func (b *cabinetBiz) BinOperate(assetSignInfo definition.AssetSignInfo, req *model.MaintainerBinOperateReq, waitClose bool) (err error) {
+func (b *cabinetBiz) BinOperate(assetSignInfo definition.AssetSignInfo, req *model.MaintainerBinOperateReq, waitClose bool) error {
 	switch {
 	case assetSignInfo.Employee != nil:
 		// 查询店员管理的门店所在城市ids
@@ -717,10 +713,7 @@ func (b *cabinetBiz) BinOperate(assetSignInfo definition.AssetSignInfo, req *mod
 				cityIds = append(cityIds, s.Edges.City.ID)
 			}
 		}
-		_, err = service.NewMaintainerCabinet().BinOperate(assetSignInfo.Employee, cityIds, req, waitClose)
-		if err != nil {
-			return err
-		}
+		service.NewMaintainerCabinet().BinOperate(assetSignInfo.Employee, cityIds, req, waitClose)
 	case assetSignInfo.Agent != nil:
 		// 查询代理关联的企业站点城市ids
 		cityIds := make([]uint64, 0)
@@ -744,13 +737,10 @@ func (b *cabinetBiz) BinOperate(assetSignInfo definition.AssetSignInfo, req *mod
 				}
 			}
 		}
-		_, err = service.NewMaintainerCabinet().BinOperate(assetSignInfo.Agent, cityIds, req, waitClose)
-		if err != nil {
-			return err
-		}
+		service.NewMaintainerCabinet().BinOperate(assetSignInfo.Agent, cityIds, req, waitClose)
 	default:
 		return errors.New("无效操作人员")
-	}
 
-	return
+	}
+	return nil
 }

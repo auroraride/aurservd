@@ -60,7 +60,7 @@ func (*cabinet) Detail(c echo.Context) (err error) {
 // @Success	200					{object}	model.StatusResponse				"请求成功"
 func (*cabinet) Operate(c echo.Context) (err error) {
 	ctx, req := app.MaintainerContextAndBinding[model.MaintainerCabinetOperateReq](c)
-	service.NewMaintainerCabinet().OperateX(ctx.Maintainer, ctx.CityIDs(), req)
+	service.NewMaintainerCabinet().Operate(ctx.Maintainer, ctx.CityIDs(), req)
 	return ctx.SendResponse()
 }
 
@@ -78,7 +78,7 @@ func (*cabinet) Operate(c echo.Context) (err error) {
 // @Success	200					{object}	model.MaintainerBinOperateReq	"请求成功"
 func (*cabinet) BinOperate(c echo.Context) (err error) {
 	ctx, req := app.MaintainerContextAndBinding[model.MaintainerBinOperateReq](c)
-	return ctx.SendResponse(service.NewMaintainerCabinet().BinOperateX(ctx.Maintainer, ctx.CityIDs(), req, true))
+	return ctx.SendResponse(service.NewMaintainerCabinet().BinOperate(ctx.Maintainer, ctx.CityIDs(), req, true))
 }
 
 // Pause

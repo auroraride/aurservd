@@ -129,100 +129,92 @@ func (s *maintainerCabinetService) OperatableX(m any, cities []uint64, serial st
 	return cab, operator
 }
 
-func (s *maintainerCabinetService) Operate(m any, cities []uint64, req *model.MaintainerCabinetOperateReq) (err error) {
+func (s *maintainerCabinetService) Operate(m any, cities []uint64, req *model.MaintainerCabinetOperateReq) {
 	// 校验权限并获取操作人
 	cab, operator := s.OperatableX(m, cities, req.Serial, req.Lng, req.Lat, req.Operate.NeedMaintenance())
 
 	// 获取Modifier 创建维保记录使用
 	md := s.getModifier(m)
 	if md == nil {
-		return errors.New("错误操作人数据")
+		snag.Panic("错误操作人数据")
 	}
 
 	switch req.Operate {
 	case model.MaintainerCabinetOperateInterrupt:
 		if req.Reason == "" {
-			return errors.New("中断原因必填")
+			snag.Panic("中断原因必填")
 		}
 		NewCabinet().Interrupt(operator, &model.CabinetInterruptRequest{
 			Serial:  req.Serial,
 			Message: "运维中断业务:" + req.Reason,
 		})
 	case model.MaintainerCabinetOperateMaintenance:
-		// 创建维护记录
-		err = NewAssetMaintenance().Create(s.ctx, &model.AssetMaintenanceCreateReq{
-			CabinetID:       cab.ID,
-			OperatorID:      operator.ID,
-			OperateRoleType: operator.Type.Value(),
-		}, md)
-		if err != nil {
-			return
+		// 门店、代理不参与维护记录
+		if !req.Mini {
+			// 创建维护记录
+			err := NewAssetMaintenance().Create(s.ctx, &model.AssetMaintenanceCreateReq{
+				CabinetID:       cab.ID,
+				OperatorID:      operator.ID,
+				OperateRoleType: model.OperatorTypeMaintainer.Value(),
+			}, md)
+			if err != nil {
+				return
+			}
 		}
-
-		_, err = NewCabinetMgr().Maintain(operator, &model.CabinetMaintainReq{
+		NewCabinetMgr().Maintain(operator, &model.CabinetMaintainReq{
 			ID:       cab.ID,
 			Maintain: silk.Bool(true),
 		})
-
-		if err != nil {
-			return err
-		}
 	case model.MaintainerCabinetOperateMaintenanceCancel:
-		if req.Content == "" {
-			return errors.New("维保内容必填")
-		}
-		switch req.Status {
-		case model.AssetMaintenanceStatusSuccess:
-		case model.AssetMaintenanceStatusFail:
-			if req.Reason == "" {
-				return errors.New("维保失败原因必填")
+		// 门店、代理不参与维护记录
+		if !req.Mini {
+			if req.Content == "" {
+				snag.Panic("维保内容必填")
 			}
-		default:
-			return errors.New("无效维保状态")
-		}
+			switch req.Status {
+			case model.AssetMaintenanceStatusSuccess:
+			case model.AssetMaintenanceStatusFail:
+				if req.Reason == "" {
+					snag.Panic("维保失败原因必填")
+				}
+			default:
+				snag.Panic("无效维保状态")
+			}
 
-		// 查询维保单
-		mt := NewAssetMaintenance().QueryMaintenanceByCabinetID(cab.ID)
-		if mt == nil {
-			return errors.New("维保数据不存在")
+			// 查询维保单
+			mt := NewAssetMaintenance().QueryMaintenanceByCabinetID(cab.ID)
+			if mt == nil {
+				snag.Panic("维保数据不存在")
+				return
+			}
+			// 填写维保结果
+			err := NewAssetMaintenance().Modify(s.ctx, &model.AssetMaintenanceModifyReq{
+				ID:      mt.ID,
+				Reason:  req.Reason,
+				Content: req.Content,
+				Status:  req.Status,
+				Details: req.Details,
+			}, md)
+			if err != nil {
+				return
+			}
 		}
-		// 填写维保结果
-		err = NewAssetMaintenance().Modify(s.ctx, &model.AssetMaintenanceModifyReq{
-			ID:      mt.ID,
-			Reason:  req.Reason,
-			Content: req.Content,
-			Status:  req.Status,
-			Details: req.Details,
-		}, md)
-		if err != nil {
-			return
-		}
-
 		NewCabinetMgr().Maintain(operator, &model.CabinetMaintainReq{
 			ID:       cab.ID,
 			Maintain: silk.Bool(false),
 		})
 	}
-
-	return
-}
-
-func (s *maintainerCabinetService) OperateX(m any, cities []uint64, req *model.MaintainerCabinetOperateReq) {
-	err := s.Operate(m, cities, req)
-	if err != nil {
-		snag.Panic(err)
-	}
 }
 
 // BinOperate 仓位操作
-func (s *maintainerCabinetService) BinOperate(m any, cities []uint64, req *model.MaintainerBinOperateReq, waitClose bool) (bool, error) {
+func (s *maintainerCabinetService) BinOperate(m any, cities []uint64, req *model.MaintainerBinOperateReq, waitClose bool) bool {
 	// 校验权限并获取操作人
 	cab, operator := s.OperatableX(m, cities, req.Serial, req.Lng, req.Lat, true)
 
 	var op any
 	switch req.Operate {
 	default:
-		return false, errors.New("未知操作人角色")
+		return false
 	case model.MaintainerBinOperateOpen:
 		op = &model.CabinetDoorOperateReq{
 			ID:        cab.ID,
@@ -260,20 +252,11 @@ func (s *maintainerCabinetService) BinOperate(m any, cities []uint64, req *model
 		}
 	}
 
-	return NewCabinetMgr().BinOperate(operator, cab.ID, op, waitClose), nil
-}
-
-// BinOperateX 仓位操作X
-func (s *maintainerCabinetService) BinOperateX(m any, cities []uint64, req *model.MaintainerBinOperateReq, waitClose bool) bool {
-	b, err := s.BinOperate(m, cities, req, waitClose)
-	if err != nil {
-		snag.Panic(err)
-	}
-	return b
+	return NewCabinetMgr().BinOperate(operator, cab.ID, op, waitClose)
 }
 
 // Pause 暂停维护
-func (s *maintainerCabinetService) Pause(m *ent.Maintainer, cities []uint64, req *model.MaintainerCabinetPauseReq) {
+func (s *maintainerCabinetService) Pause(m any, cities []uint64, req *model.MaintainerCabinetPauseReq) {
 	// 校验权限并获取操作人
 	cab, operator := s.OperatableX(m, cities, req.Serial, req.Lng, req.Lat, false)
 
