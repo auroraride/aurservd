@@ -1846,7 +1846,7 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 	if req.SN != nil {
 		q.Where(assettransferdetails.HasAssetWith(asset.Sn(*req.SN)))
 	}
-	if req.LocationsID != nil && req.LocationsType != nil {
+	if req.LocationsType != nil {
 		q.Where(
 			func(selector *sql.Selector) {
 				switch *req.LocationsType {
@@ -1868,14 +1868,16 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 						)
 					}
 				case model.AssetLocationsTypeWarehouse, model.AssetLocationsTypeStore, model.AssetLocationsTypeStation, model.AssetLocationsTypeOperation:
-					q.Where(
-						assettransferdetails.Or(
-							assettransferdetails.HasTransferWith(
-								assettransfer.FromLocationIDEQ(*req.LocationsID),
-								assettransfer.FromLocationTypeEQ(req.LocationsType.Value()),
+					if req.LocationsID != nil {
+						q.Where(
+							assettransferdetails.Or(
+								assettransferdetails.HasTransferWith(
+									assettransfer.FromLocationIDEQ(*req.LocationsID),
+									assettransfer.FromLocationTypeEQ(req.LocationsType.Value()),
+								),
 							),
-						),
-					)
+						)
+					}
 				}
 			},
 		)
