@@ -1613,7 +1613,7 @@ func (s *assetTransferService) Flow(ctx context.Context, req *model.AssetTransfe
 				assettransfer.StatusNEQ(model.AssetTransferStatusCancel.Value()),
 			),
 			assettransferdetails.HasAssetWith(
-				asset.Sn(req.SN),
+				asset.SnContains(req.SN),
 			),
 		).WithTransfer(func(query *ent.AssetTransferQuery) {
 		query.
