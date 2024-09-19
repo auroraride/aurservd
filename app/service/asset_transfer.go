@@ -820,6 +820,11 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 			assettransfer.Or(
 				assettransfer.SnContains(*req.Keyword),
 				assettransfer.ReasonContains(*req.Keyword),
+				assettransfer.HasTransferDetailsWith(
+					assettransferdetails.HasAssetWith(
+						asset.SnContains(*req.Keyword),
+					),
+				),
 			),
 		)
 	}
@@ -983,12 +988,20 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 			),
 		)
 	}
-
 	if req.InStart != nil && req.InEnd != nil {
 		q.Where(
 			assettransfer.HasTransferDetailsWith(
 				assettransferdetails.InTimeAtGTE(tools.NewTime().ParseDateStringX(*req.InStart)),
 				assettransferdetails.InTimeAtLTE(tools.NewTime().ParseNextDateStringX(*req.InEnd)),
+			),
+		)
+	}
+	if req.AssetType != nil {
+		q.Where(
+			assettransfer.HasTransferDetailsWith(
+				assettransferdetails.HasAssetWith(
+					asset.Type(req.AssetType.Value()),
+				),
 			),
 		)
 	}
