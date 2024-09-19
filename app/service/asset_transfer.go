@@ -1654,6 +1654,7 @@ func (s *assetTransferService) Flow(ctx context.Context, req *model.AssetTransfe
 		WithInOperateMaintainer().
 		WithInOperateCabinet().
 		WithInOperateRider().
+		WithInOperateAssetManager().
 		Order(ent.Desc(assettransferdetails.FieldID))
 	if req.Start != nil && req.End != nil {
 		start := tools.NewTime().ParseDateStringX(*req.Start)
@@ -1710,6 +1711,10 @@ func (s *assetTransferService) flowDetail(ctx context.Context, item *ent.AssetTr
 	case model.OperatorTypeRider:
 		if item.Edges.InOperateRider != nil {
 			toOperateName = "[骑手]" + item.Edges.InOperateRider.Name
+		}
+	case model.OperatorTypeManager:
+		if r, _ := item.Edges.InOperateAssetManager.QueryRole().First(ctx); r != nil {
+			toOperateName = "[" + r.Name + "]" + item.Edges.InOperateAssetManager.Name
 		}
 	default:
 	}
