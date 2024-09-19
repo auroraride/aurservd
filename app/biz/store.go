@@ -4,14 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
 
 	"entgo.io/ent/dialect/sql"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/storegoods"
@@ -40,7 +39,7 @@ func (b *storeBiz) List(req *definition.StoreListReq) (res []*definition.StoreDe
 	q := b.orm.QueryNotDeleted().
 		WithCity().
 		WithEmployee().
-		WithStocks().
+		WithAsset().
 		Modify(func(sel *sql.Selector) {
 			sel.
 				AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(ST_GeographyFromText('SRID=4326;POINT(' || "store"."lng" || ' ' || "store"."lat" || ')'),ST_GeographyFromText('SRID=4326;POINT(%f  %f)'))`, req.Lng, req.Lat)), "distance").
@@ -119,7 +118,7 @@ func (b *storeBiz) Detail(req *definition.StoreDetailReq) (res *definition.Store
 		Where(store.ID(req.ID)).
 		WithCity().
 		WithEmployee().
-		WithStocks().
+		WithAsset().
 		Modify(func(sel *sql.Selector) {
 			sel.AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(ST_GeographyFromText('SRID=4326;POINT(' || "store"."lng" || ' ' || "store"."lat" || ')'),ST_GeographyFromText('SRID=4326;POINT(%f  %f)'))`, req.Lng, req.Lat)), "distance").
 				OrderBy(sql.Asc("distance"))
@@ -173,26 +172,21 @@ func (b *storeBiz) detail(item *ent.Store) (res *definition.StoreDetail) {
 
 }
 
-// QueryStocks 查询门店电车库存
+// QueryStocks 查询门店电池 车库存
 func (b *storeBiz) QueryStocks(item *ent.Store, pl *ent.Plan) (ebikeNum, batteryNum int) {
-	bikes := make(map[string]*model.StockMaterial)
-	batteries := make(map[string]*model.StockMaterial)
-	for _, st := range item.Edges.Stocks {
-		switch true {
-		case st.BrandID != nil && *st.BrandID == *pl.BrandID:
-			// 电车
-			service.NewStock().Calculate(bikes, st)
-		case st.Model != nil && *st.Model == pl.Model:
-			// 电池
-			service.NewStock().Calculate(batteries, st)
+	for _, st := range item.Edges.Asset {
+		switch model.AssetType(st.Type) {
+		case model.AssetTypeEbike:
+			if st.Status == model.AssetStatusStock.Value() && st.BrandID != nil && *st.BrandID == *pl.BrandID {
+				ebikeNum += 1
+			}
+		case model.AssetTypeSmartBattery, model.AssetTypeNonSmartBattery:
+			m, _ := st.QueryModel().First(b.ctx)
+			if st.Status == model.AssetStatusStock.Value() && m != nil && m.Model == pl.Model {
+				batteryNum += 1
+			}
+		default:
 		}
-	}
-	for _, bike := range bikes {
-		ebikeNum += bike.Surplus
-	}
-
-	for _, battery := range batteries {
-		batteryNum += battery.Surplus
 	}
 	return
 }
@@ -256,23 +250,15 @@ func (b *storeBiz) StoreBySubscribe(r *ent.Rider, req *definition.StoreDetailReq
 
 // queryStocksByStore 查询门店电车是否有库存
 func (b *storeBiz) queryStocksByStore(item *ent.Store, brandIds []uint64) (eBrandIds []uint64) {
-	bikes := make(map[string]*model.StockMaterial)
-
 	brandIdMap := make(map[uint64]bool)
 	for _, brandId := range brandIds {
 		brandIdMap[brandId] = true
 	}
 
-	for _, st := range item.Edges.Stocks {
-		switch {
-		case st.BrandID != nil && brandIdMap[*st.BrandID]:
-			service.NewStock().Calculate(bikes, st)
-		}
-	}
-	for bId, bike := range bikes {
-		brandId, _ := strconv.Atoi(bId)
-		if bike.Surplus > 0 {
-			eBrandIds = append(eBrandIds, uint64(brandId))
+	for _, st := range item.Edges.Asset {
+		if st.Type == model.AssetTypeEbike.Value() && st.Status == model.AssetStatusStock.Value() &&
+			st.BrandID != nil && brandIdMap[*st.BrandID] {
+			eBrandIds = append(eBrandIds, *st.BrandID)
 		}
 	}
 	return
@@ -317,9 +303,9 @@ func (b *storeBiz) detailForStock(item *ent.Store) (res *definition.StoreDetail)
 		}
 	}
 
-	if item.Edges.Stocks != nil {
+	if item.Edges.Asset != nil {
 		var brandIds []uint64
-		for _, st := range item.Edges.Stocks {
+		for _, st := range item.Edges.Asset {
 			if st.BrandID != nil {
 				brandIds = append(brandIds, *st.BrandID)
 			}
@@ -335,4 +321,70 @@ func (b *storeBiz) detailForStock(item *ent.Store) (res *definition.StoreDetail)
 
 	return
 
+}
+
+// SelectionList 门店列表筛选项
+func (b *storeBiz) SelectionList() (res []*model.SelectOption) {
+	res = make([]*model.SelectOption, 0)
+	list, _ := b.orm.QueryNotDeleted().Order(ent.Asc(store.FieldID)).All(b.ctx)
+
+	for _, item := range list {
+		res = append(res, &model.SelectOption{
+			Value: item.ID,
+			Label: item.Name,
+		})
+	}
+	return
+}
+
+// ListByEmployee 店员已配置门店列表
+func (b *storeBiz) ListByEmployee(ep *ent.Employee) (res []*model.CascaderOptionLevel2) {
+	res = make([]*model.CascaderOptionLevel2, 0)
+	if ep == nil {
+		return
+	}
+
+	// 查询人员配置的仓库门店信息
+	eep, err := ent.Database.Employee.QueryNotDeleted().
+		Where(employee.ID(ep.ID)).
+		WithStores(func(query *ent.StoreQuery) {
+			query.Where(store.DeletedAtIsNil()).WithCity()
+		}).First(b.ctx)
+	if err != nil || eep == nil {
+		return
+	}
+
+	// 数据组合
+	stList := eep.Edges.Stores
+	cityIds := make([]uint64, 0)
+	cityIdMap := make(map[uint64]*ent.City)
+	cityIdListMap := make(map[uint64][]model.SelectOption)
+	for _, st := range stList {
+		if st.Edges.City != nil {
+			cId := st.Edges.City.ID
+			if cityIdMap[cId] == nil {
+				cityIds = append(cityIds, cId)
+				cityIdMap[cId] = st.Edges.City
+			}
+
+			cityIdListMap[cId] = append(cityIdListMap[cId], model.SelectOption{
+				Label: st.Name,
+				Value: st.ID,
+			})
+		}
+	}
+
+	for _, cityId := range cityIds {
+		if cityIdMap[cityId] != nil && len(cityIdListMap[cityId]) != 0 {
+			res = append(res, &model.CascaderOptionLevel2{
+				SelectOption: model.SelectOption{
+					Value: cityIdMap[cityId].ID,
+					Label: cityIdMap[cityId].Name,
+				},
+				Children: cityIdListMap[cityId],
+			})
+		}
+	}
+
+	return
 }

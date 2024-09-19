@@ -52,18 +52,8 @@ const (
 	FieldOrdinal = "ordinal"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
-	// EdgeRider holds the string denoting the rider edge name in mutations.
-	EdgeRider = "rider"
-	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
-	EdgeCabinet = "cabinet"
-	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
-	EdgeSubscribe = "subscribe"
-	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
-	EdgeEnterprise = "enterprise"
 	// EdgeFlows holds the string denoting the flows edge name in mutations.
 	EdgeFlows = "flows"
-	// EdgeStation holds the string denoting the station edge name in mutations.
-	EdgeStation = "station"
 	// Table holds the table name of the battery in the database.
 	Table = "battery"
 	// CityTable is the table that holds the city relation/edge.
@@ -73,48 +63,13 @@ const (
 	CityInverseTable = "city"
 	// CityColumn is the table column denoting the city relation/edge.
 	CityColumn = "city_id"
-	// RiderTable is the table that holds the rider relation/edge.
-	RiderTable = "battery"
-	// RiderInverseTable is the table name for the Rider entity.
-	// It exists in this package in order to avoid circular dependency with the "rider" package.
-	RiderInverseTable = "rider"
-	// RiderColumn is the table column denoting the rider relation/edge.
-	RiderColumn = "rider_id"
-	// CabinetTable is the table that holds the cabinet relation/edge.
-	CabinetTable = "battery"
-	// CabinetInverseTable is the table name for the Cabinet entity.
-	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
-	CabinetInverseTable = "cabinet"
-	// CabinetColumn is the table column denoting the cabinet relation/edge.
-	CabinetColumn = "cabinet_id"
-	// SubscribeTable is the table that holds the subscribe relation/edge.
-	SubscribeTable = "battery"
-	// SubscribeInverseTable is the table name for the Subscribe entity.
-	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
-	SubscribeInverseTable = "subscribe"
-	// SubscribeColumn is the table column denoting the subscribe relation/edge.
-	SubscribeColumn = "subscribe_id"
-	// EnterpriseTable is the table that holds the enterprise relation/edge.
-	EnterpriseTable = "battery"
-	// EnterpriseInverseTable is the table name for the Enterprise entity.
-	// It exists in this package in order to avoid circular dependency with the "enterprise" package.
-	EnterpriseInverseTable = "enterprise"
-	// EnterpriseColumn is the table column denoting the enterprise relation/edge.
-	EnterpriseColumn = "enterprise_id"
 	// FlowsTable is the table that holds the flows relation/edge.
 	FlowsTable = "battery_flow"
 	// FlowsInverseTable is the table name for the BatteryFlow entity.
 	// It exists in this package in order to avoid circular dependency with the "batteryflow" package.
 	FlowsInverseTable = "battery_flow"
 	// FlowsColumn is the table column denoting the flows relation/edge.
-	FlowsColumn = "battery_id"
-	// StationTable is the table that holds the station relation/edge.
-	StationTable = "battery"
-	// StationInverseTable is the table name for the EnterpriseStation entity.
-	// It exists in this package in order to avoid circular dependency with the "enterprisestation" package.
-	StationInverseTable = "enterprise_station"
-	// StationColumn is the table column denoting the station relation/edge.
-	StationColumn = "station_id"
+	FlowsColumn = "battery_flows"
 )
 
 // Columns holds all SQL columns for battery fields.
@@ -258,34 +213,6 @@ func ByCityField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByRiderField orders the results by rider field.
-func ByRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newRiderStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// ByCabinetField orders the results by cabinet field.
-func ByCabinetField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newCabinetStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// BySubscribeField orders the results by subscribe field.
-func BySubscribeField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newSubscribeStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// ByEnterpriseField orders the results by enterprise field.
-func ByEnterpriseField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newEnterpriseStep(), sql.OrderByField(field, opts...))
-	}
-}
-
 // ByFlowsCount orders the results by flows count.
 func ByFlowsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -299,13 +226,6 @@ func ByFlows(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newFlowsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
-
-// ByStationField orders the results by station field.
-func ByStationField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newStationStep(), sql.OrderByField(field, opts...))
-	}
-}
 func newCityStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -313,45 +233,10 @@ func newCityStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
 	)
 }
-func newRiderStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(RiderInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2O, true, RiderTable, RiderColumn),
-	)
-}
-func newCabinetStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(CabinetInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, CabinetTable, CabinetColumn),
-	)
-}
-func newSubscribeStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(SubscribeInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2O, true, SubscribeTable, SubscribeColumn),
-	)
-}
-func newEnterpriseStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(EnterpriseInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, EnterpriseTable, EnterpriseColumn),
-	)
-}
 func newFlowsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(FlowsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, FlowsTable, FlowsColumn),
-	)
-}
-func newStationStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(StationInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, StationTable, StationColumn),
 	)
 }

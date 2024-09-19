@@ -29,6 +29,8 @@ const (
 	FieldRemark = "remark"
 	// FieldCityID holds the string denoting the city_id field in the database.
 	FieldCityID = "city_id"
+	// FieldGroupID holds the string denoting the group_id field in the database.
+	FieldGroupID = "group_id"
 	// FieldSn holds the string denoting the sn field in the database.
 	FieldSn = "sn"
 	// FieldName holds the string denoting the name field in the database.
@@ -37,8 +39,16 @@ const (
 	FieldPhone = "phone"
 	// FieldEnable holds the string denoting the enable field in the database.
 	FieldEnable = "enable"
+	// FieldPassword holds the string denoting the password field in the database.
+	FieldPassword = "password"
+	// FieldLimit holds the string denoting the limit field in the database.
+	FieldLimit = "limit"
+	// FieldDutyStoreID holds the string denoting the duty_store_id field in the database.
+	FieldDutyStoreID = "duty_store_id"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
+	// EdgeGroup holds the string denoting the group edge name in mutations.
+	EdgeGroup = "group"
 	// EdgeStore holds the string denoting the store edge name in mutations.
 	EdgeStore = "store"
 	// EdgeAttendances holds the string denoting the attendances edge name in mutations.
@@ -51,6 +61,10 @@ const (
 	EdgeCommissions = "commissions"
 	// EdgeAssistances holds the string denoting the assistances edge name in mutations.
 	EdgeAssistances = "assistances"
+	// EdgeStores holds the string denoting the stores edge name in mutations.
+	EdgeStores = "stores"
+	// EdgeDutyStore holds the string denoting the duty_store edge name in mutations.
+	EdgeDutyStore = "duty_store"
 	// Table holds the table name of the employee in the database.
 	Table = "employee"
 	// CityTable is the table that holds the city relation/edge.
@@ -60,6 +74,13 @@ const (
 	CityInverseTable = "city"
 	// CityColumn is the table column denoting the city relation/edge.
 	CityColumn = "city_id"
+	// GroupTable is the table that holds the group relation/edge.
+	GroupTable = "employee"
+	// GroupInverseTable is the table name for the StoreGroup entity.
+	// It exists in this package in order to avoid circular dependency with the "storegroup" package.
+	GroupInverseTable = "store_group"
+	// GroupColumn is the table column denoting the group relation/edge.
+	GroupColumn = "group_id"
 	// StoreTable is the table that holds the store relation/edge.
 	StoreTable = "store"
 	// StoreInverseTable is the table name for the Store entity.
@@ -102,6 +123,18 @@ const (
 	AssistancesInverseTable = "assistance"
 	// AssistancesColumn is the table column denoting the assistances relation/edge.
 	AssistancesColumn = "employee_id"
+	// StoresTable is the table that holds the stores relation/edge. The primary key declared below.
+	StoresTable = "store_employees"
+	// StoresInverseTable is the table name for the Store entity.
+	// It exists in this package in order to avoid circular dependency with the "store" package.
+	StoresInverseTable = "store"
+	// DutyStoreTable is the table that holds the duty_store relation/edge.
+	DutyStoreTable = "employee"
+	// DutyStoreInverseTable is the table name for the Store entity.
+	// It exists in this package in order to avoid circular dependency with the "store" package.
+	DutyStoreInverseTable = "store"
+	// DutyStoreColumn is the table column denoting the duty_store relation/edge.
+	DutyStoreColumn = "duty_store_id"
 )
 
 // Columns holds all SQL columns for employee fields.
@@ -114,11 +147,21 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldCityID,
+	FieldGroupID,
 	FieldSn,
 	FieldName,
 	FieldPhone,
 	FieldEnable,
+	FieldPassword,
+	FieldLimit,
+	FieldDutyStoreID,
 }
+
+var (
+	// StoresPrimaryKey and StoresColumn2 are the table columns denoting the
+	// primary key for the stores relation (M2M).
+	StoresPrimaryKey = []string{"store_id", "employee_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -145,6 +188,8 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultEnable holds the default value on creation for the "enable" field.
 	DefaultEnable bool
+	// DefaultLimit holds the default value on creation for the "limit" field.
+	DefaultLimit uint
 )
 
 // OrderOption defines the ordering options for the Employee queries.
@@ -180,6 +225,11 @@ func ByCityID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCityID, opts...).ToFunc()
 }
 
+// ByGroupID orders the results by the group_id field.
+func ByGroupID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldGroupID, opts...).ToFunc()
+}
+
 // BySn orders the results by the sn field.
 func BySn(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSn, opts...).ToFunc()
@@ -200,10 +250,32 @@ func ByEnable(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEnable, opts...).ToFunc()
 }
 
+// ByPassword orders the results by the password field.
+func ByPassword(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPassword, opts...).ToFunc()
+}
+
+// ByLimit orders the results by the limit field.
+func ByLimit(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLimit, opts...).ToFunc()
+}
+
+// ByDutyStoreID orders the results by the duty_store_id field.
+func ByDutyStoreID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDutyStoreID, opts...).ToFunc()
+}
+
 // ByCityField orders the results by city field.
 func ByCityField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newCityStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByGroupField orders the results by group field.
+func ByGroupField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newGroupStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -283,11 +355,39 @@ func ByAssistances(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newAssistancesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByStoresCount orders the results by stores count.
+func ByStoresCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newStoresStep(), opts...)
+	}
+}
+
+// ByStores orders the results by stores terms.
+func ByStores(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStoresStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByDutyStoreField orders the results by duty_store field.
+func ByDutyStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newDutyStoreStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newCityStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CityInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+	)
+}
+func newGroupStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(GroupInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, GroupTable, GroupColumn),
 	)
 }
 func newStoreStep() *sqlgraph.Step {
@@ -330,5 +430,19 @@ func newAssistancesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AssistancesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, AssistancesTable, AssistancesColumn),
+	)
+}
+func newStoresStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StoresInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, StoresTable, StoresPrimaryKey...),
+	)
+}
+func newDutyStoreStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(DutyStoreInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, DutyStoreTable, DutyStoreColumn),
 	)
 }

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -109,7 +110,7 @@ func (plq *PointLogQuery) QueryOrder() *OrderQuery {
 // First returns the first PointLog entity from the query.
 // Returns a *NotFoundError when no PointLog was found.
 func (plq *PointLogQuery) First(ctx context.Context) (*PointLog, error) {
-	nodes, err := plq.Limit(1).All(setContextOp(ctx, plq.ctx, "First"))
+	nodes, err := plq.Limit(1).All(setContextOp(ctx, plq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +133,7 @@ func (plq *PointLogQuery) FirstX(ctx context.Context) *PointLog {
 // Returns a *NotFoundError when no PointLog ID was found.
 func (plq *PointLogQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = plq.Limit(1).IDs(setContextOp(ctx, plq.ctx, "FirstID")); err != nil {
+	if ids, err = plq.Limit(1).IDs(setContextOp(ctx, plq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -155,7 +156,7 @@ func (plq *PointLogQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one PointLog entity is found.
 // Returns a *NotFoundError when no PointLog entities are found.
 func (plq *PointLogQuery) Only(ctx context.Context) (*PointLog, error) {
-	nodes, err := plq.Limit(2).All(setContextOp(ctx, plq.ctx, "Only"))
+	nodes, err := plq.Limit(2).All(setContextOp(ctx, plq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -183,7 +184,7 @@ func (plq *PointLogQuery) OnlyX(ctx context.Context) *PointLog {
 // Returns a *NotFoundError when no entities are found.
 func (plq *PointLogQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = plq.Limit(2).IDs(setContextOp(ctx, plq.ctx, "OnlyID")); err != nil {
+	if ids, err = plq.Limit(2).IDs(setContextOp(ctx, plq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -208,7 +209,7 @@ func (plq *PointLogQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of PointLogs.
 func (plq *PointLogQuery) All(ctx context.Context) ([]*PointLog, error) {
-	ctx = setContextOp(ctx, plq.ctx, "All")
+	ctx = setContextOp(ctx, plq.ctx, ent.OpQueryAll)
 	if err := plq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -230,7 +231,7 @@ func (plq *PointLogQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if plq.ctx.Unique == nil && plq.path != nil {
 		plq.Unique(true)
 	}
-	ctx = setContextOp(ctx, plq.ctx, "IDs")
+	ctx = setContextOp(ctx, plq.ctx, ent.OpQueryIDs)
 	if err = plq.Select(pointlog.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -248,7 +249,7 @@ func (plq *PointLogQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (plq *PointLogQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, plq.ctx, "Count")
+	ctx = setContextOp(ctx, plq.ctx, ent.OpQueryCount)
 	if err := plq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -266,7 +267,7 @@ func (plq *PointLogQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (plq *PointLogQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, plq.ctx, "Exist")
+	ctx = setContextOp(ctx, plq.ctx, ent.OpQueryExist)
 	switch _, err := plq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -301,8 +302,9 @@ func (plq *PointLogQuery) Clone() *PointLogQuery {
 		withRider:  plq.withRider.Clone(),
 		withOrder:  plq.withOrder.Clone(),
 		// clone intermediate query.
-		sql:  plq.sql.Clone(),
-		path: plq.path,
+		sql:       plq.sql.Clone(),
+		path:      plq.path,
+		modifiers: append([]func(*sql.Selector){}, plq.modifiers...),
 	}
 }
 
@@ -641,7 +643,7 @@ func (plgb *PointLogGroupBy) Aggregate(fns ...AggregateFunc) *PointLogGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (plgb *PointLogGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, plgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, plgb.build.ctx, ent.OpQueryGroupBy)
 	if err := plgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -689,7 +691,7 @@ func (pls *PointLogSelect) Aggregate(fns ...AggregateFunc) *PointLogSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (pls *PointLogSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, pls.ctx, "Select")
+	ctx = setContextOp(ctx, pls.ctx, ent.OpQuerySelect)
 	if err := pls.prepareQuery(ctx); err != nil {
 		return err
 	}

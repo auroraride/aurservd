@@ -341,13 +341,13 @@ func (peu *PromotionEarningsUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (peu *PromotionEarningsUpdate) check() error {
-	if _, ok := peu.mutation.CommissionID(); peu.mutation.CommissionCleared() && !ok {
+	if peu.mutation.CommissionCleared() && len(peu.mutation.CommissionIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PromotionEarnings.commission"`)
 	}
-	if _, ok := peu.mutation.MemberID(); peu.mutation.MemberCleared() && !ok {
+	if peu.mutation.MemberCleared() && len(peu.mutation.MemberIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PromotionEarnings.member"`)
 	}
-	if _, ok := peu.mutation.RiderID(); peu.mutation.RiderCleared() && !ok {
+	if peu.mutation.RiderCleared() && len(peu.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PromotionEarnings.rider"`)
 	}
 	return nil
@@ -899,13 +899,13 @@ func (peuo *PromotionEarningsUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (peuo *PromotionEarningsUpdateOne) check() error {
-	if _, ok := peuo.mutation.CommissionID(); peuo.mutation.CommissionCleared() && !ok {
+	if peuo.mutation.CommissionCleared() && len(peuo.mutation.CommissionIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PromotionEarnings.commission"`)
 	}
-	if _, ok := peuo.mutation.MemberID(); peuo.mutation.MemberCleared() && !ok {
+	if peuo.mutation.MemberCleared() && len(peuo.mutation.MemberIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PromotionEarnings.member"`)
 	}
-	if _, ok := peuo.mutation.RiderID(); peuo.mutation.RiderCleared() && !ok {
+	if peuo.mutation.RiderCleared() && len(peuo.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PromotionEarnings.rider"`)
 	}
 	return nil

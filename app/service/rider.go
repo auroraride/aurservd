@@ -26,7 +26,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/baidu"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
@@ -442,7 +442,9 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 		}).
 		WithEnterprise().
 		WithStation().
-		WithBattery().
+		WithBattery(func(query *ent.AssetQuery) {
+			query.Where(asset.TypeIn(model.AssetTypeSmartBattery.Value(), model.AssetTypeNonSmartBattery.Value())).WithModel()
+		}).
 		Order(ent.Desc(rider.FieldCreatedAt))
 	if req.Keyword != nil {
 		info["关键词"] = *req.Keyword
@@ -634,8 +636,8 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 	}
 
 	if req.BatteryID != nil {
-		info["电池编码"] = ent.NewExportInfo(*req.BatteryID, battery.Table)
-		q.Where(rider.HasBatteryWith(battery.ID(*req.BatteryID)))
+		info["电池编码"] = ent.NewExportInfo(*req.BatteryID, asset.Table)
+		q.Where(rider.HasBatteryWith(asset.ID(*req.BatteryID)))
 	}
 
 	// 订阅类型筛选
@@ -786,10 +788,14 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 	// 获取电池
 	bat := item.Edges.Battery
 	if bat != nil {
+		var m string
+		if bat.Edges.Model != nil {
+			m = bat.Edges.Model.Model
+		}
 		ri.Battery = &model.Battery{
 			ID:    bat.ID,
 			SN:    bat.Sn,
-			Model: bat.Model,
+			Model: m,
 		}
 	}
 	return ri

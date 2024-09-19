@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -61,7 +62,7 @@ func (iq *InstructionsQuery) Order(o ...instructions.OrderOption) *InstructionsQ
 // First returns the first Instructions entity from the query.
 // Returns a *NotFoundError when no Instructions was found.
 func (iq *InstructionsQuery) First(ctx context.Context) (*Instructions, error) {
-	nodes, err := iq.Limit(1).All(setContextOp(ctx, iq.ctx, "First"))
+	nodes, err := iq.Limit(1).All(setContextOp(ctx, iq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +85,7 @@ func (iq *InstructionsQuery) FirstX(ctx context.Context) *Instructions {
 // Returns a *NotFoundError when no Instructions ID was found.
 func (iq *InstructionsQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = iq.Limit(1).IDs(setContextOp(ctx, iq.ctx, "FirstID")); err != nil {
+	if ids, err = iq.Limit(1).IDs(setContextOp(ctx, iq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -107,7 +108,7 @@ func (iq *InstructionsQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Instructions entity is found.
 // Returns a *NotFoundError when no Instructions entities are found.
 func (iq *InstructionsQuery) Only(ctx context.Context) (*Instructions, error) {
-	nodes, err := iq.Limit(2).All(setContextOp(ctx, iq.ctx, "Only"))
+	nodes, err := iq.Limit(2).All(setContextOp(ctx, iq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +136,7 @@ func (iq *InstructionsQuery) OnlyX(ctx context.Context) *Instructions {
 // Returns a *NotFoundError when no entities are found.
 func (iq *InstructionsQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = iq.Limit(2).IDs(setContextOp(ctx, iq.ctx, "OnlyID")); err != nil {
+	if ids, err = iq.Limit(2).IDs(setContextOp(ctx, iq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -160,7 +161,7 @@ func (iq *InstructionsQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of InstructionsSlice.
 func (iq *InstructionsQuery) All(ctx context.Context) ([]*Instructions, error) {
-	ctx = setContextOp(ctx, iq.ctx, "All")
+	ctx = setContextOp(ctx, iq.ctx, ent.OpQueryAll)
 	if err := iq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -182,7 +183,7 @@ func (iq *InstructionsQuery) IDs(ctx context.Context) (ids []uint64, err error) 
 	if iq.ctx.Unique == nil && iq.path != nil {
 		iq.Unique(true)
 	}
-	ctx = setContextOp(ctx, iq.ctx, "IDs")
+	ctx = setContextOp(ctx, iq.ctx, ent.OpQueryIDs)
 	if err = iq.Select(instructions.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -200,7 +201,7 @@ func (iq *InstructionsQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (iq *InstructionsQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, iq.ctx, "Count")
+	ctx = setContextOp(ctx, iq.ctx, ent.OpQueryCount)
 	if err := iq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -218,7 +219,7 @@ func (iq *InstructionsQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (iq *InstructionsQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, iq.ctx, "Exist")
+	ctx = setContextOp(ctx, iq.ctx, ent.OpQueryExist)
 	switch _, err := iq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -251,8 +252,9 @@ func (iq *InstructionsQuery) Clone() *InstructionsQuery {
 		inters:     append([]Interceptor{}, iq.inters...),
 		predicates: append([]predicate.Instructions{}, iq.predicates...),
 		// clone intermediate query.
-		sql:  iq.sql.Clone(),
-		path: iq.path,
+		sql:       iq.sql.Clone(),
+		path:      iq.path,
+		modifiers: append([]func(*sql.Selector){}, iq.modifiers...),
 	}
 }
 
@@ -477,7 +479,7 @@ func (igb *InstructionsGroupBy) Aggregate(fns ...AggregateFunc) *InstructionsGro
 
 // Scan applies the selector query and scans the result into the given value.
 func (igb *InstructionsGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, igb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, igb.build.ctx, ent.OpQueryGroupBy)
 	if err := igb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -525,7 +527,7 @@ func (is *InstructionsSelect) Aggregate(fns ...AggregateFunc) *InstructionsSelec
 
 // Scan applies the selector query and scans the result into the given value.
 func (is *InstructionsSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, is.ctx, "Select")
+	ctx = setContextOp(ctx, is.ctx, ent.OpQuerySelect)
 	if err := is.prepareQuery(ctx); err != nil {
 		return err
 	}

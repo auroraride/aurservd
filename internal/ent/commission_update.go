@@ -344,7 +344,7 @@ func (cu *CommissionUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (cu *CommissionUpdate) check() error {
-	if _, ok := cu.mutation.OrderID(); cu.mutation.OrderCleared() && !ok {
+	if cu.mutation.OrderCleared() && len(cu.mutation.OrderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Commission.order"`)
 	}
 	return nil
@@ -915,7 +915,7 @@ func (cuo *CommissionUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (cuo *CommissionUpdateOne) check() error {
-	if _, ok := cuo.mutation.OrderID(); cuo.mutation.OrderCleared() && !ok {
+	if cuo.mutation.OrderCleared() && len(cuo.mutation.OrderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Commission.order"`)
 	}
 	return nil

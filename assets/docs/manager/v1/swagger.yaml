@@ -1,19 +1,5 @@
 basePath: /
 definitions:
-  adapter.BatteryBrand:
-    enum:
-    - UNKNOWN
-    - XC
-    - TB
-    type: string
-    x-enum-comments:
-      BatteryBrandTB: 拓邦电池
-      BatteryBrandUnknown: 未知
-      BatteryBrandXC: 星创电池
-    x-enum-varnames:
-    - BatteryBrandUnknown
-    - BatteryBrandXC
-    - BatteryBrandTB
   adapter.CabinetBrand:
     enum:
     - UNKNOWN
@@ -47,7 +33,7 @@ definitions:
         type: boolean
       image:
         allOf:
-        - $ref: '#/definitions/definition.ActivityImage'
+        - $ref: '#/definitions/model.ActivityImage'
         description: 图片, 图片
       introduction:
         description: 活动简介
@@ -87,7 +73,7 @@ definitions:
         type: integer
       image:
         allOf:
-        - $ref: '#/definitions/definition.ActivityImage'
+        - $ref: '#/definitions/model.ActivityImage'
         description: 图片
       introduction:
         description: 活动简介
@@ -111,18 +97,6 @@ definitions:
         description: 更新时间
         type: string
     type: object
-  definition.ActivityImage:
-    properties:
-      home:
-        description: 首页icon图片
-        type: string
-      list:
-        description: 列表图片
-        type: string
-      popup:
-        description: 弹窗图片
-        type: string
-    type: object
   definition.ActivityModifyReq:
     properties:
       enable:
@@ -133,7 +107,7 @@ definitions:
         type: boolean
       image:
         allOf:
-        - $ref: '#/definitions/definition.ActivityImage'
+        - $ref: '#/definitions/model.ActivityImage'
         description: 图片, 图片
       introduction:
         description: 活动简介
@@ -768,6 +742,23 @@ definitions:
     - name
     - sort
     type: object
+  definition.StoreGroupCreateRep:
+    properties:
+      name:
+        description: 门店集合名称
+        type: string
+    required:
+    - name
+    type: object
+  definition.StoreGroupListRes:
+    properties:
+      id:
+        description: 门店集合id
+        type: integer
+      name:
+        description: 门店集合名称
+        type: string
+    type: object
   definition.Version:
     properties:
       appPlatform:
@@ -839,6 +830,18 @@ definitions:
     - content
     - version
     type: object
+  model.ActivityImage:
+    properties:
+      home:
+        description: 首页icon图片
+        type: string
+      list:
+        description: 列表图片
+        type: string
+      popup:
+        description: 弹窗图片
+        type: string
+    type: object
   model.AgentCreateReq:
     properties:
       enterpriseId:
@@ -906,6 +909,29 @@ definitions:
     x-enum-varnames:
     - AppPlatformAndroid
     - AppPlatformIOS
+  model.AssetLocationsType:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    type: integer
+    x-enum-comments:
+      AssetLocationsTypeCabinet: 电柜
+      AssetLocationsTypeOperation: 运维
+      AssetLocationsTypeRider: 骑手
+      AssetLocationsTypeStation: 站点
+      AssetLocationsTypeStore: 门店
+      AssetLocationsTypeWarehouse: 仓库
+    x-enum-varnames:
+    - AssetLocationsTypeWarehouse
+    - AssetLocationsTypeStore
+    - AssetLocationsTypeStation
+    - AssetLocationsTypeOperation
+    - AssetLocationsTypeCabinet
+    - AssetLocationsTypeRider
   model.AssistanceAllocateReq:
     properties:
       id:
@@ -1310,21 +1336,6 @@ definitions:
         description: 电池总压 (V)
         type: number
     type: object
-  model.BatteryCreateReq:
-    properties:
-      cityId:
-        description: 城市
-        type: integer
-      enable:
-        description: 是否启用, 需默认为`true`
-        type: boolean
-      sn:
-        description: 电池编号
-        type: string
-    required:
-    - cityId
-    - sn
-    type: object
   model.BatteryFaultRes:
     properties:
       begin_at:
@@ -1336,73 +1347,6 @@ definitions:
       sn:
         type: string
     type: object
-  model.BatteryGoal:
-    enum:
-    - 0
-    - 1
-    - 2
-    - 3
-    type: integer
-    x-enum-varnames:
-    - BatteryAll
-    - BatteryStation
-    - BatteryCabinet
-    - BatteryRider
-  model.BatteryListRes:
-    properties:
-      brand:
-        allOf:
-        - $ref: '#/definitions/adapter.BatteryBrand'
-        description: 品牌 TB:拓邦, XC:星创
-      cabinet:
-        allOf:
-        - $ref: '#/definitions/model.CabinetBasicInfo'
-        description: 电柜
-      charge:
-        description: 充电是否开启
-        type: boolean
-      city:
-        allOf:
-        - $ref: '#/definitions/model.City'
-        description: 城市
-      disCharge:
-        description: 放电是否开启
-        type: boolean
-      enable:
-        description: 是否启用
-        type: boolean
-      enterpriseName:
-        description: 团签名称
-        type: string
-      faults:
-        description: 故障列表, `0`:总压低, `1`:总压高, `2`:单体低, `3`:单体高, `6`:放电过流, `7`:充电过流,
-          `8`:SOC低, `11`:充电高温, `12`:充电低温, `13`:放电高温, `14`:放电低温, `15`:短路, `16`:MOS高温
-        items:
-          type: integer
-        type: array
-      id:
-        type: integer
-      model:
-        description: 型号
-        type: string
-      rider:
-        allOf:
-        - $ref: '#/definitions/model.Rider'
-        description: 骑手
-      sn:
-        description: 编号
-        type: string
-      soc:
-        description: 剩余容量, 单位1%
-        type: integer
-      stationName:
-        description: 站点名称
-        type: string
-      status:
-        allOf:
-        - $ref: '#/definitions/model.BatteryStatus'
-        description: 状态, 0:静置 1:充电 2:放电 3:异常(此时faults字段存在)
-    type: object
   model.BatteryModel:
     properties:
       id:
@@ -1410,21 +1354,6 @@ definitions:
       model:
         description: 电池型号
         type: string
-    type: object
-  model.BatteryModelReq:
-    properties:
-      model:
-        description: 电池型号(POST), 例如60V30AH
-        type: string
-    type: object
-  model.BatteryModifyReq:
-    properties:
-      cityId:
-        description: 城市ID
-        type: integer
-      enable:
-        description: 是否启用
-        type: boolean
     type: object
   model.BatteryPoint:
     properties:
@@ -1601,8 +1530,17 @@ definitions:
       riderId:
         description: 骑手ID
         type: integer
+      toLocationID:
+        description: 位置ID
+        type: integer
+      toLocationType:
+        allOf:
+        - $ref: '#/definitions/model.AssetLocationsType'
+        description: 位置类型  1:仓库 2:门店 3:站点 4:运维
     required:
     - riderId
+    - toLocationID
+    - toLocationType
     type: object
   model.BillOverview:
     properties:
@@ -2354,6 +2292,12 @@ definitions:
       stockNum:
         description: 库存电池
         type: integer
+      storeId:
+        description: 绑定门店ID
+        type: integer
+      storeName:
+        description: 绑定门店名称
+        type: string
       transferred:
         description: 是否初始化过调拨
         type: boolean
@@ -2559,6 +2503,12 @@ definitions:
         - 0
         - 1
         - 2
+      storeId:
+        description: 绑定门店ID
+        type: integer
+      storeName:
+        description: 绑定门店名称
+        type: string
       transferred:
         description: 是否初始化过调拨
         type: boolean
@@ -3248,141 +3198,6 @@ definitions:
     required:
     - mainPic
     type: object
-  model.EbikeCreateReq:
-    properties:
-      brandId:
-        description: '型号, 关联: `MB015 车辆型号列表`'
-        type: integer
-      color:
-        description: '颜色, 默认`橘黄`, 创建或编辑时用选择列表, 选项为: `橘黄` / `红` / `白` / `黑`'
-        type: string
-      enable:
-        description: 是否启用, 默认要启用
-        type: boolean
-      exFactory:
-        description: 生产批次
-        type: string
-      machine:
-        description: 终端编号
-        type: string
-      plate:
-        description: 车牌号
-        type: string
-      sim:
-        description: SIM卡号
-        type: string
-      sn:
-        description: 车架号
-        type: string
-    required:
-    - brandId
-    - exFactory
-    - sn
-    type: object
-  model.EbikeGoal:
-    enum:
-    - 0
-    - 1
-    - 2
-    type: integer
-    x-enum-varnames:
-    - EbikeAll
-    - EbikeStation
-    - EbikeRider
-  model.EbikeListRes:
-    properties:
-      brand:
-        description: 品牌
-        type: string
-      brandId:
-        description: 品牌ID
-        type: integer
-      color:
-        description: '颜色, 默认`橘黄`, 创建或编辑时用选择列表, 选项为: `橘黄` / `红` / `白` / `黑`'
-        type: string
-      enable:
-        description: 是否启用, 默认要启用
-        type: boolean
-      enterpriseId:
-        description: 团签ID
-        type: integer
-      enterpriseName:
-        description: 团签名称
-        type: string
-      exFactory:
-        description: 生产批次
-        type: string
-      id:
-        type: integer
-      machine:
-        description: 终端编号
-        type: string
-      plate:
-        description: 车牌号
-        type: string
-      rider:
-        description: 骑手
-        type: string
-      rto:
-        description: 是否以租代购
-        type: boolean
-      sim:
-        description: SIM卡号
-        type: string
-      sn:
-        description: 车架号
-        type: string
-      stationId:
-        description: 站点id
-        type: integer
-      stationName:
-        description: 所属站点名称
-        type: string
-      status:
-        description: 状态
-        type: string
-      store:
-        description: 门店
-        type: string
-    type: object
-  model.EbikeModifyReq:
-    properties:
-      color:
-        description: '颜色, 默认`橘黄`, 创建或编辑时用选择列表, 选项为: `橘黄` / `红` / `白` / `黑`'
-        type: string
-      enable:
-        description: 是否启用, 默认要启用
-        type: boolean
-      exFactory:
-        description: 生产批次
-        type: string
-      machine:
-        description: 终端编号
-        type: string
-      plate:
-        description: 车牌号
-        type: string
-      sim:
-        description: SIM卡号
-        type: string
-    type: object
-  model.EbikeStatus:
-    enum:
-    - 0
-    - 1
-    - 2
-    - 3
-    type: integer
-    x-enum-comments:
-      EbikeStatusInStock: 库存中
-      EbikeStatusMaintenance: 维修中
-      EbikeStatusScrapped: 已报废
-      EbikeStatusUsing: 使用中
-    x-enum-varnames:
-    - EbikeStatusInStock
-    - EbikeStatusUsing
-    - EbikeStatusMaintenance
-    - EbikeStatusScrapped
   model.Employee:
     properties:
       id:
@@ -3486,9 +3301,9 @@ definitions:
       stationID:
         description: 站点ID
         type: integer
-    required:
-    - enterpriseID
-    - stationID
+      storeID:
+        description: 门店ID
+        type: integer
     type: object
   model.EnterpriseContract:
     properties:
@@ -4861,6 +4676,9 @@ definitions:
       intelligent:
         description: 是否智能柜套餐
         type: boolean
+      introductionImage:
+        description: 商品介绍图
+        type: string
       name:
         description: 骑士卡名称
         type: string
@@ -5985,146 +5803,6 @@ definitions:
       status:
         type: boolean
     type: object
-  model.StockBatteryOverviewRes:
-    properties:
-      c_active:
-        description: 电柜-激活
-        type: integer
-      c_continue:
-        description: 电柜-结束寄存
-        type: integer
-      c_inboundnum:
-        description: 电柜-入库数量
-        type: integer
-      c_outboundnum:
-        description: 电柜-出库数量
-        type: integer
-      c_pause:
-        description: 电柜-寄存
-        type: integer
-      c_transfer:
-        description: 电柜-平台调拨数量
-        type: integer
-      c_unsubscribe:
-        description: 电柜-退租
-        type: integer
-      model:
-        description: 电池型号
-        type: string
-      num:
-        description: 总数
-        type: integer
-      s_active:
-        description: 门店-激活
-        type: integer
-      s_continue:
-        description: 门店-结束寄存
-        type: integer
-      s_inboundnum:
-        description: 门店-入库数量
-        type: integer
-      s_outboundnum:
-        description: 门店-出库数量
-        type: integer
-      s_pause:
-        description: 门店-寄存
-        type: integer
-      s_transfer:
-        description: 门店-平台调拨数量
-        type: integer
-      s_unsubscribe:
-        description: 门店-退租
-        type: integer
-    type: object
-  model.StockCabinetListRes:
-    properties:
-      batteries:
-        description: 电池详情
-        items:
-          $ref: '#/definitions/model.StockMaterial'
-        type: array
-      city:
-        allOf:
-        - $ref: '#/definitions/model.City'
-        description: 城市
-      id:
-        description: 电柜ID
-        type: integer
-      name:
-        description: 电柜名称
-        type: string
-      serial:
-        description: 电柜编号
-        type: string
-    type: object
-  model.StockDetailExportReq:
-    properties:
-      batterySn:
-        description: 电池编码
-        type: string
-      cabinetId:
-        description: 电柜ID
-        type: integer
-      cityId:
-        description: 城市ID
-        type: integer
-      ebikeSn:
-        description: 车架号
-        type: string
-      end:
-        description: 结束时间
-        type: string
-      enterpriseId:
-        description: 企业ID
-        type: integer
-      goal:
-        allOf:
-        - $ref: '#/definitions/model.StoreCabiletGoal'
-        description: 查询目标 0:不筛选 1:门店(默认) 2:电柜 3:站点
-        enum:
-        - 0
-        - 1
-        - 2
-        - 3
-      keyword:
-        description: 查询电柜编号、车架号、电池编码
-        type: string
-      materials:
-        description: 查询物资类别, 默认为电池, 逗号分隔 battery:电池 ebike:电车 others:其他物资
-        type: string
-      model:
-        description: 电池型号
-        type: string
-      positive:
-        description: 是否正序(默认倒序)
-        type: boolean
-      remark:
-        description: 备注
-        type: string
-      serial:
-        description: 电柜编号
-        type: string
-      start:
-        description: 开始时间
-        type: string
-      stationId:
-        description: 站点ID
-        type: integer
-      storeId:
-        description: 门店ID
-        type: integer
-      type:
-        description: 调拨类型, 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租
-        enum:
-        - 0
-        - 1
-        - 2
-        - 3
-        - 4
-        type: integer
-    required:
-    - remark
-    type: object
   model.StockDetailRes:
     properties:
       city:
@@ -6164,68 +5842,6 @@ definitions:
         description: 类型
         type: string
     type: object
-  model.StockListRes:
-    properties:
-      batteries:
-        description: 电池详情
-        items:
-          $ref: '#/definitions/model.StockMaterial'
-        type: array
-      batteryTotal:
-        description: 电池总数
-        type: integer
-      city:
-        allOf:
-        - $ref: '#/definitions/model.City'
-        description: 城市
-      ebikeTotal:
-        description: 电车总数
-        type: integer
-      ebikes:
-        description: 电车
-        items:
-          $ref: '#/definitions/model.StockMaterial'
-        type: array
-      enterpriseID:
-        description: 团签id
-        type: integer
-      enterpriseName:
-        description: 团签名称
-        type: string
-      materials:
-        description: 非电池物资详情
-        items:
-          $ref: '#/definitions/model.StockMaterial'
-        type: array
-      stationID:
-        description: 站点id
-        type: integer
-      stationName:
-        description: 站点名称
-        type: string
-      store:
-        allOf:
-        - $ref: '#/definitions/model.Store'
-        description: 门店
-    type: object
-  model.StockMaterial:
-    properties:
-      exception:
-        description: 异常数量(电柜无)
-        type: integer
-      inbound:
-        description: 入库数量
-        type: integer
-      name:
-        description: 物资名称
-        type: string
-      outbound:
-        description: 出库数量
-        type: integer
-      surplus:
-        description: 剩余
-        type: integer
-    type: object
   model.StockStoreMaterial:
     properties:
       model:
@@ -6237,53 +5853,6 @@ definitions:
       num:
         description: 物资数量
         type: integer
-    type: object
-  model.StockTransferReq:
-    properties:
-      batterySn:
-        description: 电池编号
-        items:
-          type: string
-        type: array
-      ebikes:
-        description: 车架编号 (和 `物资名称` / `车架` 不能同时存在, 也不能同时为空)
-        items:
-          type: string
-        type: array
-      inboundId:
-        description: 调入至 0:平台
-        type: integer
-      inboundTarget:
-        description: 调入目标 0:平台 1:门店 2:电柜 3.站点
-        enum:
-        - 0
-        - 1
-        - 2
-        type: integer
-      model:
-        description: 电池型号 (和 `物资名称` / `车架` 不能同时存在, 也不能同时为空)
-        type: string
-      name:
-        description: 物资名称 (和 `电池型号` / `车架` 不能同时存在, 也不能同时为空)
-        type: string
-      num:
-        description: 调拨数量
-        type: integer
-      outboundId:
-        description: 调出自 0:平台
-        type: integer
-      outboundTarget:
-        description: 调出目标 0:平台 1:门店 2:电柜 3.站点
-        enum:
-        - 0
-        - 1
-        - 2
-        type: integer
-      remark:
-        description: 备注
-        type: string
-    required:
-    - remark
     type: object
   model.Store:
     properties:
@@ -6339,6 +5908,9 @@ definitions:
       ebikeSale:
         description: 是否可以买车
         type: boolean
+      groupID:
+        description: 门店集合ID
+        type: integer
       headPic:
         description: 门店头图, 门店头图
         type: string
@@ -6379,6 +5951,15 @@ definitions:
     - photos
     - status
     type: object
+  model.StoreGroup:
+    properties:
+      id:
+        description: 集合id
+        type: integer
+      name:
+        description: 集合名称
+        type: string
+    type: object
   model.StoreItem:
     properties:
       branch:
@@ -6406,6 +5987,10 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Employee'
         description: 店员, 有可能不存在
+      group:
+        allOf:
+        - $ref: '#/definitions/model.StoreGroup'
+        description: 门店集合
       headPic:
         description: 门店头图
         type: string
@@ -6450,6 +6035,9 @@ definitions:
       ebikeSale:
         description: 是否可以买车
         type: boolean
+      groupID:
+        description: 门店集合ID
+        type: integer
       headPic:
         description: 门店头图
         type: string
@@ -8073,188 +7661,6 @@ paths:
       summary: 拒绝救援
       tags:
       - 救援
-  /manager/v1/battery:
-    get:
-      consumes:
-      - application/json
-      operationId: ManagerBatteryList
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 电柜ID
-        in: query
-        name: cabinetID
-        type: integer
-      - description: 电柜名称
-        in: query
-        name: cabinetName
-        type: string
-      - description: 城市
-        in: query
-        name: cityId
-        type: integer
-      - description: 当前页, 从1开始, 默认1
-        in: query
-        name: current
-        type: integer
-      - description: 团签ID
-        in: query
-        name: enterpriseId
-        type: integer
-      - description: 查询目标, 0:不筛选 1:站点 2:电柜 3:骑手
-        enum:
-        - 0
-        - 1
-        - 2
-        - 3
-        in: query
-        name: goal
-        type: integer
-        x-enum-varnames:
-        - BatteryAll
-        - BatteryStation
-        - BatteryCabinet
-        - BatteryRider
-      - description: 关键词
-        in: query
-        name: keyword
-        type: string
-      - description: 型号
-        in: query
-        name: model
-        type: string
-      - description: 归属类型   1:平台 2:代理商
-        enum:
-        - 1
-        - 2
-        in: query
-        name: ownerType
-        type: integer
-      - description: 每页数据, 默认20
-        in: query
-        name: pageSize
-        type: integer
-      - description: 骑手ID
-        in: query
-        name: riderId
-        type: integer
-      - description: 编号
-        in: query
-        name: sn
-        type: string
-      - description: 站点ID
-        in: query
-        name: stationId
-        type: integer
-      - description: 状态 0:全部 1:启用(不携带默认为启用) 2:禁用
-        in: query
-        name: status
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/model.PaginationRes'
-            - properties:
-                items:
-                  items:
-                    $ref: '#/definitions/model.BatteryListRes'
-                  type: array
-              type: object
-      summary: 电池列表
-      tags:
-      - 电池
-    post:
-      consumes:
-      - application/json
-      operationId: ManagerBatteryCreate
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 电池信息
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.BatteryCreateReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 添加电池
-      tags:
-      - 电池
-  /manager/v1/battery/{id}:
-    put:
-      consumes:
-      - application/json
-      operationId: ManagerBatteryModify
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 电池ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: 修改信息
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.BatteryModifyReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 修改电池
-      tags:
-      - 电池
-  /manager/v1/battery/batch:
-    post:
-      consumes:
-      - application/json
-      description: 参考 [MI007 批量导入电车]
-      operationId: ManagerBatteryBatchCreate
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 电池信息
-        in: formData
-        name: file
-        required: true
-        type: file
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 批量导入电池
-      tags:
-      - 电池
   /manager/v1/battery/bind:
     post:
       consumes:
@@ -8283,32 +7689,6 @@ paths:
       tags:
       - 电池
   /manager/v1/battery/model:
-    delete:
-      consumes:
-      - application/json
-      operationId: ManagerBatteryDeleteModel
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 电池型号数据
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.BatteryModelReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 删除电池型号
-      tags:
-      - 电池
     get:
       consumes:
       - application/json
@@ -8334,37 +7714,6 @@ paths:
                   type: array
               type: object
       summary: 获取电池型号
-      tags:
-      - 电池
-    post:
-      consumes:
-      - application/json
-      operationId: BatteryCreateModel
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 电池型号数据
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.BatteryModelReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/model.ItemRes'
-            - properties:
-                item:
-                  $ref: '#/definitions/model.BatteryModel'
-              type: object
-      summary: 创建电池型号
       tags:
       - 电池
   /manager/v1/battery/track/rectify:
@@ -10210,197 +9559,6 @@ paths:
       summary: 修改押金
       tags:
       - 骑手
-  /manager/v1/ebike:
-    get:
-      consumes:
-      - application/json
-      operationId: ManagerEbikeList
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 品牌ID
-        in: query
-        name: brandId
-        type: integer
-      - description: 当前页, 从1开始, 默认1
-        in: query
-        name: current
-        type: integer
-      - description: 是否启用, 默认`true`, 不携带为获取全部
-        in: query
-        name: enable
-        type: boolean
-      - description: 团签ID
-        in: query
-        name: enterpriseId
-        type: integer
-      - description: 生产批次
-        in: query
-        name: exFactory
-        type: string
-      - description: 查询目标, 0:不筛选 1:站点 2:骑手
-        enum:
-        - 0
-        - 1
-        - 2
-        in: query
-        name: goal
-        type: integer
-        x-enum-varnames:
-        - EbikeAll
-        - EbikeStation
-        - EbikeRider
-      - description: 搜索关键词<骑手:电话/姓名, 车辆:车架号/车牌号/终端编号/SIM卡号>
-        in: query
-        name: keyword
-        type: string
-      - description: 归属类型   1:平台 2:代理商
-        enum:
-        - 1
-        - 2
-        in: query
-        name: ownerType
-        type: integer
-      - description: 每页数据, 默认20
-        in: query
-        name: pageSize
-        type: integer
-      - description: 骑手ID
-        in: query
-        name: riderId
-        type: integer
-      - description: 是否以租代购
-        in: query
-        name: rto
-        type: boolean
-      - description: 站点ID
-        in: query
-        name: stationId
-        type: integer
-      - description: 状态, 0:库存中 1:使用中 2:维修中 3:已报废, 不携带为获取全部
-        enum:
-        - 0
-        - 1
-        - 2
-        - 3
-        in: query
-        name: status
-        type: integer
-        x-enum-comments:
-          EbikeStatusInStock: 库存中
-          EbikeStatusMaintenance: 维修中
-          EbikeStatusScrapped: 已报废
-          EbikeStatusUsing: 使用中
-        x-enum-varnames:
-        - EbikeStatusInStock
-        - EbikeStatusUsing
-        - EbikeStatusMaintenance
-        - EbikeStatusScrapped
-      - description: 门店ID
-        in: query
-        name: storeId
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/model.PaginationRes'
-            - properties:
-                item:
-                  items:
-                    $ref: '#/definitions/model.EbikeListRes'
-                  type: array
-              type: object
-      summary: 电车列表
-      tags:
-      - 电车
-    post:
-      consumes:
-      - application/json
-      operationId: ManagerEbikeCreate
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 电车信息
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.EbikeCreateReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 添加电车
-      tags:
-      - 电车
-  /manager/v1/ebike/:id:
-    put:
-      consumes:
-      - application/json
-      operationId: ManagerEbikeModify
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 电车信息
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.EbikeModifyReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 修改电车
-      tags:
-      - 电车
-  /manager/v1/ebike/batch:
-    post:
-      consumes:
-      - multipart/form-data
-      operationId: ManagerEbikeBatchCreate
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 电车信息
-        in: formData
-        name: file
-        required: true
-        type: file
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            items:
-              type: string
-            type: array
-      summary: 批量导入电车
-      tags:
-      - 电车
   /manager/v1/ebike/brand:
     get:
       consumes:
@@ -12136,33 +11294,6 @@ paths:
           schema:
             $ref: '#/definitions/model.ExportRes'
       summary: 导出企业使用明细
-      tags:
-      - 导出
-  /manager/v1/export/stock-detail:
-    post:
-      consumes:
-      - application/json
-      operationId: ManagerExportStockDetail
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 筛选条件
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.StockDetailExportReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.ExportRes'
-      summary: 导出出入库明细
       tags:
       - 导出
   /manager/v1/fault:
@@ -15444,6 +14575,29 @@ paths:
       summary: 筛选门店
       tags:
       - 筛选
+  /manager/v1/selection/store_group:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionStoreGroup
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SelectOption'
+            type: array
+      summary: 筛选门店集合
+      tags:
+      - 筛选
   /manager/v1/selection/wxemployee:
     get:
       consumes:
@@ -15812,146 +14966,6 @@ paths:
       summary: 修改版本
       tags:
       - 设置
-  /manager/v1/stock:
-    post:
-      consumes:
-      - application/json
-      operationId: ManagerStockCreate
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: desc
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.StockTransferReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            items:
-              type: string
-            type: array
-      summary: 调拨物资
-      tags:
-      - 库存
-  /manager/v1/stock/battery/overview:
-    get:
-      consumes:
-      - application/json
-      operationId: ManagerStockBatteryOverview
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 电柜ID, 仅goal为2的时候生效
-        in: query
-        name: cabinetId
-        type: integer
-      - description: 城市ID
-        in: query
-        name: cityId
-        type: integer
-      - description: 结束时间
-        in: query
-        name: end
-        type: string
-      - description: 查询目标, 0:不筛选 1:门店(默认) 2:电柜
-        enum:
-        - 0
-        - 1
-        - 2
-        - 3
-        in: query
-        name: goal
-        type: integer
-        x-enum-varnames:
-        - StockGoalAll
-        - StockGoalStore
-        - StockGoalCabinet
-        - StockGoalStation
-      - description: 开始时间
-        in: query
-        name: start
-        type: string
-      - description: 门店ID, 仅goal为1的时候生效
-        in: query
-        name: storeId
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 使用中数量 = 激活 + 结束寄存 - 寄存 - 退租
-          schema:
-            $ref: '#/definitions/model.StockBatteryOverviewRes'
-      summary: 电池概览
-      tags:
-      - 库存
-  /manager/v1/stock/cabinet:
-    get:
-      consumes:
-      - application/json
-      operationId: ManagerStockCabinetList
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 电柜ID
-        in: query
-        name: cabinetId
-        type: integer
-      - description: 城市ID
-        in: query
-        name: cityId
-        type: integer
-      - description: 当前页, 从1开始, 默认1
-        in: query
-        name: current
-        type: integer
-      - description: 结束时间
-        in: query
-        name: end
-        type: string
-      - description: 每页数据, 默认20
-        in: query
-        name: pageSize
-        type: integer
-      - description: 电柜编号
-        in: query
-        name: serial
-        type: string
-      - description: 开始时间
-        in: query
-        name: start
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/model.PaginationRes'
-            - properties:
-                items:
-                  items:
-                    $ref: '#/definitions/model.StockCabinetListRes'
-                  type: array
-              type: object
-      summary: 电柜物资列表
-      tags:
-      - 库存
   /manager/v1/stock/detail:
     get:
       consumes:
@@ -16068,158 +15082,6 @@ paths:
       summary: 出入库明细
       tags:
       - 库存
-  /manager/v1/stock/enterprise/list:
-    get:
-      consumes:
-      - application/json
-      operationId: ManagerStockEnterpriseList
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 城市ID
-        in: query
-        name: cityId
-        type: integer
-      - description: 当前页, 从1开始, 默认1
-        in: query
-        name: current
-        type: integer
-      - description: 电车型号ID
-        in: query
-        name: ebikeBrandId
-        type: integer
-      - description: 结束时间
-        in: query
-        name: end
-        type: string
-      - description: 团签ID
-        in: query
-        name: enterpriseId
-        type: integer
-      - description: 其他物资名称
-        in: query
-        name: keyword
-        type: string
-      - description: 电池型号
-        in: query
-        name: model
-        type: string
-      - description: 门店名称
-        in: query
-        name: name
-        type: string
-      - description: 每页数据, 默认20
-        in: query
-        name: pageSize
-        type: integer
-      - description: 开始时间
-        in: query
-        name: start
-        type: string
-      - description: 站点id
-        in: query
-        name: stationId
-        type: integer
-      - description: 门店ID
-        in: query
-        name: storeId
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/model.PaginationRes'
-            - properties:
-                items:
-                  items:
-                    $ref: '#/definitions/model.StockListRes'
-                  type: array
-              type: object
-      summary: 团签物资列表
-      tags:
-      - 库存
-  /manager/v1/stock/store:
-    get:
-      consumes:
-      - application/json
-      operationId: ManagerStockStoreList
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 城市ID
-        in: query
-        name: cityId
-        type: integer
-      - description: 当前页, 从1开始, 默认1
-        in: query
-        name: current
-        type: integer
-      - description: 电车型号ID
-        in: query
-        name: ebikeBrandId
-        type: integer
-      - description: 结束时间
-        in: query
-        name: end
-        type: string
-      - description: 团签ID
-        in: query
-        name: enterpriseId
-        type: integer
-      - description: 其他物资名称
-        in: query
-        name: keyword
-        type: string
-      - description: 电池型号
-        in: query
-        name: model
-        type: string
-      - description: 门店名称
-        in: query
-        name: name
-        type: string
-      - description: 每页数据, 默认20
-        in: query
-        name: pageSize
-        type: integer
-      - description: 开始时间
-        in: query
-        name: start
-        type: string
-      - description: 站点id
-        in: query
-        name: stationId
-        type: integer
-      - description: 门店ID
-        in: query
-        name: storeId
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/model.PaginationRes'
-            - properties:
-                items:
-                  items:
-                    $ref: '#/definitions/model.StockListRes'
-                  type: array
-              type: object
-      summary: 门店物资列表
-      tags:
-      - 库存
   /manager/v1/store:
     get:
       consumes:
@@ -16257,6 +15119,10 @@ paths:
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
+        type: integer
+      - description: 门店集合ID
+        in: query
+        name: groupID
         type: integer
       - description: 门店名称
         in: query
@@ -16385,6 +15251,81 @@ paths:
       summary: 修改门店
       tags:
       - 门店
+  /manager/v1/store_group:
+    get:
+      consumes:
+      - application/json
+      operationId: StoreGroupList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.StoreGroupListRes'
+            type: array
+      summary: 门店集合列表
+      tags:
+      - StoreGroup - 门店集合
+    post:
+      consumes:
+      - application/json
+      operationId: StoreGroupCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 创建参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.StoreGroupCreateRep'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 门店集合创建
+      tags:
+      - StoreGroup - 门店集合
+  /manager/v1/store_group/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: StoreGroupDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 资产ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 门店集合删除
+      tags:
+      - StoreGroup - 门店集合
   /manager/v1/subscribe/active:
     post:
       consumes:

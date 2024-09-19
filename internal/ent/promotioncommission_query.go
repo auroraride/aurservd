@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -110,7 +111,7 @@ func (pcq *PromotionCommissionQuery) QueryPlans() *PromotionCommissionPlanQuery 
 // First returns the first PromotionCommission entity from the query.
 // Returns a *NotFoundError when no PromotionCommission was found.
 func (pcq *PromotionCommissionQuery) First(ctx context.Context) (*PromotionCommission, error) {
-	nodes, err := pcq.Limit(1).All(setContextOp(ctx, pcq.ctx, "First"))
+	nodes, err := pcq.Limit(1).All(setContextOp(ctx, pcq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +134,7 @@ func (pcq *PromotionCommissionQuery) FirstX(ctx context.Context) *PromotionCommi
 // Returns a *NotFoundError when no PromotionCommission ID was found.
 func (pcq *PromotionCommissionQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = pcq.Limit(1).IDs(setContextOp(ctx, pcq.ctx, "FirstID")); err != nil {
+	if ids, err = pcq.Limit(1).IDs(setContextOp(ctx, pcq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -156,7 +157,7 @@ func (pcq *PromotionCommissionQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one PromotionCommission entity is found.
 // Returns a *NotFoundError when no PromotionCommission entities are found.
 func (pcq *PromotionCommissionQuery) Only(ctx context.Context) (*PromotionCommission, error) {
-	nodes, err := pcq.Limit(2).All(setContextOp(ctx, pcq.ctx, "Only"))
+	nodes, err := pcq.Limit(2).All(setContextOp(ctx, pcq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -184,7 +185,7 @@ func (pcq *PromotionCommissionQuery) OnlyX(ctx context.Context) *PromotionCommis
 // Returns a *NotFoundError when no entities are found.
 func (pcq *PromotionCommissionQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = pcq.Limit(2).IDs(setContextOp(ctx, pcq.ctx, "OnlyID")); err != nil {
+	if ids, err = pcq.Limit(2).IDs(setContextOp(ctx, pcq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -209,7 +210,7 @@ func (pcq *PromotionCommissionQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of PromotionCommissions.
 func (pcq *PromotionCommissionQuery) All(ctx context.Context) ([]*PromotionCommission, error) {
-	ctx = setContextOp(ctx, pcq.ctx, "All")
+	ctx = setContextOp(ctx, pcq.ctx, ent.OpQueryAll)
 	if err := pcq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -231,7 +232,7 @@ func (pcq *PromotionCommissionQuery) IDs(ctx context.Context) (ids []uint64, err
 	if pcq.ctx.Unique == nil && pcq.path != nil {
 		pcq.Unique(true)
 	}
-	ctx = setContextOp(ctx, pcq.ctx, "IDs")
+	ctx = setContextOp(ctx, pcq.ctx, ent.OpQueryIDs)
 	if err = pcq.Select(promotioncommission.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -249,7 +250,7 @@ func (pcq *PromotionCommissionQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (pcq *PromotionCommissionQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, pcq.ctx, "Count")
+	ctx = setContextOp(ctx, pcq.ctx, ent.OpQueryCount)
 	if err := pcq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -267,7 +268,7 @@ func (pcq *PromotionCommissionQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (pcq *PromotionCommissionQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, pcq.ctx, "Exist")
+	ctx = setContextOp(ctx, pcq.ctx, ent.OpQueryExist)
 	switch _, err := pcq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -302,8 +303,9 @@ func (pcq *PromotionCommissionQuery) Clone() *PromotionCommissionQuery {
 		withMember: pcq.withMember.Clone(),
 		withPlans:  pcq.withPlans.Clone(),
 		// clone intermediate query.
-		sql:  pcq.sql.Clone(),
-		path: pcq.path,
+		sql:       pcq.sql.Clone(),
+		path:      pcq.path,
+		modifiers: append([]func(*sql.Selector){}, pcq.modifiers...),
 	}
 }
 
@@ -641,7 +643,7 @@ func (pcgb *PromotionCommissionGroupBy) Aggregate(fns ...AggregateFunc) *Promoti
 
 // Scan applies the selector query and scans the result into the given value.
 func (pcgb *PromotionCommissionGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, pcgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, pcgb.build.ctx, ent.OpQueryGroupBy)
 	if err := pcgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -689,7 +691,7 @@ func (pcs *PromotionCommissionSelect) Aggregate(fns ...AggregateFunc) *Promotion
 
 // Scan applies the selector query and scans the result into the given value.
 func (pcs *PromotionCommissionSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, pcs.ctx, "Select")
+	ctx = setContextOp(ctx, pcs.ctx, ent.OpQuerySelect)
 	if err := pcs.prepareQuery(ctx); err != nil {
 		return err
 	}

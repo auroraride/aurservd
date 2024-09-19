@@ -7,6 +7,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -26,6 +27,8 @@ import (
 	"github.com/auroraride/aurservd/app/rpc"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/asset"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -84,7 +87,7 @@ func (s *intelligentCabinetService) exchangeCacheKey(uid string) string {
 }
 
 // Exchange 请求换电
-func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *ent.Subscribe, old *ent.Battery, cab *ent.Cabinet) {
+func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *ent.Subscribe, old *ent.Asset, cab *ent.Cabinet) {
 	if cab.Intelligent && old == nil {
 		snag.Panic("请求参数错误")
 	}
@@ -102,8 +105,6 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 		key      = s.exchangeCacheKey(uid)
 	)
 
-	// success := silk.Bool(false)
-	// message := silk.String("")
 	success := atomic.NewBool(false)
 	message := atomic.NewString("")
 
@@ -180,43 +181,88 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 			duration += result.Duration
 			stopAt = silk.Pointer(result.StopAt.AsTime())
 
-			// 如果成功并且是智能柜, 记录电池编码
-			if result.Success && cab.Intelligent {
-				after := result.After
-				before := result.Before
+			// todo 失败的第二步骤逻辑处理
 
-				// 记录用户放入的电池
-				if result.Step == model.ExchangeStepPutInto.Uint32() && after != nil {
-					putin = after.BatterySn
-					empty = &model.BinInfo{
-						Index:       int(after.Ordinal) - 1,
-						Electricity: model.BatterySoc(after.Current),
-						Voltage:     after.Voltage,
+			// 如果成功并且是智能柜, 记录电池编码
+			if result.Success {
+				if cab.Intelligent {
+					after := result.After
+					before := result.Before
+
+					// 记录用户放入的电池
+					if result.Step == model.ExchangeStepPutInto.Uint32() && after != nil {
+						putin = after.BatterySn
+						empty = &model.BinInfo{
+							Index:       int(after.Ordinal) - 1,
+							Electricity: model.BatterySoc(after.Current),
+							Voltage:     after.Voltage,
+						}
+
+						// 清除旧电池分配信息
+						err = NewBattery(s.operator).Unallocate(old, model.AssetLocationsTypeCabinet, cab.ID, model.AssetTransferTypeExchange)
+						if err != nil {
+							return
+						}
+
+						go bs.RiderBusiness(true, putin, s.rider, cab, int(after.Ordinal))
 					}
 
-					// 清除旧电池分配信息
-					_ = NewBattery().Unallocate(old.Update())
+					// 记录用户取走的电池
+					// 判定第三步是否成功, 只要柜门开启就把电池绑定到骑手 - BY: 曹博文
+					if result.Step == model.ExchangeStepOpenFull.Uint32() && before != nil {
+						putout = before.BatterySn
 
-					go bs.RiderBusiness(true, putin, s.rider, cab, int(after.Ordinal))
-				}
+						go bs.RiderBusiness(false, putout, s.rider, cab, int(before.Ordinal))
 
-				// 记录用户取走的电池
-				// 判定第三步是否成功, 只要柜门开启就把电池绑定到骑手 - BY: 曹博文
-				if result.Step == model.ExchangeStepOpenFull.Uint32() && before != nil {
-					putout = before.BatterySn
+						// 更新新电池信息
+						bat, _ := bs.LoadOrCreate(putout)
+						if bat != nil {
+							_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
+								return NewBattery(s.operator).Allocate(bat, sub, model.AssetTransferTypeExchange)
+							})
+						}
+					}
+				} else {
+					if result.Step == model.ExchangeStepPutInto.Uint32() {
+						at, _ := ent.Database.Asset.QueryNotDeleted().Where(
+							asset.Type(model.AssetTypeNonSmartBattery.Value()),
+							asset.LocationsType(model.AssetLocationsTypeRider.Value()),
+							asset.LocationsID(s.rider.ID),
+						).WithModel().First(s.ctx)
+						if at == nil {
+							zap.L().Error(fmt.Sprintf("换电-放电 非智能柜未找到电池信息 %s", cab.Serial))
+							return
+						}
+						// 清除旧电池分配信息
+						err = NewBattery(s.operator).Unallocate(at, model.AssetLocationsTypeCabinet, cab.ID, model.AssetTransferTypeExchange)
+						if err != nil {
+							zap.L().Error("换电-放电 非智能柜清除电池分配信息失败", zap.Error(err))
+							return
+						}
+					}
 
-					go bs.RiderBusiness(false, putout, s.rider, cab, int(before.Ordinal))
-
-					// 更新新电池信息
-					bat, _ := bs.LoadOrCreate(putout)
-					if bat != nil {
+					if result.Step == model.ExchangeStepOpenFull.Uint32() {
+						var modelID uint64
+						models, _ := cab.QueryModels().All(s.ctx)
+						if len(models) > 0 {
+							modelID = models[0].ID
+						}
+						locationsType := model.AssetLocationsTypeCabinet
+						newBattery, _ := NewAsset().QueryNonSmartBattery(&model.QueryAssetReq{
+							LocationsType: &locationsType,
+							LocationsID:   silk.UInt64(cab.ID),
+							ModelID:       modelID,
+						})
+						if newBattery == nil {
+							zap.L().Error(fmt.Sprintf("换电-取电 非智能柜未找到电池信息 %s", cab.Serial))
+							return
+						}
 						_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
-							return NewBattery().Allocate(tx, bat, sub, true)
+							return NewBattery(s.operator).Allocate(newBattery, sub, model.AssetTransferTypeExchange)
 						})
 					}
 				}
 			}
-
 			// 缓存结果
 			ar.Redis.RPush(s.ctx, key, result)
 		},
@@ -272,7 +318,7 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
 }
 
 // BusinessCensorX 校验用户是否可以使用智能柜办理业务
-func (s *intelligentCabinetService) BusinessCensorX(bus adapter.Business, sub *ent.Subscribe, cab *ent.Cabinet) (bat *ent.Battery) {
+func (s *intelligentCabinetService) BusinessCensorX(bus adapter.Business, sub *ent.Subscribe, cab *ent.Cabinet) (bat *ent.Asset) {
 	if !cab.Intelligent {
 		return
 	}
@@ -288,18 +334,20 @@ func (s *intelligentCabinetService) BusinessCensorX(bus adapter.Business, sub *e
 	}
 
 	// 获取电池
-	bat, _ = sub.QueryBattery().First(s.ctx)
+	bat, _ = sub.QueryBattery().WithModel().Where(asset.Type(model.AssetTypeSmartBattery.Value())).First(s.ctx)
 
 	// 业务如果需要电池, 查找电池信息
 	if bus.BatteryNeed() {
 		// 未找到当前绑定的电池信息
 		if bat == nil {
 			snag.Panic(adapter.ErrorBatteryNotFound)
+			return
 		}
-
-		// 检查电池型号与电柜型号兼容
-		if !NewCabinet().ModelInclude(cab, bat.Model) {
-			snag.Panic("电池型号不匹配，请更换电柜重试")
+		if bat.Edges.Model != nil {
+			// 检查电池型号与电柜型号兼容
+			if !NewCabinet().ModelInclude(cab, bat.Edges.Model.Model) {
+				snag.Panic("电池型号不匹配，请更换电柜重试")
+			}
 		}
 	}
 
@@ -327,7 +375,7 @@ func (s *intelligentCabinetService) BusinessUsable(cab *ent.Cabinet, bus adapter
 }
 
 // DoBusiness 请求办理业务
-func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Business, sub *ent.Subscribe, riderBat *ent.Battery, cab *ent.Cabinet) (info *model.BinInfo, batinfo *model.Battery, err error) {
+func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Business, sub *ent.Subscribe, riderBat *ent.Asset, cab *ent.Cabinet) (info *model.BinInfo, batinfo *model.Battery, err error) {
 	defer func() {
 		// 缓存任务返回
 		data := &model.BusinessCabinetStatusRes{
@@ -392,40 +440,69 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
 		Voltage:     b.Voltage,
 	}
 
+	// 业务类型对应调拨类型
+	var at model.AssetTransferType
+	switch bus {
+	case adapter.BusinessActive:
+		at = model.AssetTransferTypeActive
+	case adapter.BusinessPause:
+		at = model.AssetTransferTypePause
+	case adapter.BusinessContinue:
+		at = model.AssetTransferTypeContinue
+	case adapter.BusinessUnsubscribe:
+		at = model.AssetTransferTypeUnSubscribe
+	}
+
+	var bat *ent.Asset
+	var m string
 	// 若智能电柜, 需记录电池信息
 	if cab.Intelligent {
 		// 获取电池
-		var bat *ent.Battery
 		bat, err = NewBattery().LoadOrCreate(sn)
-		if err != nil {
+		if err != nil && bat == nil {
 			zap.L().Error("业务记录失败", zap.Error(err))
 			return
 		}
 
-		batinfo = &model.Battery{
-			ID:    bat.ID,
-			SN:    sn,
-			Model: bat.Model,
+		if bat.Edges.Model != nil {
+			m = bat.Edges.Model.Model
 		}
 
-		// 放入电池
-		// TODO 是否有必要?
-		// if putin {
-		//     _, _ = bs.Unallocate(bat)
-		// }
-
-		// 取走电池
-		if !putin {
-			_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
-				return NewBattery().Allocate(tx, bat, sub, true)
-			})
+	} else {
+		// 获取非智能电池
+		bat, _ = ent.Database.Asset.QueryNotDeleted().Where(
+			asset.LocationsType(model.AssetLocationsTypeCabinet.Value()),
+			asset.HasCabinetWith(cabinet.Serial(cab.Serial)),
+		).WithModel().First(s.ctx)
+		if bat == nil {
+			zap.L().Error("未找到电池信息")
+			return
 		}
+		if bat.Edges.Model != nil {
+			m = bat.Edges.Model.Model
+		}
+		// 非智能电柜, 没有电池编码
+		sn = ""
+	}
+	batinfo = &model.Battery{
+		ID:    bat.ID,
+		SN:    sn,
+		Model: m,
+	}
+
+	// 取走电池 激活,取消寄存会走这里
+	if !putin {
+		_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
+			return NewBattery(s.operator).Allocate(bat, sub, at)
+		})
 	}
 
 	return
 }
 
-func (s *intelligentCabinetService) Operate(operator *logging.Operator, cab *ent.Cabinet, op cabdef.Operate, req *model.CabinetDoorOperateReq) (success bool) {
+// Operate 操作电柜
+// waitClose 是否等待关闭仓门（仅开仓动作有效）
+func (s *intelligentCabinetService) Operate(operator *logging.Operator, cab *ent.Cabinet, op cabdef.Operate, req *model.CabinetDoorOperateReq, waitClose bool) (success bool, data []*cabdef.BinOperateResult) {
 	now := time.Now()
 	br := cab.Brand
 	ordinal := *req.Index + 1
@@ -460,13 +537,16 @@ func (s *intelligentCabinetService) Operate(operator *logging.Operator, cab *ent
 		Remark:  req.Remark,
 	}
 
-	var data []*cabdef.BinOperateResult
-	data, err = adapter.Post[[]*cabdef.BinOperateResult](s.GetCabinetAdapterUrlX(cab, "/operate/bin"), operator.GetAdapterUserX(), payload)
+	apiUrl := "/operate/bin"
+	if op == cabdef.OperateDoorOpen && waitClose {
+		apiUrl = "/operate/bin/open-close"
+	}
+
+	data, err = adapter.Post[[]*cabdef.BinOperateResult](s.GetCabinetAdapterUrlX(cab, apiUrl), operator.GetAdapterUserX(), payload)
 	zap.L().Info("电柜操作", zap.Bool("success", success), log.Payload(data), zap.Error(err))
 
 	success = err == nil
-
-	return
+	return success, data
 }
 
 func (s *intelligentCabinetService) Deactivate(operator *logging.Operator, cab *ent.Cabinet, payload *cabdef.BinDeactivateRequest) (success bool) {
@@ -505,7 +585,7 @@ func (s *intelligentCabinetService) Deactivate(operator *logging.Operator, cab *
 
 // OpenBind 开电池仓并绑定骑手
 func (s *intelligentCabinetService) OpenBind(req *model.CabinetOpenBindReq) {
-	bs := NewBattery(s.modifier)
+	bs := NewAsset(s.modifier)
 	// 查找骑手
 	rd := NewRider().QueryPhoneX(req.Phone)
 	// 查找订阅
@@ -522,28 +602,39 @@ func (s *intelligentCabinetService) OpenBind(req *model.CabinetOpenBindReq) {
 	info, _ := s.Bininfo(cab, *req.Index+1)
 	if info == nil {
 		snag.Panic("获取最新仓位信息失败")
+		return
 	}
 	if info.BatterySN != req.BatterySN {
 		snag.Panic("电池编码有变动, 请刷新后重试")
 	}
 	// 判定
-	if exists, _ := sub.QueryBattery().Where().Exist(s.ctx); exists {
+	if exists, _ := sub.QueryBattery().Where(
+		asset.TypeIn(model.AssetTypeNonSmartBattery.Value(), model.AssetTypeSmartBattery.Value()),
+		asset.LocationsType(model.AssetLocationsTypeRider.Value()),
+		asset.LocationsID(rd.ID),
+	).Exist(s.ctx); exists {
 		snag.Panic("该骑手当前有绑定的电池")
 	}
 	// 查找电池
-	bat := bs.QuerySnX(req.BatterySN)
+	bat, err := bs.QuerySn(req.BatterySN)
+	if err != nil {
+		snag.Panic("未找到电池信息")
+	}
 	// 开门
-	success := s.Operate(logging.GetOperatorX(s.modifier), cab, cabdef.OperateDoorOpen, &model.CabinetDoorOperateReq{
+	success, _ := s.Operate(logging.GetOperatorX(s.modifier), cab, cabdef.OperateDoorOpen, &model.CabinetDoorOperateReq{
 		ID:        req.ID,
 		Index:     req.Index,
 		Remark:    req.Remark,
 		Operation: silk.Pointer(model.CabinetDoorOperateOpen),
-	})
+	}, false)
 	if !success {
 		snag.Panic("仓门开启失败")
 	}
 	// 绑定
-	bs.Bind(bat, sub, rd)
+	err = NewBattery(s.operator).Bind(bat, sub, rd)
+	if err != nil {
+		snag.Panic(err)
+	}
 }
 
 func (s *intelligentCabinetService) Bininfo(cab *ent.Cabinet, ordinal int) (*cabdef.BinInfo, error) {

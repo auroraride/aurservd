@@ -8,11 +8,11 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/agent"
-	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -43,7 +43,6 @@ type EnterpriseQuery struct {
 	withStatements          *EnterpriseStatementQuery
 	withStations            *EnterpriseStationQuery
 	withBills               *EnterpriseBillQuery
-	withBatteries           *BatteryQuery
 	withAgents              *AgentQuery
 	withCabinets            *CabinetQuery
 	withStocks              *StockQuery
@@ -262,28 +261,6 @@ func (eq *EnterpriseQuery) QueryBills() *EnterpriseBillQuery {
 	return query
 }
 
-// QueryBatteries chains the current query on the "batteries" edge.
-func (eq *EnterpriseQuery) QueryBatteries() *BatteryQuery {
-	query := (&BatteryClient{config: eq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := eq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := eq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(enterprise.Table, enterprise.FieldID, selector),
-			sqlgraph.To(battery.Table, battery.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.BatteriesTable, enterprise.BatteriesColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
 // QueryAgents chains the current query on the "agents" edge.
 func (eq *EnterpriseQuery) QueryAgents() *AgentQuery {
 	query := (&AgentClient{config: eq.config}).Query()
@@ -397,7 +374,7 @@ func (eq *EnterpriseQuery) QuerySwapPutoutBatteries() *EnterpriseBatterySwapQuer
 // First returns the first Enterprise entity from the query.
 // Returns a *NotFoundError when no Enterprise was found.
 func (eq *EnterpriseQuery) First(ctx context.Context) (*Enterprise, error) {
-	nodes, err := eq.Limit(1).All(setContextOp(ctx, eq.ctx, "First"))
+	nodes, err := eq.Limit(1).All(setContextOp(ctx, eq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -420,7 +397,7 @@ func (eq *EnterpriseQuery) FirstX(ctx context.Context) *Enterprise {
 // Returns a *NotFoundError when no Enterprise ID was found.
 func (eq *EnterpriseQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(1).IDs(setContextOp(ctx, eq.ctx, "FirstID")); err != nil {
+	if ids, err = eq.Limit(1).IDs(setContextOp(ctx, eq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -443,7 +420,7 @@ func (eq *EnterpriseQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Enterprise entity is found.
 // Returns a *NotFoundError when no Enterprise entities are found.
 func (eq *EnterpriseQuery) Only(ctx context.Context) (*Enterprise, error) {
-	nodes, err := eq.Limit(2).All(setContextOp(ctx, eq.ctx, "Only"))
+	nodes, err := eq.Limit(2).All(setContextOp(ctx, eq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -471,7 +448,7 @@ func (eq *EnterpriseQuery) OnlyX(ctx context.Context) *Enterprise {
 // Returns a *NotFoundError when no entities are found.
 func (eq *EnterpriseQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(2).IDs(setContextOp(ctx, eq.ctx, "OnlyID")); err != nil {
+	if ids, err = eq.Limit(2).IDs(setContextOp(ctx, eq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -496,7 +473,7 @@ func (eq *EnterpriseQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Enterprises.
 func (eq *EnterpriseQuery) All(ctx context.Context) ([]*Enterprise, error) {
-	ctx = setContextOp(ctx, eq.ctx, "All")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryAll)
 	if err := eq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -518,7 +495,7 @@ func (eq *EnterpriseQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if eq.ctx.Unique == nil && eq.path != nil {
 		eq.Unique(true)
 	}
-	ctx = setContextOp(ctx, eq.ctx, "IDs")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryIDs)
 	if err = eq.Select(enterprise.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -536,7 +513,7 @@ func (eq *EnterpriseQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (eq *EnterpriseQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, eq.ctx, "Count")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryCount)
 	if err := eq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -554,7 +531,7 @@ func (eq *EnterpriseQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (eq *EnterpriseQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, eq.ctx, "Exist")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryExist)
 	switch _, err := eq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -594,15 +571,15 @@ func (eq *EnterpriseQuery) Clone() *EnterpriseQuery {
 		withStatements:          eq.withStatements.Clone(),
 		withStations:            eq.withStations.Clone(),
 		withBills:               eq.withBills.Clone(),
-		withBatteries:           eq.withBatteries.Clone(),
 		withAgents:              eq.withAgents.Clone(),
 		withCabinets:            eq.withCabinets.Clone(),
 		withStocks:              eq.withStocks.Clone(),
 		withSwapPutinBatteries:  eq.withSwapPutinBatteries.Clone(),
 		withSwapPutoutBatteries: eq.withSwapPutoutBatteries.Clone(),
 		// clone intermediate query.
-		sql:  eq.sql.Clone(),
-		path: eq.path,
+		sql:       eq.sql.Clone(),
+		path:      eq.path,
+		modifiers: append([]func(*sql.Selector){}, eq.modifiers...),
 	}
 }
 
@@ -691,17 +668,6 @@ func (eq *EnterpriseQuery) WithBills(opts ...func(*EnterpriseBillQuery)) *Enterp
 		opt(query)
 	}
 	eq.withBills = query
-	return eq
-}
-
-// WithBatteries tells the query-builder to eager-load the nodes that are connected to
-// the "batteries" edge. The optional arguments are used to configure the query builder of the edge.
-func (eq *EnterpriseQuery) WithBatteries(opts ...func(*BatteryQuery)) *EnterpriseQuery {
-	query := (&BatteryClient{config: eq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	eq.withBatteries = query
 	return eq
 }
 
@@ -838,7 +804,7 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 	var (
 		nodes       = []*Enterprise{}
 		_spec       = eq.querySpec()
-		loadedTypes = [14]bool{
+		loadedTypes = [13]bool{
 			eq.withCity != nil,
 			eq.withRiders != nil,
 			eq.withContracts != nil,
@@ -847,7 +813,6 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 			eq.withStatements != nil,
 			eq.withStations != nil,
 			eq.withBills != nil,
-			eq.withBatteries != nil,
 			eq.withAgents != nil,
 			eq.withCabinets != nil,
 			eq.withStocks != nil,
@@ -928,13 +893,6 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 		if err := eq.loadBills(ctx, query, nodes,
 			func(n *Enterprise) { n.Edges.Bills = []*EnterpriseBill{} },
 			func(n *Enterprise, e *EnterpriseBill) { n.Edges.Bills = append(n.Edges.Bills, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := eq.withBatteries; query != nil {
-		if err := eq.loadBatteries(ctx, query, nodes,
-			func(n *Enterprise) { n.Edges.Batteries = []*Battery{} },
-			func(n *Enterprise, e *Battery) { n.Edges.Batteries = append(n.Edges.Batteries, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1225,39 +1183,6 @@ func (eq *EnterpriseQuery) loadBills(ctx context.Context, query *EnterpriseBillQ
 	}
 	return nil
 }
-func (eq *EnterpriseQuery) loadBatteries(ctx context.Context, query *BatteryQuery, nodes []*Enterprise, init func(*Enterprise), assign func(*Enterprise, *Battery)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint64]*Enterprise)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(battery.FieldEnterpriseID)
-	}
-	query.Where(predicate.Battery(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(enterprise.BatteriesColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.EnterpriseID
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "enterprise_id" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "enterprise_id" returned %v for node %v`, *fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
 func (eq *EnterpriseQuery) loadAgents(ctx context.Context, query *AgentQuery, nodes []*Enterprise, init func(*Enterprise), assign func(*Enterprise, *Agent)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uint64]*Enterprise)
@@ -1530,7 +1455,6 @@ var (
 	EnterpriseQueryWithStatements          EnterpriseQueryWith = "Statements"
 	EnterpriseQueryWithStations            EnterpriseQueryWith = "Stations"
 	EnterpriseQueryWithBills               EnterpriseQueryWith = "Bills"
-	EnterpriseQueryWithBatteries           EnterpriseQueryWith = "Batteries"
 	EnterpriseQueryWithAgents              EnterpriseQueryWith = "Agents"
 	EnterpriseQueryWithCabinets            EnterpriseQueryWith = "Cabinets"
 	EnterpriseQueryWithStocks              EnterpriseQueryWith = "Stocks"
@@ -1557,8 +1481,6 @@ func (eq *EnterpriseQuery) With(withEdges ...EnterpriseQueryWith) *EnterpriseQue
 			eq.WithStations()
 		case EnterpriseQueryWithBills:
 			eq.WithBills()
-		case EnterpriseQueryWithBatteries:
-			eq.WithBatteries()
 		case EnterpriseQueryWithAgents:
 			eq.WithAgents()
 		case EnterpriseQueryWithCabinets:
@@ -1588,7 +1510,7 @@ func (egb *EnterpriseGroupBy) Aggregate(fns ...AggregateFunc) *EnterpriseGroupBy
 
 // Scan applies the selector query and scans the result into the given value.
 func (egb *EnterpriseGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, egb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, egb.build.ctx, ent.OpQueryGroupBy)
 	if err := egb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1636,7 +1558,7 @@ func (es *EnterpriseSelect) Aggregate(fns ...AggregateFunc) *EnterpriseSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (es *EnterpriseSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, es.ctx, "Select")
+	ctx = setContextOp(ctx, es.ctx, ent.OpQuerySelect)
 	if err := es.prepareQuery(ctx); err != nil {
 		return err
 	}

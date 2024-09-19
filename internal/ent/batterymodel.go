@@ -21,6 +21,10 @@ type BatteryModel struct {
 	Model string `json:"model,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
+	// 电压
+	Voltage uint `json:"voltage,omitempty"`
+	// 容量
+	Capacity uint `json:"capacity,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BatteryModelQuery when eager-loading is set.
 	Edges        BatteryModelEdges `json:"edges"`
@@ -50,7 +54,7 @@ func (*BatteryModel) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case batterymodel.FieldID:
+		case batterymodel.FieldID, batterymodel.FieldVoltage, batterymodel.FieldCapacity:
 			values[i] = new(sql.NullInt64)
 		case batterymodel.FieldModel:
 			values[i] = new(sql.NullString)
@@ -88,6 +92,18 @@ func (bm *BatteryModel) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				bm.CreatedAt = value.Time
+			}
+		case batterymodel.FieldVoltage:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field voltage", values[i])
+			} else if value.Valid {
+				bm.Voltage = uint(value.Int64)
+			}
+		case batterymodel.FieldCapacity:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field capacity", values[i])
+			} else if value.Valid {
+				bm.Capacity = uint(value.Int64)
 			}
 		default:
 			bm.selectValues.Set(columns[i], values[i])
@@ -135,6 +151,12 @@ func (bm *BatteryModel) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(bm.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("voltage=")
+	builder.WriteString(fmt.Sprintf("%v", bm.Voltage))
+	builder.WriteString(", ")
+	builder.WriteString("capacity=")
+	builder.WriteString(fmt.Sprintf("%v", bm.Capacity))
 	builder.WriteByte(')')
 	return builder.String()
 }

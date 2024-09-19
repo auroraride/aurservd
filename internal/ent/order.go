@@ -12,10 +12,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
@@ -47,8 +47,6 @@ type Order struct {
 	CityID *uint64 `json:"city_id,omitempty"`
 	// BrandID holds the value of the "brand_id" field.
 	BrandID *uint64 `json:"brand_id,omitempty"`
-	// EbikeID holds the value of the "ebike_id" field.
-	EbikeID *uint64 `json:"ebike_id,omitempty"`
 	// AgentID holds the value of the "agent_id" field.
 	AgentID *uint64 `json:"agent_id,omitempty"`
 	// 骑手ID
@@ -95,6 +93,8 @@ type Order struct {
 	OutRequestNo string `json:"out_request_no,omitempty"`
 	// 购买套餐订阅到期时间
 	SubscribeEndAt *time.Time `json:"subscribe_end_at,omitempty"`
+	// 电车ID
+	EbikeID *uint64 `json:"ebike_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrderQuery when eager-loading is set.
 	Edges        OrderEdges `json:"edges"`
@@ -109,8 +109,6 @@ type OrderEdges struct {
 	City *City `json:"city,omitempty"`
 	// Brand holds the value of the brand edge.
 	Brand *EbikeBrand `json:"brand,omitempty"`
-	// Ebike holds the value of the ebike edge.
-	Ebike *Ebike `json:"ebike,omitempty"`
 	// Agent holds the value of the agent edge.
 	Agent *Agent `json:"agent,omitempty"`
 	// 骑手
@@ -129,6 +127,8 @@ type OrderEdges struct {
 	Assistance *Assistance `json:"assistance,omitempty"`
 	// Coupons holds the value of the coupons edge.
 	Coupons []*Coupon `json:"coupons,omitempty"`
+	// Ebike holds the value of the ebike edge.
+	Ebike *Asset `json:"ebike,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [13]bool
@@ -167,23 +167,12 @@ func (e OrderEdges) BrandOrErr() (*EbikeBrand, error) {
 	return nil, &NotLoadedError{edge: "brand"}
 }
 
-// EbikeOrErr returns the Ebike value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e OrderEdges) EbikeOrErr() (*Ebike, error) {
-	if e.Ebike != nil {
-		return e.Ebike, nil
-	} else if e.loadedTypes[3] {
-		return nil, &NotFoundError{label: ebike.Label}
-	}
-	return nil, &NotLoadedError{edge: "ebike"}
-}
-
 // AgentOrErr returns the Agent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e OrderEdges) AgentOrErr() (*Agent, error) {
 	if e.Agent != nil {
 		return e.Agent, nil
-	} else if e.loadedTypes[4] {
+	} else if e.loadedTypes[3] {
 		return nil, &NotFoundError{label: agent.Label}
 	}
 	return nil, &NotLoadedError{edge: "agent"}
@@ -194,7 +183,7 @@ func (e OrderEdges) AgentOrErr() (*Agent, error) {
 func (e OrderEdges) RiderOrErr() (*Rider, error) {
 	if e.Rider != nil {
 		return e.Rider, nil
-	} else if e.loadedTypes[5] {
+	} else if e.loadedTypes[4] {
 		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rider"}
@@ -205,7 +194,7 @@ func (e OrderEdges) RiderOrErr() (*Rider, error) {
 func (e OrderEdges) SubscribeOrErr() (*Subscribe, error) {
 	if e.Subscribe != nil {
 		return e.Subscribe, nil
-	} else if e.loadedTypes[6] {
+	} else if e.loadedTypes[5] {
 		return nil, &NotFoundError{label: subscribe.Label}
 	}
 	return nil, &NotLoadedError{edge: "subscribe"}
@@ -216,7 +205,7 @@ func (e OrderEdges) SubscribeOrErr() (*Subscribe, error) {
 func (e OrderEdges) CommissionOrErr() (*Commission, error) {
 	if e.Commission != nil {
 		return e.Commission, nil
-	} else if e.loadedTypes[7] {
+	} else if e.loadedTypes[6] {
 		return nil, &NotFoundError{label: commission.Label}
 	}
 	return nil, &NotLoadedError{edge: "commission"}
@@ -227,7 +216,7 @@ func (e OrderEdges) CommissionOrErr() (*Commission, error) {
 func (e OrderEdges) ParentOrErr() (*Order, error) {
 	if e.Parent != nil {
 		return e.Parent, nil
-	} else if e.loadedTypes[8] {
+	} else if e.loadedTypes[7] {
 		return nil, &NotFoundError{label: order.Label}
 	}
 	return nil, &NotLoadedError{edge: "parent"}
@@ -236,7 +225,7 @@ func (e OrderEdges) ParentOrErr() (*Order, error) {
 // ChildrenOrErr returns the Children value or an error if the edge
 // was not loaded in eager-loading.
 func (e OrderEdges) ChildrenOrErr() ([]*Order, error) {
-	if e.loadedTypes[9] {
+	if e.loadedTypes[8] {
 		return e.Children, nil
 	}
 	return nil, &NotLoadedError{edge: "children"}
@@ -247,7 +236,7 @@ func (e OrderEdges) ChildrenOrErr() ([]*Order, error) {
 func (e OrderEdges) RefundOrErr() (*OrderRefund, error) {
 	if e.Refund != nil {
 		return e.Refund, nil
-	} else if e.loadedTypes[10] {
+	} else if e.loadedTypes[9] {
 		return nil, &NotFoundError{label: orderrefund.Label}
 	}
 	return nil, &NotLoadedError{edge: "refund"}
@@ -258,7 +247,7 @@ func (e OrderEdges) RefundOrErr() (*OrderRefund, error) {
 func (e OrderEdges) AssistanceOrErr() (*Assistance, error) {
 	if e.Assistance != nil {
 		return e.Assistance, nil
-	} else if e.loadedTypes[11] {
+	} else if e.loadedTypes[10] {
 		return nil, &NotFoundError{label: assistance.Label}
 	}
 	return nil, &NotLoadedError{edge: "assistance"}
@@ -267,10 +256,21 @@ func (e OrderEdges) AssistanceOrErr() (*Assistance, error) {
 // CouponsOrErr returns the Coupons value or an error if the edge
 // was not loaded in eager-loading.
 func (e OrderEdges) CouponsOrErr() ([]*Coupon, error) {
-	if e.loadedTypes[12] {
+	if e.loadedTypes[11] {
 		return e.Coupons, nil
 	}
 	return nil, &NotLoadedError{edge: "coupons"}
+}
+
+// EbikeOrErr returns the Ebike value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e OrderEdges) EbikeOrErr() (*Asset, error) {
+	if e.Ebike != nil {
+		return e.Ebike, nil
+	} else if e.loadedTypes[12] {
+		return nil, &NotFoundError{label: asset.Label}
+	}
+	return nil, &NotLoadedError{edge: "ebike"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -282,7 +282,7 @@ func (*Order) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case order.FieldAmount, order.FieldTotal, order.FieldPointRatio, order.FieldCouponAmount, order.FieldDiscountNewly:
 			values[i] = new(sql.NullFloat64)
-		case order.FieldID, order.FieldPlanID, order.FieldCityID, order.FieldBrandID, order.FieldEbikeID, order.FieldAgentID, order.FieldRiderID, order.FieldParentID, order.FieldSubscribeID, order.FieldStatus, order.FieldPayway, order.FieldType, order.FieldInitialDays, order.FieldPastDays, order.FieldPoints:
+		case order.FieldID, order.FieldPlanID, order.FieldCityID, order.FieldBrandID, order.FieldAgentID, order.FieldRiderID, order.FieldParentID, order.FieldSubscribeID, order.FieldStatus, order.FieldPayway, order.FieldType, order.FieldInitialDays, order.FieldPastDays, order.FieldPoints, order.FieldEbikeID:
 			values[i] = new(sql.NullInt64)
 		case order.FieldRemark, order.FieldOutTradeNo, order.FieldTradeNo, order.FieldAuthNo, order.FieldOutOrderNo, order.FieldOutRequestNo:
 			values[i] = new(sql.NullString)
@@ -370,13 +370,6 @@ func (o *Order) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				o.BrandID = new(uint64)
 				*o.BrandID = uint64(value.Int64)
-			}
-		case order.FieldEbikeID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field ebike_id", values[i])
-			} else if value.Valid {
-				o.EbikeID = new(uint64)
-				*o.EbikeID = uint64(value.Int64)
 			}
 		case order.FieldAgentID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -520,6 +513,13 @@ func (o *Order) assignValues(columns []string, values []any) error {
 				o.SubscribeEndAt = new(time.Time)
 				*o.SubscribeEndAt = value.Time
 			}
+		case order.FieldEbikeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field ebike_id", values[i])
+			} else if value.Valid {
+				o.EbikeID = new(uint64)
+				*o.EbikeID = uint64(value.Int64)
+			}
 		default:
 			o.selectValues.Set(columns[i], values[i])
 		}
@@ -546,11 +546,6 @@ func (o *Order) QueryCity() *CityQuery {
 // QueryBrand queries the "brand" edge of the Order entity.
 func (o *Order) QueryBrand() *EbikeBrandQuery {
 	return NewOrderClient(o.config).QueryBrand(o)
-}
-
-// QueryEbike queries the "ebike" edge of the Order entity.
-func (o *Order) QueryEbike() *EbikeQuery {
-	return NewOrderClient(o.config).QueryEbike(o)
 }
 
 // QueryAgent queries the "agent" edge of the Order entity.
@@ -596,6 +591,11 @@ func (o *Order) QueryAssistance() *AssistanceQuery {
 // QueryCoupons queries the "coupons" edge of the Order entity.
 func (o *Order) QueryCoupons() *CouponQuery {
 	return NewOrderClient(o.config).QueryCoupons(o)
+}
+
+// QueryEbike queries the "ebike" edge of the Order entity.
+func (o *Order) QueryEbike() *AssetQuery {
+	return NewOrderClient(o.config).QueryEbike(o)
 }
 
 // Update returns a builder for updating this Order.
@@ -653,11 +653,6 @@ func (o *Order) String() string {
 	builder.WriteString(", ")
 	if v := o.BrandID; v != nil {
 		builder.WriteString("brand_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := o.EbikeID; v != nil {
-		builder.WriteString("ebike_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
@@ -736,6 +731,11 @@ func (o *Order) String() string {
 	if v := o.SubscribeEndAt; v != nil {
 		builder.WriteString("subscribe_end_at=")
 		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := o.EbikeID; v != nil {
+		builder.WriteString("ebike_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')
 	return builder.String()

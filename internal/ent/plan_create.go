@@ -395,6 +395,20 @@ func (pc *PlanCreate) SetNillableDaily(b *bool) *PlanCreate {
 	return pc
 }
 
+// SetIntroductionImage sets the "introduction_image" field.
+func (pc *PlanCreate) SetIntroductionImage(s string) *PlanCreate {
+	pc.mutation.SetIntroductionImage(s)
+	return pc
+}
+
+// SetNillableIntroductionImage sets the "introduction_image" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableIntroductionImage(s *string) *PlanCreate {
+	if s != nil {
+		pc.SetIntroductionImage(*s)
+	}
+	return pc
+}
+
 // SetAgreement sets the "agreement" edge to the Agreement entity.
 func (pc *PlanCreate) SetAgreement(a *Agreement) *PlanCreate {
 	return pc.SetAgreementID(a.ID)
@@ -738,6 +752,10 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.Daily(); ok {
 		_spec.SetField(plan.FieldDaily, field.TypeBool, value)
 		_node.Daily = value
+	}
+	if value, ok := pc.mutation.IntroductionImage(); ok {
+		_spec.SetField(plan.FieldIntroductionImage, field.TypeString, value)
+		_node.IntroductionImage = value
 	}
 	if nodes := pc.mutation.AgreementIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1400,6 +1418,24 @@ func (u *PlanUpsert) UpdateDaily() *PlanUpsert {
 	return u
 }
 
+// SetIntroductionImage sets the "introduction_image" field.
+func (u *PlanUpsert) SetIntroductionImage(v string) *PlanUpsert {
+	u.Set(plan.FieldIntroductionImage, v)
+	return u
+}
+
+// UpdateIntroductionImage sets the "introduction_image" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateIntroductionImage() *PlanUpsert {
+	u.SetExcluded(plan.FieldIntroductionImage)
+	return u
+}
+
+// ClearIntroductionImage clears the value of the "introduction_image" field.
+func (u *PlanUpsert) ClearIntroductionImage() *PlanUpsert {
+	u.SetNull(plan.FieldIntroductionImage)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -2040,6 +2076,27 @@ func (u *PlanUpsertOne) SetDaily(v bool) *PlanUpsertOne {
 func (u *PlanUpsertOne) UpdateDaily() *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.UpdateDaily()
+	})
+}
+
+// SetIntroductionImage sets the "introduction_image" field.
+func (u *PlanUpsertOne) SetIntroductionImage(v string) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetIntroductionImage(v)
+	})
+}
+
+// UpdateIntroductionImage sets the "introduction_image" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateIntroductionImage() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateIntroductionImage()
+	})
+}
+
+// ClearIntroductionImage clears the value of the "introduction_image" field.
+func (u *PlanUpsertOne) ClearIntroductionImage() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearIntroductionImage()
 	})
 }
 
@@ -2849,6 +2906,27 @@ func (u *PlanUpsertBulk) SetDaily(v bool) *PlanUpsertBulk {
 func (u *PlanUpsertBulk) UpdateDaily() *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.UpdateDaily()
+	})
+}
+
+// SetIntroductionImage sets the "introduction_image" field.
+func (u *PlanUpsertBulk) SetIntroductionImage(v string) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetIntroductionImage(v)
+	})
+}
+
+// UpdateIntroductionImage sets the "introduction_image" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateIntroductionImage() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateIntroductionImage()
+	})
+}
+
+// ClearIntroductionImage clears the value of the "introduction_image" field.
+func (u *PlanUpsertBulk) ClearIntroductionImage() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearIntroductionImage()
 	})
 }
 

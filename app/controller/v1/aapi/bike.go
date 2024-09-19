@@ -27,21 +27,21 @@ var Bike = new(bike)
 // @Param	X-Agent-Token	header		string					true	"代理校验token"
 // @Param	query			query		model.EbikeListReq		true	"请求参数"
 // @Success	200				{object}	[]model.EbikeListRes	"请求成功"
-func (*bike) List(c echo.Context) (err error) {
-	ctx, req := app.AgentContextAndBinding[model.EbikeListReq](c)
-	return ctx.SendResponse(service.NewEbike().List(&model.EbikeListReq{
-		PaginationReq: req.PaginationReq,
-		EbikeListFilter: model.EbikeListFilter{
-			RiderID:      req.RiderID,
-			StationID:    req.StationID,
-			EnterpriseID: &ctx.Enterprise.ID,
-			Status:       req.Status,
-			Keyword:      req.Keyword,
-			BrandID:      req.BrandID,
-			Goal:         req.Goal,
-		},
-	}))
-}
+// func (*bike) List(c echo.Context) (err error) {
+// 	ctx, req := app.AgentContextAndBinding[model.EbikeListReq](c)
+// 	return ctx.SendResponse(service.NewEbike().List(&model.EbikeListReq{
+// 		PaginationReq: req.PaginationReq,
+// 		EbikeListFilter: model.EbikeListFilter{
+// 			RiderID:      req.RiderID,
+// 			StationID:    req.StationID,
+// 			EnterpriseID: &ctx.Enterprise.ID,
+// 			Status:       req.Status,
+// 			Keyword:      req.Keyword,
+// 			BrandID:      req.BrandID,
+// 			Goal:         req.Goal,
+// 		},
+// 	}))
+// }
 
 // Unallocated
 // @ID		AgentBikeUnallocated

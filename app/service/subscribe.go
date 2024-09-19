@@ -22,6 +22,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/task/reminder"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
@@ -97,6 +98,9 @@ func (s *subscribeService) QueryEdges(id uint64) (*ent.Subscribe, error) {
 			})
 		}).
 		WithEnterprise().
+		WithEbike(func(query *ent.AssetQuery) {
+			query.WithValues()
+		}).
 		First(s.ctx)
 }
 
@@ -272,6 +276,9 @@ func (s *subscribeService) QueryEffective(riderID uint64, edges ...ent.Subscribe
 			),
 		).
 		With(edges...).
+		WithBattery(func(query *ent.AssetQuery) {
+			query.Where(asset.TypeIn(model.AssetTypeSmartBattery.Value(), model.AssetTypeNonSmartBattery.Value())).WithModel()
+		}).
 		First(s.ctx)
 }
 

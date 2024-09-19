@@ -4009,7 +4009,7 @@ const docTemplate = `{
                     "description": "图片",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/definition.ActivityImage"
+                            "$ref": "#/definitions/model.ActivityImage"
                         }
                     ]
                 },
@@ -4039,23 +4039,6 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "description": "更新时间",
-                    "type": "string"
-                }
-            }
-        },
-        "definition.ActivityImage": {
-            "type": "object",
-            "properties": {
-                "home": {
-                    "description": "首页icon图片",
-                    "type": "string"
-                },
-                "list": {
-                    "description": "列表图片",
-                    "type": "string"
-                },
-                "popup": {
-                    "description": "弹窗图片",
                     "type": "string"
                 }
             }
@@ -5433,6 +5416,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ActivityImage": {
+            "type": "object",
+            "properties": {
+                "home": {
+                    "description": "首页icon图片",
+                    "type": "string"
+                },
+                "list": {
+                    "description": "列表图片",
+                    "type": "string"
+                },
+                "popup": {
+                    "description": "弹窗图片",
+                    "type": "string"
+                }
+            }
+        },
         "model.Agreement": {
             "type": "object",
             "properties": {
@@ -6299,6 +6299,14 @@ const docTemplate = `{
                 "stockNum": {
                     "description": "库存电池",
                     "type": "integer"
+                },
+                "storeId": {
+                    "description": "绑定门店ID",
+                    "type": "integer"
+                },
+                "storeName": {
+                    "description": "绑定门店名称",
+                    "type": "string"
                 },
                 "transferred": {
                     "description": "是否初始化过调拨",

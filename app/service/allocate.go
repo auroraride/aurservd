@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
+	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/pkg/silk"
@@ -112,6 +113,7 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 	r := sub.Edges.Rider
 	if r == nil {
 		snag.Panic("骑手查询失败")
+		return model.AllocateCreateRes{}
 	}
 
 	// 判定骑手是否实名认证
@@ -120,7 +122,6 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 	}
 
 	// todo v2版本合同 单电激活流程更新了（先分配在签约 所以后台激活走不通）
-
 	// 查询是否已签约
 	if exists, _ := ent.Database.Contract.QueryNotDeleted().Where(
 		contract.SubscribeID(sub.ID),
@@ -163,9 +164,9 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 	if params.StoreID != nil {
 		entStore = NewStore().Query(*params.StoreID)
 		cityID = entStore.CityID
-
+		checkAsset, _ := NewAsset().CheckAsset(model.AssetLocationsTypeStore, *params.StoreID, sub.Model)
 		// 判定门店非智能电池库存
-		if params.BatteryID == nil && !NewStock().CheckStore(*params.StoreID, sub.Model, 1) {
+		if params.BatteryID == nil && checkAsset == nil {
 			snag.Panic("电池库存不足")
 		}
 	}
@@ -175,8 +176,8 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 		entStation = NewEnterpriseStation().QueryX(*sub.StationID)
 		cityID = *entStation.CityID
 		// TODO 判定站点非智能电池库存
-
-		if params.BatteryID == nil && !NewStock().CheckStation(*sub.StationID, sub.Model, 1) {
+		checkAsset, _ := NewAsset().CheckAsset(model.AssetLocationsTypeStore, *sub.StationID, sub.Model)
+		if params.BatteryID == nil && checkAsset == nil {
 			snag.Panic("站点电池库存不足")
 		}
 	}
@@ -187,39 +188,59 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 	}
 
 	// 获取并判定电池
-	var bat *ent.Battery
-	if params.BatteryID != nil {
-		bat = NewBattery().QueryIDX(*params.BatteryID)
-		if !silk.Compare(bat.StationID, sub.StationID) {
+	var bat *ent.Asset
+	var err error
+
+	// 如果为非智能套餐 找一个非智能电池电池
+	if params.BatteryID == nil && !sub.Intelligent {
+		var locationsID uint64
+		var locationsType model.AssetLocationsType
+		// 如果为门店非智能电池
+		if params.StoreID != nil {
+			locationsType = model.AssetLocationsTypeStore
+			locationsID = *params.StoreID
+		}
+		// 如果是代理骑手
+		if sub.StationID != nil {
+			locationsType = model.AssetLocationsTypeStation
+			locationsID = *sub.StationID
+		}
+
+		md := ent.Database.BatteryModel.Query().Where(batterymodel.Model(sub.Model)).FirstX(s.ctx)
+		if md == nil {
+			snag.Panic("未找到电池型号")
+			return model.AllocateCreateRes{}
+		}
+		bat, _ = NewAsset().QueryNonSmartBattery(&model.QueryAssetReq{
+			LocationsType: &locationsType,
+			LocationsID:   &locationsID,
+			ModelID:       md.ID,
+		})
+	} else {
+		// 智能电池
+		bat, _ = NewAsset().QueryID(*params.BatteryID)
+	}
+	if bat == nil {
+		snag.Panic("未找到电池信息")
+		return model.AllocateCreateRes{}
+	}
+	// 盘点电池位置
+	switch bat.LocationsType {
+	case model.AssetLocationsTypeStation.Value():
+		if sub.StationID == nil {
+			snag.Panic("未找到站点信息")
+		}
+		if bat.LocationsID != *sub.StationID {
 			snag.Panic("电池站点不符")
 		}
-
-		// TODO 是否有必要限制电柜中的电池?
-		if bat.CabinetID != nil {
-			snag.Panic("电池在电柜中无法使用")
-		}
-
-		// 电池已被绑定
-		if bat.RiderID != nil || bat.SubscribeID != nil {
-			snag.Panic("电池无法重复绑定")
-		}
-
-		// 判定电池型号是否正确
-		if bat.Model != sub.Model {
-			snag.Panic("电池型号不符")
-		}
-
-		// 判定电池站点是否正确
-		if sub.StationID != nil && bat.StationID != nil && *sub.StationID != *bat.StationID {
-			snag.Panic("电池站点归属不一致")
-		}
+	case model.AssetLocationsTypeCabinet.Value():
+		snag.Panic("电池在电柜中无法使用")
+	case model.AssetLocationsTypeRider.Value():
+		snag.Panic("电池已被骑手绑定")
 	}
-
-	// 判定智能和非智能电池
-	if sub.Intelligent && bat == nil {
-		snag.Panic("请绑定电池")
+	if bat.Edges.Model != nil && bat.Edges.Model.Model != sub.Model {
+		snag.Panic("电池型号不符")
 	}
-
 	// 默认单电类型
 	typ := allocate.TypeBattery
 
@@ -275,8 +296,6 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 	// 强制删除原有分配信息
 	s.SubscribeDeleteIfExists(sub.ID)
 
-	var err error
-
 	// 分配信息
 	var allo *ent.Allocate
 
@@ -324,28 +343,13 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 		}})
 	default:
 		// 无须签约, 直接激活
-
-		// var srv *businessRiderService
-		// // 直接激活
-		// if s.modifier != nil {
-		// 	srv = NewBusinessRiderWithModifier(s.modifier)
-		// } else {
-		// 	srv = NewBusinessRider(r)
-		// }
-		// // TODO 电车直接激活?
-		// if bikeID != nil || brandID != nil {
-		// 	snag.Panic("暂不支持此业务")
-		// 	srv.SetEbike(bikeInfo)
-		// }
-		// srv.SetBatteryID(req.BatteryID).Active(sub, allo)
-
 		NewBusinessRiderWithParams(
 			s.modifier,
-			r,
 			entStore,
 			entStation,
 			bikeInfo,
 			bat,
+			s.operator,
 		).
 			SetEmployeeID(allo.EmployeeID).
 			SetAgentID(params.AgentID).
@@ -358,51 +362,51 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 	}
 }
 
-func (s *allocateService) detail(al *ent.Allocate) model.AllocateDetail {
-	r := al.Edges.Rider
-	res := model.AllocateDetail{
-		ID:     al.ID,
-		Type:   al.Type.String(),
-		Status: model.AllocateStatus(al.Status),
-		Time:   al.Time.Format(carbon.DateTimeLayout),
-		Model:  al.Model,
-		Rider: model.Rider{
-			ID:    r.ID,
-			Phone: r.Phone,
-			Name:  r.Name,
-		},
-		Ebike: NewEbike().Detail(al.Edges.Ebike, al.Edges.Brand),
-	}
-
-	if time.Since(al.Time).Seconds() > model.AllocateExpiration && res.Status == model.AllocateStatusPending {
-		res.Status = model.AllocateStatusVoid
-	}
-
-	return res
-}
+// func (s *allocateService) detail(al *ent.Allocate) model.AllocateDetail {
+// 	r := al.Edges.Rider
+// 	res := model.AllocateDetail{
+// 		ID:     al.ID,
+// 		Type:   al.Type.String(),
+// 		Status: model.AllocateStatus(al.Status),
+// 		Time:   al.Time.Format(carbon.DateTimeLayout),
+// 		Model:  al.Model,
+// 		Rider: model.Rider{
+// 			ID:    r.ID,
+// 			Phone: r.Phone,
+// 			Name:  r.Name,
+// 		},
+// 		Ebike: NewEbike().Detail(al.Edges.Ebike, al.Edges.Brand),
+// 	}
+//
+// 	if time.Since(al.Time).Seconds() > model.AllocateExpiration && res.Status == model.AllocateStatusPending {
+// 		res.Status = model.AllocateStatusVoid
+// 	}
+//
+// 	return res
+// }
 
 // Info 分配信息
-func (s *allocateService) Info(req *model.IDParamReq) model.AllocateDetail {
-	al := s.QueryIDX(req.ID)
-	return s.detail(al)
-}
+// func (s *allocateService) Info(req *model.IDParamReq) model.AllocateDetail {
+// 	al := s.QueryIDX(req.ID)
+// 	return s.detail(al)
+// }
 
 // EmployeeList 电车分配店员列表
-func (s *allocateService) EmployeeList(req *model.AllocateEmployeeListReq) *model.PaginationRes {
-	status := req.Status
-	if req.Status != 2 {
-		status = model.AllocateStatusPending
-	}
-	q := s.orm.Query().
-		WithRider().
-		WithEbike().
-		WithBrand().
-		Where(allocate.EmployeeID(s.employee.ID), allocate.Status(status.Value())).
-		Order(ent.Desc(allocate.FieldTime))
-	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Allocate) model.AllocateDetail {
-		return s.detail(item)
-	})
-}
+// func (s *allocateService) EmployeeList(req *model.AllocateEmployeeListReq) *model.PaginationRes {
+// 	status := req.Status
+// 	if req.Status != 2 {
+// 		status = model.AllocateStatusPending
+// 	}
+// 	q := s.orm.Query().
+// 		WithRider().
+// 		WithEbike().
+// 		WithBrand().
+// 		Where(allocate.EmployeeID(s.employee.ID), allocate.Status(status.Value())).
+// 		Order(ent.Desc(allocate.FieldTime))
+// 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Allocate) model.AllocateDetail {
+// 		return s.detail(item)
+// 	})
+// }
 
 // LoopStatus 长连接查询是否已分配
 func (s *allocateService) LoopStatus(riderID, subscribeID uint64) (res model.AllocateRiderRes) {

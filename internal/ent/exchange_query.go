@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -253,7 +254,7 @@ func (eq *ExchangeQuery) QueryEmployee() *EmployeeQuery {
 // First returns the first Exchange entity from the query.
 // Returns a *NotFoundError when no Exchange was found.
 func (eq *ExchangeQuery) First(ctx context.Context) (*Exchange, error) {
-	nodes, err := eq.Limit(1).All(setContextOp(ctx, eq.ctx, "First"))
+	nodes, err := eq.Limit(1).All(setContextOp(ctx, eq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -276,7 +277,7 @@ func (eq *ExchangeQuery) FirstX(ctx context.Context) *Exchange {
 // Returns a *NotFoundError when no Exchange ID was found.
 func (eq *ExchangeQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(1).IDs(setContextOp(ctx, eq.ctx, "FirstID")); err != nil {
+	if ids, err = eq.Limit(1).IDs(setContextOp(ctx, eq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -299,7 +300,7 @@ func (eq *ExchangeQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Exchange entity is found.
 // Returns a *NotFoundError when no Exchange entities are found.
 func (eq *ExchangeQuery) Only(ctx context.Context) (*Exchange, error) {
-	nodes, err := eq.Limit(2).All(setContextOp(ctx, eq.ctx, "Only"))
+	nodes, err := eq.Limit(2).All(setContextOp(ctx, eq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -327,7 +328,7 @@ func (eq *ExchangeQuery) OnlyX(ctx context.Context) *Exchange {
 // Returns a *NotFoundError when no entities are found.
 func (eq *ExchangeQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(2).IDs(setContextOp(ctx, eq.ctx, "OnlyID")); err != nil {
+	if ids, err = eq.Limit(2).IDs(setContextOp(ctx, eq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -352,7 +353,7 @@ func (eq *ExchangeQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Exchanges.
 func (eq *ExchangeQuery) All(ctx context.Context) ([]*Exchange, error) {
-	ctx = setContextOp(ctx, eq.ctx, "All")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryAll)
 	if err := eq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -374,7 +375,7 @@ func (eq *ExchangeQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if eq.ctx.Unique == nil && eq.path != nil {
 		eq.Unique(true)
 	}
-	ctx = setContextOp(ctx, eq.ctx, "IDs")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryIDs)
 	if err = eq.Select(exchange.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -392,7 +393,7 @@ func (eq *ExchangeQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (eq *ExchangeQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, eq.ctx, "Count")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryCount)
 	if err := eq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -410,7 +411,7 @@ func (eq *ExchangeQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (eq *ExchangeQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, eq.ctx, "Exist")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryExist)
 	switch _, err := eq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -451,8 +452,9 @@ func (eq *ExchangeQuery) Clone() *ExchangeQuery {
 		withRider:      eq.withRider.Clone(),
 		withEmployee:   eq.withEmployee.Clone(),
 		// clone intermediate query.
-		sql:  eq.sql.Clone(),
-		path: eq.path,
+		sql:       eq.sql.Clone(),
+		path:      eq.path,
+		modifiers: append([]func(*sql.Selector){}, eq.modifiers...),
 	}
 }
 
@@ -1118,7 +1120,7 @@ func (egb *ExchangeGroupBy) Aggregate(fns ...AggregateFunc) *ExchangeGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (egb *ExchangeGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, egb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, egb.build.ctx, ent.OpQueryGroupBy)
 	if err := egb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1166,7 +1168,7 @@ func (es *ExchangeSelect) Aggregate(fns ...AggregateFunc) *ExchangeSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (es *ExchangeSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, es.ctx, "Select")
+	ctx = setContextOp(ctx, es.ctx, ent.OpQuerySelect)
 	if err := es.prepareQuery(ctx); err != nil {
 		return err
 	}

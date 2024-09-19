@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -61,7 +62,7 @@ func (iq *InventoryQuery) Order(o ...inventory.OrderOption) *InventoryQuery {
 // First returns the first Inventory entity from the query.
 // Returns a *NotFoundError when no Inventory was found.
 func (iq *InventoryQuery) First(ctx context.Context) (*Inventory, error) {
-	nodes, err := iq.Limit(1).All(setContextOp(ctx, iq.ctx, "First"))
+	nodes, err := iq.Limit(1).All(setContextOp(ctx, iq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +85,7 @@ func (iq *InventoryQuery) FirstX(ctx context.Context) *Inventory {
 // Returns a *NotFoundError when no Inventory ID was found.
 func (iq *InventoryQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = iq.Limit(1).IDs(setContextOp(ctx, iq.ctx, "FirstID")); err != nil {
+	if ids, err = iq.Limit(1).IDs(setContextOp(ctx, iq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -107,7 +108,7 @@ func (iq *InventoryQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Inventory entity is found.
 // Returns a *NotFoundError when no Inventory entities are found.
 func (iq *InventoryQuery) Only(ctx context.Context) (*Inventory, error) {
-	nodes, err := iq.Limit(2).All(setContextOp(ctx, iq.ctx, "Only"))
+	nodes, err := iq.Limit(2).All(setContextOp(ctx, iq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +136,7 @@ func (iq *InventoryQuery) OnlyX(ctx context.Context) *Inventory {
 // Returns a *NotFoundError when no entities are found.
 func (iq *InventoryQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = iq.Limit(2).IDs(setContextOp(ctx, iq.ctx, "OnlyID")); err != nil {
+	if ids, err = iq.Limit(2).IDs(setContextOp(ctx, iq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -160,7 +161,7 @@ func (iq *InventoryQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Inventories.
 func (iq *InventoryQuery) All(ctx context.Context) ([]*Inventory, error) {
-	ctx = setContextOp(ctx, iq.ctx, "All")
+	ctx = setContextOp(ctx, iq.ctx, ent.OpQueryAll)
 	if err := iq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -182,7 +183,7 @@ func (iq *InventoryQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if iq.ctx.Unique == nil && iq.path != nil {
 		iq.Unique(true)
 	}
-	ctx = setContextOp(ctx, iq.ctx, "IDs")
+	ctx = setContextOp(ctx, iq.ctx, ent.OpQueryIDs)
 	if err = iq.Select(inventory.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -200,7 +201,7 @@ func (iq *InventoryQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (iq *InventoryQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, iq.ctx, "Count")
+	ctx = setContextOp(ctx, iq.ctx, ent.OpQueryCount)
 	if err := iq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -218,7 +219,7 @@ func (iq *InventoryQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (iq *InventoryQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, iq.ctx, "Exist")
+	ctx = setContextOp(ctx, iq.ctx, ent.OpQueryExist)
 	switch _, err := iq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -251,8 +252,9 @@ func (iq *InventoryQuery) Clone() *InventoryQuery {
 		inters:     append([]Interceptor{}, iq.inters...),
 		predicates: append([]predicate.Inventory{}, iq.predicates...),
 		// clone intermediate query.
-		sql:  iq.sql.Clone(),
-		path: iq.path,
+		sql:       iq.sql.Clone(),
+		path:      iq.path,
+		modifiers: append([]func(*sql.Selector){}, iq.modifiers...),
 	}
 }
 
@@ -477,7 +479,7 @@ func (igb *InventoryGroupBy) Aggregate(fns ...AggregateFunc) *InventoryGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (igb *InventoryGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, igb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, igb.build.ctx, ent.OpQueryGroupBy)
 	if err := igb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -525,7 +527,7 @@ func (is *InventorySelect) Aggregate(fns ...AggregateFunc) *InventorySelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (is *InventorySelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, is.ctx, "Select")
+	ctx = setContextOp(ctx, is.ctx, ent.OpQuerySelect)
 	if err := is.prepareQuery(ctx); err != nil {
 		return err
 	}

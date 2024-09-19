@@ -95,6 +95,7 @@ type PlanCreateReq struct {
 	DepositAlipayAuthFreeze *bool    `json:"depositAlipayAuthFreeze"`     // 是否支持预授权信用免押金 true:支持 false:不支持
 	DepositContract         *bool    `json:"depositContract"`             // 是否支持合同免押金 true:支持 false:不支持
 	AgreementID             *uint64  `json:"agreementId"`                 // 协议ID
+	IntroductionImage       *string  `json:"introductionImage"`           // 商品介绍图
 }
 
 // PlanEnableModifyReq 骑士卡状态修改请求

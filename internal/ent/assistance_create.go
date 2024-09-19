@@ -579,13 +579,13 @@ func (ac *AssistanceCreate) check() error {
 	if _, ok := ac.mutation.Wait(); !ok {
 		return &ValidationError{Name: "wait", err: errors.New(`ent: missing required field "Assistance.wait"`)}
 	}
-	if _, ok := ac.mutation.RiderID(); !ok {
+	if len(ac.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Assistance.rider"`)}
 	}
-	if _, ok := ac.mutation.SubscribeID(); !ok {
+	if len(ac.mutation.SubscribeIDs()) == 0 {
 		return &ValidationError{Name: "subscribe", err: errors.New(`ent: missing required edge "Assistance.subscribe"`)}
 	}
-	if _, ok := ac.mutation.CityID(); !ok {
+	if len(ac.mutation.CityIDs()) == 0 {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Assistance.city"`)}
 	}
 	return nil

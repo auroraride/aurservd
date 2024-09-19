@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -86,7 +87,7 @@ func (ctq *CouponTemplateQuery) QueryCoupons() *CouponQuery {
 // First returns the first CouponTemplate entity from the query.
 // Returns a *NotFoundError when no CouponTemplate was found.
 func (ctq *CouponTemplateQuery) First(ctx context.Context) (*CouponTemplate, error) {
-	nodes, err := ctq.Limit(1).All(setContextOp(ctx, ctq.ctx, "First"))
+	nodes, err := ctq.Limit(1).All(setContextOp(ctx, ctq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +110,7 @@ func (ctq *CouponTemplateQuery) FirstX(ctx context.Context) *CouponTemplate {
 // Returns a *NotFoundError when no CouponTemplate ID was found.
 func (ctq *CouponTemplateQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ctq.Limit(1).IDs(setContextOp(ctx, ctq.ctx, "FirstID")); err != nil {
+	if ids, err = ctq.Limit(1).IDs(setContextOp(ctx, ctq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -132,7 +133,7 @@ func (ctq *CouponTemplateQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one CouponTemplate entity is found.
 // Returns a *NotFoundError when no CouponTemplate entities are found.
 func (ctq *CouponTemplateQuery) Only(ctx context.Context) (*CouponTemplate, error) {
-	nodes, err := ctq.Limit(2).All(setContextOp(ctx, ctq.ctx, "Only"))
+	nodes, err := ctq.Limit(2).All(setContextOp(ctx, ctq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -160,7 +161,7 @@ func (ctq *CouponTemplateQuery) OnlyX(ctx context.Context) *CouponTemplate {
 // Returns a *NotFoundError when no entities are found.
 func (ctq *CouponTemplateQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ctq.Limit(2).IDs(setContextOp(ctx, ctq.ctx, "OnlyID")); err != nil {
+	if ids, err = ctq.Limit(2).IDs(setContextOp(ctx, ctq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -185,7 +186,7 @@ func (ctq *CouponTemplateQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of CouponTemplates.
 func (ctq *CouponTemplateQuery) All(ctx context.Context) ([]*CouponTemplate, error) {
-	ctx = setContextOp(ctx, ctq.ctx, "All")
+	ctx = setContextOp(ctx, ctq.ctx, ent.OpQueryAll)
 	if err := ctq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -207,7 +208,7 @@ func (ctq *CouponTemplateQuery) IDs(ctx context.Context) (ids []uint64, err erro
 	if ctq.ctx.Unique == nil && ctq.path != nil {
 		ctq.Unique(true)
 	}
-	ctx = setContextOp(ctx, ctq.ctx, "IDs")
+	ctx = setContextOp(ctx, ctq.ctx, ent.OpQueryIDs)
 	if err = ctq.Select(coupontemplate.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -225,7 +226,7 @@ func (ctq *CouponTemplateQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (ctq *CouponTemplateQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, ctq.ctx, "Count")
+	ctx = setContextOp(ctx, ctq.ctx, ent.OpQueryCount)
 	if err := ctq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -243,7 +244,7 @@ func (ctq *CouponTemplateQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (ctq *CouponTemplateQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, ctq.ctx, "Exist")
+	ctx = setContextOp(ctx, ctq.ctx, ent.OpQueryExist)
 	switch _, err := ctq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -277,8 +278,9 @@ func (ctq *CouponTemplateQuery) Clone() *CouponTemplateQuery {
 		predicates:  append([]predicate.CouponTemplate{}, ctq.predicates...),
 		withCoupons: ctq.withCoupons.Clone(),
 		// clone intermediate query.
-		sql:  ctq.sql.Clone(),
-		path: ctq.path,
+		sql:       ctq.sql.Clone(),
+		path:      ctq.path,
+		modifiers: append([]func(*sql.Selector){}, ctq.modifiers...),
 	}
 }
 
@@ -560,7 +562,7 @@ func (ctgb *CouponTemplateGroupBy) Aggregate(fns ...AggregateFunc) *CouponTempla
 
 // Scan applies the selector query and scans the result into the given value.
 func (ctgb *CouponTemplateGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ctgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, ctgb.build.ctx, ent.OpQueryGroupBy)
 	if err := ctgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -608,7 +610,7 @@ func (cts *CouponTemplateSelect) Aggregate(fns ...AggregateFunc) *CouponTemplate
 
 // Scan applies the selector query and scans the result into the given value.
 func (cts *CouponTemplateSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, cts.ctx, "Select")
+	ctx = setContextOp(ctx, cts.ctx, ent.OpQuerySelect)
 	if err := cts.prepareQuery(ctx); err != nil {
 		return err
 	}

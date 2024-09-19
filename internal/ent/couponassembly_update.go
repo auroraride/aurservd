@@ -226,7 +226,7 @@ func (cau *CouponAssemblyUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (cau *CouponAssemblyUpdate) check() error {
-	if _, ok := cau.mutation.TemplateID(); cau.mutation.TemplateCleared() && !ok {
+	if cau.mutation.TemplateCleared() && len(cau.mutation.TemplateIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "CouponAssembly.template"`)
 	}
 	return nil
@@ -551,7 +551,7 @@ func (cauo *CouponAssemblyUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (cauo *CouponAssemblyUpdateOne) check() error {
-	if _, ok := cauo.mutation.TemplateID(); cauo.mutation.TemplateCleared() && !ok {
+	if cauo.mutation.TemplateCleared() && len(cauo.mutation.TemplateIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "CouponAssembly.template"`)
 	}
 	return nil

@@ -10,10 +10,9 @@ import (
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/fault"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/setting"
@@ -69,8 +68,8 @@ func (s *faultBiz) List(req *definition.FaultListReq) (res *model.PaginationRes)
 		q.Where(
 			fault.Or(
 				fault.HasCabinetWith(cabinet.SerialContains(*req.DeviceNo)),
-				fault.HasBatteryWith(battery.SnContains(*req.DeviceNo)),
-				fault.HasEbikeWith(ebike.SnContains(*req.DeviceNo)),
+				fault.HasBatteryWith(asset.SnContains(*req.DeviceNo)),
+				fault.HasEbikeWith(asset.SnContains(*req.DeviceNo)),
 			))
 	}
 
@@ -122,7 +121,7 @@ func (s *faultBiz) Create(r *ent.Rider, req *definition.FaultCreateReq) error {
 	// 查找设备
 	switch req.Type {
 	case definition.FaultTypeBattery:
-		d, err := ent.Database.Battery.QueryNotDeleted().Where(battery.SnEQ(req.DeviceNo)).First(s.ctx)
+		d, err := ent.Database.Asset.QueryNotDeleted().Where(asset.SnEQ(req.DeviceNo)).First(s.ctx)
 		if err != nil {
 			return errors.New("电池不存在")
 		}
@@ -134,7 +133,7 @@ func (s *faultBiz) Create(r *ent.Rider, req *definition.FaultCreateReq) error {
 		}
 		q.SetCabinetID(d.ID)
 	case definition.FaultTypeEbike:
-		d, err := ent.Database.Ebike.Query().Where(ebike.SnEQ(req.DeviceNo)).First(s.ctx)
+		d, err := ent.Database.Asset.Query().Where(asset.SnEQ(req.DeviceNo)).First(s.ctx)
 		if err != nil {
 			return errors.New("车辆不存在")
 		}

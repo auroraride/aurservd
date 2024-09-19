@@ -13,7 +13,6 @@ import (
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/internal"
-	"github.com/auroraride/aurservd/pkg/snag"
 )
 
 type SubscribeMixin struct {
@@ -100,6 +99,8 @@ func (Subscribe) Fields() []ent.Field {
 		field.String("agreement_hash").Optional().Comment("签署协议hash"),
 		field.Uint64("enterprise_price_id").Optional().Comment("团签价格ID"),
 		field.Uint8("deposit_type").Optional().Comment("押金类型 1:芝麻免押 2:微信支付分免押 3:合同免押 4:支付押金"),
+
+		field.Uint64("ebike_id").Optional().Nillable().Comment("电车ID"),
 	}
 }
 
@@ -118,7 +119,9 @@ func (Subscribe) Edges() []ent.Edge {
 
 		edge.To("bills", EnterpriseBill.Type),
 
-		edge.To("battery", Battery.Type).Unique(),
+		edge.To("ebike", Asset.Type).Unique().Field("ebike_id"),
+
+		edge.To("battery", Asset.Type),
 
 		edge.To("enterprise_price", EnterprisePrice.Type).Unique().Field("enterprise_price_id"),
 	}
@@ -139,7 +142,6 @@ func (Subscribe) Mixin() []ent.Mixin {
 
 		// 电车
 		EbikeBrandMixin{Optional: true},
-		EbikeMixin{Optional: true},
 	}
 }
 
@@ -166,7 +168,7 @@ func (Subscribe) Hooks() []ent.Hook {
 					if sub, ok := m.(intr); ok {
 						if status, ok := sub.Status(); ok && status == model.SubscribeStatusUnSubscribed {
 							if reason, _ := sub.UnsubscribeReason(); reason == "" {
-								snag.Panic("退租理由必填")
+								// snag.Panic("退租理由必填")
 							}
 						}
 					}

@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/adapter"
-	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -62,6 +61,7 @@ func (bfu *BatteryFlowUpdate) ClearSubscribeID() *BatteryFlowUpdate {
 
 // SetBatteryID sets the "battery_id" field.
 func (bfu *BatteryFlowUpdate) SetBatteryID(u uint64) *BatteryFlowUpdate {
+	bfu.mutation.ResetBatteryID()
 	bfu.mutation.SetBatteryID(u)
 	return bfu
 }
@@ -71,6 +71,12 @@ func (bfu *BatteryFlowUpdate) SetNillableBatteryID(u *uint64) *BatteryFlowUpdate
 	if u != nil {
 		bfu.SetBatteryID(*u)
 	}
+	return bfu
+}
+
+// AddBatteryID adds u to the "battery_id" field.
+func (bfu *BatteryFlowUpdate) AddBatteryID(u int64) *BatteryFlowUpdate {
+	bfu.mutation.AddBatteryID(u)
 	return bfu
 }
 
@@ -233,11 +239,6 @@ func (bfu *BatteryFlowUpdate) SetSubscribe(s *Subscribe) *BatteryFlowUpdate {
 	return bfu.SetSubscribeID(s.ID)
 }
 
-// SetBattery sets the "battery" edge to the Battery entity.
-func (bfu *BatteryFlowUpdate) SetBattery(b *Battery) *BatteryFlowUpdate {
-	return bfu.SetBatteryID(b.ID)
-}
-
 // SetCabinet sets the "cabinet" edge to the Cabinet entity.
 func (bfu *BatteryFlowUpdate) SetCabinet(c *Cabinet) *BatteryFlowUpdate {
 	return bfu.SetCabinetID(c.ID)
@@ -256,12 +257,6 @@ func (bfu *BatteryFlowUpdate) Mutation() *BatteryFlowMutation {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (bfu *BatteryFlowUpdate) ClearSubscribe() *BatteryFlowUpdate {
 	bfu.mutation.ClearSubscribe()
-	return bfu
-}
-
-// ClearBattery clears the "battery" edge to the Battery entity.
-func (bfu *BatteryFlowUpdate) ClearBattery() *BatteryFlowUpdate {
-	bfu.mutation.ClearBattery()
 	return bfu
 }
 
@@ -313,14 +308,6 @@ func (bfu *BatteryFlowUpdate) defaults() {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (bfu *BatteryFlowUpdate) check() error {
-	if _, ok := bfu.mutation.BatteryID(); bfu.mutation.BatteryCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "BatteryFlow.battery"`)
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (bfu *BatteryFlowUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *BatteryFlowUpdate {
 	bfu.modifiers = append(bfu.modifiers, modifiers...)
@@ -328,9 +315,6 @@ func (bfu *BatteryFlowUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *B
 }
 
 func (bfu *BatteryFlowUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := bfu.check(); err != nil {
-		return n, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(batteryflow.Table, batteryflow.Columns, sqlgraph.NewFieldSpec(batteryflow.FieldID, field.TypeUint64))
 	if ps := bfu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -341,6 +325,12 @@ func (bfu *BatteryFlowUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := bfu.mutation.UpdatedAt(); ok {
 		_spec.SetField(batteryflow.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := bfu.mutation.BatteryID(); ok {
+		_spec.SetField(batteryflow.FieldBatteryID, field.TypeUint64, value)
+	}
+	if value, ok := bfu.mutation.AddedBatteryID(); ok {
+		_spec.AddField(batteryflow.FieldBatteryID, field.TypeUint64, value)
 	}
 	if value, ok := bfu.mutation.Sn(); ok {
 		_spec.SetField(batteryflow.FieldSn, field.TypeString, value)
@@ -400,35 +390,6 @@ func (bfu *BatteryFlowUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if bfu.mutation.BatteryCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   batteryflow.BatteryTable,
-			Columns: []string{batteryflow.BatteryColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := bfu.mutation.BatteryIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   batteryflow.BatteryTable,
-			Columns: []string{batteryflow.BatteryColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -544,6 +505,7 @@ func (bfuo *BatteryFlowUpdateOne) ClearSubscribeID() *BatteryFlowUpdateOne {
 
 // SetBatteryID sets the "battery_id" field.
 func (bfuo *BatteryFlowUpdateOne) SetBatteryID(u uint64) *BatteryFlowUpdateOne {
+	bfuo.mutation.ResetBatteryID()
 	bfuo.mutation.SetBatteryID(u)
 	return bfuo
 }
@@ -553,6 +515,12 @@ func (bfuo *BatteryFlowUpdateOne) SetNillableBatteryID(u *uint64) *BatteryFlowUp
 	if u != nil {
 		bfuo.SetBatteryID(*u)
 	}
+	return bfuo
+}
+
+// AddBatteryID adds u to the "battery_id" field.
+func (bfuo *BatteryFlowUpdateOne) AddBatteryID(u int64) *BatteryFlowUpdateOne {
+	bfuo.mutation.AddBatteryID(u)
 	return bfuo
 }
 
@@ -715,11 +683,6 @@ func (bfuo *BatteryFlowUpdateOne) SetSubscribe(s *Subscribe) *BatteryFlowUpdateO
 	return bfuo.SetSubscribeID(s.ID)
 }
 
-// SetBattery sets the "battery" edge to the Battery entity.
-func (bfuo *BatteryFlowUpdateOne) SetBattery(b *Battery) *BatteryFlowUpdateOne {
-	return bfuo.SetBatteryID(b.ID)
-}
-
 // SetCabinet sets the "cabinet" edge to the Cabinet entity.
 func (bfuo *BatteryFlowUpdateOne) SetCabinet(c *Cabinet) *BatteryFlowUpdateOne {
 	return bfuo.SetCabinetID(c.ID)
@@ -738,12 +701,6 @@ func (bfuo *BatteryFlowUpdateOne) Mutation() *BatteryFlowMutation {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (bfuo *BatteryFlowUpdateOne) ClearSubscribe() *BatteryFlowUpdateOne {
 	bfuo.mutation.ClearSubscribe()
-	return bfuo
-}
-
-// ClearBattery clears the "battery" edge to the Battery entity.
-func (bfuo *BatteryFlowUpdateOne) ClearBattery() *BatteryFlowUpdateOne {
-	bfuo.mutation.ClearBattery()
 	return bfuo
 }
 
@@ -808,14 +765,6 @@ func (bfuo *BatteryFlowUpdateOne) defaults() {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (bfuo *BatteryFlowUpdateOne) check() error {
-	if _, ok := bfuo.mutation.BatteryID(); bfuo.mutation.BatteryCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "BatteryFlow.battery"`)
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (bfuo *BatteryFlowUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *BatteryFlowUpdateOne {
 	bfuo.modifiers = append(bfuo.modifiers, modifiers...)
@@ -823,9 +772,6 @@ func (bfuo *BatteryFlowUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)
 }
 
 func (bfuo *BatteryFlowUpdateOne) sqlSave(ctx context.Context) (_node *BatteryFlow, err error) {
-	if err := bfuo.check(); err != nil {
-		return _node, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(batteryflow.Table, batteryflow.Columns, sqlgraph.NewFieldSpec(batteryflow.FieldID, field.TypeUint64))
 	id, ok := bfuo.mutation.ID()
 	if !ok {
@@ -853,6 +799,12 @@ func (bfuo *BatteryFlowUpdateOne) sqlSave(ctx context.Context) (_node *BatteryFl
 	}
 	if value, ok := bfuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(batteryflow.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := bfuo.mutation.BatteryID(); ok {
+		_spec.SetField(batteryflow.FieldBatteryID, field.TypeUint64, value)
+	}
+	if value, ok := bfuo.mutation.AddedBatteryID(); ok {
+		_spec.AddField(batteryflow.FieldBatteryID, field.TypeUint64, value)
 	}
 	if value, ok := bfuo.mutation.Sn(); ok {
 		_spec.SetField(batteryflow.FieldSn, field.TypeString, value)
@@ -912,35 +864,6 @@ func (bfuo *BatteryFlowUpdateOne) sqlSave(ctx context.Context) (_node *BatteryFl
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if bfuo.mutation.BatteryCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   batteryflow.BatteryTable,
-			Columns: []string{batteryflow.BatteryColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := bfuo.mutation.BatteryIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   batteryflow.BatteryTable,
-			Columns: []string{batteryflow.BatteryColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

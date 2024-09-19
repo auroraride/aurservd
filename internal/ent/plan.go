@@ -85,6 +85,8 @@ type Plan struct {
 	BrandID *uint64 `json:"brand_id,omitempty"`
 	// 是否日租
 	Daily bool `json:"daily,omitempty"`
+	// 商品介绍图
+	IntroductionImage string `json:"introduction_image,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlanQuery when eager-loading is set.
 	Edges        PlanEdges `json:"edges"`
@@ -183,7 +185,7 @@ func (*Plan) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case plan.FieldID, plan.FieldAgreementID, plan.FieldType, plan.FieldDays, plan.FieldParentID, plan.FieldRtoDays, plan.FieldBrandID:
 			values[i] = new(sql.NullInt64)
-		case plan.FieldRemark, plan.FieldModel, plan.FieldName, plan.FieldDesc:
+		case plan.FieldRemark, plan.FieldModel, plan.FieldName, plan.FieldDesc, plan.FieldIntroductionImage:
 			values[i] = new(sql.NullString)
 		case plan.FieldCreatedAt, plan.FieldUpdatedAt, plan.FieldDeletedAt, plan.FieldStart, plan.FieldEnd:
 			values[i] = new(sql.NullTime)
@@ -411,6 +413,12 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pl.Daily = value.Bool
 			}
+		case plan.FieldIntroductionImage:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field introduction_image", values[i])
+			} else if value.Valid {
+				pl.IntroductionImage = value.String
+			}
 		default:
 			pl.selectValues.Set(columns[i], values[i])
 		}
@@ -582,6 +590,9 @@ func (pl *Plan) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("daily=")
 	builder.WriteString(fmt.Sprintf("%v", pl.Daily))
+	builder.WriteString(", ")
+	builder.WriteString("introduction_image=")
+	builder.WriteString(pl.IntroductionImage)
 	builder.WriteByte(')')
 	return builder.String()
 }

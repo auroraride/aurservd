@@ -8,10 +8,11 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
@@ -23,6 +24,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/stock"
+	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 // CabinetQuery is the builder for querying Cabinet entities.
@@ -33,12 +35,13 @@ type CabinetQuery struct {
 	inters           []Interceptor
 	predicates       []predicate.Cabinet
 	withCity         *CityQuery
+	withStore        *StoreQuery
 	withBranch       *BranchQuery
 	withModels       *BatteryModelQuery
 	withFaults       *CabinetFaultQuery
 	withExchanges    *ExchangeQuery
+	withAsset        *AssetQuery
 	withStocks       *StockQuery
-	withBatteries    *BatteryQuery
 	withBatteryFlows *BatteryFlowQuery
 	withStation      *EnterpriseStationQuery
 	withEnterprise   *EnterpriseQuery
@@ -94,6 +97,28 @@ func (cq *CabinetQuery) QueryCity() *CityQuery {
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, selector),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, cabinet.CityTable, cabinet.CityColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStore chains the current query on the "store" edge.
+func (cq *CabinetQuery) QueryStore() *StoreQuery {
+	query := (&StoreClient{config: cq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinet.Table, cabinet.FieldID, selector),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, cabinet.StoreTable, cabinet.StoreColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -189,6 +214,28 @@ func (cq *CabinetQuery) QueryExchanges() *ExchangeQuery {
 	return query
 }
 
+// QueryAsset chains the current query on the "asset" edge.
+func (cq *CabinetQuery) QueryAsset() *AssetQuery {
+	query := (&AssetClient{config: cq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinet.Table, cabinet.FieldID, selector),
+			sqlgraph.To(asset.Table, asset.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, cabinet.AssetTable, cabinet.AssetColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // QueryStocks chains the current query on the "stocks" edge.
 func (cq *CabinetQuery) QueryStocks() *StockQuery {
 	query := (&StockClient{config: cq.config}).Query()
@@ -204,28 +251,6 @@ func (cq *CabinetQuery) QueryStocks() *StockQuery {
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, selector),
 			sqlgraph.To(stock.Table, stock.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, cabinet.StocksTable, cabinet.StocksColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryBatteries chains the current query on the "batteries" edge.
-func (cq *CabinetQuery) QueryBatteries() *BatteryQuery {
-	query := (&BatteryClient{config: cq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := cq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := cq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(cabinet.Table, cabinet.FieldID, selector),
-			sqlgraph.To(battery.Table, battery.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, cabinet.BatteriesTable, cabinet.BatteriesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -302,7 +327,7 @@ func (cq *CabinetQuery) QueryEnterprise() *EnterpriseQuery {
 // First returns the first Cabinet entity from the query.
 // Returns a *NotFoundError when no Cabinet was found.
 func (cq *CabinetQuery) First(ctx context.Context) (*Cabinet, error) {
-	nodes, err := cq.Limit(1).All(setContextOp(ctx, cq.ctx, "First"))
+	nodes, err := cq.Limit(1).All(setContextOp(ctx, cq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -325,7 +350,7 @@ func (cq *CabinetQuery) FirstX(ctx context.Context) *Cabinet {
 // Returns a *NotFoundError when no Cabinet ID was found.
 func (cq *CabinetQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = cq.Limit(1).IDs(setContextOp(ctx, cq.ctx, "FirstID")); err != nil {
+	if ids, err = cq.Limit(1).IDs(setContextOp(ctx, cq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -348,7 +373,7 @@ func (cq *CabinetQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Cabinet entity is found.
 // Returns a *NotFoundError when no Cabinet entities are found.
 func (cq *CabinetQuery) Only(ctx context.Context) (*Cabinet, error) {
-	nodes, err := cq.Limit(2).All(setContextOp(ctx, cq.ctx, "Only"))
+	nodes, err := cq.Limit(2).All(setContextOp(ctx, cq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -376,7 +401,7 @@ func (cq *CabinetQuery) OnlyX(ctx context.Context) *Cabinet {
 // Returns a *NotFoundError when no entities are found.
 func (cq *CabinetQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = cq.Limit(2).IDs(setContextOp(ctx, cq.ctx, "OnlyID")); err != nil {
+	if ids, err = cq.Limit(2).IDs(setContextOp(ctx, cq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -401,7 +426,7 @@ func (cq *CabinetQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Cabinets.
 func (cq *CabinetQuery) All(ctx context.Context) ([]*Cabinet, error) {
-	ctx = setContextOp(ctx, cq.ctx, "All")
+	ctx = setContextOp(ctx, cq.ctx, ent.OpQueryAll)
 	if err := cq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -423,7 +448,7 @@ func (cq *CabinetQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if cq.ctx.Unique == nil && cq.path != nil {
 		cq.Unique(true)
 	}
-	ctx = setContextOp(ctx, cq.ctx, "IDs")
+	ctx = setContextOp(ctx, cq.ctx, ent.OpQueryIDs)
 	if err = cq.Select(cabinet.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -441,7 +466,7 @@ func (cq *CabinetQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (cq *CabinetQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, cq.ctx, "Count")
+	ctx = setContextOp(ctx, cq.ctx, ent.OpQueryCount)
 	if err := cq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -459,7 +484,7 @@ func (cq *CabinetQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (cq *CabinetQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, cq.ctx, "Exist")
+	ctx = setContextOp(ctx, cq.ctx, ent.OpQueryExist)
 	switch _, err := cq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -492,18 +517,20 @@ func (cq *CabinetQuery) Clone() *CabinetQuery {
 		inters:           append([]Interceptor{}, cq.inters...),
 		predicates:       append([]predicate.Cabinet{}, cq.predicates...),
 		withCity:         cq.withCity.Clone(),
+		withStore:        cq.withStore.Clone(),
 		withBranch:       cq.withBranch.Clone(),
 		withModels:       cq.withModels.Clone(),
 		withFaults:       cq.withFaults.Clone(),
 		withExchanges:    cq.withExchanges.Clone(),
+		withAsset:        cq.withAsset.Clone(),
 		withStocks:       cq.withStocks.Clone(),
-		withBatteries:    cq.withBatteries.Clone(),
 		withBatteryFlows: cq.withBatteryFlows.Clone(),
 		withStation:      cq.withStation.Clone(),
 		withEnterprise:   cq.withEnterprise.Clone(),
 		// clone intermediate query.
-		sql:  cq.sql.Clone(),
-		path: cq.path,
+		sql:       cq.sql.Clone(),
+		path:      cq.path,
+		modifiers: append([]func(*sql.Selector){}, cq.modifiers...),
 	}
 }
 
@@ -515,6 +542,17 @@ func (cq *CabinetQuery) WithCity(opts ...func(*CityQuery)) *CabinetQuery {
 		opt(query)
 	}
 	cq.withCity = query
+	return cq
+}
+
+// WithStore tells the query-builder to eager-load the nodes that are connected to
+// the "store" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CabinetQuery) WithStore(opts ...func(*StoreQuery)) *CabinetQuery {
+	query := (&StoreClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withStore = query
 	return cq
 }
 
@@ -562,6 +600,17 @@ func (cq *CabinetQuery) WithExchanges(opts ...func(*ExchangeQuery)) *CabinetQuer
 	return cq
 }
 
+// WithAsset tells the query-builder to eager-load the nodes that are connected to
+// the "asset" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CabinetQuery) WithAsset(opts ...func(*AssetQuery)) *CabinetQuery {
+	query := (&AssetClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withAsset = query
+	return cq
+}
+
 // WithStocks tells the query-builder to eager-load the nodes that are connected to
 // the "stocks" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CabinetQuery) WithStocks(opts ...func(*StockQuery)) *CabinetQuery {
@@ -570,17 +619,6 @@ func (cq *CabinetQuery) WithStocks(opts ...func(*StockQuery)) *CabinetQuery {
 		opt(query)
 	}
 	cq.withStocks = query
-	return cq
-}
-
-// WithBatteries tells the query-builder to eager-load the nodes that are connected to
-// the "batteries" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *CabinetQuery) WithBatteries(opts ...func(*BatteryQuery)) *CabinetQuery {
-	query := (&BatteryClient{config: cq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	cq.withBatteries = query
 	return cq
 }
 
@@ -695,14 +733,15 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 	var (
 		nodes       = []*Cabinet{}
 		_spec       = cq.querySpec()
-		loadedTypes = [10]bool{
+		loadedTypes = [11]bool{
 			cq.withCity != nil,
+			cq.withStore != nil,
 			cq.withBranch != nil,
 			cq.withModels != nil,
 			cq.withFaults != nil,
 			cq.withExchanges != nil,
+			cq.withAsset != nil,
 			cq.withStocks != nil,
-			cq.withBatteries != nil,
 			cq.withBatteryFlows != nil,
 			cq.withStation != nil,
 			cq.withEnterprise != nil,
@@ -735,6 +774,12 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 			return nil, err
 		}
 	}
+	if query := cq.withStore; query != nil {
+		if err := cq.loadStore(ctx, query, nodes, nil,
+			func(n *Cabinet, e *Store) { n.Edges.Store = e }); err != nil {
+			return nil, err
+		}
+	}
 	if query := cq.withBranch; query != nil {
 		if err := cq.loadBranch(ctx, query, nodes, nil,
 			func(n *Cabinet, e *Branch) { n.Edges.Branch = e }); err != nil {
@@ -762,17 +807,17 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 			return nil, err
 		}
 	}
+	if query := cq.withAsset; query != nil {
+		if err := cq.loadAsset(ctx, query, nodes,
+			func(n *Cabinet) { n.Edges.Asset = []*Asset{} },
+			func(n *Cabinet, e *Asset) { n.Edges.Asset = append(n.Edges.Asset, e) }); err != nil {
+			return nil, err
+		}
+	}
 	if query := cq.withStocks; query != nil {
 		if err := cq.loadStocks(ctx, query, nodes,
 			func(n *Cabinet) { n.Edges.Stocks = []*Stock{} },
 			func(n *Cabinet, e *Stock) { n.Edges.Stocks = append(n.Edges.Stocks, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := cq.withBatteries; query != nil {
-		if err := cq.loadBatteries(ctx, query, nodes,
-			func(n *Cabinet) { n.Edges.Batteries = []*Battery{} },
-			func(n *Cabinet, e *Battery) { n.Edges.Batteries = append(n.Edges.Batteries, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -823,6 +868,38 @@ func (cq *CabinetQuery) loadCity(ctx context.Context, query *CityQuery, nodes []
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (cq *CabinetQuery) loadStore(ctx context.Context, query *StoreQuery, nodes []*Cabinet, init func(*Cabinet), assign func(*Cabinet, *Store)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Cabinet)
+	for i := range nodes {
+		if nodes[i].StoreID == nil {
+			continue
+		}
+		fk := *nodes[i].StoreID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(store.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "store_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -983,6 +1060,36 @@ func (cq *CabinetQuery) loadExchanges(ctx context.Context, query *ExchangeQuery,
 	}
 	return nil
 }
+func (cq *CabinetQuery) loadAsset(ctx context.Context, query *AssetQuery, nodes []*Cabinet, init func(*Cabinet), assign func(*Cabinet, *Asset)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Cabinet)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(asset.FieldLocationsID)
+	}
+	query.Where(predicate.Asset(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(cabinet.AssetColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.LocationsID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "locations_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 func (cq *CabinetQuery) loadStocks(ctx context.Context, query *StockQuery, nodes []*Cabinet, init func(*Cabinet), assign func(*Cabinet, *Stock)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uint64]*Cabinet)
@@ -1017,39 +1124,6 @@ func (cq *CabinetQuery) loadStocks(ctx context.Context, query *StockQuery, nodes
 	}
 	return nil
 }
-func (cq *CabinetQuery) loadBatteries(ctx context.Context, query *BatteryQuery, nodes []*Cabinet, init func(*Cabinet), assign func(*Cabinet, *Battery)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint64]*Cabinet)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(battery.FieldCabinetID)
-	}
-	query.Where(predicate.Battery(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(cabinet.BatteriesColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.CabinetID
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "cabinet_id" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "cabinet_id" returned %v for node %v`, *fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
 func (cq *CabinetQuery) loadBatteryFlows(ctx context.Context, query *BatteryFlowQuery, nodes []*Cabinet, init func(*Cabinet), assign func(*Cabinet, *BatteryFlow)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uint64]*Cabinet)
@@ -1060,6 +1134,7 @@ func (cq *CabinetQuery) loadBatteryFlows(ctx context.Context, query *BatteryFlow
 			init(nodes[i])
 		}
 	}
+	query.withFKs = true
 	if len(query.ctx.Fields) > 0 {
 		query.ctx.AppendFieldOnce(batteryflow.FieldCabinetID)
 	}
@@ -1176,6 +1251,9 @@ func (cq *CabinetQuery) querySpec() *sqlgraph.QuerySpec {
 		if cq.withCity != nil {
 			_spec.Node.AddColumnOnce(cabinet.FieldCityID)
 		}
+		if cq.withStore != nil {
+			_spec.Node.AddColumnOnce(cabinet.FieldStoreID)
+		}
 		if cq.withBranch != nil {
 			_spec.Node.AddColumnOnce(cabinet.FieldBranchID)
 		}
@@ -1254,12 +1332,13 @@ type CabinetQueryWith string
 
 var (
 	CabinetQueryWithCity         CabinetQueryWith = "City"
+	CabinetQueryWithStore        CabinetQueryWith = "Store"
 	CabinetQueryWithBranch       CabinetQueryWith = "Branch"
 	CabinetQueryWithModels       CabinetQueryWith = "Models"
 	CabinetQueryWithFaults       CabinetQueryWith = "Faults"
 	CabinetQueryWithExchanges    CabinetQueryWith = "Exchanges"
+	CabinetQueryWithAsset        CabinetQueryWith = "Asset"
 	CabinetQueryWithStocks       CabinetQueryWith = "Stocks"
-	CabinetQueryWithBatteries    CabinetQueryWith = "Batteries"
 	CabinetQueryWithBatteryFlows CabinetQueryWith = "BatteryFlows"
 	CabinetQueryWithStation      CabinetQueryWith = "Station"
 	CabinetQueryWithEnterprise   CabinetQueryWith = "Enterprise"
@@ -1270,6 +1349,8 @@ func (cq *CabinetQuery) With(withEdges ...CabinetQueryWith) *CabinetQuery {
 		switch v {
 		case CabinetQueryWithCity:
 			cq.WithCity()
+		case CabinetQueryWithStore:
+			cq.WithStore()
 		case CabinetQueryWithBranch:
 			cq.WithBranch()
 		case CabinetQueryWithModels:
@@ -1278,10 +1359,10 @@ func (cq *CabinetQuery) With(withEdges ...CabinetQueryWith) *CabinetQuery {
 			cq.WithFaults()
 		case CabinetQueryWithExchanges:
 			cq.WithExchanges()
+		case CabinetQueryWithAsset:
+			cq.WithAsset()
 		case CabinetQueryWithStocks:
 			cq.WithStocks()
-		case CabinetQueryWithBatteries:
-			cq.WithBatteries()
 		case CabinetQueryWithBatteryFlows:
 			cq.WithBatteryFlows()
 		case CabinetQueryWithStation:
@@ -1307,7 +1388,7 @@ func (cgb *CabinetGroupBy) Aggregate(fns ...AggregateFunc) *CabinetGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (cgb *CabinetGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, cgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, cgb.build.ctx, ent.OpQueryGroupBy)
 	if err := cgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1355,7 +1436,7 @@ func (cs *CabinetSelect) Aggregate(fns ...AggregateFunc) *CabinetSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (cs *CabinetSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, cs.ctx, "Select")
+	ctx = setContextOp(ctx, cs.ctx, ent.OpQuerySelect)
 	if err := cs.prepareQuery(ctx); err != nil {
 		return err
 	}

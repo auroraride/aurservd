@@ -25,9 +25,10 @@ var Cabinet = new(cabinet)
 // @Accept	json
 // @Produce	json
 // @Param	X-Maintainer-Token	header		string														true	"运维校验token"
+// @Param	query				query		model.MaintainerCabinetListReq								true	"查询参数"
 // @Success	200					{object}	model.Pagination{items=[]model.CabinetListByDistanceRes}	"请求成功"
 func (*cabinet) List(c echo.Context) (err error) {
-	ctx, req := app.MaintainerContextAndBinding[model.PaginationReq](c)
+	ctx, req := app.MaintainerContextAndBinding[model.MaintainerCabinetListReq](c)
 	return ctx.SendResponse(service.NewMaintainerCabinet().List(ctx.CityIDs(), req))
 }
 
@@ -77,6 +78,22 @@ func (*cabinet) Operate(c echo.Context) (err error) {
 // @Success	200					{object}	model.MaintainerBinOperateReq	"请求成功"
 func (*cabinet) BinOperate(c echo.Context) (err error) {
 	ctx, req := app.MaintainerContextAndBinding[model.MaintainerBinOperateReq](c)
-	service.NewMaintainerCabinet().BinOperate(ctx.Maintainer, ctx.CityIDs(), req)
+	return ctx.SendResponse(service.NewMaintainerCabinet().BinOperate(ctx.Maintainer, ctx.CityIDs(), req, true))
+}
+
+// Pause
+// @ID		MaintainerCabinetPause
+// @Router	/maintainer/v1/cabinet/pause/{serial} [POST]
+// @Summary	O2005 电柜暂停维护
+// @Tags	[O]运维接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Maintainer-Token	header		string							true	"运维校验token"
+// @Param	serial				path		string							true	"电柜编号"
+// @Param	body				body		model.MaintainerCabinetPauseReq	true	"请求参数"
+// @Success	200					{object}	model.StatusResponse			"请求成功"
+func (*cabinet) Pause(c echo.Context) (err error) {
+	ctx, req := app.MaintainerContextAndBinding[model.MaintainerCabinetPauseReq](c)
+	service.NewMaintainerCabinet().Pause(ctx.Maintainer, ctx.CityIDs(), req)
 	return ctx.SendResponse()
 }

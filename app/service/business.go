@@ -523,13 +523,16 @@ func (s *businessService) ListPause(req *model.BusinessPauseList) *model.Paginat
 
 func (s *businessService) pauseDetail(item *ent.SubscribePause) (res model.BusinessPauseListRes) {
 	sub := item.Edges.Subscribe
+	if sub == nil {
+		return
+	}
 	ep := sub.Edges.Plan
 	res = model.BusinessPauseListRes{
 		City:            item.Edges.City.Name,
 		Name:            item.Edges.Rider.Name,
 		Phone:           item.Edges.Rider.Phone,
 		Plan:            fmt.Sprintf("%s - %d天", ep.Name, ep.Days),
-		Start:           item.StartAt.Format(carbon.DateLayout),
+		Start:           item.StartAt.Format(carbon.DateTimeLayout),
 		StartTarget:     s.pauseTarget(item.Edges.Store, item.Edges.Cabinet),
 		StartAscription: s.pauseAscription(item.Edges.Store, item.Edges.Cabinet),
 		StartBy:         s.pauseBy(item.Creator, item.Edges.Employee, item.Edges.Cabinet),
@@ -545,7 +548,7 @@ func (s *businessService) pauseDetail(item *ent.SubscribePause) (res model.Busin
 	if item.EndAt.IsZero() {
 		res.Status = "寄存中"
 	} else {
-		res.End = item.EndAt.Format(carbon.DateLayout)
+		res.End = item.EndAt.Format(carbon.DateTimeLayout)
 		res.Status = "已结束"
 	}
 

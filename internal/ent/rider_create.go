@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
@@ -399,6 +399,21 @@ func (rc *RiderCreate) AddSubscribes(s ...*Subscribe) *RiderCreate {
 	return rc.AddSubscribeIDs(ids...)
 }
 
+// AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
+func (rc *RiderCreate) AddAssetIDs(ids ...uint64) *RiderCreate {
+	rc.mutation.AddAssetIDs(ids...)
+	return rc
+}
+
+// AddAsset adds the "asset" edges to the Asset entity.
+func (rc *RiderCreate) AddAsset(a ...*Asset) *RiderCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return rc.AddAssetIDs(ids...)
+}
+
 // AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
 func (rc *RiderCreate) AddStockIDs(ids ...uint64) *RiderCreate {
 	rc.mutation.AddStockIDs(ids...)
@@ -429,13 +444,13 @@ func (rc *RiderCreate) AddFollowups(r ...*RiderFollowUp) *RiderCreate {
 	return rc.AddFollowupIDs(ids...)
 }
 
-// SetBatteryID sets the "battery" edge to the Battery entity by ID.
+// SetBatteryID sets the "battery" edge to the Asset entity by ID.
 func (rc *RiderCreate) SetBatteryID(id uint64) *RiderCreate {
 	rc.mutation.SetBatteryID(id)
 	return rc
 }
 
-// SetNillableBatteryID sets the "battery" edge to the Battery entity by ID if the given value is not nil.
+// SetNillableBatteryID sets the "battery" edge to the Asset entity by ID if the given value is not nil.
 func (rc *RiderCreate) SetNillableBatteryID(id *uint64) *RiderCreate {
 	if id != nil {
 		rc = rc.SetBatteryID(*id)
@@ -443,9 +458,9 @@ func (rc *RiderCreate) SetNillableBatteryID(id *uint64) *RiderCreate {
 	return rc
 }
 
-// SetBattery sets the "battery" edge to the Battery entity.
-func (rc *RiderCreate) SetBattery(b *Battery) *RiderCreate {
-	return rc.SetBatteryID(b.ID)
+// SetBattery sets the "battery" edge to the Asset entity.
+func (rc *RiderCreate) SetBattery(a *Asset) *RiderCreate {
+	return rc.SetBatteryID(a.ID)
 }
 
 // AddBatteryFlowIDs adds the "battery_flows" edge to the BatteryFlow entity by IDs.
@@ -802,6 +817,22 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := rc.mutation.AssetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.AssetTable,
+			Columns: []string{rider.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := rc.mutation.StocksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -842,7 +873,7 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 			Columns: []string{rider.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

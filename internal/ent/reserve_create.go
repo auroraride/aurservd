@@ -248,13 +248,13 @@ func (rc *ReserveCreate) check() error {
 	if _, ok := rc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Reserve.type"`)}
 	}
-	if _, ok := rc.mutation.CabinetID(); !ok {
+	if len(rc.mutation.CabinetIDs()) == 0 {
 		return &ValidationError{Name: "cabinet", err: errors.New(`ent: missing required edge "Reserve.cabinet"`)}
 	}
-	if _, ok := rc.mutation.RiderID(); !ok {
+	if len(rc.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Reserve.rider"`)}
 	}
-	if _, ok := rc.mutation.CityID(); !ok {
+	if len(rc.mutation.CityIDs()) == 0 {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Reserve.city"`)}
 	}
 	return nil

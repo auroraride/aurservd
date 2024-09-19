@@ -82,6 +82,7 @@ func (Order) Fields() []ent.Field {
 		field.String("out_order_no").Optional().Comment("商户端的唯一订单号(预支付或者信用付)"),
 		field.String("out_request_no").Optional().Comment("商户端的唯一请求流水号(预支付或者信用付)"),
 		field.Time("subscribe_end_at").Optional().Nillable().Comment("购买套餐订阅到期时间"),
+		field.Uint64("ebike_id").Optional().Nillable().Comment("电车ID"),
 	}
 }
 
@@ -95,6 +96,8 @@ func (Order) Edges() []ent.Edge {
 		edge.To("refund", OrderRefund.Type).Unique().Comment("退款"),
 		edge.To("assistance", Assistance.Type).Unique(),
 		edge.To("coupons", Coupon.Type),
+
+		edge.To("ebike", Asset.Type).Unique().Field("ebike_id"),
 	}
 }
 
@@ -107,8 +110,6 @@ func (Order) Mixin() []ent.Mixin {
 		PlanMixin{Optional: true},
 		CityMixin{Optional: true},
 		EbikeBrandMixin{Optional: true},
-		EbikeMixin{Optional: true},
-
 		AgentMixin{Optional: true},
 	}
 }

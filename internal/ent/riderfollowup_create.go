@@ -183,10 +183,10 @@ func (rfuc *RiderFollowUpCreate) check() error {
 	if _, ok := rfuc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "RiderFollowUp.rider_id"`)}
 	}
-	if _, ok := rfuc.mutation.ManagerID(); !ok {
+	if len(rfuc.mutation.ManagerIDs()) == 0 {
 		return &ValidationError{Name: "manager", err: errors.New(`ent: missing required edge "RiderFollowUp.manager"`)}
 	}
-	if _, ok := rfuc.mutation.RiderID(); !ok {
+	if len(rfuc.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "RiderFollowUp.rider"`)}
 	}
 	return nil

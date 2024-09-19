@@ -199,7 +199,7 @@ func (cac *CouponAssemblyCreate) check() error {
 	if _, ok := cac.mutation.Meta(); !ok {
 		return &ValidationError{Name: "meta", err: errors.New(`ent: missing required field "CouponAssembly.meta"`)}
 	}
-	if _, ok := cac.mutation.TemplateID(); !ok {
+	if len(cac.mutation.TemplateIDs()) == 0 {
 		return &ValidationError{Name: "template", err: errors.New(`ent: missing required edge "CouponAssembly.template"`)}
 	}
 	return nil

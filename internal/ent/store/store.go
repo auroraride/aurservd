@@ -29,6 +29,8 @@ const (
 	FieldRemark = "remark"
 	// FieldCityID holds the string denoting the city_id field in the database.
 	FieldCityID = "city_id"
+	// FieldGroupID holds the string denoting the group_id field in the database.
+	FieldGroupID = "group_id"
 	// FieldEmployeeID holds the string denoting the employee_id field in the database.
 	FieldEmployeeID = "employee_id"
 	// FieldBranchID holds the string denoting the branch_id field in the database.
@@ -63,18 +65,26 @@ const (
 	FieldHeadPic = "head_pic"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
+	// EdgeGroup holds the string denoting the group edge name in mutations.
+	EdgeGroup = "group"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
 	EdgeBranch = "branch"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
 	EdgeEmployee = "employee"
-	// EdgeStocks holds the string denoting the stocks edge name in mutations.
-	EdgeStocks = "stocks"
+	// EdgeAsset holds the string denoting the asset edge name in mutations.
+	EdgeAsset = "asset"
 	// EdgeAttendances holds the string denoting the attendances edge name in mutations.
 	EdgeAttendances = "attendances"
 	// EdgeExceptions holds the string denoting the exceptions edge name in mutations.
 	EdgeExceptions = "exceptions"
 	// EdgeGoods holds the string denoting the goods edge name in mutations.
 	EdgeGoods = "goods"
+	// EdgeEmployees holds the string denoting the employees edge name in mutations.
+	EdgeEmployees = "employees"
+	// EdgeDutyEmployees holds the string denoting the duty_employees edge name in mutations.
+	EdgeDutyEmployees = "duty_employees"
+	// EdgeStocks holds the string denoting the stocks edge name in mutations.
+	EdgeStocks = "stocks"
 	// Table holds the table name of the store in the database.
 	Table = "store"
 	// CityTable is the table that holds the city relation/edge.
@@ -84,6 +94,13 @@ const (
 	CityInverseTable = "city"
 	// CityColumn is the table column denoting the city relation/edge.
 	CityColumn = "city_id"
+	// GroupTable is the table that holds the group relation/edge.
+	GroupTable = "store"
+	// GroupInverseTable is the table name for the StoreGroup entity.
+	// It exists in this package in order to avoid circular dependency with the "storegroup" package.
+	GroupInverseTable = "store_group"
+	// GroupColumn is the table column denoting the group relation/edge.
+	GroupColumn = "group_id"
 	// BranchTable is the table that holds the branch relation/edge.
 	BranchTable = "store"
 	// BranchInverseTable is the table name for the Branch entity.
@@ -98,13 +115,13 @@ const (
 	EmployeeInverseTable = "employee"
 	// EmployeeColumn is the table column denoting the employee relation/edge.
 	EmployeeColumn = "employee_id"
-	// StocksTable is the table that holds the stocks relation/edge.
-	StocksTable = "stock"
-	// StocksInverseTable is the table name for the Stock entity.
-	// It exists in this package in order to avoid circular dependency with the "stock" package.
-	StocksInverseTable = "stock"
-	// StocksColumn is the table column denoting the stocks relation/edge.
-	StocksColumn = "store_id"
+	// AssetTable is the table that holds the asset relation/edge.
+	AssetTable = "asset"
+	// AssetInverseTable is the table name for the Asset entity.
+	// It exists in this package in order to avoid circular dependency with the "asset" package.
+	AssetInverseTable = "asset"
+	// AssetColumn is the table column denoting the asset relation/edge.
+	AssetColumn = "locations_id"
 	// AttendancesTable is the table that holds the attendances relation/edge.
 	AttendancesTable = "attendance"
 	// AttendancesInverseTable is the table name for the Attendance entity.
@@ -126,6 +143,25 @@ const (
 	GoodsInverseTable = "store_goods"
 	// GoodsColumn is the table column denoting the goods relation/edge.
 	GoodsColumn = "store_id"
+	// EmployeesTable is the table that holds the employees relation/edge. The primary key declared below.
+	EmployeesTable = "store_employees"
+	// EmployeesInverseTable is the table name for the Employee entity.
+	// It exists in this package in order to avoid circular dependency with the "employee" package.
+	EmployeesInverseTable = "employee"
+	// DutyEmployeesTable is the table that holds the duty_employees relation/edge.
+	DutyEmployeesTable = "employee"
+	// DutyEmployeesInverseTable is the table name for the Employee entity.
+	// It exists in this package in order to avoid circular dependency with the "employee" package.
+	DutyEmployeesInverseTable = "employee"
+	// DutyEmployeesColumn is the table column denoting the duty_employees relation/edge.
+	DutyEmployeesColumn = "duty_store_id"
+	// StocksTable is the table that holds the stocks relation/edge.
+	StocksTable = "stock"
+	// StocksInverseTable is the table name for the Stock entity.
+	// It exists in this package in order to avoid circular dependency with the "stock" package.
+	StocksInverseTable = "stock"
+	// StocksColumn is the table column denoting the stocks relation/edge.
+	StocksColumn = "store_id"
 )
 
 // Columns holds all SQL columns for store fields.
@@ -138,6 +174,7 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldCityID,
+	FieldGroupID,
 	FieldEmployeeID,
 	FieldBranchID,
 	FieldSn,
@@ -155,6 +192,12 @@ var Columns = []string{
 	FieldPhone,
 	FieldHeadPic,
 }
+
+var (
+	// EmployeesPrimaryKey and EmployeesColumn2 are the table columns denoting the
+	// primary key for the employees relation (M2M).
+	EmployeesPrimaryKey = []string{"store_id", "employee_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -228,6 +271,11 @@ func ByRemark(opts ...sql.OrderTermOption) OrderOption {
 // ByCityID orders the results by the city_id field.
 func ByCityID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCityID, opts...).ToFunc()
+}
+
+// ByGroupID orders the results by the group_id field.
+func ByGroupID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldGroupID, opts...).ToFunc()
 }
 
 // ByEmployeeID orders the results by the employee_id field.
@@ -312,6 +360,13 @@ func ByCityField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
+// ByGroupField orders the results by group field.
+func ByGroupField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newGroupStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByBranchField orders the results by branch field.
 func ByBranchField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -326,17 +381,17 @@ func ByEmployeeField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByStocksCount orders the results by stocks count.
-func ByStocksCount(opts ...sql.OrderTermOption) OrderOption {
+// ByAssetCount orders the results by asset count.
+func ByAssetCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newStocksStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newAssetStep(), opts...)
 	}
 }
 
-// ByStocks orders the results by stocks terms.
-func ByStocks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByAsset orders the results by asset terms.
+func ByAsset(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newStocksStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newAssetStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
@@ -381,11 +436,60 @@ func ByGoods(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newGoodsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByEmployeesCount orders the results by employees count.
+func ByEmployeesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newEmployeesStep(), opts...)
+	}
+}
+
+// ByEmployees orders the results by employees terms.
+func ByEmployees(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEmployeesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByDutyEmployeesCount orders the results by duty_employees count.
+func ByDutyEmployeesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newDutyEmployeesStep(), opts...)
+	}
+}
+
+// ByDutyEmployees orders the results by duty_employees terms.
+func ByDutyEmployees(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newDutyEmployeesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByStocksCount orders the results by stocks count.
+func ByStocksCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newStocksStep(), opts...)
+	}
+}
+
+// ByStocks orders the results by stocks terms.
+func ByStocks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStocksStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newCityStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CityInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+	)
+}
+func newGroupStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(GroupInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, GroupTable, GroupColumn),
 	)
 }
 func newBranchStep() *sqlgraph.Step {
@@ -402,11 +506,11 @@ func newEmployeeStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.O2O, true, EmployeeTable, EmployeeColumn),
 	)
 }
-func newStocksStep() *sqlgraph.Step {
+func newAssetStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(StocksInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
+		sqlgraph.To(AssetInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AssetTable, AssetColumn),
 	)
 }
 func newAttendancesStep() *sqlgraph.Step {
@@ -428,5 +532,26 @@ func newGoodsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(GoodsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, GoodsTable, GoodsColumn),
+	)
+}
+func newEmployeesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EmployeesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, EmployeesTable, EmployeesPrimaryKey...),
+	)
+}
+func newDutyEmployeesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(DutyEmployeesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, DutyEmployeesTable, DutyEmployeesColumn),
+	)
+}
+func newStocksStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StocksInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
 	)
 }

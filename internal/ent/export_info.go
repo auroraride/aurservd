@@ -9,10 +9,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -59,7 +59,7 @@ func (s *Store) GetExportInfo() string {
 	return s.Name
 }
 
-func (e *Ebike) GetExportInfo() string {
+func (e *Asset) GetExportInfo() string {
 	return e.Sn
 }
 
@@ -105,8 +105,8 @@ func (ei *ExportInfo) GetExportInfoData() string {
 		m, _ = Database.Cabinet.QueryNotDeleted().Where(cabinet.ID(ei.id)).First(ctx)
 	case store.Table:
 		m, _ = Database.Store.QueryNotDeleted().Where(store.ID(ei.id)).First(ctx)
-	case ebike.Table:
-		m, _ = Database.Ebike.Query().Where(ebike.ID(ei.id)).First(ctx)
+	case asset.Table:
+		m, _ = Database.Asset.Query().Where(asset.ID(ei.id)).First(ctx)
 	case ebikebrand.Table:
 		m, _ = Database.EbikeBrand.Query().Where(ebikebrand.ID(ei.id)).First(ctx)
 	case battery.Table:

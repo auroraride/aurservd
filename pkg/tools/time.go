@@ -118,3 +118,20 @@ func (t *timeTool) PauseBeginning(start time.Time) time.Time {
 	}
 	return carbon.CreateFromStdTime(startDay).Tomorrow().StdTime()
 }
+
+// ParseDateTimeString 格式化日期时间字符串
+func (*timeTool) ParseDateTimeString(str string) (time.Time, error) {
+	res := carbon.ParseByLayout(str, carbon.DateTimeLayout)
+	if res.Error != nil {
+		return time.Time{}, res.Error
+	}
+	return res.StdTime(), nil
+}
+
+func (t *timeTool) ParseDateTimeStringX(str string) time.Time {
+	res, err := t.ParseDateTimeString(str)
+	if err != nil {
+		snag.Panic("日期时间格式错误")
+	}
+	return res
+}

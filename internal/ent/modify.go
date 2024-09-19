@@ -79,6 +79,97 @@ func (c *AllocateClient) ModifyOne(old *Allocate, data any) *AllocateUpdateOne {
 	return EntitySetAttributes[AllocateUpdateOne, Allocate](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for Asset.
+func (c *AssetClient) ModifyOne(old *Asset, data any) *AssetUpdateOne {
+	mutation := newAssetMutation(c.config, OpUpdateOne, withAsset(old))
+	up := &AssetUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetUpdateOne, Asset](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for AssetAttributeValues.
+func (c *AssetAttributeValuesClient) ModifyOne(old *AssetAttributeValues, data any) *AssetAttributeValuesUpdateOne {
+	mutation := newAssetAttributeValuesMutation(c.config, OpUpdateOne, withAssetAttributeValues(old))
+	up := &AssetAttributeValuesUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetAttributeValuesUpdateOne, AssetAttributeValues](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for AssetAttributes.
+func (c *AssetAttributesClient) ModifyOne(old *AssetAttributes, data any) *AssetAttributesUpdateOne {
+	mutation := newAssetAttributesMutation(c.config, OpUpdateOne, withAssetAttributes(old))
+	up := &AssetAttributesUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetAttributesUpdateOne, AssetAttributes](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for AssetCheck.
+func (c *AssetCheckClient) ModifyOne(old *AssetCheck, data any) *AssetCheckUpdateOne {
+	mutation := newAssetCheckMutation(c.config, OpUpdateOne, withAssetCheck(old))
+	up := &AssetCheckUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetCheckUpdateOne, AssetCheck](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for AssetCheckDetails.
+func (c *AssetCheckDetailsClient) ModifyOne(old *AssetCheckDetails, data any) *AssetCheckDetailsUpdateOne {
+	mutation := newAssetCheckDetailsMutation(c.config, OpUpdateOne, withAssetCheckDetails(old))
+	up := &AssetCheckDetailsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetCheckDetailsUpdateOne, AssetCheckDetails](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for AssetMaintenance.
+func (c *AssetMaintenanceClient) ModifyOne(old *AssetMaintenance, data any) *AssetMaintenanceUpdateOne {
+	mutation := newAssetMaintenanceMutation(c.config, OpUpdateOne, withAssetMaintenance(old))
+	up := &AssetMaintenanceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetMaintenanceUpdateOne, AssetMaintenance](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for AssetMaintenanceDetails.
+func (c *AssetMaintenanceDetailsClient) ModifyOne(old *AssetMaintenanceDetails, data any) *AssetMaintenanceDetailsUpdateOne {
+	mutation := newAssetMaintenanceDetailsMutation(c.config, OpUpdateOne, withAssetMaintenanceDetails(old))
+	up := &AssetMaintenanceDetailsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetMaintenanceDetailsUpdateOne, AssetMaintenanceDetails](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for AssetManager.
+func (c *AssetManagerClient) ModifyOne(old *AssetManager, data any) *AssetManagerUpdateOne {
+	mutation := newAssetManagerMutation(c.config, OpUpdateOne, withAssetManager(old))
+	up := &AssetManagerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetManagerUpdateOne, AssetManager](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for AssetRole.
+func (c *AssetRoleClient) ModifyOne(old *AssetRole, data any) *AssetRoleUpdateOne {
+	mutation := newAssetRoleMutation(c.config, OpUpdateOne, withAssetRole(old))
+	up := &AssetRoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetRoleUpdateOne, AssetRole](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for AssetScrap.
+func (c *AssetScrapClient) ModifyOne(old *AssetScrap, data any) *AssetScrapUpdateOne {
+	mutation := newAssetScrapMutation(c.config, OpUpdateOne, withAssetScrap(old))
+	up := &AssetScrapUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetScrapUpdateOne, AssetScrap](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for AssetScrapDetails.
+func (c *AssetScrapDetailsClient) ModifyOne(old *AssetScrapDetails, data any) *AssetScrapDetailsUpdateOne {
+	mutation := newAssetScrapDetailsMutation(c.config, OpUpdateOne, withAssetScrapDetails(old))
+	up := &AssetScrapDetailsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetScrapDetailsUpdateOne, AssetScrapDetails](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for AssetTransfer.
+func (c *AssetTransferClient) ModifyOne(old *AssetTransfer, data any) *AssetTransferUpdateOne {
+	mutation := newAssetTransferMutation(c.config, OpUpdateOne, withAssetTransfer(old))
+	up := &AssetTransferUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetTransferUpdateOne, AssetTransfer](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for AssetTransferDetails.
+func (c *AssetTransferDetailsClient) ModifyOne(old *AssetTransferDetails, data any) *AssetTransferDetailsUpdateOne {
+	mutation := newAssetTransferDetailsMutation(c.config, OpUpdateOne, withAssetTransferDetails(old))
+	up := &AssetTransferDetailsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetTransferDetailsUpdateOne, AssetTransferDetails](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Assistance.
 func (c *AssistanceClient) ModifyOne(old *Assistance, data any) *AssistanceUpdateOne {
 	mutation := newAssistanceMutation(c.config, OpUpdateOne, withAssistance(old))
@@ -359,6 +450,13 @@ func (c *ManagerClient) ModifyOne(old *Manager, data any) *ManagerUpdateOne {
 	return EntitySetAttributes[ManagerUpdateOne, Manager](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for Material.
+func (c *MaterialClient) ModifyOne(old *Material, data any) *MaterialUpdateOne {
+	mutation := newMaterialMutation(c.config, OpUpdateOne, withMaterial(old))
+	up := &MaterialUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[MaterialUpdateOne, Material](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Order.
 func (c *OrderClient) ModifyOne(old *Order, data any) *OrderUpdateOne {
 	mutation := newOrderMutation(c.config, OpUpdateOne, withOrder(old))
@@ -597,6 +695,13 @@ func (c *StoreGoodsClient) ModifyOne(old *StoreGoods, data any) *StoreGoodsUpdat
 	return EntitySetAttributes[StoreGoodsUpdateOne, StoreGoods](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for StoreGroup.
+func (c *StoreGroupClient) ModifyOne(old *StoreGroup, data any) *StoreGroupUpdateOne {
+	mutation := newStoreGroupMutation(c.config, OpUpdateOne, withStoreGroup(old))
+	up := &StoreGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[StoreGroupUpdateOne, StoreGroup](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Subscribe.
 func (c *SubscribeClient) ModifyOne(old *Subscribe, data any) *SubscribeUpdateOne {
 	mutation := newSubscribeMutation(c.config, OpUpdateOne, withSubscribe(old))
@@ -637,4 +742,11 @@ func (c *VersionClient) ModifyOne(old *Version, data any) *VersionUpdateOne {
 	mutation := newVersionMutation(c.config, OpUpdateOne, withVersion(old))
 	up := &VersionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 	return EntitySetAttributes[VersionUpdateOne, Version](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for Warehouse.
+func (c *WarehouseClient) ModifyOne(old *Warehouse, data any) *WarehouseUpdateOne {
+	mutation := newWarehouseMutation(c.config, OpUpdateOne, withWarehouse(old))
+	up := &WarehouseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[WarehouseUpdateOne, Warehouse](up, old, data)
 }

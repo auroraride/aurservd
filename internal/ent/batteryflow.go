@@ -10,7 +10,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/adapter"
-	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -48,23 +47,22 @@ type BatteryFlow struct {
 	Remark *string `json:"remark,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BatteryFlowQuery when eager-loading is set.
-	Edges        BatteryFlowEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges         BatteryFlowEdges `json:"edges"`
+	battery_flows *uint64
+	selectValues  sql.SelectValues
 }
 
 // BatteryFlowEdges holds the relations/edges for other nodes in the graph.
 type BatteryFlowEdges struct {
 	// Subscribe holds the value of the subscribe edge.
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
-	// 所属电池
-	Battery *Battery `json:"battery,omitempty"`
 	// 所属电柜
 	Cabinet *Cabinet `json:"cabinet,omitempty"`
 	// 所属骑手
 	Rider *Rider `json:"rider,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [3]bool
 }
 
 // SubscribeOrErr returns the Subscribe value or an error if the edge
@@ -78,23 +76,12 @@ func (e BatteryFlowEdges) SubscribeOrErr() (*Subscribe, error) {
 	return nil, &NotLoadedError{edge: "subscribe"}
 }
 
-// BatteryOrErr returns the Battery value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e BatteryFlowEdges) BatteryOrErr() (*Battery, error) {
-	if e.Battery != nil {
-		return e.Battery, nil
-	} else if e.loadedTypes[1] {
-		return nil, &NotFoundError{label: battery.Label}
-	}
-	return nil, &NotLoadedError{edge: "battery"}
-}
-
 // CabinetOrErr returns the Cabinet value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e BatteryFlowEdges) CabinetOrErr() (*Cabinet, error) {
 	if e.Cabinet != nil {
 		return e.Cabinet, nil
-	} else if e.loadedTypes[2] {
+	} else if e.loadedTypes[1] {
 		return nil, &NotFoundError{label: cabinet.Label}
 	}
 	return nil, &NotLoadedError{edge: "cabinet"}
@@ -105,7 +92,7 @@ func (e BatteryFlowEdges) CabinetOrErr() (*Cabinet, error) {
 func (e BatteryFlowEdges) RiderOrErr() (*Rider, error) {
 	if e.Rider != nil {
 		return e.Rider, nil
-	} else if e.loadedTypes[3] {
+	} else if e.loadedTypes[2] {
 		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rider"}
@@ -126,6 +113,8 @@ func (*BatteryFlow) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case batteryflow.FieldCreatedAt, batteryflow.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
+		case batteryflow.ForeignKeys[0]: // battery_flows
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -221,6 +210,13 @@ func (bf *BatteryFlow) assignValues(columns []string, values []any) error {
 				bf.Remark = new(string)
 				*bf.Remark = value.String
 			}
+		case batteryflow.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field battery_flows", value)
+			} else if value.Valid {
+				bf.battery_flows = new(uint64)
+				*bf.battery_flows = uint64(value.Int64)
+			}
 		default:
 			bf.selectValues.Set(columns[i], values[i])
 		}
@@ -237,11 +233,6 @@ func (bf *BatteryFlow) Value(name string) (ent.Value, error) {
 // QuerySubscribe queries the "subscribe" edge of the BatteryFlow entity.
 func (bf *BatteryFlow) QuerySubscribe() *SubscribeQuery {
 	return NewBatteryFlowClient(bf.config).QuerySubscribe(bf)
-}
-
-// QueryBattery queries the "battery" edge of the BatteryFlow entity.
-func (bf *BatteryFlow) QueryBattery() *BatteryQuery {
-	return NewBatteryFlowClient(bf.config).QueryBattery(bf)
 }
 
 // QueryCabinet queries the "cabinet" edge of the BatteryFlow entity.

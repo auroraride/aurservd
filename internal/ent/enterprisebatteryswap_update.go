@@ -335,16 +335,16 @@ func (ebsu *EnterpriseBatterySwapUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (ebsu *EnterpriseBatterySwapUpdate) check() error {
-	if _, ok := ebsu.mutation.ExchangeID(); ebsu.mutation.ExchangeCleared() && !ok {
+	if ebsu.mutation.ExchangeCleared() && len(ebsu.mutation.ExchangeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBatterySwap.exchange"`)
 	}
-	if _, ok := ebsu.mutation.CabinetID(); ebsu.mutation.CabinetCleared() && !ok {
+	if ebsu.mutation.CabinetCleared() && len(ebsu.mutation.CabinetIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBatterySwap.cabinet"`)
 	}
-	if _, ok := ebsu.mutation.PutinID(); ebsu.mutation.PutinCleared() && !ok {
+	if ebsu.mutation.PutinCleared() && len(ebsu.mutation.PutinIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBatterySwap.putin"`)
 	}
-	if _, ok := ebsu.mutation.PutoutID(); ebsu.mutation.PutoutCleared() && !ok {
+	if ebsu.mutation.PutoutCleared() && len(ebsu.mutation.PutoutIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBatterySwap.putout"`)
 	}
 	return nil
@@ -945,16 +945,16 @@ func (ebsuo *EnterpriseBatterySwapUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (ebsuo *EnterpriseBatterySwapUpdateOne) check() error {
-	if _, ok := ebsuo.mutation.ExchangeID(); ebsuo.mutation.ExchangeCleared() && !ok {
+	if ebsuo.mutation.ExchangeCleared() && len(ebsuo.mutation.ExchangeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBatterySwap.exchange"`)
 	}
-	if _, ok := ebsuo.mutation.CabinetID(); ebsuo.mutation.CabinetCleared() && !ok {
+	if ebsuo.mutation.CabinetCleared() && len(ebsuo.mutation.CabinetIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBatterySwap.cabinet"`)
 	}
-	if _, ok := ebsuo.mutation.PutinID(); ebsuo.mutation.PutinCleared() && !ok {
+	if ebsuo.mutation.PutinCleared() && len(ebsuo.mutation.PutinIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBatterySwap.putin"`)
 	}
-	if _, ok := ebsuo.mutation.PutoutID(); ebsuo.mutation.PutoutCleared() && !ok {
+	if ebsuo.mutation.PutoutCleared() && len(ebsuo.mutation.PutoutIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBatterySwap.putout"`)
 	}
 	return nil

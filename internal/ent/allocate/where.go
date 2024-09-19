@@ -100,11 +100,6 @@ func BrandID(v uint64) predicate.Allocate {
 	return predicate.Allocate(sql.FieldEQ(FieldBrandID, v))
 }
 
-// BatteryID applies equality check predicate on the "battery_id" field. It's identical to BatteryIDEQ.
-func BatteryID(v uint64) predicate.Allocate {
-	return predicate.Allocate(sql.FieldEQ(FieldBatteryID, v))
-}
-
 // StationID applies equality check predicate on the "station_id" field. It's identical to StationIDEQ.
 func StationID(v uint64) predicate.Allocate {
 	return predicate.Allocate(sql.FieldEQ(FieldStationID, v))
@@ -133,6 +128,11 @@ func Model(v string) predicate.Allocate {
 // EbikeID applies equality check predicate on the "ebike_id" field. It's identical to EbikeIDEQ.
 func EbikeID(v uint64) predicate.Allocate {
 	return predicate.Allocate(sql.FieldEQ(FieldEbikeID, v))
+}
+
+// BatteryID applies equality check predicate on the "battery_id" field. It's identical to BatteryIDEQ.
+func BatteryID(v uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldEQ(FieldBatteryID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -490,36 +490,6 @@ func BrandIDNotNil() predicate.Allocate {
 	return predicate.Allocate(sql.FieldNotNull(FieldBrandID))
 }
 
-// BatteryIDEQ applies the EQ predicate on the "battery_id" field.
-func BatteryIDEQ(v uint64) predicate.Allocate {
-	return predicate.Allocate(sql.FieldEQ(FieldBatteryID, v))
-}
-
-// BatteryIDNEQ applies the NEQ predicate on the "battery_id" field.
-func BatteryIDNEQ(v uint64) predicate.Allocate {
-	return predicate.Allocate(sql.FieldNEQ(FieldBatteryID, v))
-}
-
-// BatteryIDIn applies the In predicate on the "battery_id" field.
-func BatteryIDIn(vs ...uint64) predicate.Allocate {
-	return predicate.Allocate(sql.FieldIn(FieldBatteryID, vs...))
-}
-
-// BatteryIDNotIn applies the NotIn predicate on the "battery_id" field.
-func BatteryIDNotIn(vs ...uint64) predicate.Allocate {
-	return predicate.Allocate(sql.FieldNotIn(FieldBatteryID, vs...))
-}
-
-// BatteryIDIsNil applies the IsNil predicate on the "battery_id" field.
-func BatteryIDIsNil() predicate.Allocate {
-	return predicate.Allocate(sql.FieldIsNull(FieldBatteryID))
-}
-
-// BatteryIDNotNil applies the NotNil predicate on the "battery_id" field.
-func BatteryIDNotNil() predicate.Allocate {
-	return predicate.Allocate(sql.FieldNotNull(FieldBatteryID))
-}
-
 // StationIDEQ applies the EQ predicate on the "station_id" field.
 func StationIDEQ(v uint64) predicate.Allocate {
 	return predicate.Allocate(sql.FieldEQ(FieldStationID, v))
@@ -775,6 +745,36 @@ func EbikeIDNotNil() predicate.Allocate {
 	return predicate.Allocate(sql.FieldNotNull(FieldEbikeID))
 }
 
+// BatteryIDEQ applies the EQ predicate on the "battery_id" field.
+func BatteryIDEQ(v uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldEQ(FieldBatteryID, v))
+}
+
+// BatteryIDNEQ applies the NEQ predicate on the "battery_id" field.
+func BatteryIDNEQ(v uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldNEQ(FieldBatteryID, v))
+}
+
+// BatteryIDIn applies the In predicate on the "battery_id" field.
+func BatteryIDIn(vs ...uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldIn(FieldBatteryID, vs...))
+}
+
+// BatteryIDNotIn applies the NotIn predicate on the "battery_id" field.
+func BatteryIDNotIn(vs ...uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldNotIn(FieldBatteryID, vs...))
+}
+
+// BatteryIDIsNil applies the IsNil predicate on the "battery_id" field.
+func BatteryIDIsNil() predicate.Allocate {
+	return predicate.Allocate(sql.FieldIsNull(FieldBatteryID))
+}
+
+// BatteryIDNotNil applies the NotNil predicate on the "battery_id" field.
+func BatteryIDNotNil() predicate.Allocate {
+	return predicate.Allocate(sql.FieldNotNull(FieldBatteryID))
+}
+
 // HasRider applies the HasEdge predicate on the "rider" edge.
 func HasRider() predicate.Allocate {
 	return predicate.Allocate(func(s *sql.Selector) {
@@ -913,29 +913,6 @@ func HasBrandWith(preds ...predicate.EbikeBrand) predicate.Allocate {
 	})
 }
 
-// HasBattery applies the HasEdge predicate on the "battery" edge.
-func HasBattery() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, BatteryTable, BatteryColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasBatteryWith applies the HasEdge predicate on the "battery" edge with a given conditions (other predicates).
-func HasBatteryWith(preds ...predicate.Battery) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		step := newBatteryStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasStation applies the HasEdge predicate on the "station" edge.
 func HasStation() predicate.Allocate {
 	return predicate.Allocate(func(s *sql.Selector) {
@@ -1017,9 +994,32 @@ func HasEbike() predicate.Allocate {
 }
 
 // HasEbikeWith applies the HasEdge predicate on the "ebike" edge with a given conditions (other predicates).
-func HasEbikeWith(preds ...predicate.Ebike) predicate.Allocate {
+func HasEbikeWith(preds ...predicate.Asset) predicate.Allocate {
 	return predicate.Allocate(func(s *sql.Selector) {
 		step := newEbikeStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasBattery applies the HasEdge predicate on the "battery" edge.
+func HasBattery() predicate.Allocate {
+	return predicate.Allocate(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, BatteryTable, BatteryColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBatteryWith applies the HasEdge predicate on the "battery" edge with a given conditions (other predicates).
+func HasBatteryWith(preds ...predicate.Asset) predicate.Allocate {
+	return predicate.Allocate(func(s *sql.Selector) {
+		step := newBatteryStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

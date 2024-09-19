@@ -10,16 +10,28 @@ type Operate uint
 type OperatorType uint8
 
 const (
-	OperatorTypeManager    OperatorType = iota // 管理员
-	OperatorTypeEmployee                       // 店员
-	OperatorTypeCabinet                        // 电柜
-	OperatorTypeAgent                          // 代理
-	OperatorTypeMaintainer                     // 运维
-	OperatorTypeRider                          // 骑手
+	OperatorTypeManager      OperatorType = iota // 业务管理员
+	OperatorTypeEmployee                         // 店员
+	OperatorTypeCabinet                          // 电柜
+	OperatorTypeAgent                            // 代理
+	OperatorTypeMaintainer                       // 运维
+	OperatorTypeRider                            // 骑手
+	OperatorTypeAssetManager                     // 资产管理员
 )
 
 func (ot OperatorType) String() string {
-	return []string{"管理员", "店员", "电柜", "代理", "运维", "骑手"}[int(ot)]
+	return []string{"业务管理员", "店员", "电柜", "代理", "运维", "骑手", "资产管理员"}[int(ot)]
+}
+
+func (t OperatorType) Value() uint8 {
+	return uint8(t)
+}
+
+type OperatorInfo struct {
+	Type  OperatorType `json:"type"`  // 操作人类型
+	ID    uint64       `json:"id"`    // 操作人ID
+	Phone string       `json:"phone"` // 操作人电话
+	Name  string       `json:"name"`  // 操作人姓名
 }
 
 const (

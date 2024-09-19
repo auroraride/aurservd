@@ -45,8 +45,8 @@ const (
 	EdgeSwapPutoutBatteries = "swap_putout_batteries"
 	// EdgeCabinets holds the string denoting the cabinets edge name in mutations.
 	EdgeCabinets = "cabinets"
-	// EdgeBatteries holds the string denoting the batteries edge name in mutations.
-	EdgeBatteries = "batteries"
+	// EdgeAsset holds the string denoting the asset edge name in mutations.
+	EdgeAsset = "asset"
 	// EdgeStocks holds the string denoting the stocks edge name in mutations.
 	EdgeStocks = "stocks"
 	// Table holds the table name of the enterprisestation in the database.
@@ -91,13 +91,13 @@ const (
 	CabinetsInverseTable = "cabinet"
 	// CabinetsColumn is the table column denoting the cabinets relation/edge.
 	CabinetsColumn = "station_id"
-	// BatteriesTable is the table that holds the batteries relation/edge.
-	BatteriesTable = "battery"
-	// BatteriesInverseTable is the table name for the Battery entity.
-	// It exists in this package in order to avoid circular dependency with the "battery" package.
-	BatteriesInverseTable = "battery"
-	// BatteriesColumn is the table column denoting the batteries relation/edge.
-	BatteriesColumn = "station_id"
+	// AssetTable is the table that holds the asset relation/edge.
+	AssetTable = "asset"
+	// AssetInverseTable is the table name for the Asset entity.
+	// It exists in this package in order to avoid circular dependency with the "asset" package.
+	AssetInverseTable = "asset"
+	// AssetColumn is the table column denoting the asset relation/edge.
+	AssetColumn = "locations_id"
 	// StocksTable is the table that holds the stocks relation/edge.
 	StocksTable = "stock"
 	// StocksInverseTable is the table name for the Stock entity.
@@ -265,17 +265,17 @@ func ByCabinets(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
-// ByBatteriesCount orders the results by batteries count.
-func ByBatteriesCount(opts ...sql.OrderTermOption) OrderOption {
+// ByAssetCount orders the results by asset count.
+func ByAssetCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newBatteriesStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newAssetStep(), opts...)
 	}
 }
 
-// ByBatteries orders the results by batteries terms.
-func ByBatteries(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByAsset orders the results by asset terms.
+func ByAsset(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newBatteriesStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newAssetStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
@@ -334,11 +334,11 @@ func newCabinetsStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.O2M, false, CabinetsTable, CabinetsColumn),
 	)
 }
-func newBatteriesStep() *sqlgraph.Step {
+func newAssetStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(BatteriesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, BatteriesTable, BatteriesColumn),
+		sqlgraph.To(AssetInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AssetTable, AssetColumn),
 	)
 }
 func newStocksStep() *sqlgraph.Step {

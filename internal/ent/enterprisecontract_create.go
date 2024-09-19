@@ -195,7 +195,7 @@ func (ecc *EnterpriseContractCreate) check() error {
 	if _, ok := ecc.mutation.File(); !ok {
 		return &ValidationError{Name: "file", err: errors.New(`ent: missing required field "EnterpriseContract.file"`)}
 	}
-	if _, ok := ecc.mutation.EnterpriseID(); !ok {
+	if len(ecc.mutation.EnterpriseIDs()) == 0 {
 		return &ValidationError{Name: "enterprise", err: errors.New(`ent: missing required edge "EnterpriseContract.enterprise"`)}
 	}
 	return nil

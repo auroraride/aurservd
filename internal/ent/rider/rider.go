@@ -77,6 +77,8 @@ const (
 	EdgeExchanges = "exchanges"
 	// EdgeSubscribes holds the string denoting the subscribes edge name in mutations.
 	EdgeSubscribes = "subscribes"
+	// EdgeAsset holds the string denoting the asset edge name in mutations.
+	EdgeAsset = "asset"
 	// EdgeStocks holds the string denoting the stocks edge name in mutations.
 	EdgeStocks = "stocks"
 	// EdgeFollowups holds the string denoting the followups edge name in mutations.
@@ -143,6 +145,13 @@ const (
 	SubscribesInverseTable = "subscribe"
 	// SubscribesColumn is the table column denoting the subscribes relation/edge.
 	SubscribesColumn = "rider_id"
+	// AssetTable is the table that holds the asset relation/edge.
+	AssetTable = "asset"
+	// AssetInverseTable is the table name for the Asset entity.
+	// It exists in this package in order to avoid circular dependency with the "asset" package.
+	AssetInverseTable = "asset"
+	// AssetColumn is the table column denoting the asset relation/edge.
+	AssetColumn = "locations_id"
 	// StocksTable is the table that holds the stocks relation/edge.
 	StocksTable = "stock"
 	// StocksInverseTable is the table name for the Stock entity.
@@ -158,12 +167,12 @@ const (
 	// FollowupsColumn is the table column denoting the followups relation/edge.
 	FollowupsColumn = "rider_id"
 	// BatteryTable is the table that holds the battery relation/edge.
-	BatteryTable = "battery"
-	// BatteryInverseTable is the table name for the Battery entity.
-	// It exists in this package in order to avoid circular dependency with the "battery" package.
-	BatteryInverseTable = "battery"
+	BatteryTable = "asset"
+	// BatteryInverseTable is the table name for the Asset entity.
+	// It exists in this package in order to avoid circular dependency with the "asset" package.
+	BatteryInverseTable = "asset"
 	// BatteryColumn is the table column denoting the battery relation/edge.
-	BatteryColumn = "rider_id"
+	BatteryColumn = "locations_id"
 	// BatteryFlowsTable is the table that holds the battery_flows relation/edge.
 	BatteryFlowsTable = "battery_flow"
 	// BatteryFlowsInverseTable is the table name for the BatteryFlow entity.
@@ -427,6 +436,20 @@ func BySubscribes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// ByAssetCount orders the results by asset count.
+func ByAssetCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newAssetStep(), opts...)
+	}
+}
+
+// ByAsset orders the results by asset terms.
+func ByAsset(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAssetStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // ByStocksCount orders the results by stocks count.
 func ByStocksCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -529,6 +552,13 @@ func newSubscribesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(SubscribesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, SubscribesTable, SubscribesColumn),
+	)
+}
+func newAssetStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AssetInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AssetTable, AssetColumn),
 	)
 }
 func newStocksStep() *sqlgraph.Step {

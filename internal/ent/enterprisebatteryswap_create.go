@@ -258,16 +258,16 @@ func (ebsc *EnterpriseBatterySwapCreate) check() error {
 	if _, ok := ebsc.mutation.PutoutSn(); !ok {
 		return &ValidationError{Name: "putout_sn", err: errors.New(`ent: missing required field "EnterpriseBatterySwap.putout_sn"`)}
 	}
-	if _, ok := ebsc.mutation.ExchangeID(); !ok {
+	if len(ebsc.mutation.ExchangeIDs()) == 0 {
 		return &ValidationError{Name: "exchange", err: errors.New(`ent: missing required edge "EnterpriseBatterySwap.exchange"`)}
 	}
-	if _, ok := ebsc.mutation.CabinetID(); !ok {
+	if len(ebsc.mutation.CabinetIDs()) == 0 {
 		return &ValidationError{Name: "cabinet", err: errors.New(`ent: missing required edge "EnterpriseBatterySwap.cabinet"`)}
 	}
-	if _, ok := ebsc.mutation.PutinID(); !ok {
+	if len(ebsc.mutation.PutinIDs()) == 0 {
 		return &ValidationError{Name: "putin", err: errors.New(`ent: missing required edge "EnterpriseBatterySwap.putin"`)}
 	}
-	if _, ok := ebsc.mutation.PutoutID(); !ok {
+	if len(ebsc.mutation.PutoutIDs()) == 0 {
 		return &ValidationError{Name: "putout", err: errors.New(`ent: missing required edge "EnterpriseBatterySwap.putout"`)}
 	}
 	return nil

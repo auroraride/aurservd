@@ -80,8 +80,8 @@ definitions:
           type: string
         type: array
     required:
-      - brandId
-      - sn
+    - brandId
+    - sn
     type: object
   model.ExportRes:
     properties:
@@ -278,19 +278,19 @@ paths:
     put:
       operationId: ManagerEbikeBatchModify
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 电车信息
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.EbikeBatchModifyReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 电车信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.EbikeBatchModifyReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -298,23 +298,23 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 批量修改电车
       tags:
-        - 电车
+      - 电车
   /manager/v2/ebike/brand/:id:
     delete:
       operationId: ManagerEbikeBrandDelete
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 品牌ID
-          in: path
-          name: id
-          required: true
-          type: integer
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 品牌ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -322,7 +322,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 删除品牌
       tags:
-        - 电车
+      - 电车
   /manager/v2/export/cabinet/ec:
     post:
       consumes:

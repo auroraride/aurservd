@@ -101,6 +101,8 @@ type CabinetItem struct {
 	EnterpriseID   *uint64  `json:"enterpriseId,omitempty"`   // 团签ID
 	Lng            float64  `json:"lng,omitempty"`            // 经度
 	Lat            float64  `json:"lat,omitempty"`            // 纬度
+	StoreID        *uint64  `json:"storeId,omitempty"`        // 绑定门店ID
+	StoreName      string   `json:"storeName,omitempty"`      // 绑定门店名称
 }
 
 // CabinetQueryReq 电柜查询请求
@@ -445,9 +447,10 @@ type CabinetInterruptRequest struct {
 
 // EnterpriseBindCabinetReq 团签绑定电柜请求
 type EnterpriseBindCabinetReq struct {
-	ID           uint64 `json:"id" validate:"required" param:"id"` // 电柜ID
-	StationID    uint64 `json:"stationID" validate:"required"`     // 站点ID
-	EnterpriseID uint64 `json:"enterpriseID" validate:"required"`  // 团签ID
+	ID           uint64  `json:"id" validate:"required" param:"id"` // 电柜ID
+	StationID    *uint64 `json:"stationID"`                         // 站点ID
+	EnterpriseID *uint64 `json:"enterpriseID"`                      // 团签ID
+	StoreID      *uint64 `json:"storeID"`                           // 门店ID
 }
 
 // CabinetAgentEditReq 代理商电柜编辑请求

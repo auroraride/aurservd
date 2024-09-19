@@ -24,7 +24,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/baidu"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
@@ -32,13 +32,13 @@ import (
 
 type batteryBmsService struct {
 	*BaseService
-	orm *ent.BatteryClient
+	orm *ent.AssetClient
 }
 
 func NewBatteryBms(params ...any) *batteryBmsService {
 	return &batteryBmsService{
 		BaseService: newService(params...),
-		orm:         ent.Database.Battery,
+		orm:         ent.Database.Asset,
 	}
 }
 
@@ -69,19 +69,35 @@ func (s *batteryBmsService) Sync(data []*batdef.BatteryFlow) {
 
 // SyncPutout 同步消息 - 从电柜中取出
 func (s *batteryBmsService) SyncPutout(cab *ent.Cabinet, ordinal int) {
-	_ = s.orm.Update().Where(battery.CabinetID(cab.ID), battery.Ordinal(ordinal)).ClearCabinetID().ClearOrdinal().Exec(s.ctx)
+	// 查询电池
+	bat, _ := s.orm.Query().Where(asset.Ordinal(ordinal), asset.LocationsID(cab.ID), asset.LocationsType(model.AssetLocationsTypeCabinet.Value())).First(s.ctx)
+	if bat == nil {
+		return
+	}
+	// 查询调拨
+	// ent.Database.AssetTransferDetails.QueryNotDeleted().Where(assettransferdetails.AssetID(bat.ID))
+
+	// _ = s.orm.Update().Where(battery.CabinetID(cab.ID), battery.Ordinal(ordinal)).ClearCabinetID().ClearOrdinal().Exec(s.ctx)
 }
 
 // SyncPutin 同步消息 - 放入电柜中
-func (s *batteryBmsService) SyncPutin(sn string, cab *ent.Cabinet, ordinal int) (bat *ent.Battery, err error) {
+func (s *batteryBmsService) SyncPutin(sn string, cab *ent.Cabinet, ordinal int) (bat *ent.Asset, err error) {
+	// 这里创建电池信息  电池已经绑定在电柜下了
 	bat, err = NewBattery().LoadOrCreate(sn, &model.BatteryInCabinet{
 		CabinetID: cab.ID,
 		Ordinal:   ordinal,
 	})
 	if err != nil {
-		zap.L().Error("电池信息获取失败", zap.Error(err))
+		zap.L().Error("电池信息创建失败", zap.Error(err))
 		return
 	}
+
+	// 查询电池有无调拨单 如果无调拨单 则更新电池信息
+	// at, _ := NewAssetTransfer().QueryTransferByAssetID(context.Background(), bat.ID)
+	// if at == nil {
+	// 	zap.L().Error("电池调拨查询失败", zap.Error(err))
+	// 	return
+	// }
 
 	// if time.Since(bat.UpdatedAt).Seconds() < 20 {
 	// 	rid := ""
@@ -92,38 +108,34 @@ func (s *batteryBmsService) SyncPutin(sn string, cab *ent.Cabinet, ordinal int) 
 	// 	return
 	// }
 
-	// 移除该仓位其他电池
-	// s.SyncPutout(cab, ordinal)
-
 	err = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
-		updater := bat.Update().
-			SetCabinetID(cab.ID).
-			SetOrdinal(ordinal).
-			ClearRiderID().
-			ClearSubscribeID()
-
-		if cab.StationID != nil {
-			// 当前电柜属于代理站点时, 设置新的站点信息
-			updater.SetNillableStationID(cab.StationID).SetNillableEnterpriseID(cab.EnterpriseID)
-		} else {
-			// 当前电柜属于平台时, 清除原有站点信息
-			updater.ClearStationID().ClearEnterpriseID()
-		}
-
-		// 更新电池电柜信息
-		_, err = updater.Save(s.ctx)
-		if err != nil {
-			zap.L().Error("放入电柜更新电池失败", zap.Error(err))
-			return
-		}
-
+		// 	updater := bat.Update().
+		// 		SetCabinetID(cab.ID).
+		// 		SetOrdinal(ordinal).
+		// 		ClearRiderID().
+		// 		ClearSubscribeID()
+		//
+		// 	if cab.StationID != nil {
+		// 		// 当前电柜属于代理站点时, 设置新的站点信息
+		// 		updater.SetNillableStationID(cab.StationID).SetNillableEnterpriseID(cab.EnterpriseID)
+		// 	} else {
+		// 		// 当前电柜属于平台时, 清除原有站点信息
+		// 		updater.ClearStationID().ClearEnterpriseID()
+		// 	}
+		//
+		// 	// 更新电池电柜信息
+		// 	_, err = updater.Save(s.ctx)
+		// 	if err != nil {
+		// 		zap.L().Error("放入电柜更新电池失败", zap.Error(err))
+		// 		return
+		// 	}
+		//
 		// 更新电池流转
 		NewBatteryFlow().Create(tx, bat, model.BatteryFlowCreateReq{
 			CabinetID: silk.Pointer(cab.ID),
 			Ordinal:   silk.Pointer(ordinal),
 			Serial:    silk.Pointer(cab.Serial),
 		})
-
 		return
 	})
 	return
@@ -141,7 +153,7 @@ func (s *batteryBmsService) Detail(req *model.BatterySNRequest) (detail *model.B
 	}
 
 	// 查询电池
-	bat := ent.Database.Battery.Query().Where(battery.Sn(req.SN)).WithRider().WithCabinet().FirstX(s.ctx)
+	bat := ent.Database.Asset.Query().Where(asset.Sn(req.SN)).WithRider().WithCabinet().FirstX(s.ctx)
 	if bat == nil {
 		snag.Panic("电池未录入")
 	}

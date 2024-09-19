@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -110,7 +111,7 @@ func (ebq *EbikeBrandQuery) QueryPlans() *PlanQuery {
 // First returns the first EbikeBrand entity from the query.
 // Returns a *NotFoundError when no EbikeBrand was found.
 func (ebq *EbikeBrandQuery) First(ctx context.Context) (*EbikeBrand, error) {
-	nodes, err := ebq.Limit(1).All(setContextOp(ctx, ebq.ctx, "First"))
+	nodes, err := ebq.Limit(1).All(setContextOp(ctx, ebq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +134,7 @@ func (ebq *EbikeBrandQuery) FirstX(ctx context.Context) *EbikeBrand {
 // Returns a *NotFoundError when no EbikeBrand ID was found.
 func (ebq *EbikeBrandQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ebq.Limit(1).IDs(setContextOp(ctx, ebq.ctx, "FirstID")); err != nil {
+	if ids, err = ebq.Limit(1).IDs(setContextOp(ctx, ebq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -156,7 +157,7 @@ func (ebq *EbikeBrandQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one EbikeBrand entity is found.
 // Returns a *NotFoundError when no EbikeBrand entities are found.
 func (ebq *EbikeBrandQuery) Only(ctx context.Context) (*EbikeBrand, error) {
-	nodes, err := ebq.Limit(2).All(setContextOp(ctx, ebq.ctx, "Only"))
+	nodes, err := ebq.Limit(2).All(setContextOp(ctx, ebq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -184,7 +185,7 @@ func (ebq *EbikeBrandQuery) OnlyX(ctx context.Context) *EbikeBrand {
 // Returns a *NotFoundError when no entities are found.
 func (ebq *EbikeBrandQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ebq.Limit(2).IDs(setContextOp(ctx, ebq.ctx, "OnlyID")); err != nil {
+	if ids, err = ebq.Limit(2).IDs(setContextOp(ctx, ebq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -209,7 +210,7 @@ func (ebq *EbikeBrandQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of EbikeBrands.
 func (ebq *EbikeBrandQuery) All(ctx context.Context) ([]*EbikeBrand, error) {
-	ctx = setContextOp(ctx, ebq.ctx, "All")
+	ctx = setContextOp(ctx, ebq.ctx, ent.OpQueryAll)
 	if err := ebq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -231,7 +232,7 @@ func (ebq *EbikeBrandQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if ebq.ctx.Unique == nil && ebq.path != nil {
 		ebq.Unique(true)
 	}
-	ctx = setContextOp(ctx, ebq.ctx, "IDs")
+	ctx = setContextOp(ctx, ebq.ctx, ent.OpQueryIDs)
 	if err = ebq.Select(ebikebrand.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -249,7 +250,7 @@ func (ebq *EbikeBrandQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (ebq *EbikeBrandQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, ebq.ctx, "Count")
+	ctx = setContextOp(ctx, ebq.ctx, ent.OpQueryCount)
 	if err := ebq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -267,7 +268,7 @@ func (ebq *EbikeBrandQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (ebq *EbikeBrandQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, ebq.ctx, "Exist")
+	ctx = setContextOp(ctx, ebq.ctx, ent.OpQueryExist)
 	switch _, err := ebq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -302,8 +303,9 @@ func (ebq *EbikeBrandQuery) Clone() *EbikeBrandQuery {
 		withBrandAttribute: ebq.withBrandAttribute.Clone(),
 		withPlans:          ebq.withPlans.Clone(),
 		// clone intermediate query.
-		sql:  ebq.sql.Clone(),
-		path: ebq.path,
+		sql:       ebq.sql.Clone(),
+		path:      ebq.path,
+		modifiers: append([]func(*sql.Selector){}, ebq.modifiers...),
 	}
 }
 
@@ -642,7 +644,7 @@ func (ebgb *EbikeBrandGroupBy) Aggregate(fns ...AggregateFunc) *EbikeBrandGroupB
 
 // Scan applies the selector query and scans the result into the given value.
 func (ebgb *EbikeBrandGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ebgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, ebgb.build.ctx, ent.OpQueryGroupBy)
 	if err := ebgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -690,7 +692,7 @@ func (ebs *EbikeBrandSelect) Aggregate(fns ...AggregateFunc) *EbikeBrandSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ebs *EbikeBrandSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ebs.ctx, "Select")
+	ctx = setContextOp(ctx, ebs.ctx, ent.OpQuerySelect)
 	if err := ebs.prepareQuery(ctx); err != nil {
 		return err
 	}

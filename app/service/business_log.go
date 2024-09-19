@@ -82,7 +82,7 @@ func (s *businessLogService) SetBinInfo(bin *model.BinInfo) *businessLogService 
 	return s
 }
 
-func (s *businessLogService) SetStock(sk *ent.Stock) *businessLogService {
+func (s *businessLogService) SetAssetTransfer(sk *ent.AssetTransfer) *businessLogService {
 	if sk != nil {
 		s.creator.SetStockSn(sk.Sn)
 	}

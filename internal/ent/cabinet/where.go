@@ -82,6 +82,11 @@ func CityID(v uint64) predicate.Cabinet {
 	return predicate.Cabinet(sql.FieldEQ(FieldCityID, v))
 }
 
+// StoreID applies equality check predicate on the "store_id" field. It's identical to StoreIDEQ.
+func StoreID(v uint64) predicate.Cabinet {
+	return predicate.Cabinet(sql.FieldEQ(FieldStoreID, v))
+}
+
 // BranchID applies equality check predicate on the "branch_id" field. It's identical to BranchIDEQ.
 func BranchID(v uint64) predicate.Cabinet {
 	return predicate.Cabinet(sql.FieldEQ(FieldBranchID, v))
@@ -450,6 +455,36 @@ func CityIDIsNil() predicate.Cabinet {
 // CityIDNotNil applies the NotNil predicate on the "city_id" field.
 func CityIDNotNil() predicate.Cabinet {
 	return predicate.Cabinet(sql.FieldNotNull(FieldCityID))
+}
+
+// StoreIDEQ applies the EQ predicate on the "store_id" field.
+func StoreIDEQ(v uint64) predicate.Cabinet {
+	return predicate.Cabinet(sql.FieldEQ(FieldStoreID, v))
+}
+
+// StoreIDNEQ applies the NEQ predicate on the "store_id" field.
+func StoreIDNEQ(v uint64) predicate.Cabinet {
+	return predicate.Cabinet(sql.FieldNEQ(FieldStoreID, v))
+}
+
+// StoreIDIn applies the In predicate on the "store_id" field.
+func StoreIDIn(vs ...uint64) predicate.Cabinet {
+	return predicate.Cabinet(sql.FieldIn(FieldStoreID, vs...))
+}
+
+// StoreIDNotIn applies the NotIn predicate on the "store_id" field.
+func StoreIDNotIn(vs ...uint64) predicate.Cabinet {
+	return predicate.Cabinet(sql.FieldNotIn(FieldStoreID, vs...))
+}
+
+// StoreIDIsNil applies the IsNil predicate on the "store_id" field.
+func StoreIDIsNil() predicate.Cabinet {
+	return predicate.Cabinet(sql.FieldIsNull(FieldStoreID))
+}
+
+// StoreIDNotNil applies the NotNil predicate on the "store_id" field.
+func StoreIDNotNil() predicate.Cabinet {
+	return predicate.Cabinet(sql.FieldNotNull(FieldStoreID))
 }
 
 // BranchIDEQ applies the EQ predicate on the "branch_id" field.
@@ -1500,6 +1535,29 @@ func HasCityWith(preds ...predicate.City) predicate.Cabinet {
 	})
 }
 
+// HasStore applies the HasEdge predicate on the "store" edge.
+func HasStore() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStoreWith applies the HasEdge predicate on the "store" edge with a given conditions (other predicates).
+func HasStoreWith(preds ...predicate.Store) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		step := newStoreStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasBranch applies the HasEdge predicate on the "branch" edge.
 func HasBranch() predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
@@ -1592,6 +1650,29 @@ func HasExchangesWith(preds ...predicate.Exchange) predicate.Cabinet {
 	})
 }
 
+// HasAsset applies the HasEdge predicate on the "asset" edge.
+func HasAsset() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, AssetTable, AssetColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAssetWith applies the HasEdge predicate on the "asset" edge with a given conditions (other predicates).
+func HasAssetWith(preds ...predicate.Asset) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		step := newAssetStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasStocks applies the HasEdge predicate on the "stocks" edge.
 func HasStocks() predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
@@ -1607,29 +1688,6 @@ func HasStocks() predicate.Cabinet {
 func HasStocksWith(preds ...predicate.Stock) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		step := newStocksStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasBatteries applies the HasEdge predicate on the "batteries" edge.
-func HasBatteries() predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, BatteriesTable, BatteriesColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasBatteriesWith applies the HasEdge predicate on the "batteries" edge with a given conditions (other predicates).
-func HasBatteriesWith(preds ...predicate.Battery) predicate.Cabinet {
-	return predicate.Cabinet(func(s *sql.Selector) {
-		step := newBatteriesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

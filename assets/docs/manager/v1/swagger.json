@@ -533,232 +533,6 @@
                 }
             }
         },
-        "/manager/v1/battery": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "电池"
-                ],
-                "summary": "电池列表",
-                "operationId": "ManagerBatteryList",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "电柜ID",
-                        "name": "cabinetID",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "电柜名称",
-                        "name": "cabinetName",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "城市",
-                        "name": "cityId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "当前页, 从1开始, 默认1",
-                        "name": "current",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "团签ID",
-                        "name": "enterpriseId",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            0,
-                            1,
-                            2,
-                            3
-                        ],
-                        "type": "integer",
-                        "x-enum-varnames": [
-                            "BatteryAll",
-                            "BatteryStation",
-                            "BatteryCabinet",
-                            "BatteryRider"
-                        ],
-                        "description": "查询目标, 0:不筛选 1:站点 2:电柜 3:骑手",
-                        "name": "goal",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "关键词",
-                        "name": "keyword",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "型号",
-                        "name": "model",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            1,
-                            2
-                        ],
-                        "type": "integer",
-                        "description": "归属类型   1:平台 2:代理商",
-                        "name": "ownerType",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页数据, 默认20",
-                        "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "骑手ID",
-                        "name": "riderId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "编号",
-                        "name": "sn",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "站点ID",
-                        "name": "stationId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "状态 0:全部 1:启用(不携带默认为启用) 2:禁用",
-                        "name": "status",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/model.PaginationRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "items": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.BatteryListRes"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "电池"
-                ],
-                "summary": "添加电池",
-                "operationId": "ManagerBatteryCreate",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "电池信息",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.BatteryCreateReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/manager/v1/battery/batch": {
-            "post": {
-                "description": "参考 [MI007 批量导入电车]",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "电池"
-                ],
-                "summary": "批量导入电池",
-                "operationId": "ManagerBatteryBatchCreate",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "file",
-                        "description": "电池信息",
-                        "name": "file",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/manager/v1/battery/bind": {
             "post": {
                 "consumes": [
@@ -842,96 +616,6 @@
                                     }
                                 }
                             ]
-                        }
-                    }
-                }
-            },
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "电池"
-                ],
-                "summary": "创建电池型号",
-                "operationId": "BatteryCreateModel",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "电池型号数据",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.BatteryModelReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/model.ItemRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "item": {
-                                            "$ref": "#/definitions/model.BatteryModel"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "电池"
-                ],
-                "summary": "删除电池型号",
-                "operationId": "ManagerBatteryDeleteModel",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "电池型号数据",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.BatteryModelReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -1271,54 +955,6 @@
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.BatteryBmsDetail"
-                        }
-                    }
-                }
-            }
-        },
-        "/manager/v1/battery/{id}": {
-            "put": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "电池"
-                ],
-                "summary": "修改电池",
-                "operationId": "ManagerBatteryModify",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "电池ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "修改信息",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.BatteryModifyReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -3779,291 +3415,6 @@
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/manager/v1/ebike": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "电车"
-                ],
-                "summary": "电车列表",
-                "operationId": "ManagerEbikeList",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "品牌ID",
-                        "name": "brandId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "当前页, 从1开始, 默认1",
-                        "name": "current",
-                        "in": "query"
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "是否启用, 默认`true`, 不携带为获取全部",
-                        "name": "enable",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "团签ID",
-                        "name": "enterpriseId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "生产批次",
-                        "name": "exFactory",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            0,
-                            1,
-                            2
-                        ],
-                        "type": "integer",
-                        "x-enum-varnames": [
-                            "EbikeAll",
-                            "EbikeStation",
-                            "EbikeRider"
-                        ],
-                        "description": "查询目标, 0:不筛选 1:站点 2:骑手",
-                        "name": "goal",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "搜索关键词\u003c骑手:电话/姓名, 车辆:车架号/车牌号/终端编号/SIM卡号\u003e",
-                        "name": "keyword",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            1,
-                            2
-                        ],
-                        "type": "integer",
-                        "description": "归属类型   1:平台 2:代理商",
-                        "name": "ownerType",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页数据, 默认20",
-                        "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "骑手ID",
-                        "name": "riderId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "是否以租代购",
-                        "name": "rto",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "站点ID",
-                        "name": "stationId",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            0,
-                            1,
-                            2,
-                            3
-                        ],
-                        "type": "integer",
-                        "x-enum-comments": {
-                            "EbikeStatusInStock": "库存中",
-                            "EbikeStatusMaintenance": "维修中",
-                            "EbikeStatusScrapped": "已报废",
-                            "EbikeStatusUsing": "使用中"
-                        },
-                        "x-enum-varnames": [
-                            "EbikeStatusInStock",
-                            "EbikeStatusUsing",
-                            "EbikeStatusMaintenance",
-                            "EbikeStatusScrapped"
-                        ],
-                        "description": "状态, 0:库存中 1:使用中 2:维修中 3:已报废, 不携带为获取全部",
-                        "name": "status",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "门店ID",
-                        "name": "storeId",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/model.PaginationRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "item": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.EbikeListRes"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "电车"
-                ],
-                "summary": "添加电车",
-                "operationId": "ManagerEbikeCreate",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "电车信息",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.EbikeCreateReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/manager/v1/ebike/:id": {
-            "put": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "电车"
-                ],
-                "summary": "修改电车",
-                "operationId": "ManagerEbikeModify",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "电车信息",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.EbikeModifyReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/manager/v1/ebike/batch": {
-            "post": {
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "电车"
-                ],
-                "summary": "批量导入电车",
-                "operationId": "ManagerEbikeBatchCreate",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "file",
-                        "description": "电车信息",
-                        "name": "file",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
                         }
                     }
                 }
@@ -6709,47 +6060,6 @@
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/model.StatementUsageExport"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.ExportRes"
-                        }
-                    }
-                }
-            }
-        },
-        "/manager/v1/export/stock-detail": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "导出"
-                ],
-                "summary": "导出出入库明细",
-                "operationId": "ManagerExportStockDetail",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "筛选条件",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.StockDetailExportReq"
                         }
                     }
                 ],
@@ -11724,6 +11034,41 @@
                 }
             }
         },
+        "/manager/v1/selection/store_group": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "筛选"
+                ],
+                "summary": "筛选门店集合",
+                "operationId": "ManagerSelectionStoreGroup",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/selection/wxemployee": {
             "get": {
                 "consumes": [
@@ -12275,219 +11620,6 @@
                 }
             }
         },
-        "/manager/v1/stock": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "库存"
-                ],
-                "summary": "调拨物资",
-                "operationId": "ManagerStockCreate",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "desc",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.StockTransferReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/manager/v1/stock/battery/overview": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "库存"
-                ],
-                "summary": "电池概览",
-                "operationId": "ManagerStockBatteryOverview",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "电柜ID, 仅goal为2的时候生效",
-                        "name": "cabinetId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "城市ID",
-                        "name": "cityId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "结束时间",
-                        "name": "end",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            0,
-                            1,
-                            2,
-                            3
-                        ],
-                        "type": "integer",
-                        "x-enum-varnames": [
-                            "StockGoalAll",
-                            "StockGoalStore",
-                            "StockGoalCabinet",
-                            "StockGoalStation"
-                        ],
-                        "description": "查询目标, 0:不筛选 1:门店(默认) 2:电柜",
-                        "name": "goal",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "开始时间",
-                        "name": "start",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "门店ID, 仅goal为1的时候生效",
-                        "name": "storeId",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "使用中数量 = 激活 + 结束寄存 - 寄存 - 退租",
-                        "schema": {
-                            "$ref": "#/definitions/model.StockBatteryOverviewRes"
-                        }
-                    }
-                }
-            }
-        },
-        "/manager/v1/stock/cabinet": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "库存"
-                ],
-                "summary": "电柜物资列表",
-                "operationId": "ManagerStockCabinetList",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "电柜ID",
-                        "name": "cabinetId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "城市ID",
-                        "name": "cityId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "当前页, 从1开始, 默认1",
-                        "name": "current",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "结束时间",
-                        "name": "end",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页数据, 默认20",
-                        "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "电柜编号",
-                        "name": "serial",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "开始时间",
-                        "name": "start",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/model.PaginationRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "items": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.StockCabinetListRes"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/manager/v1/stock/detail": {
             "get": {
                 "consumes": [
@@ -12662,244 +11794,6 @@
                 }
             }
         },
-        "/manager/v1/stock/enterprise/list": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "库存"
-                ],
-                "summary": "团签物资列表",
-                "operationId": "ManagerStockEnterpriseList",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "城市ID",
-                        "name": "cityId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "当前页, 从1开始, 默认1",
-                        "name": "current",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "电车型号ID",
-                        "name": "ebikeBrandId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "结束时间",
-                        "name": "end",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "团签ID",
-                        "name": "enterpriseId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "其他物资名称",
-                        "name": "keyword",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "电池型号",
-                        "name": "model",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "门店名称",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页数据, 默认20",
-                        "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "开始时间",
-                        "name": "start",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "站点id",
-                        "name": "stationId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "门店ID",
-                        "name": "storeId",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/model.PaginationRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "items": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.StockListRes"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/manager/v1/stock/store": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "库存"
-                ],
-                "summary": "门店物资列表",
-                "operationId": "ManagerStockStoreList",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "城市ID",
-                        "name": "cityId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "当前页, 从1开始, 默认1",
-                        "name": "current",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "电车型号ID",
-                        "name": "ebikeBrandId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "结束时间",
-                        "name": "end",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "团签ID",
-                        "name": "enterpriseId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "其他物资名称",
-                        "name": "keyword",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "电池型号",
-                        "name": "model",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "门店名称",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页数据, 默认20",
-                        "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "开始时间",
-                        "name": "start",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "站点id",
-                        "name": "stationId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "门店ID",
-                        "name": "storeId",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/model.PaginationRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "items": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.StockListRes"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/manager/v1/store": {
             "get": {
                 "consumes": [
@@ -12955,6 +11849,12 @@
                         "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店集合ID",
+                        "name": "groupID",
                         "in": "query"
                     },
                     {
@@ -13128,6 +12028,119 @@
                     {
                         "type": "integer",
                         "description": "门店ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/store_group": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StoreGroup - 门店集合"
+                ],
+                "summary": "门店集合列表",
+                "operationId": "StoreGroupList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.StoreGroupListRes"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StoreGroup - 门店集合"
+                ],
+                "summary": "门店集合创建",
+                "operationId": "StoreGroupCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "创建参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.StoreGroupCreateRep"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/store_group/{id}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StoreGroup - 门店集合"
+                ],
+                "summary": "门店集合删除",
+                "operationId": "StoreGroupDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "资产ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -13891,24 +12904,6 @@
         }
     },
     "definitions": {
-        "adapter.BatteryBrand": {
-            "type": "string",
-            "enum": [
-                "UNKNOWN",
-                "XC",
-                "TB"
-            ],
-            "x-enum-comments": {
-                "BatteryBrandTB": "拓邦电池",
-                "BatteryBrandUnknown": "未知",
-                "BatteryBrandXC": "星创电池"
-            },
-            "x-enum-varnames": [
-                "BatteryBrandUnknown",
-                "BatteryBrandXC",
-                "BatteryBrandTB"
-            ]
-        },
         "adapter.CabinetBrand": {
             "type": "string",
             "enum": [
@@ -13963,7 +12958,7 @@
                     "description": "图片, 图片",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/definition.ActivityImage"
+                            "$ref": "#/definitions/model.ActivityImage"
                         }
                     ]
                 },
@@ -14011,7 +13006,7 @@
                     "description": "图片",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/definition.ActivityImage"
+                            "$ref": "#/definitions/model.ActivityImage"
                         }
                     ]
                 },
@@ -14045,23 +13040,6 @@
                 }
             }
         },
-        "definition.ActivityImage": {
-            "type": "object",
-            "properties": {
-                "home": {
-                    "description": "首页icon图片",
-                    "type": "string"
-                },
-                "list": {
-                    "description": "列表图片",
-                    "type": "string"
-                },
-                "popup": {
-                    "description": "弹窗图片",
-                    "type": "string"
-                }
-            }
-        },
         "definition.ActivityModifyReq": {
             "type": "object",
             "required": [
@@ -14085,7 +13063,7 @@
                     "description": "图片, 图片",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/definition.ActivityImage"
+                            "$ref": "#/definitions/model.ActivityImage"
                         }
                     ]
                 },
@@ -14982,6 +13960,31 @@
                 }
             }
         },
+        "definition.StoreGroupCreateRep": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "description": "门店集合名称",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.StoreGroupListRes": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "门店集合id",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "门店集合名称",
+                    "type": "string"
+                }
+            }
+        },
         "definition.Version": {
             "type": "object",
             "properties": {
@@ -15087,6 +14090,23 @@
                 }
             }
         },
+        "model.ActivityImage": {
+            "type": "object",
+            "properties": {
+                "home": {
+                    "description": "首页icon图片",
+                    "type": "string"
+                },
+                "list": {
+                    "description": "列表图片",
+                    "type": "string"
+                },
+                "popup": {
+                    "description": "弹窗图片",
+                    "type": "string"
+                }
+            }
+        },
         "model.AgentCreateReq": {
             "type": "object",
             "required": [
@@ -15181,6 +14201,33 @@
             "x-enum-varnames": [
                 "AppPlatformAndroid",
                 "AppPlatformIOS"
+            ]
+        },
+        "model.AssetLocationsType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ],
+            "x-enum-comments": {
+                "AssetLocationsTypeCabinet": "电柜",
+                "AssetLocationsTypeOperation": "运维",
+                "AssetLocationsTypeRider": "骑手",
+                "AssetLocationsTypeStation": "站点",
+                "AssetLocationsTypeStore": "门店",
+                "AssetLocationsTypeWarehouse": "仓库"
+            },
+            "x-enum-varnames": [
+                "AssetLocationsTypeWarehouse",
+                "AssetLocationsTypeStore",
+                "AssetLocationsTypeStation",
+                "AssetLocationsTypeOperation",
+                "AssetLocationsTypeCabinet",
+                "AssetLocationsTypeRider"
             ]
         },
         "model.AssistanceAllocateReq": {
@@ -15767,27 +14814,6 @@
                 }
             }
         },
-        "model.BatteryCreateReq": {
-            "type": "object",
-            "required": [
-                "cityId",
-                "sn"
-            ],
-            "properties": {
-                "cityId": {
-                    "description": "城市",
-                    "type": "integer"
-                },
-                "enable": {
-                    "description": "是否启用, 需默认为`true`",
-                    "type": "boolean"
-                },
-                "sn": {
-                    "description": "电池编号",
-                    "type": "string"
-                }
-            }
-        },
         "model.BatteryFaultRes": {
             "type": "object",
             "properties": {
@@ -15805,108 +14831,6 @@
                 }
             }
         },
-        "model.BatteryGoal": {
-            "type": "integer",
-            "enum": [
-                0,
-                1,
-                2,
-                3
-            ],
-            "x-enum-varnames": [
-                "BatteryAll",
-                "BatteryStation",
-                "BatteryCabinet",
-                "BatteryRider"
-            ]
-        },
-        "model.BatteryListRes": {
-            "type": "object",
-            "properties": {
-                "brand": {
-                    "description": "品牌 TB:拓邦, XC:星创",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/adapter.BatteryBrand"
-                        }
-                    ]
-                },
-                "cabinet": {
-                    "description": "电柜",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.CabinetBasicInfo"
-                        }
-                    ]
-                },
-                "charge": {
-                    "description": "充电是否开启",
-                    "type": "boolean"
-                },
-                "city": {
-                    "description": "城市",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.City"
-                        }
-                    ]
-                },
-                "disCharge": {
-                    "description": "放电是否开启",
-                    "type": "boolean"
-                },
-                "enable": {
-                    "description": "是否启用",
-                    "type": "boolean"
-                },
-                "enterpriseName": {
-                    "description": "团签名称",
-                    "type": "string"
-                },
-                "faults": {
-                    "description": "故障列表, `0`:总压低, `1`:总压高, `2`:单体低, `3`:单体高, `6`:放电过流, `7`:充电过流, `8`:SOC低, `11`:充电高温, `12`:充电低温, `13`:放电高温, `14`:放电低温, `15`:短路, `16`:MOS高温",
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "model": {
-                    "description": "型号",
-                    "type": "string"
-                },
-                "rider": {
-                    "description": "骑手",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.Rider"
-                        }
-                    ]
-                },
-                "sn": {
-                    "description": "编号",
-                    "type": "string"
-                },
-                "soc": {
-                    "description": "剩余容量, 单位1%",
-                    "type": "integer"
-                },
-                "stationName": {
-                    "description": "站点名称",
-                    "type": "string"
-                },
-                "status": {
-                    "description": "状态, 0:静置 1:充电 2:放电 3:异常(此时faults字段存在)",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.BatteryStatus"
-                        }
-                    ]
-                }
-            }
-        },
         "model.BatteryModel": {
             "type": "object",
             "properties": {
@@ -15916,28 +14840,6 @@
                 "model": {
                     "description": "电池型号",
                     "type": "string"
-                }
-            }
-        },
-        "model.BatteryModelReq": {
-            "type": "object",
-            "properties": {
-                "model": {
-                    "description": "电池型号(POST), 例如60V30AH",
-                    "type": "string"
-                }
-            }
-        },
-        "model.BatteryModifyReq": {
-            "type": "object",
-            "properties": {
-                "cityId": {
-                    "description": "城市ID",
-                    "type": "integer"
-                },
-                "enable": {
-                    "description": "是否启用",
-                    "type": "boolean"
                 }
             }
         },
@@ -16180,12 +15082,26 @@
         "model.BatteryUnbindRequest": {
             "type": "object",
             "required": [
-                "riderId"
+                "riderId",
+                "toLocationID",
+                "toLocationType"
             ],
             "properties": {
                 "riderId": {
                     "description": "骑手ID",
                     "type": "integer"
+                },
+                "toLocationID": {
+                    "description": "位置ID",
+                    "type": "integer"
+                },
+                "toLocationType": {
+                    "description": "位置类型  1:仓库 2:门店 3:站点 4:运维",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetLocationsType"
+                        }
+                    ]
                 }
             }
         },
@@ -17258,6 +16174,14 @@
                     "description": "库存电池",
                     "type": "integer"
                 },
+                "storeId": {
+                    "description": "绑定门店ID",
+                    "type": "integer"
+                },
+                "storeName": {
+                    "description": "绑定门店名称",
+                    "type": "string"
+                },
                 "transferred": {
                     "description": "是否初始化过调拨",
                     "type": "boolean"
@@ -17554,6 +16478,14 @@
                             "$ref": "#/definitions/model.CabinetStatus"
                         }
                     ]
+                },
+                "storeId": {
+                    "description": "绑定门店ID",
+                    "type": "integer"
+                },
+                "storeName": {
+                    "description": "绑定门店名称",
+                    "type": "string"
                 },
                 "transferred": {
                     "description": "是否初始化过调拨",
@@ -18531,187 +17463,6 @@
                 }
             }
         },
-        "model.EbikeCreateReq": {
-            "type": "object",
-            "required": [
-                "brandId",
-                "exFactory",
-                "sn"
-            ],
-            "properties": {
-                "brandId": {
-                    "description": "型号, 关联: `MB015 车辆型号列表`",
-                    "type": "integer"
-                },
-                "color": {
-                    "description": "颜色, 默认`橘黄`, 创建或编辑时用选择列表, 选项为: `橘黄` / `红` / `白` / `黑`",
-                    "type": "string"
-                },
-                "enable": {
-                    "description": "是否启用, 默认要启用",
-                    "type": "boolean"
-                },
-                "exFactory": {
-                    "description": "生产批次",
-                    "type": "string"
-                },
-                "machine": {
-                    "description": "终端编号",
-                    "type": "string"
-                },
-                "plate": {
-                    "description": "车牌号",
-                    "type": "string"
-                },
-                "sim": {
-                    "description": "SIM卡号",
-                    "type": "string"
-                },
-                "sn": {
-                    "description": "车架号",
-                    "type": "string"
-                }
-            }
-        },
-        "model.EbikeGoal": {
-            "type": "integer",
-            "enum": [
-                0,
-                1,
-                2
-            ],
-            "x-enum-varnames": [
-                "EbikeAll",
-                "EbikeStation",
-                "EbikeRider"
-            ]
-        },
-        "model.EbikeListRes": {
-            "type": "object",
-            "properties": {
-                "brand": {
-                    "description": "品牌",
-                    "type": "string"
-                },
-                "brandId": {
-                    "description": "品牌ID",
-                    "type": "integer"
-                },
-                "color": {
-                    "description": "颜色, 默认`橘黄`, 创建或编辑时用选择列表, 选项为: `橘黄` / `红` / `白` / `黑`",
-                    "type": "string"
-                },
-                "enable": {
-                    "description": "是否启用, 默认要启用",
-                    "type": "boolean"
-                },
-                "enterpriseId": {
-                    "description": "团签ID",
-                    "type": "integer"
-                },
-                "enterpriseName": {
-                    "description": "团签名称",
-                    "type": "string"
-                },
-                "exFactory": {
-                    "description": "生产批次",
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "machine": {
-                    "description": "终端编号",
-                    "type": "string"
-                },
-                "plate": {
-                    "description": "车牌号",
-                    "type": "string"
-                },
-                "rider": {
-                    "description": "骑手",
-                    "type": "string"
-                },
-                "rto": {
-                    "description": "是否以租代购",
-                    "type": "boolean"
-                },
-                "sim": {
-                    "description": "SIM卡号",
-                    "type": "string"
-                },
-                "sn": {
-                    "description": "车架号",
-                    "type": "string"
-                },
-                "stationId": {
-                    "description": "站点id",
-                    "type": "integer"
-                },
-                "stationName": {
-                    "description": "所属站点名称",
-                    "type": "string"
-                },
-                "status": {
-                    "description": "状态",
-                    "type": "string"
-                },
-                "store": {
-                    "description": "门店",
-                    "type": "string"
-                }
-            }
-        },
-        "model.EbikeModifyReq": {
-            "type": "object",
-            "properties": {
-                "color": {
-                    "description": "颜色, 默认`橘黄`, 创建或编辑时用选择列表, 选项为: `橘黄` / `红` / `白` / `黑`",
-                    "type": "string"
-                },
-                "enable": {
-                    "description": "是否启用, 默认要启用",
-                    "type": "boolean"
-                },
-                "exFactory": {
-                    "description": "生产批次",
-                    "type": "string"
-                },
-                "machine": {
-                    "description": "终端编号",
-                    "type": "string"
-                },
-                "plate": {
-                    "description": "车牌号",
-                    "type": "string"
-                },
-                "sim": {
-                    "description": "SIM卡号",
-                    "type": "string"
-                }
-            }
-        },
-        "model.EbikeStatus": {
-            "type": "integer",
-            "enum": [
-                0,
-                1,
-                2,
-                3
-            ],
-            "x-enum-comments": {
-                "EbikeStatusInStock": "库存中",
-                "EbikeStatusMaintenance": "维修中",
-                "EbikeStatusScrapped": "已报废",
-                "EbikeStatusUsing": "使用中"
-            },
-            "x-enum-varnames": [
-                "EbikeStatusInStock",
-                "EbikeStatusUsing",
-                "EbikeStatusMaintenance",
-                "EbikeStatusScrapped"
-            ]
-        },
         "model.Employee": {
             "type": "object",
             "properties": {
@@ -18853,10 +17604,6 @@
         },
         "model.EnterpriseBindCabinetReq": {
             "type": "object",
-            "required": [
-                "enterpriseID",
-                "stationID"
-            ],
             "properties": {
                 "enterpriseID": {
                     "description": "团签ID",
@@ -18864,6 +17611,10 @@
                 },
                 "stationID": {
                     "description": "站点ID",
+                    "type": "integer"
+                },
+                "storeID": {
+                    "description": "门店ID",
                     "type": "integer"
                 }
             }
@@ -20812,6 +19563,10 @@
                     "description": "是否智能柜套餐",
                     "type": "boolean"
                 },
+                "introductionImage": {
+                    "description": "商品介绍图",
+                    "type": "string"
+                },
                 "name": {
                     "description": "骑士卡名称",
                     "type": "string"
@@ -22433,200 +21188,6 @@
                 }
             }
         },
-        "model.StockBatteryOverviewRes": {
-            "type": "object",
-            "properties": {
-                "c_active": {
-                    "description": "电柜-激活",
-                    "type": "integer"
-                },
-                "c_continue": {
-                    "description": "电柜-结束寄存",
-                    "type": "integer"
-                },
-                "c_inboundnum": {
-                    "description": "电柜-入库数量",
-                    "type": "integer"
-                },
-                "c_outboundnum": {
-                    "description": "电柜-出库数量",
-                    "type": "integer"
-                },
-                "c_pause": {
-                    "description": "电柜-寄存",
-                    "type": "integer"
-                },
-                "c_transfer": {
-                    "description": "电柜-平台调拨数量",
-                    "type": "integer"
-                },
-                "c_unsubscribe": {
-                    "description": "电柜-退租",
-                    "type": "integer"
-                },
-                "model": {
-                    "description": "电池型号",
-                    "type": "string"
-                },
-                "num": {
-                    "description": "总数",
-                    "type": "integer"
-                },
-                "s_active": {
-                    "description": "门店-激活",
-                    "type": "integer"
-                },
-                "s_continue": {
-                    "description": "门店-结束寄存",
-                    "type": "integer"
-                },
-                "s_inboundnum": {
-                    "description": "门店-入库数量",
-                    "type": "integer"
-                },
-                "s_outboundnum": {
-                    "description": "门店-出库数量",
-                    "type": "integer"
-                },
-                "s_pause": {
-                    "description": "门店-寄存",
-                    "type": "integer"
-                },
-                "s_transfer": {
-                    "description": "门店-平台调拨数量",
-                    "type": "integer"
-                },
-                "s_unsubscribe": {
-                    "description": "门店-退租",
-                    "type": "integer"
-                }
-            }
-        },
-        "model.StockCabinetListRes": {
-            "type": "object",
-            "properties": {
-                "batteries": {
-                    "description": "电池详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.StockMaterial"
-                    }
-                },
-                "city": {
-                    "description": "城市",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.City"
-                        }
-                    ]
-                },
-                "id": {
-                    "description": "电柜ID",
-                    "type": "integer"
-                },
-                "name": {
-                    "description": "电柜名称",
-                    "type": "string"
-                },
-                "serial": {
-                    "description": "电柜编号",
-                    "type": "string"
-                }
-            }
-        },
-        "model.StockDetailExportReq": {
-            "type": "object",
-            "required": [
-                "remark"
-            ],
-            "properties": {
-                "batterySn": {
-                    "description": "电池编码",
-                    "type": "string"
-                },
-                "cabinetId": {
-                    "description": "电柜ID",
-                    "type": "integer"
-                },
-                "cityId": {
-                    "description": "城市ID",
-                    "type": "integer"
-                },
-                "ebikeSn": {
-                    "description": "车架号",
-                    "type": "string"
-                },
-                "end": {
-                    "description": "结束时间",
-                    "type": "string"
-                },
-                "enterpriseId": {
-                    "description": "企业ID",
-                    "type": "integer"
-                },
-                "goal": {
-                    "description": "查询目标 0:不筛选 1:门店(默认) 2:电柜 3:站点",
-                    "enum": [
-                        0,
-                        1,
-                        2,
-                        3
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.StoreCabiletGoal"
-                        }
-                    ]
-                },
-                "keyword": {
-                    "description": "查询电柜编号、车架号、电池编码",
-                    "type": "string"
-                },
-                "materials": {
-                    "description": "查询物资类别, 默认为电池, 逗号分隔 battery:电池 ebike:电车 others:其他物资",
-                    "type": "string"
-                },
-                "model": {
-                    "description": "电池型号",
-                    "type": "string"
-                },
-                "positive": {
-                    "description": "是否正序(默认倒序)",
-                    "type": "boolean"
-                },
-                "remark": {
-                    "description": "备注",
-                    "type": "string"
-                },
-                "serial": {
-                    "description": "电柜编号",
-                    "type": "string"
-                },
-                "start": {
-                    "description": "开始时间",
-                    "type": "string"
-                },
-                "stationId": {
-                    "description": "站点ID",
-                    "type": "integer"
-                },
-                "storeId": {
-                    "description": "门店ID",
-                    "type": "integer"
-                },
-                "type": {
-                    "description": "调拨类型, 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租",
-                    "type": "integer",
-                    "enum": [
-                        0,
-                        1,
-                        2,
-                        3,
-                        4
-                    ]
-                }
-            }
-        },
         "model.StockDetailRes": {
             "type": "object",
             "properties": {
@@ -22680,97 +21241,6 @@
                 }
             }
         },
-        "model.StockListRes": {
-            "type": "object",
-            "properties": {
-                "batteries": {
-                    "description": "电池详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.StockMaterial"
-                    }
-                },
-                "batteryTotal": {
-                    "description": "电池总数",
-                    "type": "integer"
-                },
-                "city": {
-                    "description": "城市",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.City"
-                        }
-                    ]
-                },
-                "ebikeTotal": {
-                    "description": "电车总数",
-                    "type": "integer"
-                },
-                "ebikes": {
-                    "description": "电车",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.StockMaterial"
-                    }
-                },
-                "enterpriseID": {
-                    "description": "团签id",
-                    "type": "integer"
-                },
-                "enterpriseName": {
-                    "description": "团签名称",
-                    "type": "string"
-                },
-                "materials": {
-                    "description": "非电池物资详情",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.StockMaterial"
-                    }
-                },
-                "stationID": {
-                    "description": "站点id",
-                    "type": "integer"
-                },
-                "stationName": {
-                    "description": "站点名称",
-                    "type": "string"
-                },
-                "store": {
-                    "description": "门店",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.Store"
-                        }
-                    ]
-                }
-            }
-        },
-        "model.StockMaterial": {
-            "type": "object",
-            "properties": {
-                "exception": {
-                    "description": "异常数量(电柜无)",
-                    "type": "integer"
-                },
-                "inbound": {
-                    "description": "入库数量",
-                    "type": "integer"
-                },
-                "name": {
-                    "description": "物资名称",
-                    "type": "string"
-                },
-                "outbound": {
-                    "description": "出库数量",
-                    "type": "integer"
-                },
-                "surplus": {
-                    "description": "剩余",
-                    "type": "integer"
-                }
-            }
-        },
         "model.StockStoreMaterial": {
             "type": "object",
             "properties": {
@@ -22785,70 +21255,6 @@
                 "num": {
                     "description": "物资数量",
                     "type": "integer"
-                }
-            }
-        },
-        "model.StockTransferReq": {
-            "type": "object",
-            "required": [
-                "remark"
-            ],
-            "properties": {
-                "batterySn": {
-                    "description": "电池编号",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "ebikes": {
-                    "description": "车架编号 (和 `物资名称` / `车架` 不能同时存在, 也不能同时为空)",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "inboundId": {
-                    "description": "调入至 0:平台",
-                    "type": "integer"
-                },
-                "inboundTarget": {
-                    "description": "调入目标 0:平台 1:门店 2:电柜 3.站点",
-                    "type": "integer",
-                    "enum": [
-                        0,
-                        1,
-                        2
-                    ]
-                },
-                "model": {
-                    "description": "电池型号 (和 `物资名称` / `车架` 不能同时存在, 也不能同时为空)",
-                    "type": "string"
-                },
-                "name": {
-                    "description": "物资名称 (和 `电池型号` / `车架` 不能同时存在, 也不能同时为空)",
-                    "type": "string"
-                },
-                "num": {
-                    "description": "调拨数量",
-                    "type": "integer"
-                },
-                "outboundId": {
-                    "description": "调出自 0:平台",
-                    "type": "integer"
-                },
-                "outboundTarget": {
-                    "description": "调出目标 0:平台 1:门店 2:电柜 3.站点",
-                    "type": "integer",
-                    "enum": [
-                        0,
-                        1,
-                        2
-                    ]
-                },
-                "remark": {
-                    "description": "备注",
-                    "type": "string"
                 }
             }
         },
@@ -22931,6 +21337,10 @@
                     "description": "是否可以买车",
                     "type": "boolean"
                 },
+                "groupID": {
+                    "description": "门店集合ID",
+                    "type": "integer"
+                },
                 "headPic": {
                     "description": "门店头图, 门店头图",
                     "type": "string"
@@ -22978,6 +21388,19 @@
                 }
             }
         },
+        "model.StoreGroup": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "集合id",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "集合名称",
+                    "type": "string"
+                }
+            }
+        },
         "model.StoreItem": {
             "type": "object",
             "properties": {
@@ -23017,6 +21440,14 @@
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.Employee"
+                        }
+                    ]
+                },
+                "group": {
+                    "description": "门店集合",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.StoreGroup"
                         }
                     ]
                 },
@@ -23082,6 +21513,10 @@
                 "ebikeSale": {
                     "description": "是否可以买车",
                     "type": "boolean"
+                },
+                "groupID": {
+                    "description": "门店集合ID",
+                    "type": "integer"
                 },
                 "headPic": {
                     "description": "门店头图",

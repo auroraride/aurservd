@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -109,7 +110,7 @@ func (sgq *StoreGoodsQuery) QueryStore() *StoreQuery {
 // First returns the first StoreGoods entity from the query.
 // Returns a *NotFoundError when no StoreGoods was found.
 func (sgq *StoreGoodsQuery) First(ctx context.Context) (*StoreGoods, error) {
-	nodes, err := sgq.Limit(1).All(setContextOp(ctx, sgq.ctx, "First"))
+	nodes, err := sgq.Limit(1).All(setContextOp(ctx, sgq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +133,7 @@ func (sgq *StoreGoodsQuery) FirstX(ctx context.Context) *StoreGoods {
 // Returns a *NotFoundError when no StoreGoods ID was found.
 func (sgq *StoreGoodsQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = sgq.Limit(1).IDs(setContextOp(ctx, sgq.ctx, "FirstID")); err != nil {
+	if ids, err = sgq.Limit(1).IDs(setContextOp(ctx, sgq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -155,7 +156,7 @@ func (sgq *StoreGoodsQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one StoreGoods entity is found.
 // Returns a *NotFoundError when no StoreGoods entities are found.
 func (sgq *StoreGoodsQuery) Only(ctx context.Context) (*StoreGoods, error) {
-	nodes, err := sgq.Limit(2).All(setContextOp(ctx, sgq.ctx, "Only"))
+	nodes, err := sgq.Limit(2).All(setContextOp(ctx, sgq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -183,7 +184,7 @@ func (sgq *StoreGoodsQuery) OnlyX(ctx context.Context) *StoreGoods {
 // Returns a *NotFoundError when no entities are found.
 func (sgq *StoreGoodsQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = sgq.Limit(2).IDs(setContextOp(ctx, sgq.ctx, "OnlyID")); err != nil {
+	if ids, err = sgq.Limit(2).IDs(setContextOp(ctx, sgq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -208,7 +209,7 @@ func (sgq *StoreGoodsQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of StoreGoodsSlice.
 func (sgq *StoreGoodsQuery) All(ctx context.Context) ([]*StoreGoods, error) {
-	ctx = setContextOp(ctx, sgq.ctx, "All")
+	ctx = setContextOp(ctx, sgq.ctx, ent.OpQueryAll)
 	if err := sgq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -230,7 +231,7 @@ func (sgq *StoreGoodsQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if sgq.ctx.Unique == nil && sgq.path != nil {
 		sgq.Unique(true)
 	}
-	ctx = setContextOp(ctx, sgq.ctx, "IDs")
+	ctx = setContextOp(ctx, sgq.ctx, ent.OpQueryIDs)
 	if err = sgq.Select(storegoods.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -248,7 +249,7 @@ func (sgq *StoreGoodsQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (sgq *StoreGoodsQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, sgq.ctx, "Count")
+	ctx = setContextOp(ctx, sgq.ctx, ent.OpQueryCount)
 	if err := sgq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -266,7 +267,7 @@ func (sgq *StoreGoodsQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (sgq *StoreGoodsQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, sgq.ctx, "Exist")
+	ctx = setContextOp(ctx, sgq.ctx, ent.OpQueryExist)
 	switch _, err := sgq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -301,8 +302,9 @@ func (sgq *StoreGoodsQuery) Clone() *StoreGoodsQuery {
 		withGoods:  sgq.withGoods.Clone(),
 		withStore:  sgq.withStore.Clone(),
 		// clone intermediate query.
-		sql:  sgq.sql.Clone(),
-		path: sgq.path,
+		sql:       sgq.sql.Clone(),
+		path:      sgq.path,
+		modifiers: append([]func(*sql.Selector){}, sgq.modifiers...),
 	}
 }
 
@@ -638,7 +640,7 @@ func (sggb *StoreGoodsGroupBy) Aggregate(fns ...AggregateFunc) *StoreGoodsGroupB
 
 // Scan applies the selector query and scans the result into the given value.
 func (sggb *StoreGoodsGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, sggb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, sggb.build.ctx, ent.OpQueryGroupBy)
 	if err := sggb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -686,7 +688,7 @@ func (sgs *StoreGoodsSelect) Aggregate(fns ...AggregateFunc) *StoreGoodsSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (sgs *StoreGoodsSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, sgs.ctx, "Select")
+	ctx = setContextOp(ctx, sgs.ctx, ent.OpQuerySelect)
 	if err := sgs.prepareQuery(ctx); err != nil {
 		return err
 	}

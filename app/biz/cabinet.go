@@ -22,11 +22,16 @@ import (
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetec"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/es"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
@@ -580,4 +585,160 @@ func (b *cabinetBiz) ECExport(modifier *model.Modifier, req *definition.CabinetE
 		}
 		tools.NewExcel(path).AddValues(rows).Done()
 	})
+}
+
+// checkSignInfo 检验店员、代理商操作权限
+func (b *cabinetBiz) checkSignInfo(assetSignInfo definition.AssetSignInfo, serial string) (err error) {
+	switch {
+	case assetSignInfo.Employee != nil:
+		eCab, _ := b.orm.QueryNotDeleted().Where(
+			cabinet.Serial(serial),
+			cabinet.HasStoreWith(
+				store.HasEmployeesWith(
+					employee.ID(assetSignInfo.Employee.ID),
+				),
+			),
+		).First(b.ctx)
+		if eCab == nil {
+			return errors.New("当前店员所属门店无该电柜操作权限")
+		}
+
+	case assetSignInfo.Agent != nil:
+		eCab, _ := b.orm.QueryNotDeleted().Where(
+			cabinet.Serial(serial),
+			cabinet.HasStationWith(
+				enterprisestation.HasEnterpriseWith(
+					enterprise.HasAgentsWith(
+						agent.ID(assetSignInfo.Agent.ID),
+					),
+				),
+			),
+		).First(b.ctx)
+		if eCab == nil {
+			return errors.New("当前代理所属站点无该电柜操作权限")
+		}
+
+	}
+	return
+}
+
+// Detail 获取电柜详情
+func (b *cabinetBiz) Detail(assetSignInfo definition.AssetSignInfo, serial string) (res model.MaintainerCabinetDetailRes, err error) {
+	err = b.checkSignInfo(assetSignInfo, serial)
+	if err != nil {
+		return res, err
+	}
+	res = service.NewMaintainerCabinet().Detail(&model.MaintainerCabinetDetailReq{Serial: serial})
+	return
+}
+
+// Operate 电柜操作
+func (b *cabinetBiz) Operate(assetSignInfo definition.AssetSignInfo, req *model.MaintainerCabinetOperateReq) error {
+	switch {
+	case assetSignInfo.Employee != nil:
+		// 查询店员管理的门店所在城市ids
+		cityIds := make([]uint64, 0)
+		ep, _ := ent.Database.Employee.QueryNotDeleted().
+			Where(
+				employee.ID(assetSignInfo.Employee.ID),
+			).
+			WithStores(func(query *ent.StoreQuery) {
+				query.WithCity()
+			}).First(b.ctx)
+		if ep == nil {
+			return errors.New("店员信息有误")
+		}
+
+		for _, s := range ep.Edges.Stores {
+			if s.Edges.City != nil {
+				cityIds = append(cityIds, s.Edges.City.ID)
+			}
+		}
+		req.Mini = true
+		service.NewMaintainerCabinet().Operate(assetSignInfo.Employee, cityIds, req)
+	case assetSignInfo.Agent != nil:
+		// 查询代理关联的企业站点城市ids
+		cityIds := make([]uint64, 0)
+		ag, _ := ent.Database.Agent.QueryNotDeleted().
+			Where(
+				agent.ID(assetSignInfo.Agent.ID),
+			).
+			WithEnterprise(func(eq *ent.EnterpriseQuery) {
+				eq.WithStations(func(esq *ent.EnterpriseStationQuery) {
+					esq.WithCity()
+				})
+			}).First(b.ctx)
+		if ag == nil {
+			return errors.New("代理人员信息有误")
+		}
+
+		if ag.Edges.Enterprise != nil {
+			for _, st := range ag.Edges.Enterprise.Edges.Stations {
+				if st.Edges.City != nil {
+					cityIds = append(cityIds, st.Edges.City.ID)
+				}
+			}
+		}
+		req.Mini = true
+		service.NewMaintainerCabinet().Operate(assetSignInfo.Agent, cityIds, req)
+	default:
+		return errors.New("无效操作人员")
+
+	}
+	return nil
+}
+
+// BinOperate 仓位操作
+// waitClose 是否等待关闭仓门（仅开仓动作有效）
+func (b *cabinetBiz) BinOperate(assetSignInfo definition.AssetSignInfo, req *model.MaintainerBinOperateReq, waitClose bool) error {
+	switch {
+	case assetSignInfo.Employee != nil:
+		// 查询店员管理的门店所在城市ids
+		cityIds := make([]uint64, 0)
+		ep, _ := ent.Database.Employee.QueryNotDeleted().
+			Where(
+				employee.ID(assetSignInfo.Employee.ID),
+			).
+			WithStores(func(query *ent.StoreQuery) {
+				query.WithCity()
+			}).First(b.ctx)
+		if ep == nil {
+			return errors.New("店员信息有误")
+		}
+
+		for _, s := range ep.Edges.Stores {
+			if s.Edges.City != nil {
+				cityIds = append(cityIds, s.Edges.City.ID)
+			}
+		}
+		service.NewMaintainerCabinet().BinOperate(assetSignInfo.Employee, cityIds, req, waitClose)
+	case assetSignInfo.Agent != nil:
+		// 查询代理关联的企业站点城市ids
+		cityIds := make([]uint64, 0)
+		ag, _ := ent.Database.Agent.QueryNotDeleted().
+			Where(
+				agent.ID(assetSignInfo.Agent.ID),
+			).
+			WithEnterprise(func(eq *ent.EnterpriseQuery) {
+				eq.WithStations(func(esq *ent.EnterpriseStationQuery) {
+					esq.WithCity()
+				})
+			}).First(b.ctx)
+		if ag == nil {
+			return errors.New("代理人员信息有误")
+		}
+
+		if ag.Edges.Enterprise != nil {
+			for _, st := range ag.Edges.Enterprise.Edges.Stations {
+				if st.Edges.City != nil {
+					cityIds = append(cityIds, st.Edges.City.ID)
+				}
+			}
+		}
+		service.NewMaintainerCabinet().BinOperate(assetSignInfo.Agent, cityIds, req, waitClose)
+	default:
+		return errors.New("无效操作人员")
+
+	}
+	return nil
 }

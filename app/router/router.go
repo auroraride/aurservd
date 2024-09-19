@@ -87,6 +87,8 @@ func Run() {
 		app.HeaderManagerToken,
 		app.HeaderEmployeeToken,
 		app.HeaderToastVisible,
+		app.HeaderAssetManagerToken,
+		app.HeaderWarestoreToken,
 	}...)
 	corsConfig.ExposeHeaders = append(corsConfig.ExposeHeaders, []string{
 		app.HeaderCaptchaID,
@@ -139,6 +141,9 @@ func Run() {
 	loadAgentRoutes()      // 代理路由
 	loadMaintainerRoutes() // 运维路由
 	loadPromotionRoutes()
+
+	loadAssetsRoutes()    // 仓库后台
+	loadWarestoreRoutes() // 库管路由
 
 	zap.L().Fatal("路由启动失败", zap.Error(e.Start(cfg.Bind)))
 }

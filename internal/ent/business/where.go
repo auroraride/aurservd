@@ -121,11 +121,6 @@ func CabinetID(v uint64) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldCabinetID, v))
 }
 
-// BatteryID applies equality check predicate on the "battery_id" field. It's identical to BatteryIDEQ.
-func BatteryID(v uint64) predicate.Business {
-	return predicate.Business(sql.FieldEQ(FieldBatteryID, v))
-}
-
 // AgentID applies equality check predicate on the "agent_id" field. It's identical to AgentIDEQ.
 func AgentID(v uint64) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldAgentID, v))
@@ -144,6 +139,11 @@ func StockSn(v string) predicate.Business {
 // RtoEbikeID applies equality check predicate on the "rto_ebike_id" field. It's identical to RtoEbikeIDEQ.
 func RtoEbikeID(v uint64) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldRtoEbikeID, v))
+}
+
+// BatteryID applies equality check predicate on the "battery_id" field. It's identical to BatteryIDEQ.
+func BatteryID(v uint64) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldBatteryID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -611,36 +611,6 @@ func CabinetIDNotNil() predicate.Business {
 	return predicate.Business(sql.FieldNotNull(FieldCabinetID))
 }
 
-// BatteryIDEQ applies the EQ predicate on the "battery_id" field.
-func BatteryIDEQ(v uint64) predicate.Business {
-	return predicate.Business(sql.FieldEQ(FieldBatteryID, v))
-}
-
-// BatteryIDNEQ applies the NEQ predicate on the "battery_id" field.
-func BatteryIDNEQ(v uint64) predicate.Business {
-	return predicate.Business(sql.FieldNEQ(FieldBatteryID, v))
-}
-
-// BatteryIDIn applies the In predicate on the "battery_id" field.
-func BatteryIDIn(vs ...uint64) predicate.Business {
-	return predicate.Business(sql.FieldIn(FieldBatteryID, vs...))
-}
-
-// BatteryIDNotIn applies the NotIn predicate on the "battery_id" field.
-func BatteryIDNotIn(vs ...uint64) predicate.Business {
-	return predicate.Business(sql.FieldNotIn(FieldBatteryID, vs...))
-}
-
-// BatteryIDIsNil applies the IsNil predicate on the "battery_id" field.
-func BatteryIDIsNil() predicate.Business {
-	return predicate.Business(sql.FieldIsNull(FieldBatteryID))
-}
-
-// BatteryIDNotNil applies the NotNil predicate on the "battery_id" field.
-func BatteryIDNotNil() predicate.Business {
-	return predicate.Business(sql.FieldNotNull(FieldBatteryID))
-}
-
 // AgentIDEQ applies the EQ predicate on the "agent_id" field.
 func AgentIDEQ(v uint64) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldAgentID, v))
@@ -824,6 +794,36 @@ func RtoEbikeIDIsNil() predicate.Business {
 // RtoEbikeIDNotNil applies the NotNil predicate on the "rto_ebike_id" field.
 func RtoEbikeIDNotNil() predicate.Business {
 	return predicate.Business(sql.FieldNotNull(FieldRtoEbikeID))
+}
+
+// BatteryIDEQ applies the EQ predicate on the "battery_id" field.
+func BatteryIDEQ(v uint64) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldBatteryID, v))
+}
+
+// BatteryIDNEQ applies the NEQ predicate on the "battery_id" field.
+func BatteryIDNEQ(v uint64) predicate.Business {
+	return predicate.Business(sql.FieldNEQ(FieldBatteryID, v))
+}
+
+// BatteryIDIn applies the In predicate on the "battery_id" field.
+func BatteryIDIn(vs ...uint64) predicate.Business {
+	return predicate.Business(sql.FieldIn(FieldBatteryID, vs...))
+}
+
+// BatteryIDNotIn applies the NotIn predicate on the "battery_id" field.
+func BatteryIDNotIn(vs ...uint64) predicate.Business {
+	return predicate.Business(sql.FieldNotIn(FieldBatteryID, vs...))
+}
+
+// BatteryIDIsNil applies the IsNil predicate on the "battery_id" field.
+func BatteryIDIsNil() predicate.Business {
+	return predicate.Business(sql.FieldIsNull(FieldBatteryID))
+}
+
+// BatteryIDNotNil applies the NotNil predicate on the "battery_id" field.
+func BatteryIDNotNil() predicate.Business {
+	return predicate.Business(sql.FieldNotNull(FieldBatteryID))
 }
 
 // HasRider applies the HasEdge predicate on the "rider" edge.
@@ -1033,29 +1033,6 @@ func HasCabinetWith(preds ...predicate.Cabinet) predicate.Business {
 	})
 }
 
-// HasBattery applies the HasEdge predicate on the "battery" edge.
-func HasBattery() predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, BatteryTable, BatteryColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasBatteryWith applies the HasEdge predicate on the "battery" edge with a given conditions (other predicates).
-func HasBatteryWith(preds ...predicate.Battery) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		step := newBatteryStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasAgent applies the HasEdge predicate on the "agent" edge.
 func HasAgent() predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {
@@ -1091,9 +1068,32 @@ func HasRtoEbike() predicate.Business {
 }
 
 // HasRtoEbikeWith applies the HasEdge predicate on the "rto_ebike" edge with a given conditions (other predicates).
-func HasRtoEbikeWith(preds ...predicate.Ebike) predicate.Business {
+func HasRtoEbikeWith(preds ...predicate.Asset) predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {
 		step := newRtoEbikeStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasBattery applies the HasEdge predicate on the "battery" edge.
+func HasBattery() predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, BatteryTable, BatteryColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBatteryWith applies the HasEdge predicate on the "battery" edge with a given conditions (other predicates).
+func HasBatteryWith(preds ...predicate.Asset) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := newBatteryStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -286,7 +286,7 @@ func (bc *BranchCreate) check() error {
 	if _, ok := bc.mutation.Geom(); !ok {
 		return &ValidationError{Name: "geom", err: errors.New(`ent: missing required field "Branch.geom"`)}
 	}
-	if _, ok := bc.mutation.CityID(); !ok {
+	if len(bc.mutation.CityIDs()) == 0 {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Branch.city"`)}
 	}
 	return nil

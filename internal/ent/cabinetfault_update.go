@@ -321,16 +321,16 @@ func (cfu *CabinetFaultUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (cfu *CabinetFaultUpdate) check() error {
-	if _, ok := cfu.mutation.CityID(); cfu.mutation.CityCleared() && !ok {
+	if cfu.mutation.CityCleared() && len(cfu.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "CabinetFault.city"`)
 	}
-	if _, ok := cfu.mutation.BranchID(); cfu.mutation.BranchCleared() && !ok {
+	if cfu.mutation.BranchCleared() && len(cfu.mutation.BranchIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "CabinetFault.branch"`)
 	}
-	if _, ok := cfu.mutation.CabinetID(); cfu.mutation.CabinetCleared() && !ok {
+	if cfu.mutation.CabinetCleared() && len(cfu.mutation.CabinetIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "CabinetFault.cabinet"`)
 	}
-	if _, ok := cfu.mutation.RiderID(); cfu.mutation.RiderCleared() && !ok {
+	if cfu.mutation.RiderCleared() && len(cfu.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "CabinetFault.rider"`)
 	}
 	return nil
@@ -844,16 +844,16 @@ func (cfuo *CabinetFaultUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (cfuo *CabinetFaultUpdateOne) check() error {
-	if _, ok := cfuo.mutation.CityID(); cfuo.mutation.CityCleared() && !ok {
+	if cfuo.mutation.CityCleared() && len(cfuo.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "CabinetFault.city"`)
 	}
-	if _, ok := cfuo.mutation.BranchID(); cfuo.mutation.BranchCleared() && !ok {
+	if cfuo.mutation.BranchCleared() && len(cfuo.mutation.BranchIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "CabinetFault.branch"`)
 	}
-	if _, ok := cfuo.mutation.CabinetID(); cfuo.mutation.CabinetCleared() && !ok {
+	if cfuo.mutation.CabinetCleared() && len(cfuo.mutation.CabinetIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "CabinetFault.cabinet"`)
 	}
-	if _, ok := cfuo.mutation.RiderID(); cfuo.mutation.RiderCleared() && !ok {
+	if cfuo.mutation.RiderCleared() && len(cfuo.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "CabinetFault.rider"`)
 	}
 	return nil

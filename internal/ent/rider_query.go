@@ -8,10 +8,11 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
@@ -42,9 +43,10 @@ type RiderQuery struct {
 	withOrders       *OrderQuery
 	withExchanges    *ExchangeQuery
 	withSubscribes   *SubscribeQuery
+	withAsset        *AssetQuery
 	withStocks       *StockQuery
 	withFollowups    *RiderFollowUpQuery
-	withBattery      *BatteryQuery
+	withBattery      *AssetQuery
 	withBatteryFlows *BatteryFlowQuery
 	modifiers        []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -259,6 +261,28 @@ func (rq *RiderQuery) QuerySubscribes() *SubscribeQuery {
 	return query
 }
 
+// QueryAsset chains the current query on the "asset" edge.
+func (rq *RiderQuery) QueryAsset() *AssetQuery {
+	query := (&AssetClient{config: rq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rider.Table, rider.FieldID, selector),
+			sqlgraph.To(asset.Table, asset.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.AssetTable, rider.AssetColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // QueryStocks chains the current query on the "stocks" edge.
 func (rq *RiderQuery) QueryStocks() *StockQuery {
 	query := (&StockClient{config: rq.config}).Query()
@@ -304,8 +328,8 @@ func (rq *RiderQuery) QueryFollowups() *RiderFollowUpQuery {
 }
 
 // QueryBattery chains the current query on the "battery" edge.
-func (rq *RiderQuery) QueryBattery() *BatteryQuery {
-	query := (&BatteryClient{config: rq.config}).Query()
+func (rq *RiderQuery) QueryBattery() *AssetQuery {
+	query := (&AssetClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -316,7 +340,7 @@ func (rq *RiderQuery) QueryBattery() *BatteryQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rider.Table, rider.FieldID, selector),
-			sqlgraph.To(battery.Table, battery.FieldID),
+			sqlgraph.To(asset.Table, asset.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, rider.BatteryTable, rider.BatteryColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
@@ -350,7 +374,7 @@ func (rq *RiderQuery) QueryBatteryFlows() *BatteryFlowQuery {
 // First returns the first Rider entity from the query.
 // Returns a *NotFoundError when no Rider was found.
 func (rq *RiderQuery) First(ctx context.Context) (*Rider, error) {
-	nodes, err := rq.Limit(1).All(setContextOp(ctx, rq.ctx, "First"))
+	nodes, err := rq.Limit(1).All(setContextOp(ctx, rq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -373,7 +397,7 @@ func (rq *RiderQuery) FirstX(ctx context.Context) *Rider {
 // Returns a *NotFoundError when no Rider ID was found.
 func (rq *RiderQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = rq.Limit(1).IDs(setContextOp(ctx, rq.ctx, "FirstID")); err != nil {
+	if ids, err = rq.Limit(1).IDs(setContextOp(ctx, rq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -396,7 +420,7 @@ func (rq *RiderQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Rider entity is found.
 // Returns a *NotFoundError when no Rider entities are found.
 func (rq *RiderQuery) Only(ctx context.Context) (*Rider, error) {
-	nodes, err := rq.Limit(2).All(setContextOp(ctx, rq.ctx, "Only"))
+	nodes, err := rq.Limit(2).All(setContextOp(ctx, rq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -424,7 +448,7 @@ func (rq *RiderQuery) OnlyX(ctx context.Context) *Rider {
 // Returns a *NotFoundError when no entities are found.
 func (rq *RiderQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = rq.Limit(2).IDs(setContextOp(ctx, rq.ctx, "OnlyID")); err != nil {
+	if ids, err = rq.Limit(2).IDs(setContextOp(ctx, rq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -449,7 +473,7 @@ func (rq *RiderQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Riders.
 func (rq *RiderQuery) All(ctx context.Context) ([]*Rider, error) {
-	ctx = setContextOp(ctx, rq.ctx, "All")
+	ctx = setContextOp(ctx, rq.ctx, ent.OpQueryAll)
 	if err := rq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -471,7 +495,7 @@ func (rq *RiderQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if rq.ctx.Unique == nil && rq.path != nil {
 		rq.Unique(true)
 	}
-	ctx = setContextOp(ctx, rq.ctx, "IDs")
+	ctx = setContextOp(ctx, rq.ctx, ent.OpQueryIDs)
 	if err = rq.Select(rider.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -489,7 +513,7 @@ func (rq *RiderQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (rq *RiderQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, rq.ctx, "Count")
+	ctx = setContextOp(ctx, rq.ctx, ent.OpQueryCount)
 	if err := rq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -507,7 +531,7 @@ func (rq *RiderQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (rq *RiderQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, rq.ctx, "Exist")
+	ctx = setContextOp(ctx, rq.ctx, ent.OpQueryExist)
 	switch _, err := rq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -547,13 +571,15 @@ func (rq *RiderQuery) Clone() *RiderQuery {
 		withOrders:       rq.withOrders.Clone(),
 		withExchanges:    rq.withExchanges.Clone(),
 		withSubscribes:   rq.withSubscribes.Clone(),
+		withAsset:        rq.withAsset.Clone(),
 		withStocks:       rq.withStocks.Clone(),
 		withFollowups:    rq.withFollowups.Clone(),
 		withBattery:      rq.withBattery.Clone(),
 		withBatteryFlows: rq.withBatteryFlows.Clone(),
 		// clone intermediate query.
-		sql:  rq.sql.Clone(),
-		path: rq.path,
+		sql:       rq.sql.Clone(),
+		path:      rq.path,
+		modifiers: append([]func(*sql.Selector){}, rq.modifiers...),
 	}
 }
 
@@ -645,6 +671,17 @@ func (rq *RiderQuery) WithSubscribes(opts ...func(*SubscribeQuery)) *RiderQuery 
 	return rq
 }
 
+// WithAsset tells the query-builder to eager-load the nodes that are connected to
+// the "asset" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RiderQuery) WithAsset(opts ...func(*AssetQuery)) *RiderQuery {
+	query := (&AssetClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withAsset = query
+	return rq
+}
+
 // WithStocks tells the query-builder to eager-load the nodes that are connected to
 // the "stocks" edge. The optional arguments are used to configure the query builder of the edge.
 func (rq *RiderQuery) WithStocks(opts ...func(*StockQuery)) *RiderQuery {
@@ -669,8 +706,8 @@ func (rq *RiderQuery) WithFollowups(opts ...func(*RiderFollowUpQuery)) *RiderQue
 
 // WithBattery tells the query-builder to eager-load the nodes that are connected to
 // the "battery" edge. The optional arguments are used to configure the query builder of the edge.
-func (rq *RiderQuery) WithBattery(opts ...func(*BatteryQuery)) *RiderQuery {
-	query := (&BatteryClient{config: rq.config}).Query()
+func (rq *RiderQuery) WithBattery(opts ...func(*AssetQuery)) *RiderQuery {
+	query := (&AssetClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -767,7 +804,7 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 	var (
 		nodes       = []*Rider{}
 		_spec       = rq.querySpec()
-		loadedTypes = [12]bool{
+		loadedTypes = [13]bool{
 			rq.withStation != nil,
 			rq.withPerson != nil,
 			rq.withEnterprise != nil,
@@ -776,6 +813,7 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 			rq.withOrders != nil,
 			rq.withExchanges != nil,
 			rq.withSubscribes != nil,
+			rq.withAsset != nil,
 			rq.withStocks != nil,
 			rq.withFollowups != nil,
 			rq.withBattery != nil,
@@ -856,6 +894,13 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 			return nil, err
 		}
 	}
+	if query := rq.withAsset; query != nil {
+		if err := rq.loadAsset(ctx, query, nodes,
+			func(n *Rider) { n.Edges.Asset = []*Asset{} },
+			func(n *Rider, e *Asset) { n.Edges.Asset = append(n.Edges.Asset, e) }); err != nil {
+			return nil, err
+		}
+	}
 	if query := rq.withStocks; query != nil {
 		if err := rq.loadStocks(ctx, query, nodes,
 			func(n *Rider) { n.Edges.Stocks = []*Stock{} },
@@ -872,7 +917,7 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 	}
 	if query := rq.withBattery; query != nil {
 		if err := rq.loadBattery(ctx, query, nodes, nil,
-			func(n *Rider, e *Battery) { n.Edges.Battery = e }); err != nil {
+			func(n *Rider, e *Asset) { n.Edges.Battery = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1132,6 +1177,36 @@ func (rq *RiderQuery) loadSubscribes(ctx context.Context, query *SubscribeQuery,
 	}
 	return nil
 }
+func (rq *RiderQuery) loadAsset(ctx context.Context, query *AssetQuery, nodes []*Rider, init func(*Rider), assign func(*Rider, *Asset)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Rider)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(asset.FieldLocationsID)
+	}
+	query.Where(predicate.Asset(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(rider.AssetColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.LocationsID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "locations_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 func (rq *RiderQuery) loadStocks(ctx context.Context, query *StockQuery, nodes []*Rider, init func(*Rider), assign func(*Rider, *Stock)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uint64]*Rider)
@@ -1196,7 +1271,7 @@ func (rq *RiderQuery) loadFollowups(ctx context.Context, query *RiderFollowUpQue
 	}
 	return nil
 }
-func (rq *RiderQuery) loadBattery(ctx context.Context, query *BatteryQuery, nodes []*Rider, init func(*Rider), assign func(*Rider, *Battery)) error {
+func (rq *RiderQuery) loadBattery(ctx context.Context, query *AssetQuery, nodes []*Rider, init func(*Rider), assign func(*Rider, *Asset)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uint64]*Rider)
 	for i := range nodes {
@@ -1204,9 +1279,9 @@ func (rq *RiderQuery) loadBattery(ctx context.Context, query *BatteryQuery, node
 		nodeids[nodes[i].ID] = nodes[i]
 	}
 	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(battery.FieldRiderID)
+		query.ctx.AppendFieldOnce(asset.FieldLocationsID)
 	}
-	query.Where(predicate.Battery(func(s *sql.Selector) {
+	query.Where(predicate.Asset(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(rider.BatteryColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
@@ -1214,13 +1289,10 @@ func (rq *RiderQuery) loadBattery(ctx context.Context, query *BatteryQuery, node
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.RiderID
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "rider_id" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		fk := n.LocationsID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "rider_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "locations_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1236,6 +1308,7 @@ func (rq *RiderQuery) loadBatteryFlows(ctx context.Context, query *BatteryFlowQu
 			init(nodes[i])
 		}
 	}
+	query.withFKs = true
 	if len(query.ctx.Fields) > 0 {
 		query.ctx.AppendFieldOnce(batteryflow.FieldRiderID)
 	}
@@ -1370,6 +1443,7 @@ var (
 	RiderQueryWithOrders       RiderQueryWith = "Orders"
 	RiderQueryWithExchanges    RiderQueryWith = "Exchanges"
 	RiderQueryWithSubscribes   RiderQueryWith = "Subscribes"
+	RiderQueryWithAsset        RiderQueryWith = "Asset"
 	RiderQueryWithStocks       RiderQueryWith = "Stocks"
 	RiderQueryWithFollowups    RiderQueryWith = "Followups"
 	RiderQueryWithBattery      RiderQueryWith = "Battery"
@@ -1395,6 +1469,8 @@ func (rq *RiderQuery) With(withEdges ...RiderQueryWith) *RiderQuery {
 			rq.WithExchanges()
 		case RiderQueryWithSubscribes:
 			rq.WithSubscribes()
+		case RiderQueryWithAsset:
+			rq.WithAsset()
 		case RiderQueryWithStocks:
 			rq.WithStocks()
 		case RiderQueryWithFollowups:
@@ -1422,7 +1498,7 @@ func (rgb *RiderGroupBy) Aggregate(fns ...AggregateFunc) *RiderGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (rgb *RiderGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, rgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, rgb.build.ctx, ent.OpQueryGroupBy)
 	if err := rgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1470,7 +1546,7 @@ func (rs *RiderSelect) Aggregate(fns ...AggregateFunc) *RiderSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (rs *RiderSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, rs.ctx, "Select")
+	ctx = setContextOp(ctx, rs.ctx, ent.OpQuerySelect)
 	if err := rs.prepareQuery(ctx); err != nil {
 		return err
 	}

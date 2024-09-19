@@ -15,10 +15,11 @@ import (
 	"github.com/auroraride/aurservd/app/workwx"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/questioncategory"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -523,31 +524,32 @@ func (s *selectionService) BatterySerialSearch(req *model.BatterySearchReq) (res
 		return
 	}
 
-	q := ent.Database.Battery.Query().Where(battery.SnHasSuffix(req.Serial))
-	if req.EnterpriseID != nil {
-		switch *req.EnterpriseID {
-		case 0:
-			q.Where(battery.EnterpriseIDIsNil())
-		default:
-			q.Where(battery.EnterpriseID(*req.EnterpriseID))
-		}
-	}
+	q := ent.Database.Asset.Query().Where(asset.SnHasSuffix(req.Serial)).WithModel()
 
-	if req.StationID != nil {
-		switch *req.StationID {
-		case 0:
-			q.Where(battery.StationIDIsNil())
-		default:
-			q.Where(battery.StationID(*req.StationID))
+	if req.StationID != nil && *req.StationID > 0 {
+		q.Where(asset.LocationsType(model.AssetLocationsTypeStation.Value()), asset.LocationsID(*req.StationID))
+	}
+	if req.EnterpriseID != nil && *req.EnterpriseID > 0 {
+		es, _ := ent.Database.EnterpriseStation.QueryNotDeleted().Where(enterprisestation.EnterpriseID(*req.EnterpriseID)).All(s.ctx)
+		if len(es) > 0 {
+			ids := make([]uint64, 0)
+			for _, e := range es {
+				ids = append(ids, e.ID)
+			}
+			q.Where(asset.LocationsType(model.AssetLocationsTypeStation.Value()), asset.LocationsIDIn(ids...))
 		}
 	}
 
 	items, _ := q.All(s.ctx)
 	for _, item := range items {
+		var m string
+		if item.Edges.Model != nil {
+			m = item.Edges.Model.Model
+		}
 		res = append(res, &model.Battery{
 			ID:    item.ID,
 			SN:    item.Sn,
-			Model: item.Model,
+			Model: m,
 		})
 	}
 
@@ -612,6 +614,18 @@ func (s *selectionService) EbikeBrandByCity(req *model.SelectionBrandByCityReq) 
 			Value: b.ID,
 			Label: b.Name,
 		}
+	}
+	return
+}
+
+// StoreGroup 筛选门店集合
+func (s *selectionService) StoreGroup() (items []model.SelectOption) {
+	list, _ := ent.Database.StoreGroup.QueryNotDeleted().All(context.Background())
+	for _, v := range list {
+		items = append(items, model.SelectOption{
+			Value: v.ID,
+			Label: v.Name,
+		})
 	}
 	return
 }

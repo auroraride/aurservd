@@ -11,21 +11,20 @@ import (
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/plan"
-	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 type ebikeBiz struct {
-	orm *ent.EbikeClient
+	orm *ent.AssetClient
 	ctx context.Context
 }
 
 func NewEbikeBiz() *ebikeBiz {
 	return &ebikeBiz{
-		orm: ent.Database.Ebike,
+		orm: ent.Database.Asset,
 		ctx: context.Background(),
 	}
 }
@@ -41,7 +40,7 @@ func (b *ebikeBiz) EbikeBrandDetail(req *definition.EbikeDetailReq) (*definition
 	}
 
 	storeItem, _ := ent.Database.Store.QueryNotDeleted().
-		WithStocks().
+		WithAsset().
 		Where(store.ID(req.StoreID)).
 		Modify(func(sel *sql.Selector) {
 			sel.
@@ -125,7 +124,7 @@ func (b *ebikeBiz) EbikeBrandDetail(req *definition.EbikeDetailReq) (*definition
 // DeleteBrand 删除车电品牌
 func (b *ebikeBiz) DeleteBrand(req *definition.EbikeBrandDeleteReq) error {
 	// 查询车电品牌下是否有车辆在使用
-	i, err := ent.Database.Ebike.Query().Where(ebike.BrandID(req.ID)).Count(b.ctx)
+	i, err := ent.Database.Asset.Query().Where(asset.BrandID(req.ID)).Count(b.ctx)
 	if err != nil {
 		return err
 	}
@@ -144,7 +143,10 @@ func (b *ebikeBiz) DeleteBrand(req *definition.EbikeBrandDeleteReq) error {
 func (b *ebikeBiz) BatchModify(req *definition.EbikeBatchModifyReq) []error {
 	errs := make([]error, 0)
 	for _, v := range req.SN {
-		e, _ := ent.Database.Ebike.Query().Where(ebike.Sn(v), ebike.RiderIDIsNil()).First(b.ctx)
+		e, _ := ent.Database.Asset.Query().Where(
+			asset.Sn(v),
+			asset.LocationsTypeNEQ(model.AssetLocationsTypeRider.Value()),
+		).First(b.ctx)
 		if e == nil {
 			errs = append(errs, fmt.Errorf("sn:%s, %s", v, "未找到车电或已分配骑手,无法修改"))
 			continue
@@ -161,8 +163,25 @@ func (b *ebikeBiz) BatchModify(req *definition.EbikeBatchModifyReq) []error {
 		return append(errs, fmt.Errorf("brandID:%d, %s", req.BrandID, "未找到品牌"))
 	}
 
+	err := ent.Database.Asset.Update().
+		Where(
+			asset.SnIn(req.SN...),
+			asset.Type(model.AssetTypeEbike.Value()),
+		).
+		SetName(item.Name).
+		SetBrandID(req.BrandID).Exec(b.ctx)
+	if err != nil {
+		return append(errs, err)
+	}
+
+	// 查询品牌名称
+	item, _ = ent.Database.EbikeBrand.QueryNotDeleted().Where(ebikebrand.ID(req.BrandID)).First(b.ctx)
+	if item == nil {
+		return append(errs, fmt.Errorf("brandID:%d, %s", req.BrandID, "未找到品牌"))
+	}
+
 	// 查询电车id
-	all, _ := ent.Database.Ebike.Query().Where(ebike.SnIn(req.SN...)).All(b.ctx)
+	all, _ := ent.Database.Asset.Query().Where(asset.SnIn(req.SN...)).All(b.ctx)
 	if len(all) == 0 {
 		return append(errs, fmt.Errorf("sn:%s, %s", req.SN, "未找到车电"))
 	}
@@ -173,10 +192,10 @@ func (b *ebikeBiz) BatchModify(req *definition.EbikeBatchModifyReq) []error {
 	}
 
 	// 更新库存中的电车型号
-	err := ent.Database.Stock.Update().
+	err = ent.Database.Asset.Update().
 		Where(
-			stock.EbikeIDIn(ids...),
-			stock.MaterialEQ(stock.MaterialEbike),
+			asset.IDIn(ids...),
+			asset.Type(model.AssetTypeEbike.Value()),
 		).
 		SetName(item.Name).
 		SetBrandID(req.BrandID).Exec(b.ctx)

@@ -418,10 +418,10 @@ func (cu *CouponUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (cu *CouponUpdate) check() error {
-	if _, ok := cu.mutation.AssemblyID(); cu.mutation.AssemblyCleared() && !ok {
+	if cu.mutation.AssemblyCleared() && len(cu.mutation.AssemblyIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Coupon.assembly"`)
 	}
-	if _, ok := cu.mutation.TemplateID(); cu.mutation.TemplateCleared() && !ok {
+	if cu.mutation.TemplateCleared() && len(cu.mutation.TemplateIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Coupon.template"`)
 	}
 	return nil
@@ -1080,10 +1080,10 @@ func (cuo *CouponUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (cuo *CouponUpdateOne) check() error {
-	if _, ok := cuo.mutation.AssemblyID(); cuo.mutation.AssemblyCleared() && !ok {
+	if cuo.mutation.AssemblyCleared() && len(cuo.mutation.AssemblyIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Coupon.assembly"`)
 	}
-	if _, ok := cuo.mutation.TemplateID(); cuo.mutation.TemplateCleared() && !ok {
+	if cuo.mutation.TemplateCleared() && len(cuo.mutation.TemplateIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Coupon.template"`)
 	}
 	return nil

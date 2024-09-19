@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -85,7 +86,7 @@ func (ceq *CabinetEcQuery) QueryCabinet() *CabinetQuery {
 // First returns the first CabinetEc entity from the query.
 // Returns a *NotFoundError when no CabinetEc was found.
 func (ceq *CabinetEcQuery) First(ctx context.Context) (*CabinetEc, error) {
-	nodes, err := ceq.Limit(1).All(setContextOp(ctx, ceq.ctx, "First"))
+	nodes, err := ceq.Limit(1).All(setContextOp(ctx, ceq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +109,7 @@ func (ceq *CabinetEcQuery) FirstX(ctx context.Context) *CabinetEc {
 // Returns a *NotFoundError when no CabinetEc ID was found.
 func (ceq *CabinetEcQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ceq.Limit(1).IDs(setContextOp(ctx, ceq.ctx, "FirstID")); err != nil {
+	if ids, err = ceq.Limit(1).IDs(setContextOp(ctx, ceq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -131,7 +132,7 @@ func (ceq *CabinetEcQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one CabinetEc entity is found.
 // Returns a *NotFoundError when no CabinetEc entities are found.
 func (ceq *CabinetEcQuery) Only(ctx context.Context) (*CabinetEc, error) {
-	nodes, err := ceq.Limit(2).All(setContextOp(ctx, ceq.ctx, "Only"))
+	nodes, err := ceq.Limit(2).All(setContextOp(ctx, ceq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +160,7 @@ func (ceq *CabinetEcQuery) OnlyX(ctx context.Context) *CabinetEc {
 // Returns a *NotFoundError when no entities are found.
 func (ceq *CabinetEcQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ceq.Limit(2).IDs(setContextOp(ctx, ceq.ctx, "OnlyID")); err != nil {
+	if ids, err = ceq.Limit(2).IDs(setContextOp(ctx, ceq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -184,7 +185,7 @@ func (ceq *CabinetEcQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of CabinetEcs.
 func (ceq *CabinetEcQuery) All(ctx context.Context) ([]*CabinetEc, error) {
-	ctx = setContextOp(ctx, ceq.ctx, "All")
+	ctx = setContextOp(ctx, ceq.ctx, ent.OpQueryAll)
 	if err := ceq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -206,7 +207,7 @@ func (ceq *CabinetEcQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if ceq.ctx.Unique == nil && ceq.path != nil {
 		ceq.Unique(true)
 	}
-	ctx = setContextOp(ctx, ceq.ctx, "IDs")
+	ctx = setContextOp(ctx, ceq.ctx, ent.OpQueryIDs)
 	if err = ceq.Select(cabinetec.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -224,7 +225,7 @@ func (ceq *CabinetEcQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (ceq *CabinetEcQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, ceq.ctx, "Count")
+	ctx = setContextOp(ctx, ceq.ctx, ent.OpQueryCount)
 	if err := ceq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -242,7 +243,7 @@ func (ceq *CabinetEcQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (ceq *CabinetEcQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, ceq.ctx, "Exist")
+	ctx = setContextOp(ctx, ceq.ctx, ent.OpQueryExist)
 	switch _, err := ceq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -276,8 +277,9 @@ func (ceq *CabinetEcQuery) Clone() *CabinetEcQuery {
 		predicates:  append([]predicate.CabinetEc{}, ceq.predicates...),
 		withCabinet: ceq.withCabinet.Clone(),
 		// clone intermediate query.
-		sql:  ceq.sql.Clone(),
-		path: ceq.path,
+		sql:       ceq.sql.Clone(),
+		path:      ceq.path,
+		modifiers: append([]func(*sql.Selector){}, ceq.modifiers...),
 	}
 }
 
@@ -563,7 +565,7 @@ func (cegb *CabinetEcGroupBy) Aggregate(fns ...AggregateFunc) *CabinetEcGroupBy 
 
 // Scan applies the selector query and scans the result into the given value.
 func (cegb *CabinetEcGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, cegb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, cegb.build.ctx, ent.OpQueryGroupBy)
 	if err := cegb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -611,7 +613,7 @@ func (ces *CabinetEcSelect) Aggregate(fns ...AggregateFunc) *CabinetEcSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ces *CabinetEcSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ces.ctx, "Select")
+	ctx = setContextOp(ctx, ces.ctx, ent.OpQuerySelect)
 	if err := ces.prepareQuery(ctx); err != nil {
 		return err
 	}

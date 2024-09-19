@@ -91,10 +91,11 @@ func (Rider) Edges() []ent.Edge {
 		edge.To("exchanges", Exchange.Type).Comment("换电记录"),
 		edge.To("subscribes", Subscribe.Type).Comment("订阅"),
 
+		edge.To("asset", Asset.Type),
 		edge.To("stocks", Stock.Type),
 		edge.To("followups", RiderFollowUp.Type),
 
-		edge.To("battery", Battery.Type).Unique(),
+		edge.To("battery", Asset.Type).Unique(),
 		edge.To("battery_flows", BatteryFlow.Type),
 	}
 }

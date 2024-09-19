@@ -64,12 +64,17 @@ func (Fault) Fields() []ent.Field {
 		field.JSON("attachments", []string{}).Optional().Comment("附件"),
 		field.Uint8("type").Default(1).Comment("故障类型 1:电柜故障 2:电池故障 3:车辆故障 4:其他"),
 		field.Strings("fault").Optional().Comment("故障内容"),
+		field.Uint64("ebike_id").Optional().Nillable().Comment("电车ID"),
+		field.Uint64("battery_id").Optional().Nillable().Comment("电池ID"),
 	}
 }
 
 // Edges of the Fault.
 func (Fault) Edges() []ent.Edge {
-	return []ent.Edge{}
+	return []ent.Edge{
+		edge.To("ebike", Asset.Type).Unique().Field("ebike_id"),
+		edge.To("battery", Asset.Type).Unique().Field("battery_id"),
+	}
 }
 
 func (Fault) Mixin() []ent.Mixin {
@@ -79,8 +84,6 @@ func (Fault) Mixin() []ent.Mixin {
 		internal.Modifier{},
 		CityMixin{},
 		CabinetMixin{Optional: true},
-		BatteryMixin{Optional: true},
-		EbikeMixin{Optional: true},
 		RiderMixin{Optional: true},
 	}
 }

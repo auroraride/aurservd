@@ -5,14 +5,6 @@
 
 package eapi
 
-import (
-	"github.com/labstack/echo/v4"
-
-	"github.com/auroraride/aurservd/app"
-	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/app/service"
-)
-
 type stock struct{}
 
 var Stock = new(stock)
@@ -26,10 +18,10 @@ var Stock = new(stock)
 // @Produce	json
 // @Param	X-Employee-Token	header		string						true	"店员校验token"
 // @Success	200					{object}	model.StockEmployeeOverview	"请求成功"
-func (*stock) Overview(c echo.Context) (err error) {
-	ctx := app.ContextX[app.EmployeeContext](c)
-	return ctx.SendResponse(service.NewStockWithEmployee(ctx.Employee).EmployeeOverview())
-}
+// func (*stock) Overview(c echo.Context) (err error) {
+// 	ctx := app.ContextX[app.EmployeeContext](c)
+// 	return ctx.SendResponse(service.NewStockWithEmployee(ctx.Employee).EmployeeOverview())
+// }
 
 // List
 // @ID		EmployeeStockList
@@ -41,9 +33,9 @@ func (*stock) Overview(c echo.Context) (err error) {
 // @Param	X-Employee-Token	header		string																true	"店员校验token"
 // @Param	query				query		model.StockEmployeeListReq											true	"电池出入库筛选请求"
 // @Success	200					{object}	model.StockEmployeeListRes{items=[]model.StockEmployeeListResItem}	"请求成功"
-func (*stock) List(c echo.Context) (err error) {
-	ctx, req := app.EmployeeContextAndBinding[model.StockEmployeeListReq](c)
-	return ctx.SendResponse(
-		service.NewStockWithEmployee(ctx.Employee).EmployeeList(req),
-	)
-}
+// func (*stock) List(c echo.Context) (err error) {
+// 	ctx, req := app.EmployeeContextAndBinding[model.StockEmployeeListReq](c)
+// 	return ctx.SendResponse(
+// 		service.NewStockWithEmployee(ctx.Employee).EmployeeList(req),
+// 	)
+// }

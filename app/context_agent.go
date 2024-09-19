@@ -8,6 +8,7 @@ package app
 import (
 	"github.com/labstack/echo/v4"
 
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 )
 
@@ -17,6 +18,7 @@ type AgentContext struct {
 	Enterprise *ent.Enterprise
 	Agent      *ent.Agent
 	Stations   ent.EnterpriseStations // 站点列表
+	Operator   *model.OperatorInfo
 }
 
 // NewAgentContext 新建代理上下文
@@ -26,6 +28,14 @@ func NewAgentContext(c echo.Context, ag *ent.Agent, en *ent.Enterprise, stations
 		Agent:       ag,
 		Enterprise:  en,
 		Stations:    stations,
+	}
+	if ag != nil {
+		ctx.Operator = &model.OperatorInfo{
+			Type:  model.OperatorTypeAgent,
+			ID:    ag.ID,
+			Phone: ag.Phone,
+			Name:  ag.Name,
+		}
 	}
 	return ctx
 }

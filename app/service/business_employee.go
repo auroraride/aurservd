@@ -11,7 +11,9 @@ import (
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
+	"github.com/auroraride/aurservd/internal/ent/asset"
+	"github.com/auroraride/aurservd/internal/ent/assetattributes"
+	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
@@ -78,11 +80,13 @@ func (s *businessEmployeeService) UnSubscribe(req *model.UnsubscribeEmployeeReq)
 				snag.Panic("必须提交车辆信息")
 			}
 			// 校验车辆
-			bike, _ := ent.Database.Ebike.Query().Where(
-				ebike.RiderID(sub.RiderID),
-				ebike.Or(
-					ebike.Sn(req.Qrcode),
-					ebike.Plate(req.Qrcode),
+			attributes, _ := ent.Database.AssetAttributes.Query().Where(assetattributes.Key("plate")).First(s.ctx)
+			bike, _ := ent.Database.Asset.Query().Where(
+				asset.LocationsID(sub.RiderID),
+				asset.LocationsType(model.AssetLocationsTypeRider.Value()),
+				asset.Or(
+					asset.Sn(req.Qrcode),
+					asset.HasValuesWith(assetattributevalues.AttributeID(attributes.ID), assetattributevalues.ValueContainsFold(req.Qrcode)),
 				),
 			).First(s.ctx)
 			if bike == nil {

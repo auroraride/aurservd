@@ -18,7 +18,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
-	"github.com/auroraride/aurservd/pkg/silk"
 )
 
 type transfer struct{}
@@ -54,8 +53,8 @@ func (*transfer) Subscribe(c echo.Context) (err error) {
 		}
 
 		var (
-			bat *ent.Battery
-			bid *uint64
+			bat *ent.Asset
+			// bid *uint64
 
 			bm = sub.Model
 		)
@@ -69,7 +68,7 @@ func (*transfer) Subscribe(c echo.Context) (err error) {
 			}
 
 			// 查找电池
-			bat, _ = service.NewBattery().QuerySn(ab.SN)
+			bat, _ = service.NewAsset().QuerySn(ab.SN)
 			if bat == nil {
 				message = "未找到电池信息"
 				goto RENDER
@@ -77,13 +76,13 @@ func (*transfer) Subscribe(c echo.Context) (err error) {
 
 			// 设置电池信息
 			bm = ab.Model
-			bid = silk.UInt64(bat.ID)
+			// bid = silk.UInt64(bat.ID)
 		}
 
 		err = ent.WithTx(ctx, func(tx *ent.Tx) (err error) {
 			err = tx.Subscribe.UpdateOneID(sub.ID).
 				SetIntelligent(intelligent).
-				SetNillableBatteryID(bid).
+				// SetNillableBatteryID(bid).
 				SetModel(bm).
 				Exec(ctx)
 			if err != nil {
@@ -92,7 +91,7 @@ func (*transfer) Subscribe(c echo.Context) (err error) {
 
 			// 更新电池信息
 			if intelligent && bat != nil {
-				err = service.NewBattery().Allocate(tx, bat, sub, false)
+				err = service.NewBattery().Allocate(bat, sub, model.AssetTransferTypeTransfer)
 			}
 
 			return

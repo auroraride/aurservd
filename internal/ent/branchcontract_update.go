@@ -393,7 +393,7 @@ func (bcu *BranchContractUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (bcu *BranchContractUpdate) check() error {
-	if _, ok := bcu.mutation.BranchID(); bcu.mutation.BranchCleared() && !ok {
+	if bcu.mutation.BranchCleared() && len(bcu.mutation.BranchIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "BranchContract.branch"`)
 	}
 	return nil
@@ -928,7 +928,7 @@ func (bcuo *BranchContractUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (bcuo *BranchContractUpdateOne) check() error {
-	if _, ok := bcuo.mutation.BranchID(); bcuo.mutation.BranchCleared() && !ok {
+	if bcuo.mutation.BranchCleared() && len(bcuo.mutation.BranchIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "BranchContract.branch"`)
 	}
 	return nil

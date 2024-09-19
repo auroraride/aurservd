@@ -802,13 +802,13 @@ func (au *AssistanceUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (au *AssistanceUpdate) check() error {
-	if _, ok := au.mutation.RiderID(); au.mutation.RiderCleared() && !ok {
+	if au.mutation.RiderCleared() && len(au.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Assistance.rider"`)
 	}
-	if _, ok := au.mutation.SubscribeID(); au.mutation.SubscribeCleared() && !ok {
+	if au.mutation.SubscribeCleared() && len(au.mutation.SubscribeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Assistance.subscribe"`)
 	}
-	if _, ok := au.mutation.CityID(); au.mutation.CityCleared() && !ok {
+	if au.mutation.CityCleared() && len(au.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Assistance.city"`)
 	}
 	return nil
@@ -1987,13 +1987,13 @@ func (auo *AssistanceUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (auo *AssistanceUpdateOne) check() error {
-	if _, ok := auo.mutation.RiderID(); auo.mutation.RiderCleared() && !ok {
+	if auo.mutation.RiderCleared() && len(auo.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Assistance.rider"`)
 	}
-	if _, ok := auo.mutation.SubscribeID(); auo.mutation.SubscribeCleared() && !ok {
+	if auo.mutation.SubscribeCleared() && len(auo.mutation.SubscribeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Assistance.subscribe"`)
 	}
-	if _, ok := auo.mutation.CityID(); auo.mutation.CityCleared() && !ok {
+	if auo.mutation.CityCleared() && len(auo.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Assistance.city"`)
 	}
 	return nil

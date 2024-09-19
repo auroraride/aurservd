@@ -469,7 +469,7 @@ func (eu *EbikeUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (eu *EbikeUpdate) check() error {
-	if _, ok := eu.mutation.BrandID(); eu.mutation.BrandCleared() && !ok {
+	if eu.mutation.BrandCleared() && len(eu.mutation.BrandIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Ebike.brand"`)
 	}
 	return nil
@@ -1231,7 +1231,7 @@ func (euo *EbikeUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (euo *EbikeUpdateOne) check() error {
-	if _, ok := euo.mutation.BrandID(); euo.mutation.BrandCleared() && !ok {
+	if euo.mutation.BrandCleared() && len(euo.mutation.BrandIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Ebike.brand"`)
 	}
 	return nil

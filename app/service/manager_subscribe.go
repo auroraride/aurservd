@@ -9,11 +9,12 @@ import (
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/stock"
+	"github.com/auroraride/aurservd/internal/ent/asset"
+	"github.com/auroraride/aurservd/internal/ent/assetattributes"
+	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/auroraride/aurservd/pkg/tools"
 )
 
 type managerSubscribeService struct {
@@ -52,8 +53,8 @@ func (s *managerSubscribeService) ChangeEbike(req *model.ManagerSubscribeChangeE
 			subscribe.ID(req.ID),
 		).
 		WithBrand().
+		WithEbike().
 		First(s.ctx)
-
 	if sub == nil {
 		snag.Panic("未找到订阅")
 	}
@@ -69,68 +70,114 @@ func (s *managerSubscribeService) ChangeEbike(req *model.ManagerSubscribeChangeE
 	// 获取门店和站点ID
 	stationID := sub.StationID
 	storeID := req.StoreID
-	enterpriseID := sub.EnterpriseID
 
-	bike := NewEbike().UnallocatedX(&model.EbikeUnallocatedParams{Keyword: req.EbikeKeyword, StoreID: storeID, StationID: stationID})
+	// 查询车辆
+	q := ent.Database.Asset.QueryNotDeleted().
+		Where(
+			asset.Type(model.AssetTypeEbike.Value()),
+			asset.Status(model.AssetStatusStock.Value()),
+		)
+	// 站点
+	var toLocationType model.AssetLocationsType
+	var toLocationID uint64
+	if stationID != nil {
+		q.Where(asset.LocationsType(model.AssetLocationsTypeStation.Value()), asset.LocationsID(*stationID))
+		toLocationType = model.AssetLocationsTypeStation
+		toLocationID = *stationID
+	}
 
-	if bike.Brand.ID != *sub.BrandID {
+	// 门店
+	if storeID != nil {
+		q.Where(asset.LocationsType(model.AssetLocationsTypeStore.Value()), asset.LocationsID(*storeID))
+		toLocationType = model.AssetLocationsTypeStore
+		toLocationID = *storeID
+	}
+	if req.EbikeKeyword != nil {
+		q.Where(
+			asset.Or(
+				asset.SnContainsFold(*req.EbikeKeyword),
+			))
+		attributes, _ := ent.Database.AssetAttributes.Query().Where(assetattributes.Key("plate")).First(s.ctx)
+		if attributes != nil {
+			q.Where(
+				asset.Or(
+					asset.HasValuesWith(
+						assetattributevalues.AttributeID(attributes.ID),
+						assetattributevalues.ValueContainsFold(*req.EbikeKeyword),
+					),
+				),
+			)
+		}
+	}
+	newBike, _ := q.First(s.ctx)
+	if newBike == nil {
+		snag.Panic("未找到可用电车")
+		return
+	}
+	if newBike.BrandID != nil && *newBike.BrandID != *sub.BrandID {
 		snag.Panic("电车型号不同")
 	}
 
-	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-		// 旧车入库
-		err = tx.Stock.Create().
-			SetEbikeID(*sub.EbikeID).
-			SetNum(1).
-			SetNillableStoreID(storeID).
-			SetNillableStationID(stationID).
-			SetNillableEnterpriseID(enterpriseID).
-			SetSn(tools.NewUnique().NewSN()).
-			SetRiderID(sub.RiderID).
-			SetName(sub.Edges.Brand.Name).
-			SetMaterial(stock.MaterialEbike).
-			SetCityID(sub.CityID).
-			SetSubscribeID(sub.ID).
-			SetBrandID(*sub.BrandID).
-			Exec(s.ctx)
+	// 旧车入库
+	if sub.Edges.Ebike != nil {
+		oldBike := sub.Edges.Ebike
+		fromLocationType := model.AssetLocationsType(oldBike.LocationsType)
+		_, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
+			FromLocationType: &fromLocationType,
+			FromLocationID:   &oldBike.LocationsID,
+			ToLocationType:   toLocationType,
+			ToLocationID:     toLocationID,
+			Details: []model.AssetTransferCreateDetail{
+				{
+					AssetType: model.AssetTypeEbike,
+					SN:        silk.String(oldBike.Sn),
+				},
+			},
+			Reason:            "修改订阅车辆",
+			AssetTransferType: model.AssetTransferTypeTransfer,
+			OperatorID:        s.modifier.ID,
+			OperatorType:      model.OperatorTypeManager,
+			AutoIn:            true,
+		}, s.modifier)
 		if err != nil {
+			snag.Panic(err)
 			return
 		}
-
-		// 新车出库
-		err = tx.Stock.Create().
-			SetEbikeID(bike.ID).
-			SetNum(-1).
-			SetNillableStoreID(storeID).
-			SetNillableStationID(stationID).
-			SetNillableEnterpriseID(enterpriseID).
-			SetSn(tools.NewUnique().NewSN()).
-			SetRiderID(sub.RiderID).
-			SetName(bike.Brand.Name).
-			SetMaterial(stock.MaterialEbike).
-			SetCityID(sub.CityID).
-			SetSubscribeID(sub.ID).
-			SetBrandID(bike.Brand.ID).
-			Exec(s.ctx)
-		if err != nil {
-			return
+		if len(failed) > 0 {
+			snag.Panic(failed[0])
 		}
+	}
 
-		// 更新新车所属
-		err = tx.Ebike.UpdateOneID(bike.ID).SetRiderID(sub.RiderID).SetStatus(model.EbikeStatusUsing).Exec(s.ctx)
-		if err != nil {
-			return
-		}
-
-		// 删除电车所属
-		err = tx.Ebike.UpdateOneID(*sub.EbikeID).ClearRiderID().SetStatus(model.EbikeStatusInStock).Exec(s.ctx)
-		if err != nil {
-			return
-		}
-
-		// 更新订阅
-		return tx.Subscribe.UpdateOneID(sub.ID).SetEbikeID(bike.ID).SetBrandID(bike.Brand.ID).Exec(s.ctx)
-	})
+	// 新车出库
+	fromLocationType := model.AssetLocationsType(newBike.LocationsType)
+	_, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
+		FromLocationType: &fromLocationType,
+		FromLocationID:   &newBike.LocationsID,
+		ToLocationType:   model.AssetLocationsTypeRider,
+		ToLocationID:     sub.RiderID,
+		Details: []model.AssetTransferCreateDetail{
+			{
+				AssetType: model.AssetTypeEbike,
+				SN:        silk.String(newBike.Sn),
+			},
+		},
+		Reason:            "修改订阅车辆",
+		AssetTransferType: model.AssetTransferTypeTransfer,
+		OperatorID:        s.modifier.ID,
+		OperatorType:      model.OperatorTypeManager,
+		AutoIn:            true,
+	}, s.modifier)
+	if err != nil {
+		snag.Panic(err)
+	}
+	if len(failed) > 0 {
+		snag.Panic(failed[0])
+	}
+	// 更新订阅
+	err = ent.Database.Subscribe.UpdateOneID(sub.ID).SetEbikeID(newBike.ID).SetNillableBrandID(newBike.BrandID).Exec(s.ctx)
+	if err != nil {
+		snag.Panic(err)
+	}
 }
 
 func (s *managerSubscribeService) UnbindEbike(req *model.ManagerSubscribeUnbindEbike) {
@@ -138,34 +185,40 @@ func (s *managerSubscribeService) UnbindEbike(req *model.ManagerSubscribeUnbindE
 	if sub == nil {
 		snag.Panic("未找到有效订阅")
 	}
+	if sub.Edges.Ebike == nil {
+		snag.Panic("未绑定车辆")
+	}
+	oldEbike := sub.Edges.Ebike
+	fromLocationType := model.AssetLocationsType(oldEbike.LocationsType)
+	_, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
+		FromLocationType: &fromLocationType,
+		FromLocationID:   &oldEbike.LocationsID,
+		ToLocationType:   model.AssetLocationsTypeStore,
+		ToLocationID:     req.StoreID,
+		Details: []model.AssetTransferCreateDetail{
+			{
+				AssetType: model.AssetTypeEbike,
+				SN:        silk.String(oldEbike.Sn),
+			},
+		},
+		Reason:            "解绑车辆",
+		AssetTransferType: model.AssetTransferTypeTransfer,
+		OperatorID:        s.modifier.ID,
+		OperatorType:      model.OperatorTypeManager,
+		AutoIn:            true,
+	}, s.modifier)
+	if err != nil {
+		return
+	}
+	if len(failed) > 0 {
+		snag.Panic(failed[0])
+	}
 
-	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-		// 旧车入库
-		err = tx.Stock.Create().
-			SetEbikeID(*sub.EbikeID).
-			SetNum(1).
-			SetStoreID(req.StoreID).
-			SetSn(tools.NewUnique().NewSN()).
-			SetRiderID(sub.RiderID).
-			SetName(sub.Edges.Brand.Name).
-			SetMaterial(stock.MaterialEbike).
-			SetCityID(sub.CityID).
-			SetSubscribeID(sub.ID).
-			SetBrandID(*sub.BrandID).
-			Exec(s.ctx)
-		if err != nil {
-			return
-		}
-
-		// 删除电车所属
-		err = tx.Ebike.UpdateOneID(*sub.EbikeID).ClearRiderID().SetStatus(model.EbikeStatusInStock).Exec(s.ctx)
-		if err != nil {
-			return
-		}
-
-		// 删除订阅标的车辆信息, 保留车辆型号以便下次绑定新车
-		return tx.Subscribe.UpdateOneID(sub.ID).ClearEbikeID().Exec(s.ctx)
-	})
+	// 删除订阅标的车辆信息, 保留车辆型号以便下次绑定新车
+	err = ent.Database.Subscribe.UpdateOneID(sub.ID).ClearEbikeID().Exec(s.ctx)
+	if err != nil {
+		snag.Panic(err)
+	}
 
 	// 记录操作日志
 	go logging.NewOperateLog().

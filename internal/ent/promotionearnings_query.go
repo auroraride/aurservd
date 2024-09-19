@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -181,7 +182,7 @@ func (peq *PromotionEarningsQuery) QueryPlan() *PlanQuery {
 // First returns the first PromotionEarnings entity from the query.
 // Returns a *NotFoundError when no PromotionEarnings was found.
 func (peq *PromotionEarningsQuery) First(ctx context.Context) (*PromotionEarnings, error) {
-	nodes, err := peq.Limit(1).All(setContextOp(ctx, peq.ctx, "First"))
+	nodes, err := peq.Limit(1).All(setContextOp(ctx, peq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -204,7 +205,7 @@ func (peq *PromotionEarningsQuery) FirstX(ctx context.Context) *PromotionEarning
 // Returns a *NotFoundError when no PromotionEarnings ID was found.
 func (peq *PromotionEarningsQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = peq.Limit(1).IDs(setContextOp(ctx, peq.ctx, "FirstID")); err != nil {
+	if ids, err = peq.Limit(1).IDs(setContextOp(ctx, peq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -227,7 +228,7 @@ func (peq *PromotionEarningsQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one PromotionEarnings entity is found.
 // Returns a *NotFoundError when no PromotionEarnings entities are found.
 func (peq *PromotionEarningsQuery) Only(ctx context.Context) (*PromotionEarnings, error) {
-	nodes, err := peq.Limit(2).All(setContextOp(ctx, peq.ctx, "Only"))
+	nodes, err := peq.Limit(2).All(setContextOp(ctx, peq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -255,7 +256,7 @@ func (peq *PromotionEarningsQuery) OnlyX(ctx context.Context) *PromotionEarnings
 // Returns a *NotFoundError when no entities are found.
 func (peq *PromotionEarningsQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = peq.Limit(2).IDs(setContextOp(ctx, peq.ctx, "OnlyID")); err != nil {
+	if ids, err = peq.Limit(2).IDs(setContextOp(ctx, peq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -280,7 +281,7 @@ func (peq *PromotionEarningsQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of PromotionEarningsSlice.
 func (peq *PromotionEarningsQuery) All(ctx context.Context) ([]*PromotionEarnings, error) {
-	ctx = setContextOp(ctx, peq.ctx, "All")
+	ctx = setContextOp(ctx, peq.ctx, ent.OpQueryAll)
 	if err := peq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -302,7 +303,7 @@ func (peq *PromotionEarningsQuery) IDs(ctx context.Context) (ids []uint64, err e
 	if peq.ctx.Unique == nil && peq.path != nil {
 		peq.Unique(true)
 	}
-	ctx = setContextOp(ctx, peq.ctx, "IDs")
+	ctx = setContextOp(ctx, peq.ctx, ent.OpQueryIDs)
 	if err = peq.Select(promotionearnings.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -320,7 +321,7 @@ func (peq *PromotionEarningsQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (peq *PromotionEarningsQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, peq.ctx, "Count")
+	ctx = setContextOp(ctx, peq.ctx, ent.OpQueryCount)
 	if err := peq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -338,7 +339,7 @@ func (peq *PromotionEarningsQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (peq *PromotionEarningsQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, peq.ctx, "Exist")
+	ctx = setContextOp(ctx, peq.ctx, ent.OpQueryExist)
 	switch _, err := peq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -376,8 +377,9 @@ func (peq *PromotionEarningsQuery) Clone() *PromotionEarningsQuery {
 		withOrder:      peq.withOrder.Clone(),
 		withPlan:       peq.withPlan.Clone(),
 		// clone intermediate query.
-		sql:  peq.sql.Clone(),
-		path: peq.path,
+		sql:       peq.sql.Clone(),
+		path:      peq.path,
+		modifiers: append([]func(*sql.Selector){}, peq.modifiers...),
 	}
 }
 
@@ -878,7 +880,7 @@ func (pegb *PromotionEarningsGroupBy) Aggregate(fns ...AggregateFunc) *Promotion
 
 // Scan applies the selector query and scans the result into the given value.
 func (pegb *PromotionEarningsGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, pegb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, pegb.build.ctx, ent.OpQueryGroupBy)
 	if err := pegb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -926,7 +928,7 @@ func (pes *PromotionEarningsSelect) Aggregate(fns ...AggregateFunc) *PromotionEa
 
 // Scan applies the selector query and scans the result into the given value.
 func (pes *PromotionEarningsSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, pes.ctx, "Select")
+	ctx = setContextOp(ctx, pes.ctx, ent.OpQuerySelect)
 	if err := pes.prepareQuery(ctx); err != nil {
 		return err
 	}

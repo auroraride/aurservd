@@ -6,8 +6,10 @@
 package app
 
 import (
-	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/labstack/echo/v4"
+
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent"
 )
 
 // EmployeeContext 店员上下文
@@ -15,6 +17,7 @@ type EmployeeContext struct {
 	*BaseContext
 
 	Employee *ent.Employee
+	Operator *model.OperatorInfo
 }
 
 // NewEmployeeContext 新建店员上下文
@@ -22,6 +25,14 @@ func NewEmployeeContext(c echo.Context, emr *ent.Employee) *EmployeeContext {
 	ctx := &EmployeeContext{
 		BaseContext: Context(c),
 		Employee:    emr,
+	}
+	if emr != nil {
+		ctx.Operator = &model.OperatorInfo{
+			Type:  model.OperatorTypeEmployee,
+			ID:    emr.ID,
+			Phone: emr.Phone,
+			Name:  emr.Name,
+		}
 	}
 	return ctx
 }

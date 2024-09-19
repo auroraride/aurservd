@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -85,7 +86,7 @@ func (ebaq *EbikeBrandAttributeQuery) QueryBrand() *EbikeBrandQuery {
 // First returns the first EbikeBrandAttribute entity from the query.
 // Returns a *NotFoundError when no EbikeBrandAttribute was found.
 func (ebaq *EbikeBrandAttributeQuery) First(ctx context.Context) (*EbikeBrandAttribute, error) {
-	nodes, err := ebaq.Limit(1).All(setContextOp(ctx, ebaq.ctx, "First"))
+	nodes, err := ebaq.Limit(1).All(setContextOp(ctx, ebaq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +109,7 @@ func (ebaq *EbikeBrandAttributeQuery) FirstX(ctx context.Context) *EbikeBrandAtt
 // Returns a *NotFoundError when no EbikeBrandAttribute ID was found.
 func (ebaq *EbikeBrandAttributeQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ebaq.Limit(1).IDs(setContextOp(ctx, ebaq.ctx, "FirstID")); err != nil {
+	if ids, err = ebaq.Limit(1).IDs(setContextOp(ctx, ebaq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -131,7 +132,7 @@ func (ebaq *EbikeBrandAttributeQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one EbikeBrandAttribute entity is found.
 // Returns a *NotFoundError when no EbikeBrandAttribute entities are found.
 func (ebaq *EbikeBrandAttributeQuery) Only(ctx context.Context) (*EbikeBrandAttribute, error) {
-	nodes, err := ebaq.Limit(2).All(setContextOp(ctx, ebaq.ctx, "Only"))
+	nodes, err := ebaq.Limit(2).All(setContextOp(ctx, ebaq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +160,7 @@ func (ebaq *EbikeBrandAttributeQuery) OnlyX(ctx context.Context) *EbikeBrandAttr
 // Returns a *NotFoundError when no entities are found.
 func (ebaq *EbikeBrandAttributeQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ebaq.Limit(2).IDs(setContextOp(ctx, ebaq.ctx, "OnlyID")); err != nil {
+	if ids, err = ebaq.Limit(2).IDs(setContextOp(ctx, ebaq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -184,7 +185,7 @@ func (ebaq *EbikeBrandAttributeQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of EbikeBrandAttributes.
 func (ebaq *EbikeBrandAttributeQuery) All(ctx context.Context) ([]*EbikeBrandAttribute, error) {
-	ctx = setContextOp(ctx, ebaq.ctx, "All")
+	ctx = setContextOp(ctx, ebaq.ctx, ent.OpQueryAll)
 	if err := ebaq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -206,7 +207,7 @@ func (ebaq *EbikeBrandAttributeQuery) IDs(ctx context.Context) (ids []uint64, er
 	if ebaq.ctx.Unique == nil && ebaq.path != nil {
 		ebaq.Unique(true)
 	}
-	ctx = setContextOp(ctx, ebaq.ctx, "IDs")
+	ctx = setContextOp(ctx, ebaq.ctx, ent.OpQueryIDs)
 	if err = ebaq.Select(ebikebrandattribute.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -224,7 +225,7 @@ func (ebaq *EbikeBrandAttributeQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (ebaq *EbikeBrandAttributeQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, ebaq.ctx, "Count")
+	ctx = setContextOp(ctx, ebaq.ctx, ent.OpQueryCount)
 	if err := ebaq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -242,7 +243,7 @@ func (ebaq *EbikeBrandAttributeQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (ebaq *EbikeBrandAttributeQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, ebaq.ctx, "Exist")
+	ctx = setContextOp(ctx, ebaq.ctx, ent.OpQueryExist)
 	switch _, err := ebaq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -276,8 +277,9 @@ func (ebaq *EbikeBrandAttributeQuery) Clone() *EbikeBrandAttributeQuery {
 		predicates: append([]predicate.EbikeBrandAttribute{}, ebaq.predicates...),
 		withBrand:  ebaq.withBrand.Clone(),
 		// clone intermediate query.
-		sql:  ebaq.sql.Clone(),
-		path: ebaq.path,
+		sql:       ebaq.sql.Clone(),
+		path:      ebaq.path,
+		modifiers: append([]func(*sql.Selector){}, ebaq.modifiers...),
 	}
 }
 
@@ -560,7 +562,7 @@ func (ebagb *EbikeBrandAttributeGroupBy) Aggregate(fns ...AggregateFunc) *EbikeB
 
 // Scan applies the selector query and scans the result into the given value.
 func (ebagb *EbikeBrandAttributeGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ebagb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, ebagb.build.ctx, ent.OpQueryGroupBy)
 	if err := ebagb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -608,7 +610,7 @@ func (ebas *EbikeBrandAttributeSelect) Aggregate(fns ...AggregateFunc) *EbikeBra
 
 // Scan applies the selector query and scans the result into the given value.
 func (ebas *EbikeBrandAttributeSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ebas.ctx, "Select")
+	ctx = setContextOp(ctx, ebas.ctx, ent.OpQuerySelect)
 	if err := ebas.prepareQuery(ctx); err != nil {
 		return err
 	}

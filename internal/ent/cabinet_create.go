@@ -13,7 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
@@ -24,6 +24,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/stock"
+	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 // CabinetCreate is the builder for creating a Cabinet entity.
@@ -112,6 +113,20 @@ func (cc *CabinetCreate) SetCityID(u uint64) *CabinetCreate {
 func (cc *CabinetCreate) SetNillableCityID(u *uint64) *CabinetCreate {
 	if u != nil {
 		cc.SetCityID(*u)
+	}
+	return cc
+}
+
+// SetStoreID sets the "store_id" field.
+func (cc *CabinetCreate) SetStoreID(u uint64) *CabinetCreate {
+	cc.mutation.SetStoreID(u)
+	return cc
+}
+
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (cc *CabinetCreate) SetNillableStoreID(u *uint64) *CabinetCreate {
+	if u != nil {
+		cc.SetStoreID(*u)
 	}
 	return cc
 }
@@ -401,6 +416,11 @@ func (cc *CabinetCreate) SetCity(c *City) *CabinetCreate {
 	return cc.SetCityID(c.ID)
 }
 
+// SetStore sets the "store" edge to the Store entity.
+func (cc *CabinetCreate) SetStore(s *Store) *CabinetCreate {
+	return cc.SetStoreID(s.ID)
+}
+
 // SetBranch sets the "branch" edge to the Branch entity.
 func (cc *CabinetCreate) SetBranch(b *Branch) *CabinetCreate {
 	return cc.SetBranchID(b.ID)
@@ -451,6 +471,21 @@ func (cc *CabinetCreate) AddExchanges(e ...*Exchange) *CabinetCreate {
 	return cc.AddExchangeIDs(ids...)
 }
 
+// AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
+func (cc *CabinetCreate) AddAssetIDs(ids ...uint64) *CabinetCreate {
+	cc.mutation.AddAssetIDs(ids...)
+	return cc
+}
+
+// AddAsset adds the "asset" edges to the Asset entity.
+func (cc *CabinetCreate) AddAsset(a ...*Asset) *CabinetCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return cc.AddAssetIDs(ids...)
+}
+
 // AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
 func (cc *CabinetCreate) AddStockIDs(ids ...uint64) *CabinetCreate {
 	cc.mutation.AddStockIDs(ids...)
@@ -464,21 +499,6 @@ func (cc *CabinetCreate) AddStocks(s ...*Stock) *CabinetCreate {
 		ids[i] = s[i].ID
 	}
 	return cc.AddStockIDs(ids...)
-}
-
-// AddBatteryIDs adds the "batteries" edge to the Battery entity by IDs.
-func (cc *CabinetCreate) AddBatteryIDs(ids ...uint64) *CabinetCreate {
-	cc.mutation.AddBatteryIDs(ids...)
-	return cc
-}
-
-// AddBatteries adds the "batteries" edges to the Battery entity.
-func (cc *CabinetCreate) AddBatteries(b ...*Battery) *CabinetCreate {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return cc.AddBatteryIDs(ids...)
 }
 
 // AddBatteryFlowIDs adds the "battery_flows" edge to the BatteryFlow entity by IDs.
@@ -798,6 +818,23 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 		_node.CityID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := cc.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   cabinet.StoreTable,
+			Columns: []string{cabinet.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.StoreID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := cc.mutation.BranchIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -863,6 +900,22 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := cc.mutation.AssetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.AssetTable,
+			Columns: []string{cabinet.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := cc.mutation.StocksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -872,22 +925,6 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := cc.mutation.BatteriesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   cabinet.BatteriesTable,
-			Columns: []string{cabinet.BatteriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1078,6 +1115,24 @@ func (u *CabinetUpsert) UpdateCityID() *CabinetUpsert {
 // ClearCityID clears the value of the "city_id" field.
 func (u *CabinetUpsert) ClearCityID() *CabinetUpsert {
 	u.SetNull(cabinet.FieldCityID)
+	return u
+}
+
+// SetStoreID sets the "store_id" field.
+func (u *CabinetUpsert) SetStoreID(v uint64) *CabinetUpsert {
+	u.Set(cabinet.FieldStoreID, v)
+	return u
+}
+
+// UpdateStoreID sets the "store_id" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateStoreID() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldStoreID)
+	return u
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (u *CabinetUpsert) ClearStoreID() *CabinetUpsert {
+	u.SetNull(cabinet.FieldStoreID)
 	return u
 }
 
@@ -1632,6 +1687,27 @@ func (u *CabinetUpsertOne) UpdateCityID() *CabinetUpsertOne {
 func (u *CabinetUpsertOne) ClearCityID() *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.ClearCityID()
+	})
+}
+
+// SetStoreID sets the "store_id" field.
+func (u *CabinetUpsertOne) SetStoreID(v uint64) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetStoreID(v)
+	})
+}
+
+// UpdateStoreID sets the "store_id" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateStoreID() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateStoreID()
+	})
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (u *CabinetUpsertOne) ClearStoreID() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.ClearStoreID()
 	})
 }
 
@@ -2420,6 +2496,27 @@ func (u *CabinetUpsertBulk) UpdateCityID() *CabinetUpsertBulk {
 func (u *CabinetUpsertBulk) ClearCityID() *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.ClearCityID()
+	})
+}
+
+// SetStoreID sets the "store_id" field.
+func (u *CabinetUpsertBulk) SetStoreID(v uint64) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetStoreID(v)
+	})
+}
+
+// UpdateStoreID sets the "store_id" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateStoreID() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateStoreID()
+	})
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (u *CabinetUpsertBulk) ClearStoreID() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.ClearStoreID()
 	})
 }
 

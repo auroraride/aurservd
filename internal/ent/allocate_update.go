@@ -14,10 +14,9 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/contract"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
@@ -193,26 +192,6 @@ func (au *AllocateUpdate) ClearBrandID() *AllocateUpdate {
 	return au
 }
 
-// SetBatteryID sets the "battery_id" field.
-func (au *AllocateUpdate) SetBatteryID(u uint64) *AllocateUpdate {
-	au.mutation.SetBatteryID(u)
-	return au
-}
-
-// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
-func (au *AllocateUpdate) SetNillableBatteryID(u *uint64) *AllocateUpdate {
-	if u != nil {
-		au.SetBatteryID(*u)
-	}
-	return au
-}
-
-// ClearBatteryID clears the value of the "battery_id" field.
-func (au *AllocateUpdate) ClearBatteryID() *AllocateUpdate {
-	au.mutation.ClearBatteryID()
-	return au
-}
-
 // SetStationID sets the "station_id" field.
 func (au *AllocateUpdate) SetStationID(u uint64) *AllocateUpdate {
 	au.mutation.SetStationID(u)
@@ -336,6 +315,26 @@ func (au *AllocateUpdate) ClearEbikeID() *AllocateUpdate {
 	return au
 }
 
+// SetBatteryID sets the "battery_id" field.
+func (au *AllocateUpdate) SetBatteryID(u uint64) *AllocateUpdate {
+	au.mutation.SetBatteryID(u)
+	return au
+}
+
+// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
+func (au *AllocateUpdate) SetNillableBatteryID(u *uint64) *AllocateUpdate {
+	if u != nil {
+		au.SetBatteryID(*u)
+	}
+	return au
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (au *AllocateUpdate) ClearBatteryID() *AllocateUpdate {
+	au.mutation.ClearBatteryID()
+	return au
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (au *AllocateUpdate) SetRider(r *Rider) *AllocateUpdate {
 	return au.SetRiderID(r.ID)
@@ -364,11 +363,6 @@ func (au *AllocateUpdate) SetStore(s *Store) *AllocateUpdate {
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (au *AllocateUpdate) SetBrand(e *EbikeBrand) *AllocateUpdate {
 	return au.SetBrandID(e.ID)
-}
-
-// SetBattery sets the "battery" edge to the Battery entity.
-func (au *AllocateUpdate) SetBattery(b *Battery) *AllocateUpdate {
-	return au.SetBatteryID(b.ID)
 }
 
 // SetStation sets the "station" edge to the EnterpriseStation entity.
@@ -400,9 +394,14 @@ func (au *AllocateUpdate) SetContract(c *Contract) *AllocateUpdate {
 	return au.SetContractID(c.ID)
 }
 
-// SetEbike sets the "ebike" edge to the Ebike entity.
-func (au *AllocateUpdate) SetEbike(e *Ebike) *AllocateUpdate {
-	return au.SetEbikeID(e.ID)
+// SetEbike sets the "ebike" edge to the Asset entity.
+func (au *AllocateUpdate) SetEbike(a *Asset) *AllocateUpdate {
+	return au.SetEbikeID(a.ID)
+}
+
+// SetBattery sets the "battery" edge to the Asset entity.
+func (au *AllocateUpdate) SetBattery(a *Asset) *AllocateUpdate {
+	return au.SetBatteryID(a.ID)
 }
 
 // Mutation returns the AllocateMutation object of the builder.
@@ -446,12 +445,6 @@ func (au *AllocateUpdate) ClearBrand() *AllocateUpdate {
 	return au
 }
 
-// ClearBattery clears the "battery" edge to the Battery entity.
-func (au *AllocateUpdate) ClearBattery() *AllocateUpdate {
-	au.mutation.ClearBattery()
-	return au
-}
-
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (au *AllocateUpdate) ClearStation() *AllocateUpdate {
 	au.mutation.ClearStation()
@@ -470,9 +463,15 @@ func (au *AllocateUpdate) ClearContract() *AllocateUpdate {
 	return au
 }
 
-// ClearEbike clears the "ebike" edge to the Ebike entity.
+// ClearEbike clears the "ebike" edge to the Asset entity.
 func (au *AllocateUpdate) ClearEbike() *AllocateUpdate {
 	au.mutation.ClearEbike()
+	return au
+}
+
+// ClearBattery clears the "battery" edge to the Asset entity.
+func (au *AllocateUpdate) ClearBattery() *AllocateUpdate {
+	au.mutation.ClearBattery()
 	return au
 }
 
@@ -525,10 +524,10 @@ func (au *AllocateUpdate) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Allocate.type": %w`, err)}
 		}
 	}
-	if _, ok := au.mutation.RiderID(); au.mutation.RiderCleared() && !ok {
+	if au.mutation.RiderCleared() && len(au.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Allocate.rider"`)
 	}
-	if _, ok := au.mutation.SubscribeID(); au.mutation.SubscribeCleared() && !ok {
+	if au.mutation.SubscribeCleared() && len(au.mutation.SubscribeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Allocate.subscribe"`)
 	}
 	return nil
@@ -765,35 +764,6 @@ func (au *AllocateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if au.mutation.BatteryCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.BatteryTable,
-			Columns: []string{allocate.BatteryColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.BatteryIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.BatteryTable,
-			Columns: []string{allocate.BatteryColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if au.mutation.StationCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -889,7 +859,7 @@ func (au *AllocateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{allocate.EbikeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -902,7 +872,36 @@ func (au *AllocateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{allocate.EbikeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.BatteryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   allocate.BatteryTable,
+			Columns: []string{allocate.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   allocate.BatteryTable,
+			Columns: []string{allocate.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1084,26 +1083,6 @@ func (auo *AllocateUpdateOne) ClearBrandID() *AllocateUpdateOne {
 	return auo
 }
 
-// SetBatteryID sets the "battery_id" field.
-func (auo *AllocateUpdateOne) SetBatteryID(u uint64) *AllocateUpdateOne {
-	auo.mutation.SetBatteryID(u)
-	return auo
-}
-
-// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
-func (auo *AllocateUpdateOne) SetNillableBatteryID(u *uint64) *AllocateUpdateOne {
-	if u != nil {
-		auo.SetBatteryID(*u)
-	}
-	return auo
-}
-
-// ClearBatteryID clears the value of the "battery_id" field.
-func (auo *AllocateUpdateOne) ClearBatteryID() *AllocateUpdateOne {
-	auo.mutation.ClearBatteryID()
-	return auo
-}
-
 // SetStationID sets the "station_id" field.
 func (auo *AllocateUpdateOne) SetStationID(u uint64) *AllocateUpdateOne {
 	auo.mutation.SetStationID(u)
@@ -1227,6 +1206,26 @@ func (auo *AllocateUpdateOne) ClearEbikeID() *AllocateUpdateOne {
 	return auo
 }
 
+// SetBatteryID sets the "battery_id" field.
+func (auo *AllocateUpdateOne) SetBatteryID(u uint64) *AllocateUpdateOne {
+	auo.mutation.SetBatteryID(u)
+	return auo
+}
+
+// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
+func (auo *AllocateUpdateOne) SetNillableBatteryID(u *uint64) *AllocateUpdateOne {
+	if u != nil {
+		auo.SetBatteryID(*u)
+	}
+	return auo
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (auo *AllocateUpdateOne) ClearBatteryID() *AllocateUpdateOne {
+	auo.mutation.ClearBatteryID()
+	return auo
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (auo *AllocateUpdateOne) SetRider(r *Rider) *AllocateUpdateOne {
 	return auo.SetRiderID(r.ID)
@@ -1255,11 +1254,6 @@ func (auo *AllocateUpdateOne) SetStore(s *Store) *AllocateUpdateOne {
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (auo *AllocateUpdateOne) SetBrand(e *EbikeBrand) *AllocateUpdateOne {
 	return auo.SetBrandID(e.ID)
-}
-
-// SetBattery sets the "battery" edge to the Battery entity.
-func (auo *AllocateUpdateOne) SetBattery(b *Battery) *AllocateUpdateOne {
-	return auo.SetBatteryID(b.ID)
 }
 
 // SetStation sets the "station" edge to the EnterpriseStation entity.
@@ -1291,9 +1285,14 @@ func (auo *AllocateUpdateOne) SetContract(c *Contract) *AllocateUpdateOne {
 	return auo.SetContractID(c.ID)
 }
 
-// SetEbike sets the "ebike" edge to the Ebike entity.
-func (auo *AllocateUpdateOne) SetEbike(e *Ebike) *AllocateUpdateOne {
-	return auo.SetEbikeID(e.ID)
+// SetEbike sets the "ebike" edge to the Asset entity.
+func (auo *AllocateUpdateOne) SetEbike(a *Asset) *AllocateUpdateOne {
+	return auo.SetEbikeID(a.ID)
+}
+
+// SetBattery sets the "battery" edge to the Asset entity.
+func (auo *AllocateUpdateOne) SetBattery(a *Asset) *AllocateUpdateOne {
+	return auo.SetBatteryID(a.ID)
 }
 
 // Mutation returns the AllocateMutation object of the builder.
@@ -1337,12 +1336,6 @@ func (auo *AllocateUpdateOne) ClearBrand() *AllocateUpdateOne {
 	return auo
 }
 
-// ClearBattery clears the "battery" edge to the Battery entity.
-func (auo *AllocateUpdateOne) ClearBattery() *AllocateUpdateOne {
-	auo.mutation.ClearBattery()
-	return auo
-}
-
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (auo *AllocateUpdateOne) ClearStation() *AllocateUpdateOne {
 	auo.mutation.ClearStation()
@@ -1361,9 +1354,15 @@ func (auo *AllocateUpdateOne) ClearContract() *AllocateUpdateOne {
 	return auo
 }
 
-// ClearEbike clears the "ebike" edge to the Ebike entity.
+// ClearEbike clears the "ebike" edge to the Asset entity.
 func (auo *AllocateUpdateOne) ClearEbike() *AllocateUpdateOne {
 	auo.mutation.ClearEbike()
+	return auo
+}
+
+// ClearBattery clears the "battery" edge to the Asset entity.
+func (auo *AllocateUpdateOne) ClearBattery() *AllocateUpdateOne {
+	auo.mutation.ClearBattery()
 	return auo
 }
 
@@ -1429,10 +1428,10 @@ func (auo *AllocateUpdateOne) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Allocate.type": %w`, err)}
 		}
 	}
-	if _, ok := auo.mutation.RiderID(); auo.mutation.RiderCleared() && !ok {
+	if auo.mutation.RiderCleared() && len(auo.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Allocate.rider"`)
 	}
-	if _, ok := auo.mutation.SubscribeID(); auo.mutation.SubscribeCleared() && !ok {
+	if auo.mutation.SubscribeCleared() && len(auo.mutation.SubscribeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Allocate.subscribe"`)
 	}
 	return nil
@@ -1686,35 +1685,6 @@ func (auo *AllocateUpdateOne) sqlSave(ctx context.Context) (_node *Allocate, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if auo.mutation.BatteryCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.BatteryTable,
-			Columns: []string{allocate.BatteryColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.BatteryIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.BatteryTable,
-			Columns: []string{allocate.BatteryColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if auo.mutation.StationCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1810,7 +1780,7 @@ func (auo *AllocateUpdateOne) sqlSave(ctx context.Context) (_node *Allocate, err
 			Columns: []string{allocate.EbikeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1823,7 +1793,36 @@ func (auo *AllocateUpdateOne) sqlSave(ctx context.Context) (_node *Allocate, err
 			Columns: []string{allocate.EbikeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.BatteryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   allocate.BatteryTable,
+			Columns: []string{allocate.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   allocate.BatteryTable,
+			Columns: []string{allocate.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

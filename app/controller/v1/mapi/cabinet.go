@@ -113,7 +113,7 @@ func (*cabinet) Detail(c echo.Context) (err error) {
 func (*cabinet) DoorOperate(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.CabinetDoorOperateReq](c)
 	return ctx.SendResponse(
-		model.StatusResponse{Status: service.NewCabinetMgrWithModifier(ctx.Modifier).BinOperate(logging.GetOperatorX(ctx.Modifier), req.ID, req)},
+		model.StatusResponse{Status: service.NewCabinetMgrWithModifier(ctx.Modifier).BinOperate(logging.GetOperatorX(ctx.Modifier), req.ID, req, false)},
 	)
 }
 
@@ -228,7 +228,7 @@ func (*cabinet) Maintain(c echo.Context) (err error) {
 // @Success		200				{object}	model.StatusResponse		"请求成功"
 func (*cabinet) OpenBind(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.CabinetOpenBindReq](c)
-	service.NewIntelligentCabinet(ctx.Modifier).OpenBind(req)
+	service.NewIntelligentCabinet(ctx.Modifier, ctx.Operator).OpenBind(req)
 	return ctx.SendResponse()
 }
 
@@ -245,7 +245,7 @@ func (*cabinet) OpenBind(c echo.Context) (err error) {
 func (*cabinet) Deactivate(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.CabinetBinDeactivateReq](c)
 	return ctx.SendResponse(
-		model.StatusResponse{Status: service.NewCabinetMgrWithModifier(ctx.Modifier).BinOperate(logging.GetOperatorX(ctx.Modifier), req.ID, req)},
+		model.StatusResponse{Status: service.NewCabinetMgrWithModifier(ctx.Modifier).BinOperate(logging.GetOperatorX(ctx.Modifier), req.ID, req, false)},
 	)
 }
 

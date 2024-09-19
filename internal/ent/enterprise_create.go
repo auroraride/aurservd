@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
-	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -400,21 +399,6 @@ func (ec *EnterpriseCreate) AddBills(e ...*EnterpriseBill) *EnterpriseCreate {
 	return ec.AddBillIDs(ids...)
 }
 
-// AddBatteryIDs adds the "batteries" edge to the Battery entity by IDs.
-func (ec *EnterpriseCreate) AddBatteryIDs(ids ...uint64) *EnterpriseCreate {
-	ec.mutation.AddBatteryIDs(ids...)
-	return ec
-}
-
-// AddBatteries adds the "batteries" edges to the Battery entity.
-func (ec *EnterpriseCreate) AddBatteries(b ...*Battery) *EnterpriseCreate {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return ec.AddBatteryIDs(ids...)
-}
-
 // AddAgentIDs adds the "agents" edge to the Agent entity by IDs.
 func (ec *EnterpriseCreate) AddAgentIDs(ids ...uint64) *EnterpriseCreate {
 	ec.mutation.AddAgentIDs(ids...)
@@ -624,7 +608,7 @@ func (ec *EnterpriseCreate) check() error {
 			return &ValidationError{Name: "sign_type", err: fmt.Errorf(`ent: validator failed for field "Enterprise.sign_type": %w`, err)}
 		}
 	}
-	if _, ok := ec.mutation.CityID(); !ok {
+	if len(ec.mutation.CityIDs()) == 0 {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Enterprise.city"`)}
 	}
 	return nil
@@ -872,22 +856,6 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisebill.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := ec.mutation.BatteriesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprise.BatteriesTable,
-			Columns: []string{enterprise.BatteriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

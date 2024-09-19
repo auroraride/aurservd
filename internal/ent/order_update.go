@@ -13,11 +13,11 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
@@ -156,26 +156,6 @@ func (ou *OrderUpdate) SetNillableBrandID(u *uint64) *OrderUpdate {
 // ClearBrandID clears the value of the "brand_id" field.
 func (ou *OrderUpdate) ClearBrandID() *OrderUpdate {
 	ou.mutation.ClearBrandID()
-	return ou
-}
-
-// SetEbikeID sets the "ebike_id" field.
-func (ou *OrderUpdate) SetEbikeID(u uint64) *OrderUpdate {
-	ou.mutation.SetEbikeID(u)
-	return ou
-}
-
-// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
-func (ou *OrderUpdate) SetNillableEbikeID(u *uint64) *OrderUpdate {
-	if u != nil {
-		ou.SetEbikeID(*u)
-	}
-	return ou
-}
-
-// ClearEbikeID clears the value of the "ebike_id" field.
-func (ou *OrderUpdate) ClearEbikeID() *OrderUpdate {
-	ou.mutation.ClearEbikeID()
 	return ou
 }
 
@@ -578,6 +558,26 @@ func (ou *OrderUpdate) ClearSubscribeEndAt() *OrderUpdate {
 	return ou
 }
 
+// SetEbikeID sets the "ebike_id" field.
+func (ou *OrderUpdate) SetEbikeID(u uint64) *OrderUpdate {
+	ou.mutation.SetEbikeID(u)
+	return ou
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableEbikeID(u *uint64) *OrderUpdate {
+	if u != nil {
+		ou.SetEbikeID(*u)
+	}
+	return ou
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (ou *OrderUpdate) ClearEbikeID() *OrderUpdate {
+	ou.mutation.ClearEbikeID()
+	return ou
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (ou *OrderUpdate) SetPlan(p *Plan) *OrderUpdate {
 	return ou.SetPlanID(p.ID)
@@ -591,11 +591,6 @@ func (ou *OrderUpdate) SetCity(c *City) *OrderUpdate {
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (ou *OrderUpdate) SetBrand(e *EbikeBrand) *OrderUpdate {
 	return ou.SetBrandID(e.ID)
-}
-
-// SetEbike sets the "ebike" edge to the Ebike entity.
-func (ou *OrderUpdate) SetEbike(e *Ebike) *OrderUpdate {
-	return ou.SetEbikeID(e.ID)
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
@@ -705,6 +700,11 @@ func (ou *OrderUpdate) AddCoupons(c ...*Coupon) *OrderUpdate {
 	return ou.AddCouponIDs(ids...)
 }
 
+// SetEbike sets the "ebike" edge to the Asset entity.
+func (ou *OrderUpdate) SetEbike(a *Asset) *OrderUpdate {
+	return ou.SetEbikeID(a.ID)
+}
+
 // Mutation returns the OrderMutation object of the builder.
 func (ou *OrderUpdate) Mutation() *OrderMutation {
 	return ou.mutation
@@ -725,12 +725,6 @@ func (ou *OrderUpdate) ClearCity() *OrderUpdate {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (ou *OrderUpdate) ClearBrand() *OrderUpdate {
 	ou.mutation.ClearBrand()
-	return ou
-}
-
-// ClearEbike clears the "ebike" edge to the Ebike entity.
-func (ou *OrderUpdate) ClearEbike() *OrderUpdate {
-	ou.mutation.ClearEbike()
 	return ou
 }
 
@@ -816,6 +810,12 @@ func (ou *OrderUpdate) RemoveCoupons(c ...*Coupon) *OrderUpdate {
 		ids[i] = c[i].ID
 	}
 	return ou.RemoveCouponIDs(ids...)
+}
+
+// ClearEbike clears the "ebike" edge to the Asset entity.
+func (ou *OrderUpdate) ClearEbike() *OrderUpdate {
+	ou.mutation.ClearEbike()
+	return ou
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1075,35 +1075,6 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if ou.mutation.EbikeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   order.EbikeTable,
-			Columns: []string{order.EbikeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ou.mutation.EbikeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   order.EbikeTable,
-			Columns: []string{order.EbikeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1404,6 +1375,35 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ou.mutation.EbikeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.EbikeTable,
+			Columns: []string{order.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.EbikeTable,
+			Columns: []string{order.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(ou.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, ou.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -1541,26 +1541,6 @@ func (ouo *OrderUpdateOne) SetNillableBrandID(u *uint64) *OrderUpdateOne {
 // ClearBrandID clears the value of the "brand_id" field.
 func (ouo *OrderUpdateOne) ClearBrandID() *OrderUpdateOne {
 	ouo.mutation.ClearBrandID()
-	return ouo
-}
-
-// SetEbikeID sets the "ebike_id" field.
-func (ouo *OrderUpdateOne) SetEbikeID(u uint64) *OrderUpdateOne {
-	ouo.mutation.SetEbikeID(u)
-	return ouo
-}
-
-// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
-func (ouo *OrderUpdateOne) SetNillableEbikeID(u *uint64) *OrderUpdateOne {
-	if u != nil {
-		ouo.SetEbikeID(*u)
-	}
-	return ouo
-}
-
-// ClearEbikeID clears the value of the "ebike_id" field.
-func (ouo *OrderUpdateOne) ClearEbikeID() *OrderUpdateOne {
-	ouo.mutation.ClearEbikeID()
 	return ouo
 }
 
@@ -1963,6 +1943,26 @@ func (ouo *OrderUpdateOne) ClearSubscribeEndAt() *OrderUpdateOne {
 	return ouo
 }
 
+// SetEbikeID sets the "ebike_id" field.
+func (ouo *OrderUpdateOne) SetEbikeID(u uint64) *OrderUpdateOne {
+	ouo.mutation.SetEbikeID(u)
+	return ouo
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableEbikeID(u *uint64) *OrderUpdateOne {
+	if u != nil {
+		ouo.SetEbikeID(*u)
+	}
+	return ouo
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (ouo *OrderUpdateOne) ClearEbikeID() *OrderUpdateOne {
+	ouo.mutation.ClearEbikeID()
+	return ouo
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (ouo *OrderUpdateOne) SetPlan(p *Plan) *OrderUpdateOne {
 	return ouo.SetPlanID(p.ID)
@@ -1976,11 +1976,6 @@ func (ouo *OrderUpdateOne) SetCity(c *City) *OrderUpdateOne {
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (ouo *OrderUpdateOne) SetBrand(e *EbikeBrand) *OrderUpdateOne {
 	return ouo.SetBrandID(e.ID)
-}
-
-// SetEbike sets the "ebike" edge to the Ebike entity.
-func (ouo *OrderUpdateOne) SetEbike(e *Ebike) *OrderUpdateOne {
-	return ouo.SetEbikeID(e.ID)
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
@@ -2090,6 +2085,11 @@ func (ouo *OrderUpdateOne) AddCoupons(c ...*Coupon) *OrderUpdateOne {
 	return ouo.AddCouponIDs(ids...)
 }
 
+// SetEbike sets the "ebike" edge to the Asset entity.
+func (ouo *OrderUpdateOne) SetEbike(a *Asset) *OrderUpdateOne {
+	return ouo.SetEbikeID(a.ID)
+}
+
 // Mutation returns the OrderMutation object of the builder.
 func (ouo *OrderUpdateOne) Mutation() *OrderMutation {
 	return ouo.mutation
@@ -2110,12 +2110,6 @@ func (ouo *OrderUpdateOne) ClearCity() *OrderUpdateOne {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (ouo *OrderUpdateOne) ClearBrand() *OrderUpdateOne {
 	ouo.mutation.ClearBrand()
-	return ouo
-}
-
-// ClearEbike clears the "ebike" edge to the Ebike entity.
-func (ouo *OrderUpdateOne) ClearEbike() *OrderUpdateOne {
-	ouo.mutation.ClearEbike()
 	return ouo
 }
 
@@ -2201,6 +2195,12 @@ func (ouo *OrderUpdateOne) RemoveCoupons(c ...*Coupon) *OrderUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return ouo.RemoveCouponIDs(ids...)
+}
+
+// ClearEbike clears the "ebike" edge to the Asset entity.
+func (ouo *OrderUpdateOne) ClearEbike() *OrderUpdateOne {
+	ouo.mutation.ClearEbike()
+	return ouo
 }
 
 // Where appends a list predicates to the OrderUpdate builder.
@@ -2497,35 +2497,6 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ouo.mutation.EbikeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   order.EbikeTable,
-			Columns: []string{order.EbikeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ouo.mutation.EbikeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   order.EbikeTable,
-			Columns: []string{order.EbikeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if ouo.mutation.AgentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -2812,6 +2783,35 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(coupon.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ouo.mutation.EbikeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.EbikeTable,
+			Columns: []string{order.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.EbikeTable,
+			Columns: []string{order.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

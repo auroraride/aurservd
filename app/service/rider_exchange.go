@@ -37,12 +37,15 @@ type riderExchangeService struct {
 	subscribe *ent.Subscribe
 	exchange  *ent.Exchange
 	task      *ec.Task
+
+	*BaseService
 }
 
 func NewRiderExchange(r *ent.Rider) *riderExchangeService {
 	s := &riderExchangeService{
-		maxTime: 180 * time.Second,
-		rider:   r,
+		maxTime:     180 * time.Second,
+		rider:       r,
+		BaseService: newService(r),
 	}
 	s.ctx = context.WithValue(context.Background(), model.CtxRiderKey{}, r)
 	return s
@@ -197,7 +200,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
 		tcab  *ec.Cabinet
 		tex   *ec.Exchange
 		t     *ec.Task
-		bat   *ent.Battery
+		bat   *ent.Asset
 		batSN *string
 	)
 

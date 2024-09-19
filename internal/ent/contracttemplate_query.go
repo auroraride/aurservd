@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -61,7 +62,7 @@ func (ctq *ContractTemplateQuery) Order(o ...contracttemplate.OrderOption) *Cont
 // First returns the first ContractTemplate entity from the query.
 // Returns a *NotFoundError when no ContractTemplate was found.
 func (ctq *ContractTemplateQuery) First(ctx context.Context) (*ContractTemplate, error) {
-	nodes, err := ctq.Limit(1).All(setContextOp(ctx, ctq.ctx, "First"))
+	nodes, err := ctq.Limit(1).All(setContextOp(ctx, ctq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +85,7 @@ func (ctq *ContractTemplateQuery) FirstX(ctx context.Context) *ContractTemplate 
 // Returns a *NotFoundError when no ContractTemplate ID was found.
 func (ctq *ContractTemplateQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ctq.Limit(1).IDs(setContextOp(ctx, ctq.ctx, "FirstID")); err != nil {
+	if ids, err = ctq.Limit(1).IDs(setContextOp(ctx, ctq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -107,7 +108,7 @@ func (ctq *ContractTemplateQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one ContractTemplate entity is found.
 // Returns a *NotFoundError when no ContractTemplate entities are found.
 func (ctq *ContractTemplateQuery) Only(ctx context.Context) (*ContractTemplate, error) {
-	nodes, err := ctq.Limit(2).All(setContextOp(ctx, ctq.ctx, "Only"))
+	nodes, err := ctq.Limit(2).All(setContextOp(ctx, ctq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +136,7 @@ func (ctq *ContractTemplateQuery) OnlyX(ctx context.Context) *ContractTemplate {
 // Returns a *NotFoundError when no entities are found.
 func (ctq *ContractTemplateQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ctq.Limit(2).IDs(setContextOp(ctx, ctq.ctx, "OnlyID")); err != nil {
+	if ids, err = ctq.Limit(2).IDs(setContextOp(ctx, ctq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -160,7 +161,7 @@ func (ctq *ContractTemplateQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of ContractTemplates.
 func (ctq *ContractTemplateQuery) All(ctx context.Context) ([]*ContractTemplate, error) {
-	ctx = setContextOp(ctx, ctq.ctx, "All")
+	ctx = setContextOp(ctx, ctq.ctx, ent.OpQueryAll)
 	if err := ctq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -182,7 +183,7 @@ func (ctq *ContractTemplateQuery) IDs(ctx context.Context) (ids []uint64, err er
 	if ctq.ctx.Unique == nil && ctq.path != nil {
 		ctq.Unique(true)
 	}
-	ctx = setContextOp(ctx, ctq.ctx, "IDs")
+	ctx = setContextOp(ctx, ctq.ctx, ent.OpQueryIDs)
 	if err = ctq.Select(contracttemplate.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -200,7 +201,7 @@ func (ctq *ContractTemplateQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (ctq *ContractTemplateQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, ctq.ctx, "Count")
+	ctx = setContextOp(ctx, ctq.ctx, ent.OpQueryCount)
 	if err := ctq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -218,7 +219,7 @@ func (ctq *ContractTemplateQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (ctq *ContractTemplateQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, ctq.ctx, "Exist")
+	ctx = setContextOp(ctx, ctq.ctx, ent.OpQueryExist)
 	switch _, err := ctq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -251,8 +252,9 @@ func (ctq *ContractTemplateQuery) Clone() *ContractTemplateQuery {
 		inters:     append([]Interceptor{}, ctq.inters...),
 		predicates: append([]predicate.ContractTemplate{}, ctq.predicates...),
 		// clone intermediate query.
-		sql:  ctq.sql.Clone(),
-		path: ctq.path,
+		sql:       ctq.sql.Clone(),
+		path:      ctq.path,
+		modifiers: append([]func(*sql.Selector){}, ctq.modifiers...),
 	}
 }
 
@@ -477,7 +479,7 @@ func (ctgb *ContractTemplateGroupBy) Aggregate(fns ...AggregateFunc) *ContractTe
 
 // Scan applies the selector query and scans the result into the given value.
 func (ctgb *ContractTemplateGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ctgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, ctgb.build.ctx, ent.OpQueryGroupBy)
 	if err := ctgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -525,7 +527,7 @@ func (cts *ContractTemplateSelect) Aggregate(fns ...AggregateFunc) *ContractTemp
 
 // Scan applies the selector query and scans the result into the given value.
 func (cts *ContractTemplateSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, cts.ctx, "Select")
+	ctx = setContextOp(ctx, cts.ctx, ent.OpQuerySelect)
 	if err := cts.prepareQuery(ctx); err != nil {
 		return err
 	}

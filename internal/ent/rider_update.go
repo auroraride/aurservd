@@ -13,7 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
@@ -509,6 +509,21 @@ func (ru *RiderUpdate) AddSubscribes(s ...*Subscribe) *RiderUpdate {
 	return ru.AddSubscribeIDs(ids...)
 }
 
+// AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
+func (ru *RiderUpdate) AddAssetIDs(ids ...uint64) *RiderUpdate {
+	ru.mutation.AddAssetIDs(ids...)
+	return ru
+}
+
+// AddAsset adds the "asset" edges to the Asset entity.
+func (ru *RiderUpdate) AddAsset(a ...*Asset) *RiderUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ru.AddAssetIDs(ids...)
+}
+
 // AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
 func (ru *RiderUpdate) AddStockIDs(ids ...uint64) *RiderUpdate {
 	ru.mutation.AddStockIDs(ids...)
@@ -539,13 +554,13 @@ func (ru *RiderUpdate) AddFollowups(r ...*RiderFollowUp) *RiderUpdate {
 	return ru.AddFollowupIDs(ids...)
 }
 
-// SetBatteryID sets the "battery" edge to the Battery entity by ID.
+// SetBatteryID sets the "battery" edge to the Asset entity by ID.
 func (ru *RiderUpdate) SetBatteryID(id uint64) *RiderUpdate {
 	ru.mutation.SetBatteryID(id)
 	return ru
 }
 
-// SetNillableBatteryID sets the "battery" edge to the Battery entity by ID if the given value is not nil.
+// SetNillableBatteryID sets the "battery" edge to the Asset entity by ID if the given value is not nil.
 func (ru *RiderUpdate) SetNillableBatteryID(id *uint64) *RiderUpdate {
 	if id != nil {
 		ru = ru.SetBatteryID(*id)
@@ -553,9 +568,9 @@ func (ru *RiderUpdate) SetNillableBatteryID(id *uint64) *RiderUpdate {
 	return ru
 }
 
-// SetBattery sets the "battery" edge to the Battery entity.
-func (ru *RiderUpdate) SetBattery(b *Battery) *RiderUpdate {
-	return ru.SetBatteryID(b.ID)
+// SetBattery sets the "battery" edge to the Asset entity.
+func (ru *RiderUpdate) SetBattery(a *Asset) *RiderUpdate {
+	return ru.SetBatteryID(a.ID)
 }
 
 // AddBatteryFlowIDs adds the "battery_flows" edge to the BatteryFlow entity by IDs.
@@ -701,6 +716,27 @@ func (ru *RiderUpdate) RemoveSubscribes(s ...*Subscribe) *RiderUpdate {
 	return ru.RemoveSubscribeIDs(ids...)
 }
 
+// ClearAsset clears all "asset" edges to the Asset entity.
+func (ru *RiderUpdate) ClearAsset() *RiderUpdate {
+	ru.mutation.ClearAsset()
+	return ru
+}
+
+// RemoveAssetIDs removes the "asset" edge to Asset entities by IDs.
+func (ru *RiderUpdate) RemoveAssetIDs(ids ...uint64) *RiderUpdate {
+	ru.mutation.RemoveAssetIDs(ids...)
+	return ru
+}
+
+// RemoveAsset removes "asset" edges to Asset entities.
+func (ru *RiderUpdate) RemoveAsset(a ...*Asset) *RiderUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ru.RemoveAssetIDs(ids...)
+}
+
 // ClearStocks clears all "stocks" edges to the Stock entity.
 func (ru *RiderUpdate) ClearStocks() *RiderUpdate {
 	ru.mutation.ClearStocks()
@@ -743,7 +779,7 @@ func (ru *RiderUpdate) RemoveFollowups(r ...*RiderFollowUp) *RiderUpdate {
 	return ru.RemoveFollowupIDs(ids...)
 }
 
-// ClearBattery clears the "battery" edge to the Battery entity.
+// ClearBattery clears the "battery" edge to the Asset entity.
 func (ru *RiderUpdate) ClearBattery() *RiderUpdate {
 	ru.mutation.ClearBattery()
 	return ru
@@ -1274,6 +1310,51 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ru.mutation.AssetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.AssetTable,
+			Columns: []string{rider.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.RemovedAssetIDs(); len(nodes) > 0 && !ru.mutation.AssetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.AssetTable,
+			Columns: []string{rider.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.AssetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.AssetTable,
+			Columns: []string{rider.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if ru.mutation.StocksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -1372,7 +1453,7 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{rider.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1385,7 +1466,7 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{rider.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1926,6 +2007,21 @@ func (ruo *RiderUpdateOne) AddSubscribes(s ...*Subscribe) *RiderUpdateOne {
 	return ruo.AddSubscribeIDs(ids...)
 }
 
+// AddAssetIDs adds the "asset" edge to the Asset entity by IDs.
+func (ruo *RiderUpdateOne) AddAssetIDs(ids ...uint64) *RiderUpdateOne {
+	ruo.mutation.AddAssetIDs(ids...)
+	return ruo
+}
+
+// AddAsset adds the "asset" edges to the Asset entity.
+func (ruo *RiderUpdateOne) AddAsset(a ...*Asset) *RiderUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ruo.AddAssetIDs(ids...)
+}
+
 // AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
 func (ruo *RiderUpdateOne) AddStockIDs(ids ...uint64) *RiderUpdateOne {
 	ruo.mutation.AddStockIDs(ids...)
@@ -1956,13 +2052,13 @@ func (ruo *RiderUpdateOne) AddFollowups(r ...*RiderFollowUp) *RiderUpdateOne {
 	return ruo.AddFollowupIDs(ids...)
 }
 
-// SetBatteryID sets the "battery" edge to the Battery entity by ID.
+// SetBatteryID sets the "battery" edge to the Asset entity by ID.
 func (ruo *RiderUpdateOne) SetBatteryID(id uint64) *RiderUpdateOne {
 	ruo.mutation.SetBatteryID(id)
 	return ruo
 }
 
-// SetNillableBatteryID sets the "battery" edge to the Battery entity by ID if the given value is not nil.
+// SetNillableBatteryID sets the "battery" edge to the Asset entity by ID if the given value is not nil.
 func (ruo *RiderUpdateOne) SetNillableBatteryID(id *uint64) *RiderUpdateOne {
 	if id != nil {
 		ruo = ruo.SetBatteryID(*id)
@@ -1970,9 +2066,9 @@ func (ruo *RiderUpdateOne) SetNillableBatteryID(id *uint64) *RiderUpdateOne {
 	return ruo
 }
 
-// SetBattery sets the "battery" edge to the Battery entity.
-func (ruo *RiderUpdateOne) SetBattery(b *Battery) *RiderUpdateOne {
-	return ruo.SetBatteryID(b.ID)
+// SetBattery sets the "battery" edge to the Asset entity.
+func (ruo *RiderUpdateOne) SetBattery(a *Asset) *RiderUpdateOne {
+	return ruo.SetBatteryID(a.ID)
 }
 
 // AddBatteryFlowIDs adds the "battery_flows" edge to the BatteryFlow entity by IDs.
@@ -2118,6 +2214,27 @@ func (ruo *RiderUpdateOne) RemoveSubscribes(s ...*Subscribe) *RiderUpdateOne {
 	return ruo.RemoveSubscribeIDs(ids...)
 }
 
+// ClearAsset clears all "asset" edges to the Asset entity.
+func (ruo *RiderUpdateOne) ClearAsset() *RiderUpdateOne {
+	ruo.mutation.ClearAsset()
+	return ruo
+}
+
+// RemoveAssetIDs removes the "asset" edge to Asset entities by IDs.
+func (ruo *RiderUpdateOne) RemoveAssetIDs(ids ...uint64) *RiderUpdateOne {
+	ruo.mutation.RemoveAssetIDs(ids...)
+	return ruo
+}
+
+// RemoveAsset removes "asset" edges to Asset entities.
+func (ruo *RiderUpdateOne) RemoveAsset(a ...*Asset) *RiderUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ruo.RemoveAssetIDs(ids...)
+}
+
 // ClearStocks clears all "stocks" edges to the Stock entity.
 func (ruo *RiderUpdateOne) ClearStocks() *RiderUpdateOne {
 	ruo.mutation.ClearStocks()
@@ -2160,7 +2277,7 @@ func (ruo *RiderUpdateOne) RemoveFollowups(r ...*RiderFollowUp) *RiderUpdateOne 
 	return ruo.RemoveFollowupIDs(ids...)
 }
 
-// ClearBattery clears the "battery" edge to the Battery entity.
+// ClearBattery clears the "battery" edge to the Asset entity.
 func (ruo *RiderUpdateOne) ClearBattery() *RiderUpdateOne {
 	ruo.mutation.ClearBattery()
 	return ruo
@@ -2721,6 +2838,51 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ruo.mutation.AssetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.AssetTable,
+			Columns: []string{rider.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.RemovedAssetIDs(); len(nodes) > 0 && !ruo.mutation.AssetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.AssetTable,
+			Columns: []string{rider.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.AssetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.AssetTable,
+			Columns: []string{rider.AssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if ruo.mutation.StocksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -2819,7 +2981,7 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 			Columns: []string{rider.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -2832,7 +2994,7 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 			Columns: []string{rider.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

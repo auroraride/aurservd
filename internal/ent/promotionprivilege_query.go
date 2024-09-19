@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -61,7 +62,7 @@ func (ppq *PromotionPrivilegeQuery) Order(o ...promotionprivilege.OrderOption) *
 // First returns the first PromotionPrivilege entity from the query.
 // Returns a *NotFoundError when no PromotionPrivilege was found.
 func (ppq *PromotionPrivilegeQuery) First(ctx context.Context) (*PromotionPrivilege, error) {
-	nodes, err := ppq.Limit(1).All(setContextOp(ctx, ppq.ctx, "First"))
+	nodes, err := ppq.Limit(1).All(setContextOp(ctx, ppq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +85,7 @@ func (ppq *PromotionPrivilegeQuery) FirstX(ctx context.Context) *PromotionPrivil
 // Returns a *NotFoundError when no PromotionPrivilege ID was found.
 func (ppq *PromotionPrivilegeQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ppq.Limit(1).IDs(setContextOp(ctx, ppq.ctx, "FirstID")); err != nil {
+	if ids, err = ppq.Limit(1).IDs(setContextOp(ctx, ppq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -107,7 +108,7 @@ func (ppq *PromotionPrivilegeQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one PromotionPrivilege entity is found.
 // Returns a *NotFoundError when no PromotionPrivilege entities are found.
 func (ppq *PromotionPrivilegeQuery) Only(ctx context.Context) (*PromotionPrivilege, error) {
-	nodes, err := ppq.Limit(2).All(setContextOp(ctx, ppq.ctx, "Only"))
+	nodes, err := ppq.Limit(2).All(setContextOp(ctx, ppq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +136,7 @@ func (ppq *PromotionPrivilegeQuery) OnlyX(ctx context.Context) *PromotionPrivile
 // Returns a *NotFoundError when no entities are found.
 func (ppq *PromotionPrivilegeQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ppq.Limit(2).IDs(setContextOp(ctx, ppq.ctx, "OnlyID")); err != nil {
+	if ids, err = ppq.Limit(2).IDs(setContextOp(ctx, ppq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -160,7 +161,7 @@ func (ppq *PromotionPrivilegeQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of PromotionPrivileges.
 func (ppq *PromotionPrivilegeQuery) All(ctx context.Context) ([]*PromotionPrivilege, error) {
-	ctx = setContextOp(ctx, ppq.ctx, "All")
+	ctx = setContextOp(ctx, ppq.ctx, ent.OpQueryAll)
 	if err := ppq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -182,7 +183,7 @@ func (ppq *PromotionPrivilegeQuery) IDs(ctx context.Context) (ids []uint64, err 
 	if ppq.ctx.Unique == nil && ppq.path != nil {
 		ppq.Unique(true)
 	}
-	ctx = setContextOp(ctx, ppq.ctx, "IDs")
+	ctx = setContextOp(ctx, ppq.ctx, ent.OpQueryIDs)
 	if err = ppq.Select(promotionprivilege.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -200,7 +201,7 @@ func (ppq *PromotionPrivilegeQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (ppq *PromotionPrivilegeQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, ppq.ctx, "Count")
+	ctx = setContextOp(ctx, ppq.ctx, ent.OpQueryCount)
 	if err := ppq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -218,7 +219,7 @@ func (ppq *PromotionPrivilegeQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (ppq *PromotionPrivilegeQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, ppq.ctx, "Exist")
+	ctx = setContextOp(ctx, ppq.ctx, ent.OpQueryExist)
 	switch _, err := ppq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -251,8 +252,9 @@ func (ppq *PromotionPrivilegeQuery) Clone() *PromotionPrivilegeQuery {
 		inters:     append([]Interceptor{}, ppq.inters...),
 		predicates: append([]predicate.PromotionPrivilege{}, ppq.predicates...),
 		// clone intermediate query.
-		sql:  ppq.sql.Clone(),
-		path: ppq.path,
+		sql:       ppq.sql.Clone(),
+		path:      ppq.path,
+		modifiers: append([]func(*sql.Selector){}, ppq.modifiers...),
 	}
 }
 
@@ -477,7 +479,7 @@ func (ppgb *PromotionPrivilegeGroupBy) Aggregate(fns ...AggregateFunc) *Promotio
 
 // Scan applies the selector query and scans the result into the given value.
 func (ppgb *PromotionPrivilegeGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ppgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, ppgb.build.ctx, ent.OpQueryGroupBy)
 	if err := ppgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -525,7 +527,7 @@ func (pps *PromotionPrivilegeSelect) Aggregate(fns ...AggregateFunc) *PromotionP
 
 // Scan applies the selector query and scans the result into the given value.
 func (pps *PromotionPrivilegeSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, pps.ctx, "Select")
+	ctx = setContextOp(ctx, pps.ctx, ent.OpQuerySelect)
 	if err := pps.prepareQuery(ctx); err != nil {
 		return err
 	}

@@ -8,9 +8,11 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -24,6 +26,7 @@ type MaintainerQuery struct {
 	inters     []Interceptor
 	predicates []predicate.Maintainer
 	withCities *CityQuery
+	withAsset  *AssetQuery
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -83,10 +86,32 @@ func (mq *MaintainerQuery) QueryCities() *CityQuery {
 	return query
 }
 
+// QueryAsset chains the current query on the "asset" edge.
+func (mq *MaintainerQuery) QueryAsset() *AssetQuery {
+	query := (&AssetClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(maintainer.Table, maintainer.FieldID, selector),
+			sqlgraph.To(asset.Table, asset.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, maintainer.AssetTable, maintainer.AssetColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Maintainer entity from the query.
 // Returns a *NotFoundError when no Maintainer was found.
 func (mq *MaintainerQuery) First(ctx context.Context) (*Maintainer, error) {
-	nodes, err := mq.Limit(1).All(setContextOp(ctx, mq.ctx, "First"))
+	nodes, err := mq.Limit(1).All(setContextOp(ctx, mq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +134,7 @@ func (mq *MaintainerQuery) FirstX(ctx context.Context) *Maintainer {
 // Returns a *NotFoundError when no Maintainer ID was found.
 func (mq *MaintainerQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = mq.Limit(1).IDs(setContextOp(ctx, mq.ctx, "FirstID")); err != nil {
+	if ids, err = mq.Limit(1).IDs(setContextOp(ctx, mq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -132,7 +157,7 @@ func (mq *MaintainerQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Maintainer entity is found.
 // Returns a *NotFoundError when no Maintainer entities are found.
 func (mq *MaintainerQuery) Only(ctx context.Context) (*Maintainer, error) {
-	nodes, err := mq.Limit(2).All(setContextOp(ctx, mq.ctx, "Only"))
+	nodes, err := mq.Limit(2).All(setContextOp(ctx, mq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -160,7 +185,7 @@ func (mq *MaintainerQuery) OnlyX(ctx context.Context) *Maintainer {
 // Returns a *NotFoundError when no entities are found.
 func (mq *MaintainerQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = mq.Limit(2).IDs(setContextOp(ctx, mq.ctx, "OnlyID")); err != nil {
+	if ids, err = mq.Limit(2).IDs(setContextOp(ctx, mq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -185,7 +210,7 @@ func (mq *MaintainerQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Maintainers.
 func (mq *MaintainerQuery) All(ctx context.Context) ([]*Maintainer, error) {
-	ctx = setContextOp(ctx, mq.ctx, "All")
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryAll)
 	if err := mq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -207,7 +232,7 @@ func (mq *MaintainerQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if mq.ctx.Unique == nil && mq.path != nil {
 		mq.Unique(true)
 	}
-	ctx = setContextOp(ctx, mq.ctx, "IDs")
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryIDs)
 	if err = mq.Select(maintainer.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -225,7 +250,7 @@ func (mq *MaintainerQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (mq *MaintainerQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, mq.ctx, "Count")
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryCount)
 	if err := mq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -243,7 +268,7 @@ func (mq *MaintainerQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (mq *MaintainerQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, mq.ctx, "Exist")
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryExist)
 	switch _, err := mq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -276,9 +301,11 @@ func (mq *MaintainerQuery) Clone() *MaintainerQuery {
 		inters:     append([]Interceptor{}, mq.inters...),
 		predicates: append([]predicate.Maintainer{}, mq.predicates...),
 		withCities: mq.withCities.Clone(),
+		withAsset:  mq.withAsset.Clone(),
 		// clone intermediate query.
-		sql:  mq.sql.Clone(),
-		path: mq.path,
+		sql:       mq.sql.Clone(),
+		path:      mq.path,
+		modifiers: append([]func(*sql.Selector){}, mq.modifiers...),
 	}
 }
 
@@ -290,6 +317,17 @@ func (mq *MaintainerQuery) WithCities(opts ...func(*CityQuery)) *MaintainerQuery
 		opt(query)
 	}
 	mq.withCities = query
+	return mq
+}
+
+// WithAsset tells the query-builder to eager-load the nodes that are connected to
+// the "asset" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MaintainerQuery) WithAsset(opts ...func(*AssetQuery)) *MaintainerQuery {
+	query := (&AssetClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withAsset = query
 	return mq
 }
 
@@ -371,8 +409,9 @@ func (mq *MaintainerQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*M
 	var (
 		nodes       = []*Maintainer{}
 		_spec       = mq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			mq.withCities != nil,
+			mq.withAsset != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -400,6 +439,13 @@ func (mq *MaintainerQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*M
 		if err := mq.loadCities(ctx, query, nodes,
 			func(n *Maintainer) { n.Edges.Cities = []*City{} },
 			func(n *Maintainer, e *City) { n.Edges.Cities = append(n.Edges.Cities, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := mq.withAsset; query != nil {
+		if err := mq.loadAsset(ctx, query, nodes,
+			func(n *Maintainer) { n.Edges.Asset = []*Asset{} },
+			func(n *Maintainer, e *Asset) { n.Edges.Asset = append(n.Edges.Asset, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -464,6 +510,36 @@ func (mq *MaintainerQuery) loadCities(ctx context.Context, query *CityQuery, nod
 		for kn := range nodes {
 			assign(kn, n)
 		}
+	}
+	return nil
+}
+func (mq *MaintainerQuery) loadAsset(ctx context.Context, query *AssetQuery, nodes []*Maintainer, init func(*Maintainer), assign func(*Maintainer, *Asset)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Maintainer)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(asset.FieldLocationsID)
+	}
+	query.Where(predicate.Asset(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(maintainer.AssetColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.LocationsID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "locations_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }
@@ -565,6 +641,7 @@ type MaintainerQueryWith string
 
 var (
 	MaintainerQueryWithCities MaintainerQueryWith = "Cities"
+	MaintainerQueryWithAsset  MaintainerQueryWith = "Asset"
 )
 
 func (mq *MaintainerQuery) With(withEdges ...MaintainerQueryWith) *MaintainerQuery {
@@ -572,6 +649,8 @@ func (mq *MaintainerQuery) With(withEdges ...MaintainerQueryWith) *MaintainerQue
 		switch v {
 		case MaintainerQueryWithCities:
 			mq.WithCities()
+		case MaintainerQueryWithAsset:
+			mq.WithAsset()
 		}
 	}
 	return mq
@@ -591,7 +670,7 @@ func (mgb *MaintainerGroupBy) Aggregate(fns ...AggregateFunc) *MaintainerGroupBy
 
 // Scan applies the selector query and scans the result into the given value.
 func (mgb *MaintainerGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, mgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, mgb.build.ctx, ent.OpQueryGroupBy)
 	if err := mgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -639,7 +718,7 @@ func (ms *MaintainerSelect) Aggregate(fns ...AggregateFunc) *MaintainerSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ms *MaintainerSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ms.ctx, "Select")
+	ctx = setContextOp(ctx, ms.ctx, ent.OpQuerySelect)
 	if err := ms.prepareQuery(ctx); err != nil {
 		return err
 	}

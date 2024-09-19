@@ -302,19 +302,19 @@ func (ebc *EnterpriseBillCreate) check() error {
 	if _, ok := ebc.mutation.Model(); !ok {
 		return &ValidationError{Name: "model", err: errors.New(`ent: missing required field "EnterpriseBill.model"`)}
 	}
-	if _, ok := ebc.mutation.RiderID(); !ok {
+	if len(ebc.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "EnterpriseBill.rider"`)}
 	}
-	if _, ok := ebc.mutation.CityID(); !ok {
+	if len(ebc.mutation.CityIDs()) == 0 {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "EnterpriseBill.city"`)}
 	}
-	if _, ok := ebc.mutation.EnterpriseID(); !ok {
+	if len(ebc.mutation.EnterpriseIDs()) == 0 {
 		return &ValidationError{Name: "enterprise", err: errors.New(`ent: missing required edge "EnterpriseBill.enterprise"`)}
 	}
-	if _, ok := ebc.mutation.StatementID(); !ok {
+	if len(ebc.mutation.StatementIDs()) == 0 {
 		return &ValidationError{Name: "statement", err: errors.New(`ent: missing required edge "EnterpriseBill.statement"`)}
 	}
-	if _, ok := ebc.mutation.SubscribeID(); !ok {
+	if len(ebc.mutation.SubscribeIDs()) == 0 {
 		return &ValidationError{Name: "subscribe", err: errors.New(`ent: missing required edge "EnterpriseBill.subscribe"`)}
 	}
 	return nil

@@ -16,6 +16,19 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/agreement"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
+	"github.com/auroraride/aurservd/internal/ent/asset"
+	"github.com/auroraride/aurservd/internal/ent/assetattributes"
+	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
+	"github.com/auroraride/aurservd/internal/ent/assetcheck"
+	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
+	"github.com/auroraride/aurservd/internal/ent/assetmaintenance"
+	"github.com/auroraride/aurservd/internal/ent/assetmaintenancedetails"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
+	"github.com/auroraride/aurservd/internal/ent/assetrole"
+	"github.com/auroraride/aurservd/internal/ent/assetscrap"
+	"github.com/auroraride/aurservd/internal/ent/assetscrapdetails"
+	"github.com/auroraride/aurservd/internal/ent/assettransfer"
+	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/battery"
@@ -56,6 +69,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/manager"
+	"github.com/auroraride/aurservd/internal/ent/material"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
@@ -90,12 +104,14 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/stocksummary"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/storegoods"
+	"github.com/auroraride/aurservd/internal/ent/storegroup"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 	"github.com/auroraride/aurservd/internal/ent/version"
+	"github.com/auroraride/aurservd/internal/ent/warehouse"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -152,7 +168,7 @@ var (
 	columnCheck sql.ColumnCheck
 )
 
-// columnChecker checks if the column exists in the given table.
+// checkColumn checks if the column exists in the given table.
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
@@ -160,6 +176,19 @@ func checkColumn(table, column string) error {
 			agent.Table:                      agent.ValidColumn,
 			agreement.Table:                  agreement.ValidColumn,
 			allocate.Table:                   allocate.ValidColumn,
+			asset.Table:                      asset.ValidColumn,
+			assetattributevalues.Table:       assetattributevalues.ValidColumn,
+			assetattributes.Table:            assetattributes.ValidColumn,
+			assetcheck.Table:                 assetcheck.ValidColumn,
+			assetcheckdetails.Table:          assetcheckdetails.ValidColumn,
+			assetmaintenance.Table:           assetmaintenance.ValidColumn,
+			assetmaintenancedetails.Table:    assetmaintenancedetails.ValidColumn,
+			assetmanager.Table:               assetmanager.ValidColumn,
+			assetrole.Table:                  assetrole.ValidColumn,
+			assetscrap.Table:                 assetscrap.ValidColumn,
+			assetscrapdetails.Table:          assetscrapdetails.ValidColumn,
+			assettransfer.Table:              assettransfer.ValidColumn,
+			assettransferdetails.Table:       assettransferdetails.ValidColumn,
 			assistance.Table:                 assistance.ValidColumn,
 			attendance.Table:                 attendance.ValidColumn,
 			battery.Table:                    battery.ValidColumn,
@@ -200,6 +229,7 @@ func checkColumn(table, column string) error {
 			inventory.Table:                  inventory.ValidColumn,
 			maintainer.Table:                 maintainer.ValidColumn,
 			manager.Table:                    manager.ValidColumn,
+			material.Table:                   material.ValidColumn,
 			order.Table:                      order.ValidColumn,
 			orderrefund.Table:                orderrefund.ValidColumn,
 			person.Table:                     person.ValidColumn,
@@ -234,12 +264,14 @@ func checkColumn(table, column string) error {
 			stocksummary.Table:               stocksummary.ValidColumn,
 			store.Table:                      store.ValidColumn,
 			storegoods.Table:                 storegoods.ValidColumn,
+			storegroup.Table:                 storegroup.ValidColumn,
 			subscribe.Table:                  subscribe.ValidColumn,
 			subscribealter.Table:             subscribealter.ValidColumn,
 			subscribepause.Table:             subscribepause.ValidColumn,
 			subscribereminder.Table:          subscribereminder.ValidColumn,
 			subscribesuspend.Table:           subscribesuspend.ValidColumn,
 			version.Table:                    version.ValidColumn,
+			warehouse.Table:                  warehouse.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

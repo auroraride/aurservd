@@ -40,6 +40,13 @@ func Execute() {
 
 			// 初始化 买前必读 优惠券 积分 阅读相关配置
 			biz.NewInstructions().InitInstructions()
+
+			// 初始化资产属性
+			service.NewAssetAttributes().Initialize()
+
+			// todo 临时测试用 之后删除
+			// fix.AssetDo()
+
 		},
 	}
 

@@ -156,7 +156,7 @@ func (pmcu *PromotionMemberCommissionUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (pmcu *PromotionMemberCommissionUpdate) check() error {
-	if _, ok := pmcu.mutation.CommissionID(); pmcu.mutation.CommissionCleared() && !ok {
+	if pmcu.mutation.CommissionCleared() && len(pmcu.mutation.CommissionIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PromotionMemberCommission.commission"`)
 	}
 	return nil
@@ -407,7 +407,7 @@ func (pmcuo *PromotionMemberCommissionUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (pmcuo *PromotionMemberCommissionUpdateOne) check() error {
-	if _, ok := pmcuo.mutation.CommissionID(); pmcuo.mutation.CommissionCleared() && !ok {
+	if pmcuo.mutation.CommissionCleared() && len(pmcuo.mutation.CommissionIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PromotionMemberCommission.commission"`)
 	}
 	return nil

@@ -12,10 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/fault"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
@@ -116,34 +115,6 @@ func (fc *FaultCreate) SetNillableCabinetID(u *uint64) *FaultCreate {
 	return fc
 }
 
-// SetBatteryID sets the "battery_id" field.
-func (fc *FaultCreate) SetBatteryID(u uint64) *FaultCreate {
-	fc.mutation.SetBatteryID(u)
-	return fc
-}
-
-// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
-func (fc *FaultCreate) SetNillableBatteryID(u *uint64) *FaultCreate {
-	if u != nil {
-		fc.SetBatteryID(*u)
-	}
-	return fc
-}
-
-// SetEbikeID sets the "ebike_id" field.
-func (fc *FaultCreate) SetEbikeID(u uint64) *FaultCreate {
-	fc.mutation.SetEbikeID(u)
-	return fc
-}
-
-// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
-func (fc *FaultCreate) SetNillableEbikeID(u *uint64) *FaultCreate {
-	if u != nil {
-		fc.SetEbikeID(*u)
-	}
-	return fc
-}
-
 // SetRiderID sets the "rider_id" field.
 func (fc *FaultCreate) SetRiderID(u uint64) *FaultCreate {
 	fc.mutation.SetRiderID(u)
@@ -212,6 +183,34 @@ func (fc *FaultCreate) SetFault(s []string) *FaultCreate {
 	return fc
 }
 
+// SetEbikeID sets the "ebike_id" field.
+func (fc *FaultCreate) SetEbikeID(u uint64) *FaultCreate {
+	fc.mutation.SetEbikeID(u)
+	return fc
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (fc *FaultCreate) SetNillableEbikeID(u *uint64) *FaultCreate {
+	if u != nil {
+		fc.SetEbikeID(*u)
+	}
+	return fc
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (fc *FaultCreate) SetBatteryID(u uint64) *FaultCreate {
+	fc.mutation.SetBatteryID(u)
+	return fc
+}
+
+// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
+func (fc *FaultCreate) SetNillableBatteryID(u *uint64) *FaultCreate {
+	if u != nil {
+		fc.SetBatteryID(*u)
+	}
+	return fc
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (fc *FaultCreate) SetCity(c *City) *FaultCreate {
 	return fc.SetCityID(c.ID)
@@ -222,19 +221,19 @@ func (fc *FaultCreate) SetCabinet(c *Cabinet) *FaultCreate {
 	return fc.SetCabinetID(c.ID)
 }
 
-// SetBattery sets the "battery" edge to the Battery entity.
-func (fc *FaultCreate) SetBattery(b *Battery) *FaultCreate {
-	return fc.SetBatteryID(b.ID)
-}
-
-// SetEbike sets the "ebike" edge to the Ebike entity.
-func (fc *FaultCreate) SetEbike(e *Ebike) *FaultCreate {
-	return fc.SetEbikeID(e.ID)
-}
-
 // SetRider sets the "rider" edge to the Rider entity.
 func (fc *FaultCreate) SetRider(r *Rider) *FaultCreate {
 	return fc.SetRiderID(r.ID)
+}
+
+// SetEbike sets the "ebike" edge to the Asset entity.
+func (fc *FaultCreate) SetEbike(a *Asset) *FaultCreate {
+	return fc.SetEbikeID(a.ID)
+}
+
+// SetBattery sets the "battery" edge to the Asset entity.
+func (fc *FaultCreate) SetBattery(a *Asset) *FaultCreate {
+	return fc.SetBatteryID(a.ID)
 }
 
 // Mutation returns the FaultMutation object of the builder.
@@ -316,7 +315,7 @@ func (fc *FaultCreate) check() error {
 	if _, ok := fc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Fault.type"`)}
 	}
-	if _, ok := fc.mutation.CityID(); !ok {
+	if len(fc.mutation.CityIDs()) == 0 {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Fault.city"`)}
 	}
 	return nil
@@ -424,40 +423,6 @@ func (fc *FaultCreate) createSpec() (*Fault, *sqlgraph.CreateSpec) {
 		_node.CabinetID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := fc.mutation.BatteryIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   fault.BatteryTable,
-			Columns: []string{fault.BatteryColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.BatteryID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := fc.mutation.EbikeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   fault.EbikeTable,
-			Columns: []string{fault.EbikeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.EbikeID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := fc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -473,6 +438,40 @@ func (fc *FaultCreate) createSpec() (*Fault, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.RiderID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := fc.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   fault.EbikeTable,
+			Columns: []string{fault.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EbikeID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := fc.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   fault.BatteryTable,
+			Columns: []string{fault.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.BatteryID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -623,42 +622,6 @@ func (u *FaultUpsert) ClearCabinetID() *FaultUpsert {
 	return u
 }
 
-// SetBatteryID sets the "battery_id" field.
-func (u *FaultUpsert) SetBatteryID(v uint64) *FaultUpsert {
-	u.Set(fault.FieldBatteryID, v)
-	return u
-}
-
-// UpdateBatteryID sets the "battery_id" field to the value that was provided on create.
-func (u *FaultUpsert) UpdateBatteryID() *FaultUpsert {
-	u.SetExcluded(fault.FieldBatteryID)
-	return u
-}
-
-// ClearBatteryID clears the value of the "battery_id" field.
-func (u *FaultUpsert) ClearBatteryID() *FaultUpsert {
-	u.SetNull(fault.FieldBatteryID)
-	return u
-}
-
-// SetEbikeID sets the "ebike_id" field.
-func (u *FaultUpsert) SetEbikeID(v uint64) *FaultUpsert {
-	u.Set(fault.FieldEbikeID, v)
-	return u
-}
-
-// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
-func (u *FaultUpsert) UpdateEbikeID() *FaultUpsert {
-	u.SetExcluded(fault.FieldEbikeID)
-	return u
-}
-
-// ClearEbikeID clears the value of the "ebike_id" field.
-func (u *FaultUpsert) ClearEbikeID() *FaultUpsert {
-	u.SetNull(fault.FieldEbikeID)
-	return u
-}
-
 // SetRiderID sets the "rider_id" field.
 func (u *FaultUpsert) SetRiderID(v uint64) *FaultUpsert {
 	u.Set(fault.FieldRiderID, v)
@@ -764,6 +727,42 @@ func (u *FaultUpsert) UpdateFault() *FaultUpsert {
 // ClearFault clears the value of the "fault" field.
 func (u *FaultUpsert) ClearFault() *FaultUpsert {
 	u.SetNull(fault.FieldFault)
+	return u
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (u *FaultUpsert) SetEbikeID(v uint64) *FaultUpsert {
+	u.Set(fault.FieldEbikeID, v)
+	return u
+}
+
+// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
+func (u *FaultUpsert) UpdateEbikeID() *FaultUpsert {
+	u.SetExcluded(fault.FieldEbikeID)
+	return u
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (u *FaultUpsert) ClearEbikeID() *FaultUpsert {
+	u.SetNull(fault.FieldEbikeID)
+	return u
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (u *FaultUpsert) SetBatteryID(v uint64) *FaultUpsert {
+	u.Set(fault.FieldBatteryID, v)
+	return u
+}
+
+// UpdateBatteryID sets the "battery_id" field to the value that was provided on create.
+func (u *FaultUpsert) UpdateBatteryID() *FaultUpsert {
+	u.SetExcluded(fault.FieldBatteryID)
+	return u
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (u *FaultUpsert) ClearBatteryID() *FaultUpsert {
+	u.SetNull(fault.FieldBatteryID)
 	return u
 }
 
@@ -927,48 +926,6 @@ func (u *FaultUpsertOne) ClearCabinetID() *FaultUpsertOne {
 	})
 }
 
-// SetBatteryID sets the "battery_id" field.
-func (u *FaultUpsertOne) SetBatteryID(v uint64) *FaultUpsertOne {
-	return u.Update(func(s *FaultUpsert) {
-		s.SetBatteryID(v)
-	})
-}
-
-// UpdateBatteryID sets the "battery_id" field to the value that was provided on create.
-func (u *FaultUpsertOne) UpdateBatteryID() *FaultUpsertOne {
-	return u.Update(func(s *FaultUpsert) {
-		s.UpdateBatteryID()
-	})
-}
-
-// ClearBatteryID clears the value of the "battery_id" field.
-func (u *FaultUpsertOne) ClearBatteryID() *FaultUpsertOne {
-	return u.Update(func(s *FaultUpsert) {
-		s.ClearBatteryID()
-	})
-}
-
-// SetEbikeID sets the "ebike_id" field.
-func (u *FaultUpsertOne) SetEbikeID(v uint64) *FaultUpsertOne {
-	return u.Update(func(s *FaultUpsert) {
-		s.SetEbikeID(v)
-	})
-}
-
-// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
-func (u *FaultUpsertOne) UpdateEbikeID() *FaultUpsertOne {
-	return u.Update(func(s *FaultUpsert) {
-		s.UpdateEbikeID()
-	})
-}
-
-// ClearEbikeID clears the value of the "ebike_id" field.
-func (u *FaultUpsertOne) ClearEbikeID() *FaultUpsertOne {
-	return u.Update(func(s *FaultUpsert) {
-		s.ClearEbikeID()
-	})
-}
-
 // SetRiderID sets the "rider_id" field.
 func (u *FaultUpsertOne) SetRiderID(v uint64) *FaultUpsertOne {
 	return u.Update(func(s *FaultUpsert) {
@@ -1092,6 +1049,48 @@ func (u *FaultUpsertOne) UpdateFault() *FaultUpsertOne {
 func (u *FaultUpsertOne) ClearFault() *FaultUpsertOne {
 	return u.Update(func(s *FaultUpsert) {
 		s.ClearFault()
+	})
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (u *FaultUpsertOne) SetEbikeID(v uint64) *FaultUpsertOne {
+	return u.Update(func(s *FaultUpsert) {
+		s.SetEbikeID(v)
+	})
+}
+
+// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
+func (u *FaultUpsertOne) UpdateEbikeID() *FaultUpsertOne {
+	return u.Update(func(s *FaultUpsert) {
+		s.UpdateEbikeID()
+	})
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (u *FaultUpsertOne) ClearEbikeID() *FaultUpsertOne {
+	return u.Update(func(s *FaultUpsert) {
+		s.ClearEbikeID()
+	})
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (u *FaultUpsertOne) SetBatteryID(v uint64) *FaultUpsertOne {
+	return u.Update(func(s *FaultUpsert) {
+		s.SetBatteryID(v)
+	})
+}
+
+// UpdateBatteryID sets the "battery_id" field to the value that was provided on create.
+func (u *FaultUpsertOne) UpdateBatteryID() *FaultUpsertOne {
+	return u.Update(func(s *FaultUpsert) {
+		s.UpdateBatteryID()
+	})
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (u *FaultUpsertOne) ClearBatteryID() *FaultUpsertOne {
+	return u.Update(func(s *FaultUpsert) {
+		s.ClearBatteryID()
 	})
 }
 
@@ -1421,48 +1420,6 @@ func (u *FaultUpsertBulk) ClearCabinetID() *FaultUpsertBulk {
 	})
 }
 
-// SetBatteryID sets the "battery_id" field.
-func (u *FaultUpsertBulk) SetBatteryID(v uint64) *FaultUpsertBulk {
-	return u.Update(func(s *FaultUpsert) {
-		s.SetBatteryID(v)
-	})
-}
-
-// UpdateBatteryID sets the "battery_id" field to the value that was provided on create.
-func (u *FaultUpsertBulk) UpdateBatteryID() *FaultUpsertBulk {
-	return u.Update(func(s *FaultUpsert) {
-		s.UpdateBatteryID()
-	})
-}
-
-// ClearBatteryID clears the value of the "battery_id" field.
-func (u *FaultUpsertBulk) ClearBatteryID() *FaultUpsertBulk {
-	return u.Update(func(s *FaultUpsert) {
-		s.ClearBatteryID()
-	})
-}
-
-// SetEbikeID sets the "ebike_id" field.
-func (u *FaultUpsertBulk) SetEbikeID(v uint64) *FaultUpsertBulk {
-	return u.Update(func(s *FaultUpsert) {
-		s.SetEbikeID(v)
-	})
-}
-
-// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
-func (u *FaultUpsertBulk) UpdateEbikeID() *FaultUpsertBulk {
-	return u.Update(func(s *FaultUpsert) {
-		s.UpdateEbikeID()
-	})
-}
-
-// ClearEbikeID clears the value of the "ebike_id" field.
-func (u *FaultUpsertBulk) ClearEbikeID() *FaultUpsertBulk {
-	return u.Update(func(s *FaultUpsert) {
-		s.ClearEbikeID()
-	})
-}
-
 // SetRiderID sets the "rider_id" field.
 func (u *FaultUpsertBulk) SetRiderID(v uint64) *FaultUpsertBulk {
 	return u.Update(func(s *FaultUpsert) {
@@ -1586,6 +1543,48 @@ func (u *FaultUpsertBulk) UpdateFault() *FaultUpsertBulk {
 func (u *FaultUpsertBulk) ClearFault() *FaultUpsertBulk {
 	return u.Update(func(s *FaultUpsert) {
 		s.ClearFault()
+	})
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (u *FaultUpsertBulk) SetEbikeID(v uint64) *FaultUpsertBulk {
+	return u.Update(func(s *FaultUpsert) {
+		s.SetEbikeID(v)
+	})
+}
+
+// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
+func (u *FaultUpsertBulk) UpdateEbikeID() *FaultUpsertBulk {
+	return u.Update(func(s *FaultUpsert) {
+		s.UpdateEbikeID()
+	})
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (u *FaultUpsertBulk) ClearEbikeID() *FaultUpsertBulk {
+	return u.Update(func(s *FaultUpsert) {
+		s.ClearEbikeID()
+	})
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (u *FaultUpsertBulk) SetBatteryID(v uint64) *FaultUpsertBulk {
+	return u.Update(func(s *FaultUpsert) {
+		s.SetBatteryID(v)
+	})
+}
+
+// UpdateBatteryID sets the "battery_id" field to the value that was provided on create.
+func (u *FaultUpsertBulk) UpdateBatteryID() *FaultUpsertBulk {
+	return u.Update(func(s *FaultUpsert) {
+		s.UpdateBatteryID()
+	})
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (u *FaultUpsertBulk) ClearBatteryID() *FaultUpsertBulk {
+	return u.Update(func(s *FaultUpsert) {
+		s.ClearBatteryID()
 	})
 }
 

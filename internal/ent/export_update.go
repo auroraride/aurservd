@@ -300,7 +300,7 @@ func (eu *ExportUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (eu *ExportUpdate) check() error {
-	if _, ok := eu.mutation.ManagerID(); eu.mutation.ManagerCleared() && !ok {
+	if eu.mutation.ManagerCleared() && len(eu.mutation.ManagerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Export.manager"`)
 	}
 	return nil
@@ -718,7 +718,7 @@ func (euo *ExportUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (euo *ExportUpdateOne) check() error {
-	if _, ok := euo.mutation.ManagerID(); euo.mutation.ManagerCleared() && !ok {
+	if euo.mutation.ManagerCleared() && len(euo.mutation.ManagerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Export.manager"`)
 	}
 	return nil

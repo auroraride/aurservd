@@ -576,10 +576,10 @@ func (spu *SubscribePauseUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (spu *SubscribePauseUpdate) check() error {
-	if _, ok := spu.mutation.RiderID(); spu.mutation.RiderCleared() && !ok {
+	if spu.mutation.RiderCleared() && len(spu.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SubscribePause.rider"`)
 	}
-	if _, ok := spu.mutation.SubscribeID(); spu.mutation.SubscribeCleared() && !ok {
+	if spu.mutation.SubscribeCleared() && len(spu.mutation.SubscribeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SubscribePause.subscribe"`)
 	}
 	return nil
@@ -1546,10 +1546,10 @@ func (spuo *SubscribePauseUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (spuo *SubscribePauseUpdateOne) check() error {
-	if _, ok := spuo.mutation.RiderID(); spuo.mutation.RiderCleared() && !ok {
+	if spuo.mutation.RiderCleared() && len(spuo.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SubscribePause.rider"`)
 	}
-	if _, ok := spuo.mutation.SubscribeID(); spuo.mutation.SubscribeCleared() && !ok {
+	if spuo.mutation.SubscribeCleared() && len(spuo.mutation.SubscribeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SubscribePause.subscribe"`)
 	}
 	return nil

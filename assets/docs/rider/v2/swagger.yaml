@@ -28,7 +28,7 @@ definitions:
         type: integer
       image:
         allOf:
-        - $ref: '#/definitions/definition.ActivityImage'
+        - $ref: '#/definitions/model.ActivityImage'
         description: 图片
       introduction:
         description: 活动简介
@@ -50,18 +50,6 @@ definitions:
         type: integer
       updatedAt:
         description: 更新时间
-        type: string
-    type: object
-  definition.ActivityImage:
-    properties:
-      home:
-        description: 首页icon图片
-        type: string
-      list:
-        description: 列表图片
-        type: string
-      popup:
-        description: 弹窗图片
         type: string
     type: object
   definition.AgreementDetail:
@@ -1014,6 +1002,18 @@ definitions:
         description: 版本号
         type: string
     type: object
+  model.ActivityImage:
+    properties:
+      home:
+        description: 首页icon图片
+        type: string
+      list:
+        description: 列表图片
+        type: string
+      popup:
+        description: 弹窗图片
+        type: string
+    type: object
   model.Agreement:
     properties:
       forceReadTime:
@@ -1619,6 +1619,12 @@ definitions:
       stockNum:
         description: 库存电池
         type: integer
+      storeId:
+        description: 绑定门店ID
+        type: integer
+      storeName:
+        description: 绑定门店名称
+        type: string
       transferred:
         description: 是否初始化过调拨
         type: boolean
@@ -4826,22 +4832,22 @@ paths:
   /rider/v2/phone/device:
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: ReportPhoneDevice
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
-        - description: 请求参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.RiderPhoneDeviceReq'
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.RiderPhoneDeviceReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -4849,7 +4855,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 上报手机设备信息
       tags:
-        - Rider - 骑手
+      - Rider - 骑手
   /rider/v2/plan:
     get:
       consumes:

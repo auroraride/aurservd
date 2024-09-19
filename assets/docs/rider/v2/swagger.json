@@ -2783,42 +2783,42 @@
                 }
             }
         },
-      "/rider/v2/phone/device": {
-        "post": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "Rider - 骑手"
-          ],
-          "summary": "上报手机设备信息",
-          "operationId": "ReportPhoneDevice",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "骑手校验token",
-              "name": "X-Rider-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "description": "请求参数",
-              "name": "body",
-              "in": "body",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/definition.RiderPhoneDeviceReq"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "$ref": "#/definitions/model.StatusResponse"
+        "/rider/v2/phone/device": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rider - 骑手"
+                ],
+                "summary": "上报手机设备信息",
+                "operationId": "ReportPhoneDevice",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.RiderPhoneDeviceReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -4001,7 +4001,7 @@
                     "description": "图片",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/definition.ActivityImage"
+                            "$ref": "#/definitions/model.ActivityImage"
                         }
                     ]
                 },
@@ -4031,23 +4031,6 @@
                 },
                 "updatedAt": {
                     "description": "更新时间",
-                    "type": "string"
-                }
-            }
-        },
-        "definition.ActivityImage": {
-            "type": "object",
-            "properties": {
-                "home": {
-                    "description": "首页icon图片",
-                    "type": "string"
-                },
-                "list": {
-                    "description": "列表图片",
-                    "type": "string"
-                },
-                "popup": {
-                    "description": "弹窗图片",
                     "type": "string"
                 }
             }
@@ -4973,43 +4956,43 @@
                 }
             }
         },
-      "definition.RiderPhoneDeviceReq": {
-        "type": "object",
-        "properties": {
-          "brand": {
-            "description": "手机品牌",
-            "type": "string"
-          },
-          "deviceSn": {
-            "description": "设备编号",
-            "type": "string"
-          },
-          "imei": {
-            "description": "IMEI",
-            "type": "string"
-          },
-          "model": {
-            "description": "手机型号",
-            "type": "string"
-          },
-          "osName": {
-            "description": "系统名称",
-            "type": "string"
-          },
-          "osVersion": {
-            "description": "系统版本",
-            "type": "string"
-          },
-          "screenHeight": {
-            "description": "屏幕高度",
-            "type": "integer"
-          },
-          "screenWidth": {
-            "description": "屏幕宽度",
-            "type": "integer"
-          }
-        }
-      },
+        "definition.RiderPhoneDeviceReq": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "description": "手机品牌",
+                    "type": "string"
+                },
+                "deviceSn": {
+                    "description": "设备编号",
+                    "type": "string"
+                },
+                "imei": {
+                    "description": "IMEI",
+                    "type": "string"
+                },
+                "model": {
+                    "description": "手机型号",
+                    "type": "string"
+                },
+                "osName": {
+                    "description": "系统名称",
+                    "type": "string"
+                },
+                "osVersion": {
+                    "description": "系统版本",
+                    "type": "string"
+                },
+                "screenHeight": {
+                    "description": "屏幕高度",
+                    "type": "integer"
+                },
+                "screenWidth": {
+                    "description": "屏幕宽度",
+                    "type": "integer"
+                }
+            }
+        },
         "definition.RiderSetMobPushReq": {
             "type": "object",
             "required": [
@@ -5421,6 +5404,23 @@
                 },
                 "version": {
                     "description": "版本号",
+                    "type": "string"
+                }
+            }
+        },
+        "model.ActivityImage": {
+            "type": "object",
+            "properties": {
+                "home": {
+                    "description": "首页icon图片",
+                    "type": "string"
+                },
+                "list": {
+                    "description": "列表图片",
+                    "type": "string"
+                },
+                "popup": {
+                    "description": "弹窗图片",
                     "type": "string"
                 }
             }
@@ -6291,6 +6291,14 @@
                 "stockNum": {
                     "description": "库存电池",
                     "type": "integer"
+                },
+                "storeId": {
+                    "description": "绑定门店ID",
+                    "type": "integer"
+                },
+                "storeName": {
+                    "description": "绑定门店名称",
+                    "type": "string"
                 },
                 "transferred": {
                     "description": "是否初始化过调拨",

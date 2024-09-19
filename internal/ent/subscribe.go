@@ -11,10 +11,9 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -58,8 +57,6 @@ type Subscribe struct {
 	CabinetID *uint64 `json:"cabinet_id,omitempty"`
 	// BrandID holds the value of the "brand_id" field.
 	BrandID *uint64 `json:"brand_id,omitempty"`
-	// EbikeID holds the value of the "ebike_id" field.
-	EbikeID *uint64 `json:"ebike_id,omitempty"`
 	// 骑手ID
 	RiderID uint64 `json:"rider_id,omitempty"`
 	// 初始订单ID(开通订阅的初始订单), 团签用户无此字段
@@ -116,6 +113,8 @@ type Subscribe struct {
 	EnterprisePriceID uint64 `json:"enterprise_price_id,omitempty"`
 	// 押金类型 1:芝麻免押 2:微信支付分免押 3:合同免押 4:支付押金
 	DepositType uint8 `json:"deposit_type,omitempty"`
+	// 电车ID
+	EbikeID *uint64 `json:"ebike_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeQuery when eager-loading is set.
 	Edges        SubscribeEdges `json:"edges"`
@@ -138,8 +137,6 @@ type SubscribeEdges struct {
 	Cabinet *Cabinet `json:"cabinet,omitempty"`
 	// Brand holds the value of the brand edge.
 	Brand *EbikeBrand `json:"brand,omitempty"`
-	// Ebike holds the value of the ebike edge.
-	Ebike *Ebike `json:"ebike,omitempty"`
 	// Rider holds the value of the rider edge.
 	Rider *Rider `json:"rider,omitempty"`
 	// Enterprise holds the value of the enterprise edge.
@@ -156,8 +153,10 @@ type SubscribeEdges struct {
 	InitialOrder *Order `json:"initial_order,omitempty"`
 	// Bills holds the value of the bills edge.
 	Bills []*EnterpriseBill `json:"bills,omitempty"`
+	// Ebike holds the value of the ebike edge.
+	Ebike *Asset `json:"ebike,omitempty"`
 	// Battery holds the value of the battery edge.
-	Battery *Battery `json:"battery,omitempty"`
+	Battery []*Asset `json:"battery,omitempty"`
 	// EnterprisePrice holds the value of the enterprise_price edge.
 	EnterprisePrice *EnterprisePrice `json:"enterprise_price,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -242,23 +241,12 @@ func (e SubscribeEdges) BrandOrErr() (*EbikeBrand, error) {
 	return nil, &NotLoadedError{edge: "brand"}
 }
 
-// EbikeOrErr returns the Ebike value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e SubscribeEdges) EbikeOrErr() (*Ebike, error) {
-	if e.Ebike != nil {
-		return e.Ebike, nil
-	} else if e.loadedTypes[7] {
-		return nil, &NotFoundError{label: ebike.Label}
-	}
-	return nil, &NotLoadedError{edge: "ebike"}
-}
-
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e SubscribeEdges) RiderOrErr() (*Rider, error) {
 	if e.Rider != nil {
 		return e.Rider, nil
-	} else if e.loadedTypes[8] {
+	} else if e.loadedTypes[7] {
 		return nil, &NotFoundError{label: rider.Label}
 	}
 	return nil, &NotLoadedError{edge: "rider"}
@@ -269,7 +257,7 @@ func (e SubscribeEdges) RiderOrErr() (*Rider, error) {
 func (e SubscribeEdges) EnterpriseOrErr() (*Enterprise, error) {
 	if e.Enterprise != nil {
 		return e.Enterprise, nil
-	} else if e.loadedTypes[9] {
+	} else if e.loadedTypes[8] {
 		return nil, &NotFoundError{label: enterprise.Label}
 	}
 	return nil, &NotLoadedError{edge: "enterprise"}
@@ -278,7 +266,7 @@ func (e SubscribeEdges) EnterpriseOrErr() (*Enterprise, error) {
 // PausesOrErr returns the Pauses value or an error if the edge
 // was not loaded in eager-loading.
 func (e SubscribeEdges) PausesOrErr() ([]*SubscribePause, error) {
-	if e.loadedTypes[10] {
+	if e.loadedTypes[9] {
 		return e.Pauses, nil
 	}
 	return nil, &NotLoadedError{edge: "pauses"}
@@ -287,7 +275,7 @@ func (e SubscribeEdges) PausesOrErr() ([]*SubscribePause, error) {
 // SuspendsOrErr returns the Suspends value or an error if the edge
 // was not loaded in eager-loading.
 func (e SubscribeEdges) SuspendsOrErr() ([]*SubscribeSuspend, error) {
-	if e.loadedTypes[11] {
+	if e.loadedTypes[10] {
 		return e.Suspends, nil
 	}
 	return nil, &NotLoadedError{edge: "suspends"}
@@ -296,7 +284,7 @@ func (e SubscribeEdges) SuspendsOrErr() ([]*SubscribeSuspend, error) {
 // AltersOrErr returns the Alters value or an error if the edge
 // was not loaded in eager-loading.
 func (e SubscribeEdges) AltersOrErr() ([]*SubscribeAlter, error) {
-	if e.loadedTypes[12] {
+	if e.loadedTypes[11] {
 		return e.Alters, nil
 	}
 	return nil, &NotLoadedError{edge: "alters"}
@@ -305,7 +293,7 @@ func (e SubscribeEdges) AltersOrErr() ([]*SubscribeAlter, error) {
 // OrdersOrErr returns the Orders value or an error if the edge
 // was not loaded in eager-loading.
 func (e SubscribeEdges) OrdersOrErr() ([]*Order, error) {
-	if e.loadedTypes[13] {
+	if e.loadedTypes[12] {
 		return e.Orders, nil
 	}
 	return nil, &NotLoadedError{edge: "orders"}
@@ -316,7 +304,7 @@ func (e SubscribeEdges) OrdersOrErr() ([]*Order, error) {
 func (e SubscribeEdges) InitialOrderOrErr() (*Order, error) {
 	if e.InitialOrder != nil {
 		return e.InitialOrder, nil
-	} else if e.loadedTypes[14] {
+	} else if e.loadedTypes[13] {
 		return nil, &NotFoundError{label: order.Label}
 	}
 	return nil, &NotLoadedError{edge: "initial_order"}
@@ -325,19 +313,28 @@ func (e SubscribeEdges) InitialOrderOrErr() (*Order, error) {
 // BillsOrErr returns the Bills value or an error if the edge
 // was not loaded in eager-loading.
 func (e SubscribeEdges) BillsOrErr() ([]*EnterpriseBill, error) {
-	if e.loadedTypes[15] {
+	if e.loadedTypes[14] {
 		return e.Bills, nil
 	}
 	return nil, &NotLoadedError{edge: "bills"}
 }
 
-// BatteryOrErr returns the Battery value or an error if the edge
+// EbikeOrErr returns the Ebike value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e SubscribeEdges) BatteryOrErr() (*Battery, error) {
-	if e.Battery != nil {
+func (e SubscribeEdges) EbikeOrErr() (*Asset, error) {
+	if e.Ebike != nil {
+		return e.Ebike, nil
+	} else if e.loadedTypes[15] {
+		return nil, &NotFoundError{label: asset.Label}
+	}
+	return nil, &NotLoadedError{edge: "ebike"}
+}
+
+// BatteryOrErr returns the Battery value or an error if the edge
+// was not loaded in eager-loading.
+func (e SubscribeEdges) BatteryOrErr() ([]*Asset, error) {
+	if e.loadedTypes[16] {
 		return e.Battery, nil
-	} else if e.loadedTypes[16] {
-		return nil, &NotFoundError{label: battery.Label}
 	}
 	return nil, &NotLoadedError{edge: "battery"}
 }
@@ -362,7 +359,7 @@ func (*Subscribe) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case subscribe.FieldPauseOverdue, subscribe.FieldNeedContract, subscribe.FieldIntelligent:
 			values[i] = new(sql.NullBool)
-		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldCabinetID, subscribe.FieldBrandID, subscribe.FieldEbikeID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldSuspendDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining, subscribe.FieldEnterprisePriceID, subscribe.FieldDepositType:
+		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldCabinetID, subscribe.FieldBrandID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldSuspendDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining, subscribe.FieldEnterprisePriceID, subscribe.FieldDepositType, subscribe.FieldEbikeID:
 			values[i] = new(sql.NullInt64)
 		case subscribe.FieldRemark, subscribe.FieldModel, subscribe.FieldUnsubscribeReason, subscribe.FieldFormula, subscribe.FieldAgreementHash:
 			values[i] = new(sql.NullString)
@@ -477,13 +474,6 @@ func (s *Subscribe) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.BrandID = new(uint64)
 				*s.BrandID = uint64(value.Int64)
-			}
-		case subscribe.FieldEbikeID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field ebike_id", values[i])
-			} else if value.Valid {
-				s.EbikeID = new(uint64)
-				*s.EbikeID = uint64(value.Int64)
 			}
 		case subscribe.FieldRiderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -662,6 +652,13 @@ func (s *Subscribe) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.DepositType = uint8(value.Int64)
 			}
+		case subscribe.FieldEbikeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field ebike_id", values[i])
+			} else if value.Valid {
+				s.EbikeID = new(uint64)
+				*s.EbikeID = uint64(value.Int64)
+			}
 		default:
 			s.selectValues.Set(columns[i], values[i])
 		}
@@ -710,11 +707,6 @@ func (s *Subscribe) QueryBrand() *EbikeBrandQuery {
 	return NewSubscribeClient(s.config).QueryBrand(s)
 }
 
-// QueryEbike queries the "ebike" edge of the Subscribe entity.
-func (s *Subscribe) QueryEbike() *EbikeQuery {
-	return NewSubscribeClient(s.config).QueryEbike(s)
-}
-
 // QueryRider queries the "rider" edge of the Subscribe entity.
 func (s *Subscribe) QueryRider() *RiderQuery {
 	return NewSubscribeClient(s.config).QueryRider(s)
@@ -755,8 +747,13 @@ func (s *Subscribe) QueryBills() *EnterpriseBillQuery {
 	return NewSubscribeClient(s.config).QueryBills(s)
 }
 
+// QueryEbike queries the "ebike" edge of the Subscribe entity.
+func (s *Subscribe) QueryEbike() *AssetQuery {
+	return NewSubscribeClient(s.config).QueryEbike(s)
+}
+
 // QueryBattery queries the "battery" edge of the Subscribe entity.
-func (s *Subscribe) QueryBattery() *BatteryQuery {
+func (s *Subscribe) QueryBattery() *AssetQuery {
 	return NewSubscribeClient(s.config).QueryBattery(s)
 }
 
@@ -838,11 +835,6 @@ func (s *Subscribe) String() string {
 	builder.WriteString(", ")
 	if v := s.BrandID; v != nil {
 		builder.WriteString("brand_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := s.EbikeID; v != nil {
-		builder.WriteString("ebike_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
@@ -947,6 +939,11 @@ func (s *Subscribe) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("deposit_type=")
 	builder.WriteString(fmt.Sprintf("%v", s.DepositType))
+	builder.WriteString(", ")
+	if v := s.EbikeID; v != nil {
+		builder.WriteString("ebike_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

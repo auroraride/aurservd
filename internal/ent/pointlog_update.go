@@ -262,7 +262,7 @@ func (plu *PointLogUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (plu *PointLogUpdate) check() error {
-	if _, ok := plu.mutation.RiderID(); plu.mutation.RiderCleared() && !ok {
+	if plu.mutation.RiderCleared() && len(plu.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PointLog.rider"`)
 	}
 	return nil
@@ -654,7 +654,7 @@ func (pluo *PointLogUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (pluo *PointLogUpdateOne) check() error {
-	if _, ok := pluo.mutation.RiderID(); pluo.mutation.RiderCleared() && !ok {
+	if pluo.mutation.RiderCleared() && len(pluo.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PointLog.rider"`)
 	}
 	return nil

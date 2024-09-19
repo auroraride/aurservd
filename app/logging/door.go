@@ -19,7 +19,7 @@ type DoorOperateLog struct {
 	Operation     string                        `json:"operation" sls:"操作" index:"doc"`
 	Success       bool                          `json:"success" sls:"是否成功" index:"doc"`
 	Remark        string                        `json:"remark" sls:"备注"`
-	OperatorID    uint64                        `json:"operatorID" sls:"操作人ID" index:"doc"`
+	OperatorID    uint64                        `json:"operatorId" sls:"操作人ID" index:"doc"`
 	OperatorPhone string                        `json:"operatorPhone" sls:"操作人电话" index:"doc"`
 	OperatorName  string                        `json:"operatorName" sls:"操作者" index:"doc"`
 	OperatorRole  model.CabinetDoorOperatorRole `json:"operatorRole" sls:"操作人角色" string:"true" index:"doc"`

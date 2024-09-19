@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -20,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/storegroup"
 )
 
 // EmployeeQuery is the builder for querying Employee entities.
@@ -30,12 +32,15 @@ type EmployeeQuery struct {
 	inters          []Interceptor
 	predicates      []predicate.Employee
 	withCity        *CityQuery
+	withGroup       *StoreGroupQuery
 	withStore       *StoreQuery
 	withAttendances *AttendanceQuery
 	withStocks      *StockQuery
 	withExchanges   *ExchangeQuery
 	withCommissions *CommissionQuery
 	withAssistances *AssistanceQuery
+	withStores      *StoreQuery
+	withDutyStore   *StoreQuery
 	modifiers       []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -88,6 +93,28 @@ func (eq *EmployeeQuery) QueryCity() *CityQuery {
 			sqlgraph.From(employee.Table, employee.FieldID, selector),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, employee.CityTable, employee.CityColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryGroup chains the current query on the "group" edge.
+func (eq *EmployeeQuery) QueryGroup() *StoreGroupQuery {
+	query := (&StoreGroupClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, selector),
+			sqlgraph.To(storegroup.Table, storegroup.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, employee.GroupTable, employee.GroupColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -227,10 +254,54 @@ func (eq *EmployeeQuery) QueryAssistances() *AssistanceQuery {
 	return query
 }
 
+// QueryStores chains the current query on the "stores" edge.
+func (eq *EmployeeQuery) QueryStores() *StoreQuery {
+	query := (&StoreClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, selector),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, employee.StoresTable, employee.StoresPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryDutyStore chains the current query on the "duty_store" edge.
+func (eq *EmployeeQuery) QueryDutyStore() *StoreQuery {
+	query := (&StoreClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, selector),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, employee.DutyStoreTable, employee.DutyStoreColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Employee entity from the query.
 // Returns a *NotFoundError when no Employee was found.
 func (eq *EmployeeQuery) First(ctx context.Context) (*Employee, error) {
-	nodes, err := eq.Limit(1).All(setContextOp(ctx, eq.ctx, "First"))
+	nodes, err := eq.Limit(1).All(setContextOp(ctx, eq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -253,7 +324,7 @@ func (eq *EmployeeQuery) FirstX(ctx context.Context) *Employee {
 // Returns a *NotFoundError when no Employee ID was found.
 func (eq *EmployeeQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(1).IDs(setContextOp(ctx, eq.ctx, "FirstID")); err != nil {
+	if ids, err = eq.Limit(1).IDs(setContextOp(ctx, eq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -276,7 +347,7 @@ func (eq *EmployeeQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Employee entity is found.
 // Returns a *NotFoundError when no Employee entities are found.
 func (eq *EmployeeQuery) Only(ctx context.Context) (*Employee, error) {
-	nodes, err := eq.Limit(2).All(setContextOp(ctx, eq.ctx, "Only"))
+	nodes, err := eq.Limit(2).All(setContextOp(ctx, eq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -304,7 +375,7 @@ func (eq *EmployeeQuery) OnlyX(ctx context.Context) *Employee {
 // Returns a *NotFoundError when no entities are found.
 func (eq *EmployeeQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(2).IDs(setContextOp(ctx, eq.ctx, "OnlyID")); err != nil {
+	if ids, err = eq.Limit(2).IDs(setContextOp(ctx, eq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -329,7 +400,7 @@ func (eq *EmployeeQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Employees.
 func (eq *EmployeeQuery) All(ctx context.Context) ([]*Employee, error) {
-	ctx = setContextOp(ctx, eq.ctx, "All")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryAll)
 	if err := eq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -351,7 +422,7 @@ func (eq *EmployeeQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if eq.ctx.Unique == nil && eq.path != nil {
 		eq.Unique(true)
 	}
-	ctx = setContextOp(ctx, eq.ctx, "IDs")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryIDs)
 	if err = eq.Select(employee.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -369,7 +440,7 @@ func (eq *EmployeeQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (eq *EmployeeQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, eq.ctx, "Count")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryCount)
 	if err := eq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -387,7 +458,7 @@ func (eq *EmployeeQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (eq *EmployeeQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, eq.ctx, "Exist")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryExist)
 	switch _, err := eq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -420,15 +491,19 @@ func (eq *EmployeeQuery) Clone() *EmployeeQuery {
 		inters:          append([]Interceptor{}, eq.inters...),
 		predicates:      append([]predicate.Employee{}, eq.predicates...),
 		withCity:        eq.withCity.Clone(),
+		withGroup:       eq.withGroup.Clone(),
 		withStore:       eq.withStore.Clone(),
 		withAttendances: eq.withAttendances.Clone(),
 		withStocks:      eq.withStocks.Clone(),
 		withExchanges:   eq.withExchanges.Clone(),
 		withCommissions: eq.withCommissions.Clone(),
 		withAssistances: eq.withAssistances.Clone(),
+		withStores:      eq.withStores.Clone(),
+		withDutyStore:   eq.withDutyStore.Clone(),
 		// clone intermediate query.
-		sql:  eq.sql.Clone(),
-		path: eq.path,
+		sql:       eq.sql.Clone(),
+		path:      eq.path,
+		modifiers: append([]func(*sql.Selector){}, eq.modifiers...),
 	}
 }
 
@@ -440,6 +515,17 @@ func (eq *EmployeeQuery) WithCity(opts ...func(*CityQuery)) *EmployeeQuery {
 		opt(query)
 	}
 	eq.withCity = query
+	return eq
+}
+
+// WithGroup tells the query-builder to eager-load the nodes that are connected to
+// the "group" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EmployeeQuery) WithGroup(opts ...func(*StoreGroupQuery)) *EmployeeQuery {
+	query := (&StoreGroupClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withGroup = query
 	return eq
 }
 
@@ -506,6 +592,28 @@ func (eq *EmployeeQuery) WithAssistances(opts ...func(*AssistanceQuery)) *Employ
 		opt(query)
 	}
 	eq.withAssistances = query
+	return eq
+}
+
+// WithStores tells the query-builder to eager-load the nodes that are connected to
+// the "stores" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EmployeeQuery) WithStores(opts ...func(*StoreQuery)) *EmployeeQuery {
+	query := (&StoreClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withStores = query
+	return eq
+}
+
+// WithDutyStore tells the query-builder to eager-load the nodes that are connected to
+// the "duty_store" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EmployeeQuery) WithDutyStore(opts ...func(*StoreQuery)) *EmployeeQuery {
+	query := (&StoreClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withDutyStore = query
 	return eq
 }
 
@@ -587,14 +695,17 @@ func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Emp
 	var (
 		nodes       = []*Employee{}
 		_spec       = eq.querySpec()
-		loadedTypes = [7]bool{
+		loadedTypes = [10]bool{
 			eq.withCity != nil,
+			eq.withGroup != nil,
 			eq.withStore != nil,
 			eq.withAttendances != nil,
 			eq.withStocks != nil,
 			eq.withExchanges != nil,
 			eq.withCommissions != nil,
 			eq.withAssistances != nil,
+			eq.withStores != nil,
+			eq.withDutyStore != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -621,6 +732,12 @@ func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Emp
 	if query := eq.withCity; query != nil {
 		if err := eq.loadCity(ctx, query, nodes, nil,
 			func(n *Employee, e *City) { n.Edges.City = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withGroup; query != nil {
+		if err := eq.loadGroup(ctx, query, nodes, nil,
+			func(n *Employee, e *StoreGroup) { n.Edges.Group = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -665,6 +782,19 @@ func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Emp
 			return nil, err
 		}
 	}
+	if query := eq.withStores; query != nil {
+		if err := eq.loadStores(ctx, query, nodes,
+			func(n *Employee) { n.Edges.Stores = []*Store{} },
+			func(n *Employee, e *Store) { n.Edges.Stores = append(n.Edges.Stores, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withDutyStore; query != nil {
+		if err := eq.loadDutyStore(ctx, query, nodes, nil,
+			func(n *Employee, e *Store) { n.Edges.DutyStore = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
@@ -690,6 +820,38 @@ func (eq *EmployeeQuery) loadCity(ctx context.Context, query *CityQuery, nodes [
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (eq *EmployeeQuery) loadGroup(ctx context.Context, query *StoreGroupQuery, nodes []*Employee, init func(*Employee), assign func(*Employee, *StoreGroup)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Employee)
+	for i := range nodes {
+		if nodes[i].GroupID == nil {
+			continue
+		}
+		fk := *nodes[i].GroupID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(storegroup.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "group_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -890,6 +1052,99 @@ func (eq *EmployeeQuery) loadAssistances(ctx context.Context, query *AssistanceQ
 	}
 	return nil
 }
+func (eq *EmployeeQuery) loadStores(ctx context.Context, query *StoreQuery, nodes []*Employee, init func(*Employee), assign func(*Employee, *Store)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[uint64]*Employee)
+	nids := make(map[uint64]map[*Employee]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(employee.StoresTable)
+		s.Join(joinT).On(s.C(store.FieldID), joinT.C(employee.StoresPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(employee.StoresPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(employee.StoresPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullInt64)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := uint64(values[0].(*sql.NullInt64).Int64)
+				inValue := uint64(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Employee]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Store](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "stores" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (eq *EmployeeQuery) loadDutyStore(ctx context.Context, query *StoreQuery, nodes []*Employee, init func(*Employee), assign func(*Employee, *Store)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Employee)
+	for i := range nodes {
+		if nodes[i].DutyStoreID == nil {
+			continue
+		}
+		fk := *nodes[i].DutyStoreID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(store.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "duty_store_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (eq *EmployeeQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := eq.querySpec()
@@ -921,6 +1176,12 @@ func (eq *EmployeeQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if eq.withCity != nil {
 			_spec.Node.AddColumnOnce(employee.FieldCityID)
+		}
+		if eq.withGroup != nil {
+			_spec.Node.AddColumnOnce(employee.FieldGroupID)
+		}
+		if eq.withDutyStore != nil {
+			_spec.Node.AddColumnOnce(employee.FieldDutyStoreID)
 		}
 	}
 	if ps := eq.predicates; len(ps) > 0 {
@@ -991,12 +1252,15 @@ type EmployeeQueryWith string
 
 var (
 	EmployeeQueryWithCity        EmployeeQueryWith = "City"
+	EmployeeQueryWithGroup       EmployeeQueryWith = "Group"
 	EmployeeQueryWithStore       EmployeeQueryWith = "Store"
 	EmployeeQueryWithAttendances EmployeeQueryWith = "Attendances"
 	EmployeeQueryWithStocks      EmployeeQueryWith = "Stocks"
 	EmployeeQueryWithExchanges   EmployeeQueryWith = "Exchanges"
 	EmployeeQueryWithCommissions EmployeeQueryWith = "Commissions"
 	EmployeeQueryWithAssistances EmployeeQueryWith = "Assistances"
+	EmployeeQueryWithStores      EmployeeQueryWith = "Stores"
+	EmployeeQueryWithDutyStore   EmployeeQueryWith = "DutyStore"
 )
 
 func (eq *EmployeeQuery) With(withEdges ...EmployeeQueryWith) *EmployeeQuery {
@@ -1004,6 +1268,8 @@ func (eq *EmployeeQuery) With(withEdges ...EmployeeQueryWith) *EmployeeQuery {
 		switch v {
 		case EmployeeQueryWithCity:
 			eq.WithCity()
+		case EmployeeQueryWithGroup:
+			eq.WithGroup()
 		case EmployeeQueryWithStore:
 			eq.WithStore()
 		case EmployeeQueryWithAttendances:
@@ -1016,6 +1282,10 @@ func (eq *EmployeeQuery) With(withEdges ...EmployeeQueryWith) *EmployeeQuery {
 			eq.WithCommissions()
 		case EmployeeQueryWithAssistances:
 			eq.WithAssistances()
+		case EmployeeQueryWithStores:
+			eq.WithStores()
+		case EmployeeQueryWithDutyStore:
+			eq.WithDutyStore()
 		}
 	}
 	return eq
@@ -1035,7 +1305,7 @@ func (egb *EmployeeGroupBy) Aggregate(fns ...AggregateFunc) *EmployeeGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (egb *EmployeeGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, egb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, egb.build.ctx, ent.OpQueryGroupBy)
 	if err := egb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1083,7 +1353,7 @@ func (es *EmployeeSelect) Aggregate(fns ...AggregateFunc) *EmployeeSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (es *EmployeeSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, es.ctx, "Select")
+	ctx = setContextOp(ctx, es.ctx, ent.OpQuerySelect)
 	if err := es.prepareQuery(ctx); err != nil {
 		return err
 	}

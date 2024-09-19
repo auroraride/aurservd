@@ -12,11 +12,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
-	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
@@ -61,8 +60,6 @@ type Business struct {
 	StationID *uint64 `json:"station_id,omitempty"`
 	// 电柜ID
 	CabinetID *uint64 `json:"cabinet_id,omitempty"`
-	// BatteryID holds the value of the "battery_id" field.
-	BatteryID *uint64 `json:"battery_id,omitempty"`
 	// AgentID holds the value of the "agent_id" field.
 	AgentID *uint64 `json:"agent_id,omitempty"`
 	// 业务类型
@@ -73,6 +70,8 @@ type Business struct {
 	StockSn string `json:"stock_sn,omitempty"`
 	// 以租代购车辆ID，生成后禁止修改
 	RtoEbikeID *uint64 `json:"rto_ebike_id,omitempty"`
+	// 电池ID
+	BatteryID *uint64 `json:"battery_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BusinessQuery when eager-loading is set.
 	Edges        BusinessEdges `json:"edges"`
@@ -99,12 +98,12 @@ type BusinessEdges struct {
 	Station *EnterpriseStation `json:"station,omitempty"`
 	// Cabinet holds the value of the cabinet edge.
 	Cabinet *Cabinet `json:"cabinet,omitempty"`
-	// Battery holds the value of the battery edge.
-	Battery *Battery `json:"battery,omitempty"`
 	// Agent holds the value of the agent edge.
 	Agent *Agent `json:"agent,omitempty"`
 	// RtoEbike holds the value of the rto_ebike edge.
-	RtoEbike *Ebike `json:"rto_ebike,omitempty"`
+	RtoEbike *Asset `json:"rto_ebike,omitempty"`
+	// Battery holds the value of the battery edge.
+	Battery *Asset `json:"battery,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [12]bool
@@ -209,23 +208,12 @@ func (e BusinessEdges) CabinetOrErr() (*Cabinet, error) {
 	return nil, &NotLoadedError{edge: "cabinet"}
 }
 
-// BatteryOrErr returns the Battery value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e BusinessEdges) BatteryOrErr() (*Battery, error) {
-	if e.Battery != nil {
-		return e.Battery, nil
-	} else if e.loadedTypes[9] {
-		return nil, &NotFoundError{label: battery.Label}
-	}
-	return nil, &NotLoadedError{edge: "battery"}
-}
-
 // AgentOrErr returns the Agent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e BusinessEdges) AgentOrErr() (*Agent, error) {
 	if e.Agent != nil {
 		return e.Agent, nil
-	} else if e.loadedTypes[10] {
+	} else if e.loadedTypes[9] {
 		return nil, &NotFoundError{label: agent.Label}
 	}
 	return nil, &NotLoadedError{edge: "agent"}
@@ -233,13 +221,24 @@ func (e BusinessEdges) AgentOrErr() (*Agent, error) {
 
 // RtoEbikeOrErr returns the RtoEbike value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e BusinessEdges) RtoEbikeOrErr() (*Ebike, error) {
+func (e BusinessEdges) RtoEbikeOrErr() (*Asset, error) {
 	if e.RtoEbike != nil {
 		return e.RtoEbike, nil
-	} else if e.loadedTypes[11] {
-		return nil, &NotFoundError{label: ebike.Label}
+	} else if e.loadedTypes[10] {
+		return nil, &NotFoundError{label: asset.Label}
 	}
 	return nil, &NotLoadedError{edge: "rto_ebike"}
+}
+
+// BatteryOrErr returns the Battery value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e BusinessEdges) BatteryOrErr() (*Asset, error) {
+	if e.Battery != nil {
+		return e.Battery, nil
+	} else if e.loadedTypes[11] {
+		return nil, &NotFoundError{label: asset.Label}
+	}
+	return nil, &NotLoadedError{edge: "battery"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -251,7 +250,7 @@ func (*Business) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case business.FieldType:
 			values[i] = new(model.BusinessType)
-		case business.FieldID, business.FieldRiderID, business.FieldCityID, business.FieldSubscribeID, business.FieldEmployeeID, business.FieldStoreID, business.FieldPlanID, business.FieldEnterpriseID, business.FieldStationID, business.FieldCabinetID, business.FieldBatteryID, business.FieldAgentID, business.FieldRtoEbikeID:
+		case business.FieldID, business.FieldRiderID, business.FieldCityID, business.FieldSubscribeID, business.FieldEmployeeID, business.FieldStoreID, business.FieldPlanID, business.FieldEnterpriseID, business.FieldStationID, business.FieldCabinetID, business.FieldAgentID, business.FieldRtoEbikeID, business.FieldBatteryID:
 			values[i] = new(sql.NullInt64)
 		case business.FieldRemark, business.FieldStockSn:
 			values[i] = new(sql.NullString)
@@ -379,13 +378,6 @@ func (b *Business) assignValues(columns []string, values []any) error {
 				b.CabinetID = new(uint64)
 				*b.CabinetID = uint64(value.Int64)
 			}
-		case business.FieldBatteryID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field battery_id", values[i])
-			} else if value.Valid {
-				b.BatteryID = new(uint64)
-				*b.BatteryID = uint64(value.Int64)
-			}
 		case business.FieldAgentID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field agent_id", values[i])
@@ -419,6 +411,13 @@ func (b *Business) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				b.RtoEbikeID = new(uint64)
 				*b.RtoEbikeID = uint64(value.Int64)
+			}
+		case business.FieldBatteryID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field battery_id", values[i])
+			} else if value.Valid {
+				b.BatteryID = new(uint64)
+				*b.BatteryID = uint64(value.Int64)
 			}
 		default:
 			b.selectValues.Set(columns[i], values[i])
@@ -478,19 +477,19 @@ func (b *Business) QueryCabinet() *CabinetQuery {
 	return NewBusinessClient(b.config).QueryCabinet(b)
 }
 
-// QueryBattery queries the "battery" edge of the Business entity.
-func (b *Business) QueryBattery() *BatteryQuery {
-	return NewBusinessClient(b.config).QueryBattery(b)
-}
-
 // QueryAgent queries the "agent" edge of the Business entity.
 func (b *Business) QueryAgent() *AgentQuery {
 	return NewBusinessClient(b.config).QueryAgent(b)
 }
 
 // QueryRtoEbike queries the "rto_ebike" edge of the Business entity.
-func (b *Business) QueryRtoEbike() *EbikeQuery {
+func (b *Business) QueryRtoEbike() *AssetQuery {
 	return NewBusinessClient(b.config).QueryRtoEbike(b)
+}
+
+// QueryBattery queries the "battery" edge of the Business entity.
+func (b *Business) QueryBattery() *AssetQuery {
+	return NewBusinessClient(b.config).QueryBattery(b)
 }
 
 // Update returns a builder for updating this Business.
@@ -575,11 +574,6 @@ func (b *Business) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := b.BatteryID; v != nil {
-		builder.WriteString("battery_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
 	if v := b.AgentID; v != nil {
 		builder.WriteString("agent_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
@@ -596,6 +590,11 @@ func (b *Business) String() string {
 	builder.WriteString(", ")
 	if v := b.RtoEbikeID; v != nil {
 		builder.WriteString("rto_ebike_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := b.BatteryID; v != nil {
+		builder.WriteString("battery_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')

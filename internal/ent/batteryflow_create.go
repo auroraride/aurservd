@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/adapter"
-	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -176,11 +175,6 @@ func (bfc *BatteryFlowCreate) SetSubscribe(s *Subscribe) *BatteryFlowCreate {
 	return bfc.SetSubscribeID(s.ID)
 }
 
-// SetBattery sets the "battery" edge to the Battery entity.
-func (bfc *BatteryFlowCreate) SetBattery(b *Battery) *BatteryFlowCreate {
-	return bfc.SetBatteryID(b.ID)
-}
-
 // SetCabinet sets the "cabinet" edge to the Cabinet entity.
 func (bfc *BatteryFlowCreate) SetCabinet(c *Cabinet) *BatteryFlowCreate {
 	return bfc.SetCabinetID(c.ID)
@@ -257,9 +251,6 @@ func (bfc *BatteryFlowCreate) check() error {
 	if _, ok := bfc.mutation.Soc(); !ok {
 		return &ValidationError{Name: "soc", err: errors.New(`ent: missing required field "BatteryFlow.soc"`)}
 	}
-	if _, ok := bfc.mutation.BatteryID(); !ok {
-		return &ValidationError{Name: "battery", err: errors.New(`ent: missing required edge "BatteryFlow.battery"`)}
-	}
 	return nil
 }
 
@@ -294,6 +285,10 @@ func (bfc *BatteryFlowCreate) createSpec() (*BatteryFlow, *sqlgraph.CreateSpec) 
 	if value, ok := bfc.mutation.UpdatedAt(); ok {
 		_spec.SetField(batteryflow.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if value, ok := bfc.mutation.BatteryID(); ok {
+		_spec.SetField(batteryflow.FieldBatteryID, field.TypeUint64, value)
+		_node.BatteryID = value
 	}
 	if value, ok := bfc.mutation.Sn(); ok {
 		_spec.SetField(batteryflow.FieldSn, field.TypeString, value)
@@ -334,23 +329,6 @@ func (bfc *BatteryFlowCreate) createSpec() (*BatteryFlow, *sqlgraph.CreateSpec) 
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.SubscribeID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := bfc.mutation.BatteryIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   batteryflow.BatteryTable,
-			Columns: []string{batteryflow.BatteryColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.BatteryID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := bfc.mutation.CabinetIDs(); len(nodes) > 0 {
@@ -478,6 +456,12 @@ func (u *BatteryFlowUpsert) SetBatteryID(v uint64) *BatteryFlowUpsert {
 // UpdateBatteryID sets the "battery_id" field to the value that was provided on create.
 func (u *BatteryFlowUpsert) UpdateBatteryID() *BatteryFlowUpsert {
 	u.SetExcluded(batteryflow.FieldBatteryID)
+	return u
+}
+
+// AddBatteryID adds v to the "battery_id" field.
+func (u *BatteryFlowUpsert) AddBatteryID(v uint64) *BatteryFlowUpsert {
+	u.Add(batteryflow.FieldBatteryID, v)
 	return u
 }
 
@@ -709,6 +693,13 @@ func (u *BatteryFlowUpsertOne) ClearSubscribeID() *BatteryFlowUpsertOne {
 func (u *BatteryFlowUpsertOne) SetBatteryID(v uint64) *BatteryFlowUpsertOne {
 	return u.Update(func(s *BatteryFlowUpsert) {
 		s.SetBatteryID(v)
+	})
+}
+
+// AddBatteryID adds v to the "battery_id" field.
+func (u *BatteryFlowUpsertOne) AddBatteryID(v uint64) *BatteryFlowUpsertOne {
+	return u.Update(func(s *BatteryFlowUpsert) {
+		s.AddBatteryID(v)
 	})
 }
 
@@ -1137,6 +1128,13 @@ func (u *BatteryFlowUpsertBulk) ClearSubscribeID() *BatteryFlowUpsertBulk {
 func (u *BatteryFlowUpsertBulk) SetBatteryID(v uint64) *BatteryFlowUpsertBulk {
 	return u.Update(func(s *BatteryFlowUpsert) {
 		s.SetBatteryID(v)
+	})
+}
+
+// AddBatteryID adds v to the "battery_id" field.
+func (u *BatteryFlowUpsertBulk) AddBatteryID(v uint64) *BatteryFlowUpsertBulk {
+	return u.Update(func(s *BatteryFlowUpsert) {
+		s.AddBatteryID(v)
 	})
 }
 

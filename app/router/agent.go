@@ -55,9 +55,9 @@ func loadAgentRoutes() {
 	auth.POST("/cabinet/binopen", aapi.Cabinet.BinOpen)      // 电柜开仓
 
 	// A6 物资
-	auth.GET("/stock", aapi.Stock.Detail)               // 出入库详情
-	auth.GET("/stock/battery", aapi.Stock.BatteryStock) //  电池物资
-	auth.GET("/stock/ebike", aapi.Stock.EBikeStock)     // 电车物资
+	// auth.GET("/stock", aapi.Stock.Detail) // 出入库详情
+	// auth.GET("/stock/battery", aapi.Stock.BatteryStock) //  电池物资
+	// auth.GET("/stock/ebike", aapi.Stock.EBikeStock)     // 电车物资
 
 	// A7 骑士卡 / 订阅
 	auth.POST("/subscribe/active", aapi.Subscribe.Active)            // 激活骑手
@@ -79,10 +79,43 @@ func loadAgentRoutes() {
 	auth.GET("/battery/model", aapi.Battery.Model)         // 电池型号列表
 
 	// AB 电车
-	auth.GET("/bike", aapi.Bike.List)                    // 电车列表
+	// auth.GET("/bike", aapi.Bike.List)                    // 电车列表
 	auth.GET("/bike/unallocated", aapi.Bike.Unallocated) // 搜索未分配车辆
 
 	// AZ 杂项
 	auth.POST("/misc/feedback", aapi.Misc.Feedback)            // 意见反馈
 	auth.POST("/misc/feedback/image", aapi.Misc.FeedbackImage) // 意见反馈 - 上传图片
+
+	// 筛选项
+	auth.GET("/selection/warehouse", aapi.Selection.Warehouse)      // 城市仓库
+	auth.GET("/selection/store", aapi.Selection.Store)              // 城市门店
+	auth.GET("/selection/city_station", aapi.Selection.CityStation) // 城市站点
+	auth.GET("/selection/maintainer", aapi.Selection.Maintainer)    // 运维
+	auth.GET("/selection/station", aapi.Selection.Station)          // 企业站点
+	auth.GET("/selection/model", aapi.Selection.Model)              // 电池型号筛选
+	auth.GET("/selection/ebike/brand", aapi.Selection.EbikeBrand)   // 电车品牌筛选
+
+	// 资产调拨
+	auth.POST("/transfer", aapi.AssetTransfer.Transfer)                   // 创建调拨
+	auth.GET("/transfer", aapi.AssetTransfer.TransferList)                // 调拨列表
+	auth.GET("/transfer/:id", aapi.AssetTransfer.TransferDetail)          // 调拨详情
+	auth.POST("/transfer/receive", aapi.AssetTransfer.TransferReceive)    // 调拨批量入库
+	auth.GET("/transfer/sn/:sn", aapi.AssetTransfer.TransferBySn)         // 根据sn查询调拨信息
+	auth.GET("/transfer/flow", aapi.AssetTransfer.TransferFlow)           // 资产流转明细
+	auth.GET("/transfer/details", aapi.AssetTransfer.TransferDetailsList) // 出入库明细
+	auth.PUT("/transfer/:id", aapi.AssetTransfer.Modify)                  // 修改调拨记录
+	auth.PUT("/transfer/cancel/:id", aapi.AssetTransfer.TransferCancel)   // 取消资产调拨
+
+	// 物资管理
+	auth.GET("/assets", aapi.Asset.Assets)              // 资产数据
+	auth.GET("/assets/common", aapi.Asset.AssetsCommon) // 电池/电车资产数据
+	auth.GET("/assets/count", aapi.Asset.AssetCount)    // 资产统计
+
+	// 盘点
+	auth.GET("/check/sn/:sn", aapi.AssetCheck.GetAssetBySN)       // 通过SN查询资产
+	auth.GET("/check", aapi.AssetCheck.List)                      // 盘点记录
+	auth.POST("/check", aapi.AssetCheck.Create)                   // 创建资产盘点
+	auth.GET("/check/:id", aapi.AssetCheck.Detail)                // 盘点详情
+	auth.GET("/check/asset/:id", aapi.AssetCheck.AssetDetailList) // 盘点资产明细
+
 }
