@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetcheck"
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -25,18 +26,18 @@ import (
 // AssetCheckQuery is the builder for querying AssetCheck entities.
 type AssetCheckQuery struct {
 	config
-	ctx                *QueryContext
-	order              []assetcheck.OrderOption
-	inters             []Interceptor
-	predicates         []predicate.AssetCheck
-	withCheckDetails   *AssetCheckDetailsQuery
-	withOperateManager *AssetManagerQuery
-	withOperateStore   *StoreQuery
-	withOperateAgent   *AgentQuery
-	withWarehouse      *WarehouseQuery
-	withStore          *StoreQuery
-	withStation        *EnterpriseStationQuery
-	modifiers          []func(*sql.Selector)
+	ctx                     *QueryContext
+	order                   []assetcheck.OrderOption
+	inters                  []Interceptor
+	predicates              []predicate.AssetCheck
+	withCheckDetails        *AssetCheckDetailsQuery
+	withOperateAssetManager *AssetManagerQuery
+	withOperateEmployee     *EmployeeQuery
+	withOperateAgent        *AgentQuery
+	withWarehouse           *WarehouseQuery
+	withStore               *StoreQuery
+	withStation             *EnterpriseStationQuery
+	modifiers               []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -95,8 +96,8 @@ func (acq *AssetCheckQuery) QueryCheckDetails() *AssetCheckDetailsQuery {
 	return query
 }
 
-// QueryOperateManager chains the current query on the "operate_manager" edge.
-func (acq *AssetCheckQuery) QueryOperateManager() *AssetManagerQuery {
+// QueryOperateAssetManager chains the current query on the "operate_asset_manager" edge.
+func (acq *AssetCheckQuery) QueryOperateAssetManager() *AssetManagerQuery {
 	query := (&AssetManagerClient{config: acq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := acq.prepareQuery(ctx); err != nil {
@@ -109,7 +110,7 @@ func (acq *AssetCheckQuery) QueryOperateManager() *AssetManagerQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assetcheck.Table, assetcheck.FieldID, selector),
 			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, assetcheck.OperateManagerTable, assetcheck.OperateManagerColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheck.OperateAssetManagerTable, assetcheck.OperateAssetManagerColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(acq.driver.Dialect(), step)
 		return fromU, nil
@@ -117,9 +118,9 @@ func (acq *AssetCheckQuery) QueryOperateManager() *AssetManagerQuery {
 	return query
 }
 
-// QueryOperateStore chains the current query on the "operate_store" edge.
-func (acq *AssetCheckQuery) QueryOperateStore() *StoreQuery {
-	query := (&StoreClient{config: acq.config}).Query()
+// QueryOperateEmployee chains the current query on the "operate_employee" edge.
+func (acq *AssetCheckQuery) QueryOperateEmployee() *EmployeeQuery {
+	query := (&EmployeeClient{config: acq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := acq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -130,8 +131,8 @@ func (acq *AssetCheckQuery) QueryOperateStore() *StoreQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assetcheck.Table, assetcheck.FieldID, selector),
-			sqlgraph.To(store.Table, store.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, assetcheck.OperateStoreTable, assetcheck.OperateStoreColumn),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetcheck.OperateEmployeeTable, assetcheck.OperateEmployeeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(acq.driver.Dialect(), step)
 		return fromU, nil
@@ -414,18 +415,18 @@ func (acq *AssetCheckQuery) Clone() *AssetCheckQuery {
 		return nil
 	}
 	return &AssetCheckQuery{
-		config:             acq.config,
-		ctx:                acq.ctx.Clone(),
-		order:              append([]assetcheck.OrderOption{}, acq.order...),
-		inters:             append([]Interceptor{}, acq.inters...),
-		predicates:         append([]predicate.AssetCheck{}, acq.predicates...),
-		withCheckDetails:   acq.withCheckDetails.Clone(),
-		withOperateManager: acq.withOperateManager.Clone(),
-		withOperateStore:   acq.withOperateStore.Clone(),
-		withOperateAgent:   acq.withOperateAgent.Clone(),
-		withWarehouse:      acq.withWarehouse.Clone(),
-		withStore:          acq.withStore.Clone(),
-		withStation:        acq.withStation.Clone(),
+		config:                  acq.config,
+		ctx:                     acq.ctx.Clone(),
+		order:                   append([]assetcheck.OrderOption{}, acq.order...),
+		inters:                  append([]Interceptor{}, acq.inters...),
+		predicates:              append([]predicate.AssetCheck{}, acq.predicates...),
+		withCheckDetails:        acq.withCheckDetails.Clone(),
+		withOperateAssetManager: acq.withOperateAssetManager.Clone(),
+		withOperateEmployee:     acq.withOperateEmployee.Clone(),
+		withOperateAgent:        acq.withOperateAgent.Clone(),
+		withWarehouse:           acq.withWarehouse.Clone(),
+		withStore:               acq.withStore.Clone(),
+		withStation:             acq.withStation.Clone(),
 		// clone intermediate query.
 		sql:       acq.sql.Clone(),
 		path:      acq.path,
@@ -444,25 +445,25 @@ func (acq *AssetCheckQuery) WithCheckDetails(opts ...func(*AssetCheckDetailsQuer
 	return acq
 }
 
-// WithOperateManager tells the query-builder to eager-load the nodes that are connected to
-// the "operate_manager" edge. The optional arguments are used to configure the query builder of the edge.
-func (acq *AssetCheckQuery) WithOperateManager(opts ...func(*AssetManagerQuery)) *AssetCheckQuery {
+// WithOperateAssetManager tells the query-builder to eager-load the nodes that are connected to
+// the "operate_asset_manager" edge. The optional arguments are used to configure the query builder of the edge.
+func (acq *AssetCheckQuery) WithOperateAssetManager(opts ...func(*AssetManagerQuery)) *AssetCheckQuery {
 	query := (&AssetManagerClient{config: acq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	acq.withOperateManager = query
+	acq.withOperateAssetManager = query
 	return acq
 }
 
-// WithOperateStore tells the query-builder to eager-load the nodes that are connected to
-// the "operate_store" edge. The optional arguments are used to configure the query builder of the edge.
-func (acq *AssetCheckQuery) WithOperateStore(opts ...func(*StoreQuery)) *AssetCheckQuery {
-	query := (&StoreClient{config: acq.config}).Query()
+// WithOperateEmployee tells the query-builder to eager-load the nodes that are connected to
+// the "operate_employee" edge. The optional arguments are used to configure the query builder of the edge.
+func (acq *AssetCheckQuery) WithOperateEmployee(opts ...func(*EmployeeQuery)) *AssetCheckQuery {
+	query := (&EmployeeClient{config: acq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	acq.withOperateStore = query
+	acq.withOperateEmployee = query
 	return acq
 }
 
@@ -590,8 +591,8 @@ func (acq *AssetCheckQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 		_spec       = acq.querySpec()
 		loadedTypes = [7]bool{
 			acq.withCheckDetails != nil,
-			acq.withOperateManager != nil,
-			acq.withOperateStore != nil,
+			acq.withOperateAssetManager != nil,
+			acq.withOperateEmployee != nil,
 			acq.withOperateAgent != nil,
 			acq.withWarehouse != nil,
 			acq.withStore != nil,
@@ -626,15 +627,15 @@ func (acq *AssetCheckQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 			return nil, err
 		}
 	}
-	if query := acq.withOperateManager; query != nil {
-		if err := acq.loadOperateManager(ctx, query, nodes, nil,
-			func(n *AssetCheck, e *AssetManager) { n.Edges.OperateManager = e }); err != nil {
+	if query := acq.withOperateAssetManager; query != nil {
+		if err := acq.loadOperateAssetManager(ctx, query, nodes, nil,
+			func(n *AssetCheck, e *AssetManager) { n.Edges.OperateAssetManager = e }); err != nil {
 			return nil, err
 		}
 	}
-	if query := acq.withOperateStore; query != nil {
-		if err := acq.loadOperateStore(ctx, query, nodes, nil,
-			func(n *AssetCheck, e *Store) { n.Edges.OperateStore = e }); err != nil {
+	if query := acq.withOperateEmployee; query != nil {
+		if err := acq.loadOperateEmployee(ctx, query, nodes, nil,
+			func(n *AssetCheck, e *Employee) { n.Edges.OperateEmployee = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -695,7 +696,7 @@ func (acq *AssetCheckQuery) loadCheckDetails(ctx context.Context, query *AssetCh
 	}
 	return nil
 }
-func (acq *AssetCheckQuery) loadOperateManager(ctx context.Context, query *AssetManagerQuery, nodes []*AssetCheck, init func(*AssetCheck), assign func(*AssetCheck, *AssetManager)) error {
+func (acq *AssetCheckQuery) loadOperateAssetManager(ctx context.Context, query *AssetManagerQuery, nodes []*AssetCheck, init func(*AssetCheck), assign func(*AssetCheck, *AssetManager)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*AssetCheck)
 	for i := range nodes {
@@ -724,7 +725,7 @@ func (acq *AssetCheckQuery) loadOperateManager(ctx context.Context, query *Asset
 	}
 	return nil
 }
-func (acq *AssetCheckQuery) loadOperateStore(ctx context.Context, query *StoreQuery, nodes []*AssetCheck, init func(*AssetCheck), assign func(*AssetCheck, *Store)) error {
+func (acq *AssetCheckQuery) loadOperateEmployee(ctx context.Context, query *EmployeeQuery, nodes []*AssetCheck, init func(*AssetCheck), assign func(*AssetCheck, *Employee)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*AssetCheck)
 	for i := range nodes {
@@ -737,7 +738,7 @@ func (acq *AssetCheckQuery) loadOperateStore(ctx context.Context, query *StoreQu
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(store.IDIn(ids...))
+	query.Where(employee.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
@@ -898,10 +899,10 @@ func (acq *AssetCheckQuery) querySpec() *sqlgraph.QuerySpec {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
-		if acq.withOperateManager != nil {
+		if acq.withOperateAssetManager != nil {
 			_spec.Node.AddColumnOnce(assetcheck.FieldOperateID)
 		}
-		if acq.withOperateStore != nil {
+		if acq.withOperateEmployee != nil {
 			_spec.Node.AddColumnOnce(assetcheck.FieldOperateID)
 		}
 		if acq.withOperateAgent != nil {
@@ -984,13 +985,13 @@ func (acq *AssetCheckQuery) Modify(modifiers ...func(s *sql.Selector)) *AssetChe
 type AssetCheckQueryWith string
 
 var (
-	AssetCheckQueryWithCheckDetails   AssetCheckQueryWith = "CheckDetails"
-	AssetCheckQueryWithOperateManager AssetCheckQueryWith = "OperateManager"
-	AssetCheckQueryWithOperateStore   AssetCheckQueryWith = "OperateStore"
-	AssetCheckQueryWithOperateAgent   AssetCheckQueryWith = "OperateAgent"
-	AssetCheckQueryWithWarehouse      AssetCheckQueryWith = "Warehouse"
-	AssetCheckQueryWithStore          AssetCheckQueryWith = "Store"
-	AssetCheckQueryWithStation        AssetCheckQueryWith = "Station"
+	AssetCheckQueryWithCheckDetails        AssetCheckQueryWith = "CheckDetails"
+	AssetCheckQueryWithOperateAssetManager AssetCheckQueryWith = "OperateAssetManager"
+	AssetCheckQueryWithOperateEmployee     AssetCheckQueryWith = "OperateEmployee"
+	AssetCheckQueryWithOperateAgent        AssetCheckQueryWith = "OperateAgent"
+	AssetCheckQueryWithWarehouse           AssetCheckQueryWith = "Warehouse"
+	AssetCheckQueryWithStore               AssetCheckQueryWith = "Store"
+	AssetCheckQueryWithStation             AssetCheckQueryWith = "Station"
 )
 
 func (acq *AssetCheckQuery) With(withEdges ...AssetCheckQueryWith) *AssetCheckQuery {
@@ -998,10 +999,10 @@ func (acq *AssetCheckQuery) With(withEdges ...AssetCheckQueryWith) *AssetCheckQu
 		switch v {
 		case AssetCheckQueryWithCheckDetails:
 			acq.WithCheckDetails()
-		case AssetCheckQueryWithOperateManager:
-			acq.WithOperateManager()
-		case AssetCheckQueryWithOperateStore:
-			acq.WithOperateStore()
+		case AssetCheckQueryWithOperateAssetManager:
+			acq.WithOperateAssetManager()
+		case AssetCheckQueryWithOperateEmployee:
+			acq.WithOperateEmployee()
 		case AssetCheckQueryWithOperateAgent:
 			acq.WithOperateAgent()
 		case AssetCheckQueryWithWarehouse:

@@ -921,7 +921,7 @@ func (s *assetService) DetailForList(item *ent.Asset) *model.AssetListRes {
 // 资产公共筛选
 func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 	if req.SN != nil {
-		q.Where(asset.Sn(*req.SN))
+		q.Where(asset.SnContainsFold(*req.SN))
 	}
 	if req.AssetType != nil {
 		q.Where(asset.Type(req.AssetType.Value()))

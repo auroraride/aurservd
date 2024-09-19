@@ -403,7 +403,7 @@ func (s *assetCheckService) MarkStartOrEndCheck(ctx context.Context, req *model.
 // List 盘点列表
 func (s *assetCheckService) List(ctx context.Context, req *model.AssetCheckListReq) (*model.PaginationRes, error) {
 	q := ent.Database.AssetCheck.QueryNotDeleted().WithStore().WithStation().WithWarehouse().
-		WithOperateStore().WithOperateManager().WithOperateAgent().WithCheckDetails(func(query *ent.AssetCheckDetailsQuery) {
+		WithOperateEmployee().WithOperateAssetManager().WithOperateAgent().WithCheckDetails(func(query *ent.AssetCheckDetailsQuery) {
 		query.WithAsset()
 	}).Order(ent.Desc(assetcheck.FieldID))
 
@@ -427,7 +427,7 @@ func (s *assetCheckService) listFilter(q *ent.AssetCheckQuery, req *model.AssetC
 			assetcheck.Or(
 				assetcheck.HasWarehouseWith(warehouse.NameContains(*req.Keyword)),
 				assetcheck.HasStationWith(enterprisestation.HasAgentsWith(agent.NameContains(*req.Keyword))),
-				assetcheck.HasStoreWith(store.Name(*req.Keyword)),
+				assetcheck.HasStoreWith(store.NameContains(*req.Keyword)),
 			),
 		)
 	}
@@ -473,7 +473,7 @@ func (s *assetCheckService) listFilter(q *ent.AssetCheckQuery, req *model.AssetC
 // Detail 盘点明细
 func (s *assetCheckService) Detail(ctx context.Context, id uint64) (*model.AssetCheckListRes, error) {
 	item, _ := ent.Database.AssetCheck.QueryNotDeleted().Where(assetcheck.ID(id)).WithStore().WithStation().WithWarehouse().
-		WithOperateStore().WithOperateManager().WithOperateAgent().WithCheckDetails(func(query *ent.AssetCheckDetailsQuery) {
+		WithOperateEmployee().WithOperateAssetManager().WithOperateAgent().WithCheckDetails(func(query *ent.AssetCheckDetailsQuery) {
 		query.WithAsset(func(query *ent.AssetQuery) {
 			query.WithModel().WithBrand()
 		})
@@ -492,22 +492,22 @@ func (s *assetCheckService) detail(item *ent.AssetCheck) *model.AssetCheckListRe
 	if item.EndAt != nil {
 		end = item.EndAt.Format("2006-01-02 15:04:05")
 	}
-	OperatorName := ""
+	operatorName := ""
 	switch model.OperatorType(item.OperateType) {
 	case model.OperatorTypeAgent:
 		if item.Edges.OperateAgent != nil {
-			OperatorName = item.Edges.OperateAgent.Name
+			operatorName = item.Edges.OperateAgent.Name
 		}
 	case model.OperatorTypeEmployee:
-		if item.Edges.OperateStore != nil {
-			OperatorName = item.Edges.OperateStore.Name
+		if item.Edges.OperateEmployee != nil {
+			operatorName = item.Edges.OperateEmployee.Name
 		}
 	case model.OperatorTypeAssetManager:
-		if item.Edges.OperateManager != nil {
-			OperatorName = item.Edges.OperateManager.Name
+		if item.Edges.OperateAssetManager != nil {
+			operatorName = item.Edges.OperateAssetManager.Name
 		}
 	default:
-		OperatorName = ""
+		operatorName = ""
 	}
 	locationsName := ""
 	switch model.AssetLocationsType(item.LocationsType) {
@@ -543,7 +543,7 @@ func (s *assetCheckService) detail(item *ent.AssetCheck) *model.AssetCheckListRe
 		StartAt:        start,
 		EndAt:          end,
 		OperatorID:     item.OperateID,
-		OperatorName:   OperatorName,
+		OperatorName:   operatorName,
 		BatteryNum:     item.BatteryNum,
 		BatteryNumReal: item.BatteryNumReal,
 		EbikeNum:       item.EbikeNum,

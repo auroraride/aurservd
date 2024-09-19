@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetcheck"
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -378,42 +379,42 @@ func (acu *AssetCheckUpdate) AddCheckDetails(a ...*AssetCheckDetails) *AssetChec
 	return acu.AddCheckDetailIDs(ids...)
 }
 
-// SetOperateManagerID sets the "operate_manager" edge to the AssetManager entity by ID.
-func (acu *AssetCheckUpdate) SetOperateManagerID(id uint64) *AssetCheckUpdate {
-	acu.mutation.SetOperateManagerID(id)
+// SetOperateAssetManagerID sets the "operate_asset_manager" edge to the AssetManager entity by ID.
+func (acu *AssetCheckUpdate) SetOperateAssetManagerID(id uint64) *AssetCheckUpdate {
+	acu.mutation.SetOperateAssetManagerID(id)
 	return acu
 }
 
-// SetNillableOperateManagerID sets the "operate_manager" edge to the AssetManager entity by ID if the given value is not nil.
-func (acu *AssetCheckUpdate) SetNillableOperateManagerID(id *uint64) *AssetCheckUpdate {
+// SetNillableOperateAssetManagerID sets the "operate_asset_manager" edge to the AssetManager entity by ID if the given value is not nil.
+func (acu *AssetCheckUpdate) SetNillableOperateAssetManagerID(id *uint64) *AssetCheckUpdate {
 	if id != nil {
-		acu = acu.SetOperateManagerID(*id)
+		acu = acu.SetOperateAssetManagerID(*id)
 	}
 	return acu
 }
 
-// SetOperateManager sets the "operate_manager" edge to the AssetManager entity.
-func (acu *AssetCheckUpdate) SetOperateManager(a *AssetManager) *AssetCheckUpdate {
-	return acu.SetOperateManagerID(a.ID)
+// SetOperateAssetManager sets the "operate_asset_manager" edge to the AssetManager entity.
+func (acu *AssetCheckUpdate) SetOperateAssetManager(a *AssetManager) *AssetCheckUpdate {
+	return acu.SetOperateAssetManagerID(a.ID)
 }
 
-// SetOperateStoreID sets the "operate_store" edge to the Store entity by ID.
-func (acu *AssetCheckUpdate) SetOperateStoreID(id uint64) *AssetCheckUpdate {
-	acu.mutation.SetOperateStoreID(id)
+// SetOperateEmployeeID sets the "operate_employee" edge to the Employee entity by ID.
+func (acu *AssetCheckUpdate) SetOperateEmployeeID(id uint64) *AssetCheckUpdate {
+	acu.mutation.SetOperateEmployeeID(id)
 	return acu
 }
 
-// SetNillableOperateStoreID sets the "operate_store" edge to the Store entity by ID if the given value is not nil.
-func (acu *AssetCheckUpdate) SetNillableOperateStoreID(id *uint64) *AssetCheckUpdate {
+// SetNillableOperateEmployeeID sets the "operate_employee" edge to the Employee entity by ID if the given value is not nil.
+func (acu *AssetCheckUpdate) SetNillableOperateEmployeeID(id *uint64) *AssetCheckUpdate {
 	if id != nil {
-		acu = acu.SetOperateStoreID(*id)
+		acu = acu.SetOperateEmployeeID(*id)
 	}
 	return acu
 }
 
-// SetOperateStore sets the "operate_store" edge to the Store entity.
-func (acu *AssetCheckUpdate) SetOperateStore(s *Store) *AssetCheckUpdate {
-	return acu.SetOperateStoreID(s.ID)
+// SetOperateEmployee sets the "operate_employee" edge to the Employee entity.
+func (acu *AssetCheckUpdate) SetOperateEmployee(e *Employee) *AssetCheckUpdate {
+	return acu.SetOperateEmployeeID(e.ID)
 }
 
 // SetOperateAgentID sets the "operate_agent" edge to the Agent entity by ID.
@@ -518,15 +519,15 @@ func (acu *AssetCheckUpdate) RemoveCheckDetails(a ...*AssetCheckDetails) *AssetC
 	return acu.RemoveCheckDetailIDs(ids...)
 }
 
-// ClearOperateManager clears the "operate_manager" edge to the AssetManager entity.
-func (acu *AssetCheckUpdate) ClearOperateManager() *AssetCheckUpdate {
-	acu.mutation.ClearOperateManager()
+// ClearOperateAssetManager clears the "operate_asset_manager" edge to the AssetManager entity.
+func (acu *AssetCheckUpdate) ClearOperateAssetManager() *AssetCheckUpdate {
+	acu.mutation.ClearOperateAssetManager()
 	return acu
 }
 
-// ClearOperateStore clears the "operate_store" edge to the Store entity.
-func (acu *AssetCheckUpdate) ClearOperateStore() *AssetCheckUpdate {
-	acu.mutation.ClearOperateStore()
+// ClearOperateEmployee clears the "operate_employee" edge to the Employee entity.
+func (acu *AssetCheckUpdate) ClearOperateEmployee() *AssetCheckUpdate {
+	acu.mutation.ClearOperateEmployee()
 	return acu
 }
 
@@ -755,12 +756,12 @@ func (acu *AssetCheckUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if acu.mutation.OperateManagerCleared() {
+	if acu.mutation.OperateAssetManagerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assetcheck.OperateManagerTable,
-			Columns: []string{assetcheck.OperateManagerColumn},
+			Table:   assetcheck.OperateAssetManagerTable,
+			Columns: []string{assetcheck.OperateAssetManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -768,12 +769,12 @@ func (acu *AssetCheckUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := acu.mutation.OperateManagerIDs(); len(nodes) > 0 {
+	if nodes := acu.mutation.OperateAssetManagerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assetcheck.OperateManagerTable,
-			Columns: []string{assetcheck.OperateManagerColumn},
+			Table:   assetcheck.OperateAssetManagerTable,
+			Columns: []string{assetcheck.OperateAssetManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -784,28 +785,28 @@ func (acu *AssetCheckUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if acu.mutation.OperateStoreCleared() {
+	if acu.mutation.OperateEmployeeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assetcheck.OperateStoreTable,
-			Columns: []string{assetcheck.OperateStoreColumn},
+			Table:   assetcheck.OperateEmployeeTable,
+			Columns: []string{assetcheck.OperateEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := acu.mutation.OperateStoreIDs(); len(nodes) > 0 {
+	if nodes := acu.mutation.OperateEmployeeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assetcheck.OperateStoreTable,
-			Columns: []string{assetcheck.OperateStoreColumn},
+			Table:   assetcheck.OperateEmployeeTable,
+			Columns: []string{assetcheck.OperateEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1293,42 +1294,42 @@ func (acuo *AssetCheckUpdateOne) AddCheckDetails(a ...*AssetCheckDetails) *Asset
 	return acuo.AddCheckDetailIDs(ids...)
 }
 
-// SetOperateManagerID sets the "operate_manager" edge to the AssetManager entity by ID.
-func (acuo *AssetCheckUpdateOne) SetOperateManagerID(id uint64) *AssetCheckUpdateOne {
-	acuo.mutation.SetOperateManagerID(id)
+// SetOperateAssetManagerID sets the "operate_asset_manager" edge to the AssetManager entity by ID.
+func (acuo *AssetCheckUpdateOne) SetOperateAssetManagerID(id uint64) *AssetCheckUpdateOne {
+	acuo.mutation.SetOperateAssetManagerID(id)
 	return acuo
 }
 
-// SetNillableOperateManagerID sets the "operate_manager" edge to the AssetManager entity by ID if the given value is not nil.
-func (acuo *AssetCheckUpdateOne) SetNillableOperateManagerID(id *uint64) *AssetCheckUpdateOne {
+// SetNillableOperateAssetManagerID sets the "operate_asset_manager" edge to the AssetManager entity by ID if the given value is not nil.
+func (acuo *AssetCheckUpdateOne) SetNillableOperateAssetManagerID(id *uint64) *AssetCheckUpdateOne {
 	if id != nil {
-		acuo = acuo.SetOperateManagerID(*id)
+		acuo = acuo.SetOperateAssetManagerID(*id)
 	}
 	return acuo
 }
 
-// SetOperateManager sets the "operate_manager" edge to the AssetManager entity.
-func (acuo *AssetCheckUpdateOne) SetOperateManager(a *AssetManager) *AssetCheckUpdateOne {
-	return acuo.SetOperateManagerID(a.ID)
+// SetOperateAssetManager sets the "operate_asset_manager" edge to the AssetManager entity.
+func (acuo *AssetCheckUpdateOne) SetOperateAssetManager(a *AssetManager) *AssetCheckUpdateOne {
+	return acuo.SetOperateAssetManagerID(a.ID)
 }
 
-// SetOperateStoreID sets the "operate_store" edge to the Store entity by ID.
-func (acuo *AssetCheckUpdateOne) SetOperateStoreID(id uint64) *AssetCheckUpdateOne {
-	acuo.mutation.SetOperateStoreID(id)
+// SetOperateEmployeeID sets the "operate_employee" edge to the Employee entity by ID.
+func (acuo *AssetCheckUpdateOne) SetOperateEmployeeID(id uint64) *AssetCheckUpdateOne {
+	acuo.mutation.SetOperateEmployeeID(id)
 	return acuo
 }
 
-// SetNillableOperateStoreID sets the "operate_store" edge to the Store entity by ID if the given value is not nil.
-func (acuo *AssetCheckUpdateOne) SetNillableOperateStoreID(id *uint64) *AssetCheckUpdateOne {
+// SetNillableOperateEmployeeID sets the "operate_employee" edge to the Employee entity by ID if the given value is not nil.
+func (acuo *AssetCheckUpdateOne) SetNillableOperateEmployeeID(id *uint64) *AssetCheckUpdateOne {
 	if id != nil {
-		acuo = acuo.SetOperateStoreID(*id)
+		acuo = acuo.SetOperateEmployeeID(*id)
 	}
 	return acuo
 }
 
-// SetOperateStore sets the "operate_store" edge to the Store entity.
-func (acuo *AssetCheckUpdateOne) SetOperateStore(s *Store) *AssetCheckUpdateOne {
-	return acuo.SetOperateStoreID(s.ID)
+// SetOperateEmployee sets the "operate_employee" edge to the Employee entity.
+func (acuo *AssetCheckUpdateOne) SetOperateEmployee(e *Employee) *AssetCheckUpdateOne {
+	return acuo.SetOperateEmployeeID(e.ID)
 }
 
 // SetOperateAgentID sets the "operate_agent" edge to the Agent entity by ID.
@@ -1433,15 +1434,15 @@ func (acuo *AssetCheckUpdateOne) RemoveCheckDetails(a ...*AssetCheckDetails) *As
 	return acuo.RemoveCheckDetailIDs(ids...)
 }
 
-// ClearOperateManager clears the "operate_manager" edge to the AssetManager entity.
-func (acuo *AssetCheckUpdateOne) ClearOperateManager() *AssetCheckUpdateOne {
-	acuo.mutation.ClearOperateManager()
+// ClearOperateAssetManager clears the "operate_asset_manager" edge to the AssetManager entity.
+func (acuo *AssetCheckUpdateOne) ClearOperateAssetManager() *AssetCheckUpdateOne {
+	acuo.mutation.ClearOperateAssetManager()
 	return acuo
 }
 
-// ClearOperateStore clears the "operate_store" edge to the Store entity.
-func (acuo *AssetCheckUpdateOne) ClearOperateStore() *AssetCheckUpdateOne {
-	acuo.mutation.ClearOperateStore()
+// ClearOperateEmployee clears the "operate_employee" edge to the Employee entity.
+func (acuo *AssetCheckUpdateOne) ClearOperateEmployee() *AssetCheckUpdateOne {
+	acuo.mutation.ClearOperateEmployee()
 	return acuo
 }
 
@@ -1700,12 +1701,12 @@ func (acuo *AssetCheckUpdateOne) sqlSave(ctx context.Context) (_node *AssetCheck
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if acuo.mutation.OperateManagerCleared() {
+	if acuo.mutation.OperateAssetManagerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assetcheck.OperateManagerTable,
-			Columns: []string{assetcheck.OperateManagerColumn},
+			Table:   assetcheck.OperateAssetManagerTable,
+			Columns: []string{assetcheck.OperateAssetManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -1713,12 +1714,12 @@ func (acuo *AssetCheckUpdateOne) sqlSave(ctx context.Context) (_node *AssetCheck
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := acuo.mutation.OperateManagerIDs(); len(nodes) > 0 {
+	if nodes := acuo.mutation.OperateAssetManagerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assetcheck.OperateManagerTable,
-			Columns: []string{assetcheck.OperateManagerColumn},
+			Table:   assetcheck.OperateAssetManagerTable,
+			Columns: []string{assetcheck.OperateAssetManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -1729,28 +1730,28 @@ func (acuo *AssetCheckUpdateOne) sqlSave(ctx context.Context) (_node *AssetCheck
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if acuo.mutation.OperateStoreCleared() {
+	if acuo.mutation.OperateEmployeeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assetcheck.OperateStoreTable,
-			Columns: []string{assetcheck.OperateStoreColumn},
+			Table:   assetcheck.OperateEmployeeTable,
+			Columns: []string{assetcheck.OperateEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := acuo.mutation.OperateStoreIDs(); len(nodes) > 0 {
+	if nodes := acuo.mutation.OperateEmployeeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assetcheck.OperateStoreTable,
-			Columns: []string{assetcheck.OperateStoreColumn},
+			Table:   assetcheck.OperateEmployeeTable,
+			Columns: []string{assetcheck.OperateEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

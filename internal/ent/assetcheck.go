@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/assetcheck"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
@@ -48,7 +49,7 @@ type AssetCheck struct {
 	EbikeNumReal uint `json:"ebike_num_real,omitempty"`
 	// 盘点人id
 	OperateID uint64 `json:"operate_id,omitempty"`
-	// 盘点角色类型 1:资产后台 2:门店 3:代理
+	// 盘点角色类型 1:门店 3:代理 6:资产后台
 	OperateType uint8 `json:"operate_type,omitempty"`
 	// 盘点位置类型 1:仓库 2:门店 3:代理
 	LocationsType uint8 `json:"locations_type,omitempty"`
@@ -68,10 +69,10 @@ type AssetCheck struct {
 type AssetCheckEdges struct {
 	// CheckDetails holds the value of the check_details edge.
 	CheckDetails []*AssetCheckDetails `json:"check_details,omitempty"`
-	// OperateManager holds the value of the operate_manager edge.
-	OperateManager *AssetManager `json:"operate_manager,omitempty"`
-	// OperateStore holds the value of the operate_store edge.
-	OperateStore *Store `json:"operate_store,omitempty"`
+	// OperateAssetManager holds the value of the operate_asset_manager edge.
+	OperateAssetManager *AssetManager `json:"operate_asset_manager,omitempty"`
+	// OperateEmployee holds the value of the operate_employee edge.
+	OperateEmployee *Employee `json:"operate_employee,omitempty"`
 	// OperateAgent holds the value of the operate_agent edge.
 	OperateAgent *Agent `json:"operate_agent,omitempty"`
 	// Warehouse holds the value of the warehouse edge.
@@ -94,26 +95,26 @@ func (e AssetCheckEdges) CheckDetailsOrErr() ([]*AssetCheckDetails, error) {
 	return nil, &NotLoadedError{edge: "check_details"}
 }
 
-// OperateManagerOrErr returns the OperateManager value or an error if the edge
+// OperateAssetManagerOrErr returns the OperateAssetManager value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e AssetCheckEdges) OperateManagerOrErr() (*AssetManager, error) {
-	if e.OperateManager != nil {
-		return e.OperateManager, nil
+func (e AssetCheckEdges) OperateAssetManagerOrErr() (*AssetManager, error) {
+	if e.OperateAssetManager != nil {
+		return e.OperateAssetManager, nil
 	} else if e.loadedTypes[1] {
 		return nil, &NotFoundError{label: assetmanager.Label}
 	}
-	return nil, &NotLoadedError{edge: "operate_manager"}
+	return nil, &NotLoadedError{edge: "operate_asset_manager"}
 }
 
-// OperateStoreOrErr returns the OperateStore value or an error if the edge
+// OperateEmployeeOrErr returns the OperateEmployee value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e AssetCheckEdges) OperateStoreOrErr() (*Store, error) {
-	if e.OperateStore != nil {
-		return e.OperateStore, nil
+func (e AssetCheckEdges) OperateEmployeeOrErr() (*Employee, error) {
+	if e.OperateEmployee != nil {
+		return e.OperateEmployee, nil
 	} else if e.loadedTypes[2] {
-		return nil, &NotFoundError{label: store.Label}
+		return nil, &NotFoundError{label: employee.Label}
 	}
-	return nil, &NotLoadedError{edge: "operate_store"}
+	return nil, &NotLoadedError{edge: "operate_employee"}
 }
 
 // OperateAgentOrErr returns the OperateAgent value or an error if the edge
@@ -321,14 +322,14 @@ func (ac *AssetCheck) QueryCheckDetails() *AssetCheckDetailsQuery {
 	return NewAssetCheckClient(ac.config).QueryCheckDetails(ac)
 }
 
-// QueryOperateManager queries the "operate_manager" edge of the AssetCheck entity.
-func (ac *AssetCheck) QueryOperateManager() *AssetManagerQuery {
-	return NewAssetCheckClient(ac.config).QueryOperateManager(ac)
+// QueryOperateAssetManager queries the "operate_asset_manager" edge of the AssetCheck entity.
+func (ac *AssetCheck) QueryOperateAssetManager() *AssetManagerQuery {
+	return NewAssetCheckClient(ac.config).QueryOperateAssetManager(ac)
 }
 
-// QueryOperateStore queries the "operate_store" edge of the AssetCheck entity.
-func (ac *AssetCheck) QueryOperateStore() *StoreQuery {
-	return NewAssetCheckClient(ac.config).QueryOperateStore(ac)
+// QueryOperateEmployee queries the "operate_employee" edge of the AssetCheck entity.
+func (ac *AssetCheck) QueryOperateEmployee() *EmployeeQuery {
+	return NewAssetCheckClient(ac.config).QueryOperateEmployee(ac)
 }
 
 // QueryOperateAgent queries the "operate_agent" edge of the AssetCheck entity.
