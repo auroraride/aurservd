@@ -215,7 +215,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 						go bs.RiderBusiness(false, putout, s.rider, cab, int(before.Ordinal))
 
 						// 更新新电池信息
-						bat, _ := bs.LoadOrCreate(putout)
+						bat, _ := bs.QuerySn(putout)
 						if bat != nil {
 							_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
 								return NewBattery(s.operator).Allocate(bat, sub, model.AssetTransferTypeExchange)
@@ -458,7 +458,7 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
 	// 若智能电柜, 需记录电池信息
 	if cab.Intelligent {
 		// 获取电池
-		bat, err = NewBattery().LoadOrCreate(sn)
+		bat, err = NewBattery().QuerySn(sn)
 		if err != nil && bat == nil {
 			zap.L().Error("业务记录失败", zap.Error(err))
 			return

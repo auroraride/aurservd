@@ -36,6 +36,22 @@ func NewBattery(params ...any) *batteryService {
 	}
 }
 
+// QuerySn 查询电池
+func (s *batteryService) QuerySn(sn string) (bat *ent.Asset, err error) {
+	_, err = adapter.ParseBatterySN(sn)
+	if err != nil {
+		zap.L().Error("查询电池失败，电池编码错误: "+sn, zap.Error(err))
+		return
+	}
+
+	bat, _ = NewAsset().QuerySn(sn)
+	if bat == nil {
+		zap.L().Error("查询电池失败，未找到电池: " + sn)
+		return
+	}
+	return
+}
+
 // LoadOrCreate 加载电池, 若电池不存在则先创建电池, 若电池存在, 则不更新电池直接返回
 func (s *batteryService) LoadOrCreate(sn string, params ...any) (bat *ent.Asset, err error) {
 	bat, _ = NewAsset().QuerySn(sn)
@@ -70,7 +86,11 @@ func (s *batteryService) LoadOrCreate(sn string, params ...any) (bat *ent.Asset,
 		LocationsType: model.AssetLocationsTypeCabinet,
 		LocationsID:   cab.ID,
 		Enable:        silk.Bool(true),
-	}, nil)
+	}, &model.Modifier{
+		ID:    cab.ID,
+		Name:  cab.Name,
+		Phone: cab.Serial,
+	})
 	if err != nil {
 		return nil, err
 	}
