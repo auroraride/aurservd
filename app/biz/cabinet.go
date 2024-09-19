@@ -628,9 +628,7 @@ func (b *cabinetBiz) Detail(assetSignInfo definition.AssetSignInfo, serial strin
 	if err != nil {
 		return res, err
 	}
-
-	service.NewMaintainerCabinet().Detail(&model.MaintainerCabinetDetailReq{Serial: serial})
-
+	res = service.NewMaintainerCabinet().Detail(&model.MaintainerCabinetDetailReq{Serial: serial})
 	return
 }
 
