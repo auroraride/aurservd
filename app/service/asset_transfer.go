@@ -820,6 +820,11 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 			assettransfer.Or(
 				assettransfer.SnContains(*req.Keyword),
 				assettransfer.ReasonContains(*req.Keyword),
+				assettransfer.HasTransferDetailsWith(
+					assettransferdetails.HasAssetWith(
+						asset.SnContains(*req.Keyword),
+					),
+				),
 			),
 		)
 	}
@@ -983,12 +988,20 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 			),
 		)
 	}
-
 	if req.InStart != nil && req.InEnd != nil {
 		q.Where(
 			assettransfer.HasTransferDetailsWith(
 				assettransferdetails.InTimeAtGTE(tools.NewTime().ParseDateStringX(*req.InStart)),
 				assettransferdetails.InTimeAtLTE(tools.NewTime().ParseNextDateStringX(*req.InEnd)),
+			),
+		)
+	}
+	if req.AssetType != nil {
+		q.Where(
+			assettransfer.HasTransferDetailsWith(
+				assettransferdetails.HasAssetWith(
+					asset.Type(req.AssetType.Value()),
+				),
 			),
 		)
 	}
@@ -1854,8 +1867,12 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 		q.Where(
 			assettransferdetails.CreatedAtGTE(start),
 			assettransferdetails.CreatedAtLTE(end),
-			assettransferdetails.InTimeAtGTE(start),
-			assettransferdetails.InTimeAtLTE(end),
+			assettransferdetails.Or(
+				assettransferdetails.And(
+					assettransferdetails.InTimeAtGTE(start),
+					assettransferdetails.InTimeAtLTE(end),
+				),
+			),
 		)
 	}
 	if req.AssetType != nil {
@@ -1865,7 +1882,7 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 		q.Where(assettransferdetails.HasAssetWith(asset.CityID(*req.CityID)))
 	}
 	if req.SN != nil {
-		q.Where(assettransferdetails.HasAssetWith(asset.Sn(*req.SN)))
+		q.Where(assettransferdetails.HasAssetWith(asset.SnContainsFold(*req.SN)))
 	}
 	if req.LocationsType != nil {
 		q.Where(
@@ -1909,8 +1926,8 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 	if req.CabinetSN != nil {
 		q.Where(
 			assettransferdetails.Or(
-				assettransferdetails.HasInOperateCabinetWith(cabinet.Sn(*req.CabinetSN)),
-				assettransferdetails.HasTransferWith(assettransfer.HasOutOperateCabinetWith(cabinet.Sn(*req.CabinetSN))),
+				assettransferdetails.HasInOperateCabinetWith(cabinet.SnContainsFold(*req.CabinetSN)),
+				assettransferdetails.HasTransferWith(assettransfer.HasOutOperateCabinetWith(cabinet.SnContainsFold(*req.CabinetSN))),
 			),
 		)
 	}

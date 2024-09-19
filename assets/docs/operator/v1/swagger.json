@@ -992,6 +992,36 @@
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetTypeCabinetAccessory": "电柜配件",
+                            "AssetTypeEbike": "电车",
+                            "AssetTypeEbikeAccessory": "电车配件",
+                            "AssetTypeNonSmartBattery": "非智能电池",
+                            "AssetTypeOtherAccessory": "其它配件",
+                            "AssetTypeSmartBattery": "智能电池"
+                        },
+                        "x-enum-varnames": [
+                            "AssetTypeEbike",
+                            "AssetTypeSmartBattery",
+                            "AssetTypeNonSmartBattery",
+                            "AssetTypeCabinetAccessory",
+                            "AssetTypeEbikeAccessory",
+                            "AssetTypeOtherAccessory"
+                        ],
+                        "description": "物资类型",
+                        "name": "assetType",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
@@ -2227,6 +2257,10 @@
                     "description": "备注",
                     "type": "string"
                 },
+                "rto": {
+                    "description": "电车是否赠送",
+                    "type": "string"
+                },
                 "sn": {
                     "description": "编号",
                     "type": "string"
@@ -3303,6 +3337,10 @@
                 "lng": {
                     "description": "经度",
                     "type": "number"
+                },
+                "mini": {
+                    "description": "是否小程序门店、代理调用电柜",
+                    "type": "boolean"
                 },
                 "operate": {
                     "description": "操作, 除`maintenance`之外所有操作均需要提前设电柜为维护状态。 open:开仓, open-all:全部开仓（暂时不做）, maintenance:电柜维护, maintenance-cancel:取消维护, interrupt:中断业务, reboot:重启（暂时不做）",

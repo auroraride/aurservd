@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetcheck"
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
@@ -266,42 +267,42 @@ func (acc *AssetCheckCreate) AddCheckDetails(a ...*AssetCheckDetails) *AssetChec
 	return acc.AddCheckDetailIDs(ids...)
 }
 
-// SetOperateManagerID sets the "operate_manager" edge to the AssetManager entity by ID.
-func (acc *AssetCheckCreate) SetOperateManagerID(id uint64) *AssetCheckCreate {
-	acc.mutation.SetOperateManagerID(id)
+// SetOperateAssetManagerID sets the "operate_asset_manager" edge to the AssetManager entity by ID.
+func (acc *AssetCheckCreate) SetOperateAssetManagerID(id uint64) *AssetCheckCreate {
+	acc.mutation.SetOperateAssetManagerID(id)
 	return acc
 }
 
-// SetNillableOperateManagerID sets the "operate_manager" edge to the AssetManager entity by ID if the given value is not nil.
-func (acc *AssetCheckCreate) SetNillableOperateManagerID(id *uint64) *AssetCheckCreate {
+// SetNillableOperateAssetManagerID sets the "operate_asset_manager" edge to the AssetManager entity by ID if the given value is not nil.
+func (acc *AssetCheckCreate) SetNillableOperateAssetManagerID(id *uint64) *AssetCheckCreate {
 	if id != nil {
-		acc = acc.SetOperateManagerID(*id)
+		acc = acc.SetOperateAssetManagerID(*id)
 	}
 	return acc
 }
 
-// SetOperateManager sets the "operate_manager" edge to the AssetManager entity.
-func (acc *AssetCheckCreate) SetOperateManager(a *AssetManager) *AssetCheckCreate {
-	return acc.SetOperateManagerID(a.ID)
+// SetOperateAssetManager sets the "operate_asset_manager" edge to the AssetManager entity.
+func (acc *AssetCheckCreate) SetOperateAssetManager(a *AssetManager) *AssetCheckCreate {
+	return acc.SetOperateAssetManagerID(a.ID)
 }
 
-// SetOperateStoreID sets the "operate_store" edge to the Store entity by ID.
-func (acc *AssetCheckCreate) SetOperateStoreID(id uint64) *AssetCheckCreate {
-	acc.mutation.SetOperateStoreID(id)
+// SetOperateEmployeeID sets the "operate_employee" edge to the Employee entity by ID.
+func (acc *AssetCheckCreate) SetOperateEmployeeID(id uint64) *AssetCheckCreate {
+	acc.mutation.SetOperateEmployeeID(id)
 	return acc
 }
 
-// SetNillableOperateStoreID sets the "operate_store" edge to the Store entity by ID if the given value is not nil.
-func (acc *AssetCheckCreate) SetNillableOperateStoreID(id *uint64) *AssetCheckCreate {
+// SetNillableOperateEmployeeID sets the "operate_employee" edge to the Employee entity by ID if the given value is not nil.
+func (acc *AssetCheckCreate) SetNillableOperateEmployeeID(id *uint64) *AssetCheckCreate {
 	if id != nil {
-		acc = acc.SetOperateStoreID(*id)
+		acc = acc.SetOperateEmployeeID(*id)
 	}
 	return acc
 }
 
-// SetOperateStore sets the "operate_store" edge to the Store entity.
-func (acc *AssetCheckCreate) SetOperateStore(s *Store) *AssetCheckCreate {
-	return acc.SetOperateStoreID(s.ID)
+// SetOperateEmployee sets the "operate_employee" edge to the Employee entity.
+func (acc *AssetCheckCreate) SetOperateEmployee(e *Employee) *AssetCheckCreate {
+	return acc.SetOperateEmployeeID(e.ID)
 }
 
 // SetOperateAgentID sets the "operate_agent" edge to the Agent entity by ID.
@@ -545,12 +546,12 @@ func (acc *AssetCheckCreate) createSpec() (*AssetCheck, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := acc.mutation.OperateManagerIDs(); len(nodes) > 0 {
+	if nodes := acc.mutation.OperateAssetManagerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assetcheck.OperateManagerTable,
-			Columns: []string{assetcheck.OperateManagerColumn},
+			Table:   assetcheck.OperateAssetManagerTable,
+			Columns: []string{assetcheck.OperateAssetManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(assetmanager.FieldID, field.TypeUint64),
@@ -562,15 +563,15 @@ func (acc *AssetCheckCreate) createSpec() (*AssetCheck, *sqlgraph.CreateSpec) {
 		_node.OperateID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := acc.mutation.OperateStoreIDs(); len(nodes) > 0 {
+	if nodes := acc.mutation.OperateEmployeeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assetcheck.OperateStoreTable,
-			Columns: []string{assetcheck.OperateStoreColumn},
+			Table:   assetcheck.OperateEmployeeTable,
+			Columns: []string{assetcheck.OperateEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
