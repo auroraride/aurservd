@@ -938,7 +938,7 @@ func (eu *EnterpriseUpdate) check() error {
 			return &ValidationError{Name: "sign_type", err: fmt.Errorf(`ent: validator failed for field "Enterprise.sign_type": %w`, err)}
 		}
 	}
-	if _, ok := eu.mutation.CityID(); eu.mutation.CityCleared() && !ok {
+	if eu.mutation.CityCleared() && len(eu.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Enterprise.city"`)
 	}
 	return nil
@@ -2585,7 +2585,7 @@ func (euo *EnterpriseUpdateOne) check() error {
 			return &ValidationError{Name: "sign_type", err: fmt.Errorf(`ent: validator failed for field "Enterprise.sign_type": %w`, err)}
 		}
 	}
-	if _, ok := euo.mutation.CityID(); euo.mutation.CityCleared() && !ok {
+	if euo.mutation.CityCleared() && len(euo.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Enterprise.city"`)
 	}
 	return nil

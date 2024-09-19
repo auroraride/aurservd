@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -133,7 +134,7 @@ func (pgq *PromotionGrowthQuery) QueryRider() *RiderQuery {
 // First returns the first PromotionGrowth entity from the query.
 // Returns a *NotFoundError when no PromotionGrowth was found.
 func (pgq *PromotionGrowthQuery) First(ctx context.Context) (*PromotionGrowth, error) {
-	nodes, err := pgq.Limit(1).All(setContextOp(ctx, pgq.ctx, "First"))
+	nodes, err := pgq.Limit(1).All(setContextOp(ctx, pgq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -156,7 +157,7 @@ func (pgq *PromotionGrowthQuery) FirstX(ctx context.Context) *PromotionGrowth {
 // Returns a *NotFoundError when no PromotionGrowth ID was found.
 func (pgq *PromotionGrowthQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = pgq.Limit(1).IDs(setContextOp(ctx, pgq.ctx, "FirstID")); err != nil {
+	if ids, err = pgq.Limit(1).IDs(setContextOp(ctx, pgq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -179,7 +180,7 @@ func (pgq *PromotionGrowthQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one PromotionGrowth entity is found.
 // Returns a *NotFoundError when no PromotionGrowth entities are found.
 func (pgq *PromotionGrowthQuery) Only(ctx context.Context) (*PromotionGrowth, error) {
-	nodes, err := pgq.Limit(2).All(setContextOp(ctx, pgq.ctx, "Only"))
+	nodes, err := pgq.Limit(2).All(setContextOp(ctx, pgq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -207,7 +208,7 @@ func (pgq *PromotionGrowthQuery) OnlyX(ctx context.Context) *PromotionGrowth {
 // Returns a *NotFoundError when no entities are found.
 func (pgq *PromotionGrowthQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = pgq.Limit(2).IDs(setContextOp(ctx, pgq.ctx, "OnlyID")); err != nil {
+	if ids, err = pgq.Limit(2).IDs(setContextOp(ctx, pgq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -232,7 +233,7 @@ func (pgq *PromotionGrowthQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of PromotionGrowths.
 func (pgq *PromotionGrowthQuery) All(ctx context.Context) ([]*PromotionGrowth, error) {
-	ctx = setContextOp(ctx, pgq.ctx, "All")
+	ctx = setContextOp(ctx, pgq.ctx, ent.OpQueryAll)
 	if err := pgq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -254,7 +255,7 @@ func (pgq *PromotionGrowthQuery) IDs(ctx context.Context) (ids []uint64, err err
 	if pgq.ctx.Unique == nil && pgq.path != nil {
 		pgq.Unique(true)
 	}
-	ctx = setContextOp(ctx, pgq.ctx, "IDs")
+	ctx = setContextOp(ctx, pgq.ctx, ent.OpQueryIDs)
 	if err = pgq.Select(promotiongrowth.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -272,7 +273,7 @@ func (pgq *PromotionGrowthQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (pgq *PromotionGrowthQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, pgq.ctx, "Count")
+	ctx = setContextOp(ctx, pgq.ctx, ent.OpQueryCount)
 	if err := pgq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -290,7 +291,7 @@ func (pgq *PromotionGrowthQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (pgq *PromotionGrowthQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, pgq.ctx, "Exist")
+	ctx = setContextOp(ctx, pgq.ctx, ent.OpQueryExist)
 	switch _, err := pgq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -326,8 +327,9 @@ func (pgq *PromotionGrowthQuery) Clone() *PromotionGrowthQuery {
 		withTask:   pgq.withTask.Clone(),
 		withRider:  pgq.withRider.Clone(),
 		// clone intermediate query.
-		sql:  pgq.sql.Clone(),
-		path: pgq.path,
+		sql:       pgq.sql.Clone(),
+		path:      pgq.path,
+		modifiers: append([]func(*sql.Selector){}, pgq.modifiers...),
 	}
 }
 
@@ -725,7 +727,7 @@ func (pggb *PromotionGrowthGroupBy) Aggregate(fns ...AggregateFunc) *PromotionGr
 
 // Scan applies the selector query and scans the result into the given value.
 func (pggb *PromotionGrowthGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, pggb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, pggb.build.ctx, ent.OpQueryGroupBy)
 	if err := pggb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -773,7 +775,7 @@ func (pgs *PromotionGrowthSelect) Aggregate(fns ...AggregateFunc) *PromotionGrow
 
 // Scan applies the selector query and scans the result into the given value.
 func (pgs *PromotionGrowthSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, pgs.ctx, "Select")
+	ctx = setContextOp(ctx, pgs.ctx, ent.OpQuerySelect)
 	if err := pgs.prepareQuery(ctx); err != nil {
 		return err
 	}

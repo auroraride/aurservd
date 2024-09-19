@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -134,7 +135,7 @@ func (amq *AssetMaintenanceQuery) QueryMaintenanceDetails() *AssetMaintenanceDet
 // First returns the first AssetMaintenance entity from the query.
 // Returns a *NotFoundError when no AssetMaintenance was found.
 func (amq *AssetMaintenanceQuery) First(ctx context.Context) (*AssetMaintenance, error) {
-	nodes, err := amq.Limit(1).All(setContextOp(ctx, amq.ctx, "First"))
+	nodes, err := amq.Limit(1).All(setContextOp(ctx, amq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -157,7 +158,7 @@ func (amq *AssetMaintenanceQuery) FirstX(ctx context.Context) *AssetMaintenance 
 // Returns a *NotFoundError when no AssetMaintenance ID was found.
 func (amq *AssetMaintenanceQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = amq.Limit(1).IDs(setContextOp(ctx, amq.ctx, "FirstID")); err != nil {
+	if ids, err = amq.Limit(1).IDs(setContextOp(ctx, amq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -180,7 +181,7 @@ func (amq *AssetMaintenanceQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one AssetMaintenance entity is found.
 // Returns a *NotFoundError when no AssetMaintenance entities are found.
 func (amq *AssetMaintenanceQuery) Only(ctx context.Context) (*AssetMaintenance, error) {
-	nodes, err := amq.Limit(2).All(setContextOp(ctx, amq.ctx, "Only"))
+	nodes, err := amq.Limit(2).All(setContextOp(ctx, amq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -208,7 +209,7 @@ func (amq *AssetMaintenanceQuery) OnlyX(ctx context.Context) *AssetMaintenance {
 // Returns a *NotFoundError when no entities are found.
 func (amq *AssetMaintenanceQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = amq.Limit(2).IDs(setContextOp(ctx, amq.ctx, "OnlyID")); err != nil {
+	if ids, err = amq.Limit(2).IDs(setContextOp(ctx, amq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -233,7 +234,7 @@ func (amq *AssetMaintenanceQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of AssetMaintenances.
 func (amq *AssetMaintenanceQuery) All(ctx context.Context) ([]*AssetMaintenance, error) {
-	ctx = setContextOp(ctx, amq.ctx, "All")
+	ctx = setContextOp(ctx, amq.ctx, ent.OpQueryAll)
 	if err := amq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -255,7 +256,7 @@ func (amq *AssetMaintenanceQuery) IDs(ctx context.Context) (ids []uint64, err er
 	if amq.ctx.Unique == nil && amq.path != nil {
 		amq.Unique(true)
 	}
-	ctx = setContextOp(ctx, amq.ctx, "IDs")
+	ctx = setContextOp(ctx, amq.ctx, ent.OpQueryIDs)
 	if err = amq.Select(assetmaintenance.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -273,7 +274,7 @@ func (amq *AssetMaintenanceQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (amq *AssetMaintenanceQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, amq.ctx, "Count")
+	ctx = setContextOp(ctx, amq.ctx, ent.OpQueryCount)
 	if err := amq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -291,7 +292,7 @@ func (amq *AssetMaintenanceQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (amq *AssetMaintenanceQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, amq.ctx, "Exist")
+	ctx = setContextOp(ctx, amq.ctx, ent.OpQueryExist)
 	switch _, err := amq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -327,8 +328,9 @@ func (amq *AssetMaintenanceQuery) Clone() *AssetMaintenanceQuery {
 		withMaintainer:         amq.withMaintainer.Clone(),
 		withMaintenanceDetails: amq.withMaintenanceDetails.Clone(),
 		// clone intermediate query.
-		sql:  amq.sql.Clone(),
-		path: amq.path,
+		sql:       amq.sql.Clone(),
+		path:      amq.path,
+		modifiers: append([]func(*sql.Selector){}, amq.modifiers...),
 	}
 }
 
@@ -724,7 +726,7 @@ func (amgb *AssetMaintenanceGroupBy) Aggregate(fns ...AggregateFunc) *AssetMaint
 
 // Scan applies the selector query and scans the result into the given value.
 func (amgb *AssetMaintenanceGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, amgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, amgb.build.ctx, ent.OpQueryGroupBy)
 	if err := amgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -772,7 +774,7 @@ func (ams *AssetMaintenanceSelect) Aggregate(fns ...AggregateFunc) *AssetMainten
 
 // Scan applies the selector query and scans the result into the given value.
 func (ams *AssetMaintenanceSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ams.ctx, "Select")
+	ctx = setContextOp(ctx, ams.ctx, ent.OpQuerySelect)
 	if err := ams.prepareQuery(ctx); err != nil {
 		return err
 	}

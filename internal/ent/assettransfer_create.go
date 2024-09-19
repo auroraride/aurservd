@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -537,23 +538,23 @@ func (atc *AssetTransferCreate) SetOutOperateAssetManager(a *AssetManager) *Asse
 	return atc.SetOutOperateAssetManagerID(a.ID)
 }
 
-// SetOutOperateStoreID sets the "out_operate_store" edge to the Store entity by ID.
-func (atc *AssetTransferCreate) SetOutOperateStoreID(id uint64) *AssetTransferCreate {
-	atc.mutation.SetOutOperateStoreID(id)
+// SetOutOperateEmployeeID sets the "out_operate_employee" edge to the Employee entity by ID.
+func (atc *AssetTransferCreate) SetOutOperateEmployeeID(id uint64) *AssetTransferCreate {
+	atc.mutation.SetOutOperateEmployeeID(id)
 	return atc
 }
 
-// SetNillableOutOperateStoreID sets the "out_operate_store" edge to the Store entity by ID if the given value is not nil.
-func (atc *AssetTransferCreate) SetNillableOutOperateStoreID(id *uint64) *AssetTransferCreate {
+// SetNillableOutOperateEmployeeID sets the "out_operate_employee" edge to the Employee entity by ID if the given value is not nil.
+func (atc *AssetTransferCreate) SetNillableOutOperateEmployeeID(id *uint64) *AssetTransferCreate {
 	if id != nil {
-		atc = atc.SetOutOperateStoreID(*id)
+		atc = atc.SetOutOperateEmployeeID(*id)
 	}
 	return atc
 }
 
-// SetOutOperateStore sets the "out_operate_store" edge to the Store entity.
-func (atc *AssetTransferCreate) SetOutOperateStore(s *Store) *AssetTransferCreate {
-	return atc.SetOutOperateStoreID(s.ID)
+// SetOutOperateEmployee sets the "out_operate_employee" edge to the Employee entity.
+func (atc *AssetTransferCreate) SetOutOperateEmployee(e *Employee) *AssetTransferCreate {
+	return atc.SetOutOperateEmployeeID(e.ID)
 }
 
 // SetOutOperateAgentID sets the "out_operate_agent" edge to the Agent entity by ID.
@@ -1051,15 +1052,15 @@ func (atc *AssetTransferCreate) createSpec() (*AssetTransfer, *sqlgraph.CreateSp
 		_node.OutOperateID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := atc.mutation.OutOperateStoreIDs(); len(nodes) > 0 {
+	if nodes := atc.mutation.OutOperateEmployeeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.OutOperateStoreTable,
-			Columns: []string{assettransfer.OutOperateStoreColumn},
+			Table:   assettransfer.OutOperateEmployeeTable,
+			Columns: []string{assettransfer.OutOperateEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

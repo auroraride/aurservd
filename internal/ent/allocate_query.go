@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -326,7 +327,7 @@ func (aq *AllocateQuery) QueryBattery() *AssetQuery {
 // First returns the first Allocate entity from the query.
 // Returns a *NotFoundError when no Allocate was found.
 func (aq *AllocateQuery) First(ctx context.Context) (*Allocate, error) {
-	nodes, err := aq.Limit(1).All(setContextOp(ctx, aq.ctx, "First"))
+	nodes, err := aq.Limit(1).All(setContextOp(ctx, aq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -349,7 +350,7 @@ func (aq *AllocateQuery) FirstX(ctx context.Context) *Allocate {
 // Returns a *NotFoundError when no Allocate ID was found.
 func (aq *AllocateQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = aq.Limit(1).IDs(setContextOp(ctx, aq.ctx, "FirstID")); err != nil {
+	if ids, err = aq.Limit(1).IDs(setContextOp(ctx, aq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -372,7 +373,7 @@ func (aq *AllocateQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Allocate entity is found.
 // Returns a *NotFoundError when no Allocate entities are found.
 func (aq *AllocateQuery) Only(ctx context.Context) (*Allocate, error) {
-	nodes, err := aq.Limit(2).All(setContextOp(ctx, aq.ctx, "Only"))
+	nodes, err := aq.Limit(2).All(setContextOp(ctx, aq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -400,7 +401,7 @@ func (aq *AllocateQuery) OnlyX(ctx context.Context) *Allocate {
 // Returns a *NotFoundError when no entities are found.
 func (aq *AllocateQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = aq.Limit(2).IDs(setContextOp(ctx, aq.ctx, "OnlyID")); err != nil {
+	if ids, err = aq.Limit(2).IDs(setContextOp(ctx, aq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -425,7 +426,7 @@ func (aq *AllocateQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Allocates.
 func (aq *AllocateQuery) All(ctx context.Context) ([]*Allocate, error) {
-	ctx = setContextOp(ctx, aq.ctx, "All")
+	ctx = setContextOp(ctx, aq.ctx, ent.OpQueryAll)
 	if err := aq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -447,7 +448,7 @@ func (aq *AllocateQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if aq.ctx.Unique == nil && aq.path != nil {
 		aq.Unique(true)
 	}
-	ctx = setContextOp(ctx, aq.ctx, "IDs")
+	ctx = setContextOp(ctx, aq.ctx, ent.OpQueryIDs)
 	if err = aq.Select(allocate.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -465,7 +466,7 @@ func (aq *AllocateQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (aq *AllocateQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, aq.ctx, "Count")
+	ctx = setContextOp(ctx, aq.ctx, ent.OpQueryCount)
 	if err := aq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -483,7 +484,7 @@ func (aq *AllocateQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (aq *AllocateQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, aq.ctx, "Exist")
+	ctx = setContextOp(ctx, aq.ctx, ent.OpQueryExist)
 	switch _, err := aq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -527,8 +528,9 @@ func (aq *AllocateQuery) Clone() *AllocateQuery {
 		withEbike:     aq.withEbike.Clone(),
 		withBattery:   aq.withBattery.Clone(),
 		// clone intermediate query.
-		sql:  aq.sql.Clone(),
-		path: aq.path,
+		sql:       aq.sql.Clone(),
+		path:      aq.path,
+		modifiers: append([]func(*sql.Selector){}, aq.modifiers...),
 	}
 }
 
@@ -1367,7 +1369,7 @@ func (agb *AllocateGroupBy) Aggregate(fns ...AggregateFunc) *AllocateGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (agb *AllocateGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, agb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, agb.build.ctx, ent.OpQueryGroupBy)
 	if err := agb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1415,7 +1417,7 @@ func (as *AllocateSelect) Aggregate(fns ...AggregateFunc) *AllocateSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (as *AllocateSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, as.ctx, "Select")
+	ctx = setContextOp(ctx, as.ctx, ent.OpQuerySelect)
 	if err := as.prepareQuery(ctx); err != nil {
 		return err
 	}

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -109,7 +110,7 @@ func (pwq *PromotionWithdrawalQuery) QueryCards() *PromotionBankCardQuery {
 // First returns the first PromotionWithdrawal entity from the query.
 // Returns a *NotFoundError when no PromotionWithdrawal was found.
 func (pwq *PromotionWithdrawalQuery) First(ctx context.Context) (*PromotionWithdrawal, error) {
-	nodes, err := pwq.Limit(1).All(setContextOp(ctx, pwq.ctx, "First"))
+	nodes, err := pwq.Limit(1).All(setContextOp(ctx, pwq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +133,7 @@ func (pwq *PromotionWithdrawalQuery) FirstX(ctx context.Context) *PromotionWithd
 // Returns a *NotFoundError when no PromotionWithdrawal ID was found.
 func (pwq *PromotionWithdrawalQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = pwq.Limit(1).IDs(setContextOp(ctx, pwq.ctx, "FirstID")); err != nil {
+	if ids, err = pwq.Limit(1).IDs(setContextOp(ctx, pwq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -155,7 +156,7 @@ func (pwq *PromotionWithdrawalQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one PromotionWithdrawal entity is found.
 // Returns a *NotFoundError when no PromotionWithdrawal entities are found.
 func (pwq *PromotionWithdrawalQuery) Only(ctx context.Context) (*PromotionWithdrawal, error) {
-	nodes, err := pwq.Limit(2).All(setContextOp(ctx, pwq.ctx, "Only"))
+	nodes, err := pwq.Limit(2).All(setContextOp(ctx, pwq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -183,7 +184,7 @@ func (pwq *PromotionWithdrawalQuery) OnlyX(ctx context.Context) *PromotionWithdr
 // Returns a *NotFoundError when no entities are found.
 func (pwq *PromotionWithdrawalQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = pwq.Limit(2).IDs(setContextOp(ctx, pwq.ctx, "OnlyID")); err != nil {
+	if ids, err = pwq.Limit(2).IDs(setContextOp(ctx, pwq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -208,7 +209,7 @@ func (pwq *PromotionWithdrawalQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of PromotionWithdrawals.
 func (pwq *PromotionWithdrawalQuery) All(ctx context.Context) ([]*PromotionWithdrawal, error) {
-	ctx = setContextOp(ctx, pwq.ctx, "All")
+	ctx = setContextOp(ctx, pwq.ctx, ent.OpQueryAll)
 	if err := pwq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -230,7 +231,7 @@ func (pwq *PromotionWithdrawalQuery) IDs(ctx context.Context) (ids []uint64, err
 	if pwq.ctx.Unique == nil && pwq.path != nil {
 		pwq.Unique(true)
 	}
-	ctx = setContextOp(ctx, pwq.ctx, "IDs")
+	ctx = setContextOp(ctx, pwq.ctx, ent.OpQueryIDs)
 	if err = pwq.Select(promotionwithdrawal.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -248,7 +249,7 @@ func (pwq *PromotionWithdrawalQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (pwq *PromotionWithdrawalQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, pwq.ctx, "Count")
+	ctx = setContextOp(ctx, pwq.ctx, ent.OpQueryCount)
 	if err := pwq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -266,7 +267,7 @@ func (pwq *PromotionWithdrawalQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (pwq *PromotionWithdrawalQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, pwq.ctx, "Exist")
+	ctx = setContextOp(ctx, pwq.ctx, ent.OpQueryExist)
 	switch _, err := pwq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -301,8 +302,9 @@ func (pwq *PromotionWithdrawalQuery) Clone() *PromotionWithdrawalQuery {
 		withMember: pwq.withMember.Clone(),
 		withCards:  pwq.withCards.Clone(),
 		// clone intermediate query.
-		sql:  pwq.sql.Clone(),
-		path: pwq.path,
+		sql:       pwq.sql.Clone(),
+		path:      pwq.path,
+		modifiers: append([]func(*sql.Selector){}, pwq.modifiers...),
 	}
 }
 
@@ -638,7 +640,7 @@ func (pwgb *PromotionWithdrawalGroupBy) Aggregate(fns ...AggregateFunc) *Promoti
 
 // Scan applies the selector query and scans the result into the given value.
 func (pwgb *PromotionWithdrawalGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, pwgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, pwgb.build.ctx, ent.OpQueryGroupBy)
 	if err := pwgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -686,7 +688,7 @@ func (pws *PromotionWithdrawalSelect) Aggregate(fns ...AggregateFunc) *Promotion
 
 // Scan applies the selector query and scans the result into the given value.
 func (pws *PromotionWithdrawalSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, pws.ctx, "Select")
+	ctx = setContextOp(ctx, pws.ctx, ent.OpQuerySelect)
 	if err := pws.prepareQuery(ctx); err != nil {
 		return err
 	}

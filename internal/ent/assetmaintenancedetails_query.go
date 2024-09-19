@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -133,7 +134,7 @@ func (amdq *AssetMaintenanceDetailsQuery) QueryMaintenance() *AssetMaintenanceQu
 // First returns the first AssetMaintenanceDetails entity from the query.
 // Returns a *NotFoundError when no AssetMaintenanceDetails was found.
 func (amdq *AssetMaintenanceDetailsQuery) First(ctx context.Context) (*AssetMaintenanceDetails, error) {
-	nodes, err := amdq.Limit(1).All(setContextOp(ctx, amdq.ctx, "First"))
+	nodes, err := amdq.Limit(1).All(setContextOp(ctx, amdq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -156,7 +157,7 @@ func (amdq *AssetMaintenanceDetailsQuery) FirstX(ctx context.Context) *AssetMain
 // Returns a *NotFoundError when no AssetMaintenanceDetails ID was found.
 func (amdq *AssetMaintenanceDetailsQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = amdq.Limit(1).IDs(setContextOp(ctx, amdq.ctx, "FirstID")); err != nil {
+	if ids, err = amdq.Limit(1).IDs(setContextOp(ctx, amdq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -179,7 +180,7 @@ func (amdq *AssetMaintenanceDetailsQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one AssetMaintenanceDetails entity is found.
 // Returns a *NotFoundError when no AssetMaintenanceDetails entities are found.
 func (amdq *AssetMaintenanceDetailsQuery) Only(ctx context.Context) (*AssetMaintenanceDetails, error) {
-	nodes, err := amdq.Limit(2).All(setContextOp(ctx, amdq.ctx, "Only"))
+	nodes, err := amdq.Limit(2).All(setContextOp(ctx, amdq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -207,7 +208,7 @@ func (amdq *AssetMaintenanceDetailsQuery) OnlyX(ctx context.Context) *AssetMaint
 // Returns a *NotFoundError when no entities are found.
 func (amdq *AssetMaintenanceDetailsQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = amdq.Limit(2).IDs(setContextOp(ctx, amdq.ctx, "OnlyID")); err != nil {
+	if ids, err = amdq.Limit(2).IDs(setContextOp(ctx, amdq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -232,7 +233,7 @@ func (amdq *AssetMaintenanceDetailsQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of AssetMaintenanceDetailsSlice.
 func (amdq *AssetMaintenanceDetailsQuery) All(ctx context.Context) ([]*AssetMaintenanceDetails, error) {
-	ctx = setContextOp(ctx, amdq.ctx, "All")
+	ctx = setContextOp(ctx, amdq.ctx, ent.OpQueryAll)
 	if err := amdq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -254,7 +255,7 @@ func (amdq *AssetMaintenanceDetailsQuery) IDs(ctx context.Context) (ids []uint64
 	if amdq.ctx.Unique == nil && amdq.path != nil {
 		amdq.Unique(true)
 	}
-	ctx = setContextOp(ctx, amdq.ctx, "IDs")
+	ctx = setContextOp(ctx, amdq.ctx, ent.OpQueryIDs)
 	if err = amdq.Select(assetmaintenancedetails.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -272,7 +273,7 @@ func (amdq *AssetMaintenanceDetailsQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (amdq *AssetMaintenanceDetailsQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, amdq.ctx, "Count")
+	ctx = setContextOp(ctx, amdq.ctx, ent.OpQueryCount)
 	if err := amdq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -290,7 +291,7 @@ func (amdq *AssetMaintenanceDetailsQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (amdq *AssetMaintenanceDetailsQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, amdq.ctx, "Exist")
+	ctx = setContextOp(ctx, amdq.ctx, ent.OpQueryExist)
 	switch _, err := amdq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -326,8 +327,9 @@ func (amdq *AssetMaintenanceDetailsQuery) Clone() *AssetMaintenanceDetailsQuery 
 		withAsset:       amdq.withAsset.Clone(),
 		withMaintenance: amdq.withMaintenance.Clone(),
 		// clone intermediate query.
-		sql:  amdq.sql.Clone(),
-		path: amdq.path,
+		sql:       amdq.sql.Clone(),
+		path:      amdq.path,
+		modifiers: append([]func(*sql.Selector){}, amdq.modifiers...),
 	}
 }
 
@@ -719,7 +721,7 @@ func (amdgb *AssetMaintenanceDetailsGroupBy) Aggregate(fns ...AggregateFunc) *As
 
 // Scan applies the selector query and scans the result into the given value.
 func (amdgb *AssetMaintenanceDetailsGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, amdgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, amdgb.build.ctx, ent.OpQueryGroupBy)
 	if err := amdgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -767,7 +769,7 @@ func (amds *AssetMaintenanceDetailsSelect) Aggregate(fns ...AggregateFunc) *Asse
 
 // Scan applies the selector query and scans the result into the given value.
 func (amds *AssetMaintenanceDetailsSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, amds.ctx, "Select")
+	ctx = setContextOp(ctx, amds.ctx, ent.OpQuerySelect)
 	if err := amds.prepareQuery(ctx); err != nil {
 		return err
 	}

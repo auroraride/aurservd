@@ -298,7 +298,7 @@ func (cc *CommissionCreate) check() error {
 	if _, ok := cc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Commission.status"`)}
 	}
-	if _, ok := cc.mutation.OrderID(); !ok {
+	if len(cc.mutation.OrderIDs()) == 0 {
 		return &ValidationError{Name: "order", err: errors.New(`ent: missing required edge "Commission.order"`)}
 	}
 	return nil

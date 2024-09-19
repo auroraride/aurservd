@@ -323,13 +323,13 @@ func (eu *ExceptionUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (eu *ExceptionUpdate) check() error {
-	if _, ok := eu.mutation.CityID(); eu.mutation.CityCleared() && !ok {
+	if eu.mutation.CityCleared() && len(eu.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Exception.city"`)
 	}
-	if _, ok := eu.mutation.EmployeeID(); eu.mutation.EmployeeCleared() && !ok {
+	if eu.mutation.EmployeeCleared() && len(eu.mutation.EmployeeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Exception.employee"`)
 	}
-	if _, ok := eu.mutation.StoreID(); eu.mutation.StoreCleared() && !ok {
+	if eu.mutation.StoreCleared() && len(eu.mutation.StoreIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Exception.store"`)
 	}
 	return nil
@@ -823,13 +823,13 @@ func (euo *ExceptionUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (euo *ExceptionUpdateOne) check() error {
-	if _, ok := euo.mutation.CityID(); euo.mutation.CityCleared() && !ok {
+	if euo.mutation.CityCleared() && len(euo.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Exception.city"`)
 	}
-	if _, ok := euo.mutation.EmployeeID(); euo.mutation.EmployeeCleared() && !ok {
+	if euo.mutation.EmployeeCleared() && len(euo.mutation.EmployeeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Exception.employee"`)
 	}
-	if _, ok := euo.mutation.StoreID(); euo.mutation.StoreCleared() && !ok {
+	if euo.mutation.StoreCleared() && len(euo.mutation.StoreIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Exception.store"`)
 	}
 	return nil

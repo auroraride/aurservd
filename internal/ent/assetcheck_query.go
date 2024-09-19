@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -229,7 +230,7 @@ func (acq *AssetCheckQuery) QueryStation() *EnterpriseStationQuery {
 // First returns the first AssetCheck entity from the query.
 // Returns a *NotFoundError when no AssetCheck was found.
 func (acq *AssetCheckQuery) First(ctx context.Context) (*AssetCheck, error) {
-	nodes, err := acq.Limit(1).All(setContextOp(ctx, acq.ctx, "First"))
+	nodes, err := acq.Limit(1).All(setContextOp(ctx, acq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -252,7 +253,7 @@ func (acq *AssetCheckQuery) FirstX(ctx context.Context) *AssetCheck {
 // Returns a *NotFoundError when no AssetCheck ID was found.
 func (acq *AssetCheckQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = acq.Limit(1).IDs(setContextOp(ctx, acq.ctx, "FirstID")); err != nil {
+	if ids, err = acq.Limit(1).IDs(setContextOp(ctx, acq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -275,7 +276,7 @@ func (acq *AssetCheckQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one AssetCheck entity is found.
 // Returns a *NotFoundError when no AssetCheck entities are found.
 func (acq *AssetCheckQuery) Only(ctx context.Context) (*AssetCheck, error) {
-	nodes, err := acq.Limit(2).All(setContextOp(ctx, acq.ctx, "Only"))
+	nodes, err := acq.Limit(2).All(setContextOp(ctx, acq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -303,7 +304,7 @@ func (acq *AssetCheckQuery) OnlyX(ctx context.Context) *AssetCheck {
 // Returns a *NotFoundError when no entities are found.
 func (acq *AssetCheckQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = acq.Limit(2).IDs(setContextOp(ctx, acq.ctx, "OnlyID")); err != nil {
+	if ids, err = acq.Limit(2).IDs(setContextOp(ctx, acq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -328,7 +329,7 @@ func (acq *AssetCheckQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of AssetChecks.
 func (acq *AssetCheckQuery) All(ctx context.Context) ([]*AssetCheck, error) {
-	ctx = setContextOp(ctx, acq.ctx, "All")
+	ctx = setContextOp(ctx, acq.ctx, ent.OpQueryAll)
 	if err := acq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -350,7 +351,7 @@ func (acq *AssetCheckQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if acq.ctx.Unique == nil && acq.path != nil {
 		acq.Unique(true)
 	}
-	ctx = setContextOp(ctx, acq.ctx, "IDs")
+	ctx = setContextOp(ctx, acq.ctx, ent.OpQueryIDs)
 	if err = acq.Select(assetcheck.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -368,7 +369,7 @@ func (acq *AssetCheckQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (acq *AssetCheckQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, acq.ctx, "Count")
+	ctx = setContextOp(ctx, acq.ctx, ent.OpQueryCount)
 	if err := acq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -386,7 +387,7 @@ func (acq *AssetCheckQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (acq *AssetCheckQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, acq.ctx, "Exist")
+	ctx = setContextOp(ctx, acq.ctx, ent.OpQueryExist)
 	switch _, err := acq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -426,8 +427,9 @@ func (acq *AssetCheckQuery) Clone() *AssetCheckQuery {
 		withStore:          acq.withStore.Clone(),
 		withStation:        acq.withStation.Clone(),
 		// clone intermediate query.
-		sql:  acq.sql.Clone(),
-		path: acq.path,
+		sql:       acq.sql.Clone(),
+		path:      acq.path,
+		modifiers: append([]func(*sql.Selector){}, acq.modifiers...),
 	}
 }
 
@@ -1027,7 +1029,7 @@ func (acgb *AssetCheckGroupBy) Aggregate(fns ...AggregateFunc) *AssetCheckGroupB
 
 // Scan applies the selector query and scans the result into the given value.
 func (acgb *AssetCheckGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, acgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, acgb.build.ctx, ent.OpQueryGroupBy)
 	if err := acgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1075,7 +1077,7 @@ func (acs *AssetCheckSelect) Aggregate(fns ...AggregateFunc) *AssetCheckSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (acs *AssetCheckSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, acs.ctx, "Select")
+	ctx = setContextOp(ctx, acs.ctx, ent.OpQuerySelect)
 	if err := acs.prepareQuery(ctx); err != nil {
 		return err
 	}

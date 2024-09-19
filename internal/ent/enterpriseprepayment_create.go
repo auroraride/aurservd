@@ -215,7 +215,7 @@ func (epc *EnterprisePrepaymentCreate) check() error {
 	if _, ok := epc.mutation.Amount(); !ok {
 		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "EnterprisePrepayment.amount"`)}
 	}
-	if _, ok := epc.mutation.EnterpriseID(); !ok {
+	if len(epc.mutation.EnterpriseIDs()) == 0 {
 		return &ValidationError{Name: "enterprise", err: errors.New(`ent: missing required edge "EnterprisePrepayment.enterprise"`)}
 	}
 	return nil

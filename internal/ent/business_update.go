@@ -548,13 +548,13 @@ func (bu *BusinessUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (bu *BusinessUpdate) check() error {
-	if _, ok := bu.mutation.RiderID(); bu.mutation.RiderCleared() && !ok {
+	if bu.mutation.RiderCleared() && len(bu.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Business.rider"`)
 	}
-	if _, ok := bu.mutation.CityID(); bu.mutation.CityCleared() && !ok {
+	if bu.mutation.CityCleared() && len(bu.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Business.city"`)
 	}
-	if _, ok := bu.mutation.SubscribeID(); bu.mutation.SubscribeCleared() && !ok {
+	if bu.mutation.SubscribeCleared() && len(bu.mutation.SubscribeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Business.subscribe"`)
 	}
 	return nil
@@ -1507,13 +1507,13 @@ func (buo *BusinessUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (buo *BusinessUpdateOne) check() error {
-	if _, ok := buo.mutation.RiderID(); buo.mutation.RiderCleared() && !ok {
+	if buo.mutation.RiderCleared() && len(buo.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Business.rider"`)
 	}
-	if _, ok := buo.mutation.CityID(); buo.mutation.CityCleared() && !ok {
+	if buo.mutation.CityCleared() && len(buo.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Business.city"`)
 	}
-	if _, ok := buo.mutation.SubscribeID(); buo.mutation.SubscribeCleared() && !ok {
+	if buo.mutation.SubscribeCleared() && len(buo.mutation.SubscribeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Business.subscribe"`)
 	}
 	return nil

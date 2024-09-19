@@ -430,7 +430,7 @@ func (esu *EnterpriseStationUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (esu *EnterpriseStationUpdate) check() error {
-	if _, ok := esu.mutation.EnterpriseID(); esu.mutation.EnterpriseCleared() && !ok {
+	if esu.mutation.EnterpriseCleared() && len(esu.mutation.EnterpriseIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseStation.enterprise"`)
 	}
 	return nil
@@ -1237,7 +1237,7 @@ func (esuo *EnterpriseStationUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (esuo *EnterpriseStationUpdateOne) check() error {
-	if _, ok := esuo.mutation.EnterpriseID(); esuo.mutation.EnterpriseCleared() && !ok {
+	if esuo.mutation.EnterpriseCleared() && len(esuo.mutation.EnterpriseIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseStation.enterprise"`)
 	}
 	return nil

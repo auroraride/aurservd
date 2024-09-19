@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -61,7 +62,7 @@ func (paq *PromotionAchievementQuery) Order(o ...promotionachievement.OrderOptio
 // First returns the first PromotionAchievement entity from the query.
 // Returns a *NotFoundError when no PromotionAchievement was found.
 func (paq *PromotionAchievementQuery) First(ctx context.Context) (*PromotionAchievement, error) {
-	nodes, err := paq.Limit(1).All(setContextOp(ctx, paq.ctx, "First"))
+	nodes, err := paq.Limit(1).All(setContextOp(ctx, paq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +85,7 @@ func (paq *PromotionAchievementQuery) FirstX(ctx context.Context) *PromotionAchi
 // Returns a *NotFoundError when no PromotionAchievement ID was found.
 func (paq *PromotionAchievementQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = paq.Limit(1).IDs(setContextOp(ctx, paq.ctx, "FirstID")); err != nil {
+	if ids, err = paq.Limit(1).IDs(setContextOp(ctx, paq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -107,7 +108,7 @@ func (paq *PromotionAchievementQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one PromotionAchievement entity is found.
 // Returns a *NotFoundError when no PromotionAchievement entities are found.
 func (paq *PromotionAchievementQuery) Only(ctx context.Context) (*PromotionAchievement, error) {
-	nodes, err := paq.Limit(2).All(setContextOp(ctx, paq.ctx, "Only"))
+	nodes, err := paq.Limit(2).All(setContextOp(ctx, paq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +136,7 @@ func (paq *PromotionAchievementQuery) OnlyX(ctx context.Context) *PromotionAchie
 // Returns a *NotFoundError when no entities are found.
 func (paq *PromotionAchievementQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = paq.Limit(2).IDs(setContextOp(ctx, paq.ctx, "OnlyID")); err != nil {
+	if ids, err = paq.Limit(2).IDs(setContextOp(ctx, paq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -160,7 +161,7 @@ func (paq *PromotionAchievementQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of PromotionAchievements.
 func (paq *PromotionAchievementQuery) All(ctx context.Context) ([]*PromotionAchievement, error) {
-	ctx = setContextOp(ctx, paq.ctx, "All")
+	ctx = setContextOp(ctx, paq.ctx, ent.OpQueryAll)
 	if err := paq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -182,7 +183,7 @@ func (paq *PromotionAchievementQuery) IDs(ctx context.Context) (ids []uint64, er
 	if paq.ctx.Unique == nil && paq.path != nil {
 		paq.Unique(true)
 	}
-	ctx = setContextOp(ctx, paq.ctx, "IDs")
+	ctx = setContextOp(ctx, paq.ctx, ent.OpQueryIDs)
 	if err = paq.Select(promotionachievement.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -200,7 +201,7 @@ func (paq *PromotionAchievementQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (paq *PromotionAchievementQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, paq.ctx, "Count")
+	ctx = setContextOp(ctx, paq.ctx, ent.OpQueryCount)
 	if err := paq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -218,7 +219,7 @@ func (paq *PromotionAchievementQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (paq *PromotionAchievementQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, paq.ctx, "Exist")
+	ctx = setContextOp(ctx, paq.ctx, ent.OpQueryExist)
 	switch _, err := paq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -251,8 +252,9 @@ func (paq *PromotionAchievementQuery) Clone() *PromotionAchievementQuery {
 		inters:     append([]Interceptor{}, paq.inters...),
 		predicates: append([]predicate.PromotionAchievement{}, paq.predicates...),
 		// clone intermediate query.
-		sql:  paq.sql.Clone(),
-		path: paq.path,
+		sql:       paq.sql.Clone(),
+		path:      paq.path,
+		modifiers: append([]func(*sql.Selector){}, paq.modifiers...),
 	}
 }
 
@@ -477,7 +479,7 @@ func (pagb *PromotionAchievementGroupBy) Aggregate(fns ...AggregateFunc) *Promot
 
 // Scan applies the selector query and scans the result into the given value.
 func (pagb *PromotionAchievementGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, pagb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, pagb.build.ctx, ent.OpQueryGroupBy)
 	if err := pagb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -525,7 +527,7 @@ func (pas *PromotionAchievementSelect) Aggregate(fns ...AggregateFunc) *Promotio
 
 // Scan applies the selector query and scans the result into the given value.
 func (pas *PromotionAchievementSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, pas.ctx, "Select")
+	ctx = setContextOp(ctx, pas.ctx, ent.OpQuerySelect)
 	if err := pas.prepareQuery(ctx); err != nil {
 		return err
 	}

@@ -1103,6 +1103,7 @@ func (s *orderService) TradePay(o *ent.Order) error {
 
 	// 授权订单状态 已授权状态：授权成功，可以进行转支付或解冻操作
 	if fundAuthOperationDetailQueryRsp.OrderStatus != ali.OrderStatusAuthorized {
+		zap.L().Error("授权订单状态异常", zap.Any("fundAuthOperationDetailQueryRsp", fundAuthOperationDetailQueryRsp))
 		return errors.New("授权订单状态异常")
 	}
 

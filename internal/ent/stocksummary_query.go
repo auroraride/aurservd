@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -181,7 +182,7 @@ func (ssq *StockSummaryQuery) QueryCabinet() *CabinetQuery {
 // First returns the first StockSummary entity from the query.
 // Returns a *NotFoundError when no StockSummary was found.
 func (ssq *StockSummaryQuery) First(ctx context.Context) (*StockSummary, error) {
-	nodes, err := ssq.Limit(1).All(setContextOp(ctx, ssq.ctx, "First"))
+	nodes, err := ssq.Limit(1).All(setContextOp(ctx, ssq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -204,7 +205,7 @@ func (ssq *StockSummaryQuery) FirstX(ctx context.Context) *StockSummary {
 // Returns a *NotFoundError when no StockSummary ID was found.
 func (ssq *StockSummaryQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ssq.Limit(1).IDs(setContextOp(ctx, ssq.ctx, "FirstID")); err != nil {
+	if ids, err = ssq.Limit(1).IDs(setContextOp(ctx, ssq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -227,7 +228,7 @@ func (ssq *StockSummaryQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one StockSummary entity is found.
 // Returns a *NotFoundError when no StockSummary entities are found.
 func (ssq *StockSummaryQuery) Only(ctx context.Context) (*StockSummary, error) {
-	nodes, err := ssq.Limit(2).All(setContextOp(ctx, ssq.ctx, "Only"))
+	nodes, err := ssq.Limit(2).All(setContextOp(ctx, ssq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -255,7 +256,7 @@ func (ssq *StockSummaryQuery) OnlyX(ctx context.Context) *StockSummary {
 // Returns a *NotFoundError when no entities are found.
 func (ssq *StockSummaryQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ssq.Limit(2).IDs(setContextOp(ctx, ssq.ctx, "OnlyID")); err != nil {
+	if ids, err = ssq.Limit(2).IDs(setContextOp(ctx, ssq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -280,7 +281,7 @@ func (ssq *StockSummaryQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of StockSummaries.
 func (ssq *StockSummaryQuery) All(ctx context.Context) ([]*StockSummary, error) {
-	ctx = setContextOp(ctx, ssq.ctx, "All")
+	ctx = setContextOp(ctx, ssq.ctx, ent.OpQueryAll)
 	if err := ssq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -302,7 +303,7 @@ func (ssq *StockSummaryQuery) IDs(ctx context.Context) (ids []uint64, err error)
 	if ssq.ctx.Unique == nil && ssq.path != nil {
 		ssq.Unique(true)
 	}
-	ctx = setContextOp(ctx, ssq.ctx, "IDs")
+	ctx = setContextOp(ctx, ssq.ctx, ent.OpQueryIDs)
 	if err = ssq.Select(stocksummary.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -320,7 +321,7 @@ func (ssq *StockSummaryQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (ssq *StockSummaryQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, ssq.ctx, "Count")
+	ctx = setContextOp(ctx, ssq.ctx, ent.OpQueryCount)
 	if err := ssq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -338,7 +339,7 @@ func (ssq *StockSummaryQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (ssq *StockSummaryQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, ssq.ctx, "Exist")
+	ctx = setContextOp(ctx, ssq.ctx, ent.OpQueryExist)
 	switch _, err := ssq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -376,8 +377,9 @@ func (ssq *StockSummaryQuery) Clone() *StockSummaryQuery {
 		withRider:      ssq.withRider.Clone(),
 		withCabinet:    ssq.withCabinet.Clone(),
 		// clone intermediate query.
-		sql:  ssq.sql.Clone(),
-		path: ssq.path,
+		sql:       ssq.sql.Clone(),
+		path:      ssq.path,
+		modifiers: append([]func(*sql.Selector){}, ssq.modifiers...),
 	}
 }
 
@@ -887,7 +889,7 @@ func (ssgb *StockSummaryGroupBy) Aggregate(fns ...AggregateFunc) *StockSummaryGr
 
 // Scan applies the selector query and scans the result into the given value.
 func (ssgb *StockSummaryGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ssgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, ssgb.build.ctx, ent.OpQueryGroupBy)
 	if err := ssgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -935,7 +937,7 @@ func (sss *StockSummarySelect) Aggregate(fns ...AggregateFunc) *StockSummarySele
 
 // Scan applies the selector query and scans the result into the given value.
 func (sss *StockSummarySelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, sss.ctx, "Select")
+	ctx = setContextOp(ctx, sss.ctx, ent.OpQuerySelect)
 	if err := sss.prepareQuery(ctx); err != nil {
 		return err
 	}

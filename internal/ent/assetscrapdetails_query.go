@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -109,7 +110,7 @@ func (asdq *AssetScrapDetailsQuery) QueryScrap() *AssetScrapQuery {
 // First returns the first AssetScrapDetails entity from the query.
 // Returns a *NotFoundError when no AssetScrapDetails was found.
 func (asdq *AssetScrapDetailsQuery) First(ctx context.Context) (*AssetScrapDetails, error) {
-	nodes, err := asdq.Limit(1).All(setContextOp(ctx, asdq.ctx, "First"))
+	nodes, err := asdq.Limit(1).All(setContextOp(ctx, asdq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +133,7 @@ func (asdq *AssetScrapDetailsQuery) FirstX(ctx context.Context) *AssetScrapDetai
 // Returns a *NotFoundError when no AssetScrapDetails ID was found.
 func (asdq *AssetScrapDetailsQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = asdq.Limit(1).IDs(setContextOp(ctx, asdq.ctx, "FirstID")); err != nil {
+	if ids, err = asdq.Limit(1).IDs(setContextOp(ctx, asdq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -155,7 +156,7 @@ func (asdq *AssetScrapDetailsQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one AssetScrapDetails entity is found.
 // Returns a *NotFoundError when no AssetScrapDetails entities are found.
 func (asdq *AssetScrapDetailsQuery) Only(ctx context.Context) (*AssetScrapDetails, error) {
-	nodes, err := asdq.Limit(2).All(setContextOp(ctx, asdq.ctx, "Only"))
+	nodes, err := asdq.Limit(2).All(setContextOp(ctx, asdq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -183,7 +184,7 @@ func (asdq *AssetScrapDetailsQuery) OnlyX(ctx context.Context) *AssetScrapDetail
 // Returns a *NotFoundError when no entities are found.
 func (asdq *AssetScrapDetailsQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = asdq.Limit(2).IDs(setContextOp(ctx, asdq.ctx, "OnlyID")); err != nil {
+	if ids, err = asdq.Limit(2).IDs(setContextOp(ctx, asdq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -208,7 +209,7 @@ func (asdq *AssetScrapDetailsQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of AssetScrapDetailsSlice.
 func (asdq *AssetScrapDetailsQuery) All(ctx context.Context) ([]*AssetScrapDetails, error) {
-	ctx = setContextOp(ctx, asdq.ctx, "All")
+	ctx = setContextOp(ctx, asdq.ctx, ent.OpQueryAll)
 	if err := asdq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -230,7 +231,7 @@ func (asdq *AssetScrapDetailsQuery) IDs(ctx context.Context) (ids []uint64, err 
 	if asdq.ctx.Unique == nil && asdq.path != nil {
 		asdq.Unique(true)
 	}
-	ctx = setContextOp(ctx, asdq.ctx, "IDs")
+	ctx = setContextOp(ctx, asdq.ctx, ent.OpQueryIDs)
 	if err = asdq.Select(assetscrapdetails.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -248,7 +249,7 @@ func (asdq *AssetScrapDetailsQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (asdq *AssetScrapDetailsQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, asdq.ctx, "Count")
+	ctx = setContextOp(ctx, asdq.ctx, ent.OpQueryCount)
 	if err := asdq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -266,7 +267,7 @@ func (asdq *AssetScrapDetailsQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (asdq *AssetScrapDetailsQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, asdq.ctx, "Exist")
+	ctx = setContextOp(ctx, asdq.ctx, ent.OpQueryExist)
 	switch _, err := asdq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -301,8 +302,9 @@ func (asdq *AssetScrapDetailsQuery) Clone() *AssetScrapDetailsQuery {
 		withAsset:  asdq.withAsset.Clone(),
 		withScrap:  asdq.withScrap.Clone(),
 		// clone intermediate query.
-		sql:  asdq.sql.Clone(),
-		path: asdq.path,
+		sql:       asdq.sql.Clone(),
+		path:      asdq.path,
+		modifiers: append([]func(*sql.Selector){}, asdq.modifiers...),
 	}
 }
 
@@ -638,7 +640,7 @@ func (asdgb *AssetScrapDetailsGroupBy) Aggregate(fns ...AggregateFunc) *AssetScr
 
 // Scan applies the selector query and scans the result into the given value.
 func (asdgb *AssetScrapDetailsGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, asdgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, asdgb.build.ctx, ent.OpQueryGroupBy)
 	if err := asdgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -686,7 +688,7 @@ func (asds *AssetScrapDetailsSelect) Aggregate(fns ...AggregateFunc) *AssetScrap
 
 // Scan applies the selector query and scans the result into the given value.
 func (asds *AssetScrapDetailsSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, asds.ctx, "Select")
+	ctx = setContextOp(ctx, asds.ctx, ent.OpQuerySelect)
 	if err := asds.prepareQuery(ctx); err != nil {
 		return err
 	}

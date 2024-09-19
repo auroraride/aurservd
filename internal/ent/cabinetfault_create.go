@@ -268,16 +268,16 @@ func (cfc *CabinetFaultCreate) check() error {
 	if _, ok := cfc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "CabinetFault.rider_id"`)}
 	}
-	if _, ok := cfc.mutation.CityID(); !ok {
+	if len(cfc.mutation.CityIDs()) == 0 {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "CabinetFault.city"`)}
 	}
-	if _, ok := cfc.mutation.BranchID(); !ok {
+	if len(cfc.mutation.BranchIDs()) == 0 {
 		return &ValidationError{Name: "branch", err: errors.New(`ent: missing required edge "CabinetFault.branch"`)}
 	}
-	if _, ok := cfc.mutation.CabinetID(); !ok {
+	if len(cfc.mutation.CabinetIDs()) == 0 {
 		return &ValidationError{Name: "cabinet", err: errors.New(`ent: missing required edge "CabinetFault.cabinet"`)}
 	}
-	if _, ok := cfc.mutation.RiderID(); !ok {
+	if len(cfc.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "CabinetFault.rider"`)}
 	}
 	return nil

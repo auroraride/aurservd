@@ -97,7 +97,11 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (res *
 		}
 	}
 
-	cont, _ := ent.Database.Contract.QueryNotDeleted().Where(contract.AllocateID(allo.ID), contract.SubscribeID(req.SubscribeID)).First(s.ctx)
+	cont, _ := ent.Database.Contract.QueryNotDeleted().
+		Where(contract.AllocateID(allo.ID), contract.SubscribeID(req.SubscribeID)).
+		WithRider().
+		WithSubscribe().
+		First(s.ctx)
 	if cont == nil {
 		return nil, errors.New("未找到合同信息")
 	}

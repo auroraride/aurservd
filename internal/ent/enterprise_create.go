@@ -608,7 +608,7 @@ func (ec *EnterpriseCreate) check() error {
 			return &ValidationError{Name: "sign_type", err: fmt.Errorf(`ent: validator failed for field "Enterprise.sign_type": %w`, err)}
 		}
 	}
-	if _, ok := ec.mutation.CityID(); !ok {
+	if len(ec.mutation.CityIDs()) == 0 {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Enterprise.city"`)}
 	}
 	return nil

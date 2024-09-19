@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -156,7 +157,7 @@ func (prq *PromotionReferralsQuery) QueryReferredMember() *PromotionMemberQuery 
 // First returns the first PromotionReferrals entity from the query.
 // Returns a *NotFoundError when no PromotionReferrals was found.
 func (prq *PromotionReferralsQuery) First(ctx context.Context) (*PromotionReferrals, error) {
-	nodes, err := prq.Limit(1).All(setContextOp(ctx, prq.ctx, "First"))
+	nodes, err := prq.Limit(1).All(setContextOp(ctx, prq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -179,7 +180,7 @@ func (prq *PromotionReferralsQuery) FirstX(ctx context.Context) *PromotionReferr
 // Returns a *NotFoundError when no PromotionReferrals ID was found.
 func (prq *PromotionReferralsQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = prq.Limit(1).IDs(setContextOp(ctx, prq.ctx, "FirstID")); err != nil {
+	if ids, err = prq.Limit(1).IDs(setContextOp(ctx, prq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -202,7 +203,7 @@ func (prq *PromotionReferralsQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one PromotionReferrals entity is found.
 // Returns a *NotFoundError when no PromotionReferrals entities are found.
 func (prq *PromotionReferralsQuery) Only(ctx context.Context) (*PromotionReferrals, error) {
-	nodes, err := prq.Limit(2).All(setContextOp(ctx, prq.ctx, "Only"))
+	nodes, err := prq.Limit(2).All(setContextOp(ctx, prq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -230,7 +231,7 @@ func (prq *PromotionReferralsQuery) OnlyX(ctx context.Context) *PromotionReferra
 // Returns a *NotFoundError when no entities are found.
 func (prq *PromotionReferralsQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = prq.Limit(2).IDs(setContextOp(ctx, prq.ctx, "OnlyID")); err != nil {
+	if ids, err = prq.Limit(2).IDs(setContextOp(ctx, prq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -255,7 +256,7 @@ func (prq *PromotionReferralsQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of PromotionReferralsSlice.
 func (prq *PromotionReferralsQuery) All(ctx context.Context) ([]*PromotionReferrals, error) {
-	ctx = setContextOp(ctx, prq.ctx, "All")
+	ctx = setContextOp(ctx, prq.ctx, ent.OpQueryAll)
 	if err := prq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -277,7 +278,7 @@ func (prq *PromotionReferralsQuery) IDs(ctx context.Context) (ids []uint64, err 
 	if prq.ctx.Unique == nil && prq.path != nil {
 		prq.Unique(true)
 	}
-	ctx = setContextOp(ctx, prq.ctx, "IDs")
+	ctx = setContextOp(ctx, prq.ctx, ent.OpQueryIDs)
 	if err = prq.Select(promotionreferrals.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -295,7 +296,7 @@ func (prq *PromotionReferralsQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (prq *PromotionReferralsQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, prq.ctx, "Count")
+	ctx = setContextOp(ctx, prq.ctx, ent.OpQueryCount)
 	if err := prq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -313,7 +314,7 @@ func (prq *PromotionReferralsQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (prq *PromotionReferralsQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, prq.ctx, "Exist")
+	ctx = setContextOp(ctx, prq.ctx, ent.OpQueryExist)
 	switch _, err := prq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -350,8 +351,9 @@ func (prq *PromotionReferralsQuery) Clone() *PromotionReferralsQuery {
 		withReferringMember: prq.withReferringMember.Clone(),
 		withReferredMember:  prq.withReferredMember.Clone(),
 		// clone intermediate query.
-		sql:  prq.sql.Clone(),
-		path: prq.path,
+		sql:       prq.sql.Clone(),
+		path:      prq.path,
+		modifiers: append([]func(*sql.Selector){}, prq.modifiers...),
 	}
 }
 
@@ -802,7 +804,7 @@ func (prgb *PromotionReferralsGroupBy) Aggregate(fns ...AggregateFunc) *Promotio
 
 // Scan applies the selector query and scans the result into the given value.
 func (prgb *PromotionReferralsGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, prgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, prgb.build.ctx, ent.OpQueryGroupBy)
 	if err := prgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -850,7 +852,7 @@ func (prs *PromotionReferralsSelect) Aggregate(fns ...AggregateFunc) *PromotionR
 
 // Scan applies the selector query and scans the result into the given value.
 func (prs *PromotionReferralsSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, prs.ctx, "Select")
+	ctx = setContextOp(ctx, prs.ctx, ent.OpQuerySelect)
 	if err := prs.prepareQuery(ctx); err != nil {
 		return err
 	}

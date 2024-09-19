@@ -400,7 +400,7 @@ func (bu *BranchUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (bu *BranchUpdate) check() error {
-	if _, ok := bu.mutation.CityID(); bu.mutation.CityCleared() && !ok {
+	if bu.mutation.CityCleared() && len(bu.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Branch.city"`)
 	}
 	return nil
@@ -1085,7 +1085,7 @@ func (buo *BranchUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (buo *BranchUpdateOne) check() error {
-	if _, ok := buo.mutation.CityID(); buo.mutation.CityCleared() && !ok {
+	if buo.mutation.CityCleared() && len(buo.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Branch.city"`)
 	}
 	return nil

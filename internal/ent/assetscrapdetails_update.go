@@ -136,7 +136,7 @@ func (asdu *AssetScrapDetailsUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (asdu *AssetScrapDetailsUpdate) check() error {
-	if _, ok := asdu.mutation.AssetID(); asdu.mutation.AssetCleared() && !ok {
+	if asdu.mutation.AssetCleared() && len(asdu.mutation.AssetIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "AssetScrapDetails.asset"`)
 	}
 	return nil
@@ -361,7 +361,7 @@ func (asduo *AssetScrapDetailsUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (asduo *AssetScrapDetailsUpdateOne) check() error {
-	if _, ok := asduo.mutation.AssetID(); asduo.mutation.AssetCleared() && !ok {
+	if asduo.mutation.AssetCleared() && len(asduo.mutation.AssetIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "AssetScrapDetails.asset"`)
 	}
 	return nil

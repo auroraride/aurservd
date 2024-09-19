@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -61,7 +62,7 @@ func (mq *MaterialQuery) Order(o ...material.OrderOption) *MaterialQuery {
 // First returns the first Material entity from the query.
 // Returns a *NotFoundError when no Material was found.
 func (mq *MaterialQuery) First(ctx context.Context) (*Material, error) {
-	nodes, err := mq.Limit(1).All(setContextOp(ctx, mq.ctx, "First"))
+	nodes, err := mq.Limit(1).All(setContextOp(ctx, mq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +85,7 @@ func (mq *MaterialQuery) FirstX(ctx context.Context) *Material {
 // Returns a *NotFoundError when no Material ID was found.
 func (mq *MaterialQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = mq.Limit(1).IDs(setContextOp(ctx, mq.ctx, "FirstID")); err != nil {
+	if ids, err = mq.Limit(1).IDs(setContextOp(ctx, mq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -107,7 +108,7 @@ func (mq *MaterialQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Material entity is found.
 // Returns a *NotFoundError when no Material entities are found.
 func (mq *MaterialQuery) Only(ctx context.Context) (*Material, error) {
-	nodes, err := mq.Limit(2).All(setContextOp(ctx, mq.ctx, "Only"))
+	nodes, err := mq.Limit(2).All(setContextOp(ctx, mq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +136,7 @@ func (mq *MaterialQuery) OnlyX(ctx context.Context) *Material {
 // Returns a *NotFoundError when no entities are found.
 func (mq *MaterialQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = mq.Limit(2).IDs(setContextOp(ctx, mq.ctx, "OnlyID")); err != nil {
+	if ids, err = mq.Limit(2).IDs(setContextOp(ctx, mq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -160,7 +161,7 @@ func (mq *MaterialQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Materials.
 func (mq *MaterialQuery) All(ctx context.Context) ([]*Material, error) {
-	ctx = setContextOp(ctx, mq.ctx, "All")
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryAll)
 	if err := mq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -182,7 +183,7 @@ func (mq *MaterialQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if mq.ctx.Unique == nil && mq.path != nil {
 		mq.Unique(true)
 	}
-	ctx = setContextOp(ctx, mq.ctx, "IDs")
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryIDs)
 	if err = mq.Select(material.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -200,7 +201,7 @@ func (mq *MaterialQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (mq *MaterialQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, mq.ctx, "Count")
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryCount)
 	if err := mq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -218,7 +219,7 @@ func (mq *MaterialQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (mq *MaterialQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, mq.ctx, "Exist")
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryExist)
 	switch _, err := mq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -251,8 +252,9 @@ func (mq *MaterialQuery) Clone() *MaterialQuery {
 		inters:     append([]Interceptor{}, mq.inters...),
 		predicates: append([]predicate.Material{}, mq.predicates...),
 		// clone intermediate query.
-		sql:  mq.sql.Clone(),
-		path: mq.path,
+		sql:       mq.sql.Clone(),
+		path:      mq.path,
+		modifiers: append([]func(*sql.Selector){}, mq.modifiers...),
 	}
 }
 
@@ -477,7 +479,7 @@ func (mgb *MaterialGroupBy) Aggregate(fns ...AggregateFunc) *MaterialGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (mgb *MaterialGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, mgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, mgb.build.ctx, ent.OpQueryGroupBy)
 	if err := mgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -525,7 +527,7 @@ func (ms *MaterialSelect) Aggregate(fns ...AggregateFunc) *MaterialSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ms *MaterialSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ms.ctx, "Select")
+	ctx = setContextOp(ctx, ms.ctx, ent.OpQuerySelect)
 	if err := ms.prepareQuery(ctx); err != nil {
 		return err
 	}

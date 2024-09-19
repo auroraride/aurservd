@@ -349,7 +349,7 @@ func (wu *WarehouseUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (wu *WarehouseUpdate) check() error {
-	if _, ok := wu.mutation.CityID(); wu.mutation.CityCleared() && !ok {
+	if wu.mutation.CityCleared() && len(wu.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Warehouse.city"`)
 	}
 	return nil
@@ -933,7 +933,7 @@ func (wuo *WarehouseUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (wuo *WarehouseUpdateOne) check() error {
-	if _, ok := wuo.mutation.CityID(); wuo.mutation.CityCleared() && !ok {
+	if wuo.mutation.CityCleared() && len(wuo.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Warehouse.city"`)
 	}
 	return nil

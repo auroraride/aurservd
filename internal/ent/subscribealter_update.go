@@ -347,10 +347,10 @@ func (sau *SubscribeAlterUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (sau *SubscribeAlterUpdate) check() error {
-	if _, ok := sau.mutation.RiderID(); sau.mutation.RiderCleared() && !ok {
+	if sau.mutation.RiderCleared() && len(sau.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SubscribeAlter.rider"`)
 	}
-	if _, ok := sau.mutation.SubscribeID(); sau.mutation.SubscribeCleared() && !ok {
+	if sau.mutation.SubscribeCleared() && len(sau.mutation.SubscribeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SubscribeAlter.subscribe"`)
 	}
 	return nil
@@ -908,10 +908,10 @@ func (sauo *SubscribeAlterUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (sauo *SubscribeAlterUpdateOne) check() error {
-	if _, ok := sauo.mutation.RiderID(); sauo.mutation.RiderCleared() && !ok {
+	if sauo.mutation.RiderCleared() && len(sauo.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SubscribeAlter.rider"`)
 	}
-	if _, ok := sauo.mutation.SubscribeID(); sauo.mutation.SubscribeCleared() && !ok {
+	if sauo.mutation.SubscribeCleared() && len(sauo.mutation.SubscribeIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SubscribeAlter.subscribe"`)
 	}
 	return nil

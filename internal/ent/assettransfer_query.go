@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -16,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -46,7 +48,7 @@ type AssetTransferQuery struct {
 	withToLocationOperator     *MaintainerQuery
 	withToLocationWarehouse    *WarehouseQuery
 	withOutOperateAssetManager *AssetManagerQuery
-	withOutOperateStore        *StoreQuery
+	withOutOperateEmployee     *EmployeeQuery
 	withOutOperateAgent        *AgentQuery
 	withOutOperateMaintainer   *MaintainerQuery
 	withOutOperateCabinet      *CabinetQuery
@@ -397,9 +399,9 @@ func (atq *AssetTransferQuery) QueryOutOperateAssetManager() *AssetManagerQuery 
 	return query
 }
 
-// QueryOutOperateStore chains the current query on the "out_operate_store" edge.
-func (atq *AssetTransferQuery) QueryOutOperateStore() *StoreQuery {
-	query := (&StoreClient{config: atq.config}).Query()
+// QueryOutOperateEmployee chains the current query on the "out_operate_employee" edge.
+func (atq *AssetTransferQuery) QueryOutOperateEmployee() *EmployeeQuery {
+	query := (&EmployeeClient{config: atq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := atq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -410,8 +412,8 @@ func (atq *AssetTransferQuery) QueryOutOperateStore() *StoreQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, selector),
-			sqlgraph.To(store.Table, store.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateStoreTable, assettransfer.OutOperateStoreColumn),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateEmployeeTable, assettransfer.OutOperateEmployeeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(atq.driver.Dialect(), step)
 		return fromU, nil
@@ -532,7 +534,7 @@ func (atq *AssetTransferQuery) QueryOutOperateManager() *ManagerQuery {
 // First returns the first AssetTransfer entity from the query.
 // Returns a *NotFoundError when no AssetTransfer was found.
 func (atq *AssetTransferQuery) First(ctx context.Context) (*AssetTransfer, error) {
-	nodes, err := atq.Limit(1).All(setContextOp(ctx, atq.ctx, "First"))
+	nodes, err := atq.Limit(1).All(setContextOp(ctx, atq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -555,7 +557,7 @@ func (atq *AssetTransferQuery) FirstX(ctx context.Context) *AssetTransfer {
 // Returns a *NotFoundError when no AssetTransfer ID was found.
 func (atq *AssetTransferQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = atq.Limit(1).IDs(setContextOp(ctx, atq.ctx, "FirstID")); err != nil {
+	if ids, err = atq.Limit(1).IDs(setContextOp(ctx, atq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -578,7 +580,7 @@ func (atq *AssetTransferQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one AssetTransfer entity is found.
 // Returns a *NotFoundError when no AssetTransfer entities are found.
 func (atq *AssetTransferQuery) Only(ctx context.Context) (*AssetTransfer, error) {
-	nodes, err := atq.Limit(2).All(setContextOp(ctx, atq.ctx, "Only"))
+	nodes, err := atq.Limit(2).All(setContextOp(ctx, atq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -606,7 +608,7 @@ func (atq *AssetTransferQuery) OnlyX(ctx context.Context) *AssetTransfer {
 // Returns a *NotFoundError when no entities are found.
 func (atq *AssetTransferQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = atq.Limit(2).IDs(setContextOp(ctx, atq.ctx, "OnlyID")); err != nil {
+	if ids, err = atq.Limit(2).IDs(setContextOp(ctx, atq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -631,7 +633,7 @@ func (atq *AssetTransferQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of AssetTransfers.
 func (atq *AssetTransferQuery) All(ctx context.Context) ([]*AssetTransfer, error) {
-	ctx = setContextOp(ctx, atq.ctx, "All")
+	ctx = setContextOp(ctx, atq.ctx, ent.OpQueryAll)
 	if err := atq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -653,7 +655,7 @@ func (atq *AssetTransferQuery) IDs(ctx context.Context) (ids []uint64, err error
 	if atq.ctx.Unique == nil && atq.path != nil {
 		atq.Unique(true)
 	}
-	ctx = setContextOp(ctx, atq.ctx, "IDs")
+	ctx = setContextOp(ctx, atq.ctx, ent.OpQueryIDs)
 	if err = atq.Select(assettransfer.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -671,7 +673,7 @@ func (atq *AssetTransferQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (atq *AssetTransferQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, atq.ctx, "Count")
+	ctx = setContextOp(ctx, atq.ctx, ent.OpQueryCount)
 	if err := atq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -689,7 +691,7 @@ func (atq *AssetTransferQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (atq *AssetTransferQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, atq.ctx, "Exist")
+	ctx = setContextOp(ctx, atq.ctx, ent.OpQueryExist)
 	switch _, err := atq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -735,15 +737,16 @@ func (atq *AssetTransferQuery) Clone() *AssetTransferQuery {
 		withToLocationOperator:     atq.withToLocationOperator.Clone(),
 		withToLocationWarehouse:    atq.withToLocationWarehouse.Clone(),
 		withOutOperateAssetManager: atq.withOutOperateAssetManager.Clone(),
-		withOutOperateStore:        atq.withOutOperateStore.Clone(),
+		withOutOperateEmployee:     atq.withOutOperateEmployee.Clone(),
 		withOutOperateAgent:        atq.withOutOperateAgent.Clone(),
 		withOutOperateMaintainer:   atq.withOutOperateMaintainer.Clone(),
 		withOutOperateCabinet:      atq.withOutOperateCabinet.Clone(),
 		withOutOperateRider:        atq.withOutOperateRider.Clone(),
 		withOutOperateManager:      atq.withOutOperateManager.Clone(),
 		// clone intermediate query.
-		sql:  atq.sql.Clone(),
-		path: atq.path,
+		sql:       atq.sql.Clone(),
+		path:      atq.path,
+		modifiers: append([]func(*sql.Selector){}, atq.modifiers...),
 	}
 }
 
@@ -901,14 +904,14 @@ func (atq *AssetTransferQuery) WithOutOperateAssetManager(opts ...func(*AssetMan
 	return atq
 }
 
-// WithOutOperateStore tells the query-builder to eager-load the nodes that are connected to
-// the "out_operate_store" edge. The optional arguments are used to configure the query builder of the edge.
-func (atq *AssetTransferQuery) WithOutOperateStore(opts ...func(*StoreQuery)) *AssetTransferQuery {
-	query := (&StoreClient{config: atq.config}).Query()
+// WithOutOperateEmployee tells the query-builder to eager-load the nodes that are connected to
+// the "out_operate_employee" edge. The optional arguments are used to configure the query builder of the edge.
+func (atq *AssetTransferQuery) WithOutOperateEmployee(opts ...func(*EmployeeQuery)) *AssetTransferQuery {
+	query := (&EmployeeClient{config: atq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	atq.withOutOperateStore = query
+	atq.withOutOperateEmployee = query
 	return atq
 }
 
@@ -1060,7 +1063,7 @@ func (atq *AssetTransferQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 			atq.withToLocationOperator != nil,
 			atq.withToLocationWarehouse != nil,
 			atq.withOutOperateAssetManager != nil,
-			atq.withOutOperateStore != nil,
+			atq.withOutOperateEmployee != nil,
 			atq.withOutOperateAgent != nil,
 			atq.withOutOperateMaintainer != nil,
 			atq.withOutOperateCabinet != nil,
@@ -1176,9 +1179,9 @@ func (atq *AssetTransferQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 			return nil, err
 		}
 	}
-	if query := atq.withOutOperateStore; query != nil {
-		if err := atq.loadOutOperateStore(ctx, query, nodes, nil,
-			func(n *AssetTransfer, e *Store) { n.Edges.OutOperateStore = e }); err != nil {
+	if query := atq.withOutOperateEmployee; query != nil {
+		if err := atq.loadOutOperateEmployee(ctx, query, nodes, nil,
+			func(n *AssetTransfer, e *Employee) { n.Edges.OutOperateEmployee = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1643,7 +1646,7 @@ func (atq *AssetTransferQuery) loadOutOperateAssetManager(ctx context.Context, q
 	}
 	return nil
 }
-func (atq *AssetTransferQuery) loadOutOperateStore(ctx context.Context, query *StoreQuery, nodes []*AssetTransfer, init func(*AssetTransfer), assign func(*AssetTransfer, *Store)) error {
+func (atq *AssetTransferQuery) loadOutOperateEmployee(ctx context.Context, query *EmployeeQuery, nodes []*AssetTransfer, init func(*AssetTransfer), assign func(*AssetTransfer, *Employee)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*AssetTransfer)
 	for i := range nodes {
@@ -1659,7 +1662,7 @@ func (atq *AssetTransferQuery) loadOutOperateStore(ctx context.Context, query *S
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(store.IDIn(ids...))
+	query.Where(employee.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
@@ -1903,7 +1906,7 @@ func (atq *AssetTransferQuery) querySpec() *sqlgraph.QuerySpec {
 		if atq.withOutOperateAssetManager != nil {
 			_spec.Node.AddColumnOnce(assettransfer.FieldOutOperateID)
 		}
-		if atq.withOutOperateStore != nil {
+		if atq.withOutOperateEmployee != nil {
 			_spec.Node.AddColumnOnce(assettransfer.FieldOutOperateID)
 		}
 		if atq.withOutOperateAgent != nil {
@@ -2003,7 +2006,7 @@ var (
 	AssetTransferQueryWithToLocationOperator     AssetTransferQueryWith = "ToLocationOperator"
 	AssetTransferQueryWithToLocationWarehouse    AssetTransferQueryWith = "ToLocationWarehouse"
 	AssetTransferQueryWithOutOperateAssetManager AssetTransferQueryWith = "OutOperateAssetManager"
-	AssetTransferQueryWithOutOperateStore        AssetTransferQueryWith = "OutOperateStore"
+	AssetTransferQueryWithOutOperateEmployee     AssetTransferQueryWith = "OutOperateEmployee"
 	AssetTransferQueryWithOutOperateAgent        AssetTransferQueryWith = "OutOperateAgent"
 	AssetTransferQueryWithOutOperateMaintainer   AssetTransferQueryWith = "OutOperateMaintainer"
 	AssetTransferQueryWithOutOperateCabinet      AssetTransferQueryWith = "OutOperateCabinet"
@@ -2042,8 +2045,8 @@ func (atq *AssetTransferQuery) With(withEdges ...AssetTransferQueryWith) *AssetT
 			atq.WithToLocationWarehouse()
 		case AssetTransferQueryWithOutOperateAssetManager:
 			atq.WithOutOperateAssetManager()
-		case AssetTransferQueryWithOutOperateStore:
-			atq.WithOutOperateStore()
+		case AssetTransferQueryWithOutOperateEmployee:
+			atq.WithOutOperateEmployee()
 		case AssetTransferQueryWithOutOperateAgent:
 			atq.WithOutOperateAgent()
 		case AssetTransferQueryWithOutOperateMaintainer:
@@ -2073,7 +2076,7 @@ func (atgb *AssetTransferGroupBy) Aggregate(fns ...AggregateFunc) *AssetTransfer
 
 // Scan applies the selector query and scans the result into the given value.
 func (atgb *AssetTransferGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, atgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, atgb.build.ctx, ent.OpQueryGroupBy)
 	if err := atgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -2121,7 +2124,7 @@ func (ats *AssetTransferSelect) Aggregate(fns ...AggregateFunc) *AssetTransferSe
 
 // Scan applies the selector query and scans the result into the given value.
 func (ats *AssetTransferSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ats.ctx, "Select")
+	ctx = setContextOp(ctx, ats.ctx, ent.OpQuerySelect)
 	if err := ats.prepareQuery(ctx); err != nil {
 		return err
 	}

@@ -4580,15 +4580,15 @@ func (c *AssetTransferClient) QueryOutOperateAssetManager(at *AssetTransfer) *As
 	return query
 }
 
-// QueryOutOperateStore queries the out_operate_store edge of a AssetTransfer.
-func (c *AssetTransferClient) QueryOutOperateStore(at *AssetTransfer) *StoreQuery {
-	query := (&StoreClient{config: c.config}).Query()
+// QueryOutOperateEmployee queries the out_operate_employee edge of a AssetTransfer.
+func (c *AssetTransferClient) QueryOutOperateEmployee(at *AssetTransfer) *EmployeeQuery {
+	query := (&EmployeeClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := at.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assettransfer.Table, assettransfer.FieldID, id),
-			sqlgraph.To(store.Table, store.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateStoreTable, assettransfer.OutOperateStoreColumn),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransfer.OutOperateEmployeeTable, assettransfer.OutOperateEmployeeColumn),
 		)
 		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
 		return fromV, nil

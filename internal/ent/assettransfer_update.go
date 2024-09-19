@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -657,23 +658,23 @@ func (atu *AssetTransferUpdate) SetOutOperateAssetManager(a *AssetManager) *Asse
 	return atu.SetOutOperateAssetManagerID(a.ID)
 }
 
-// SetOutOperateStoreID sets the "out_operate_store" edge to the Store entity by ID.
-func (atu *AssetTransferUpdate) SetOutOperateStoreID(id uint64) *AssetTransferUpdate {
-	atu.mutation.SetOutOperateStoreID(id)
+// SetOutOperateEmployeeID sets the "out_operate_employee" edge to the Employee entity by ID.
+func (atu *AssetTransferUpdate) SetOutOperateEmployeeID(id uint64) *AssetTransferUpdate {
+	atu.mutation.SetOutOperateEmployeeID(id)
 	return atu
 }
 
-// SetNillableOutOperateStoreID sets the "out_operate_store" edge to the Store entity by ID if the given value is not nil.
-func (atu *AssetTransferUpdate) SetNillableOutOperateStoreID(id *uint64) *AssetTransferUpdate {
+// SetNillableOutOperateEmployeeID sets the "out_operate_employee" edge to the Employee entity by ID if the given value is not nil.
+func (atu *AssetTransferUpdate) SetNillableOutOperateEmployeeID(id *uint64) *AssetTransferUpdate {
 	if id != nil {
-		atu = atu.SetOutOperateStoreID(*id)
+		atu = atu.SetOutOperateEmployeeID(*id)
 	}
 	return atu
 }
 
-// SetOutOperateStore sets the "out_operate_store" edge to the Store entity.
-func (atu *AssetTransferUpdate) SetOutOperateStore(s *Store) *AssetTransferUpdate {
-	return atu.SetOutOperateStoreID(s.ID)
+// SetOutOperateEmployee sets the "out_operate_employee" edge to the Employee entity.
+func (atu *AssetTransferUpdate) SetOutOperateEmployee(e *Employee) *AssetTransferUpdate {
+	return atu.SetOutOperateEmployeeID(e.ID)
 }
 
 // SetOutOperateAgentID sets the "out_operate_agent" edge to the Agent entity by ID.
@@ -875,9 +876,9 @@ func (atu *AssetTransferUpdate) ClearOutOperateAssetManager() *AssetTransferUpda
 	return atu
 }
 
-// ClearOutOperateStore clears the "out_operate_store" edge to the Store entity.
-func (atu *AssetTransferUpdate) ClearOutOperateStore() *AssetTransferUpdate {
-	atu.mutation.ClearOutOperateStore()
+// ClearOutOperateEmployee clears the "out_operate_employee" edge to the Employee entity.
+func (atu *AssetTransferUpdate) ClearOutOperateEmployee() *AssetTransferUpdate {
+	atu.mutation.ClearOutOperateEmployee()
 	return atu
 }
 
@@ -1489,28 +1490,28 @@ func (atu *AssetTransferUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atu.mutation.OutOperateStoreCleared() {
+	if atu.mutation.OutOperateEmployeeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.OutOperateStoreTable,
-			Columns: []string{assettransfer.OutOperateStoreColumn},
+			Table:   assettransfer.OutOperateEmployeeTable,
+			Columns: []string{assettransfer.OutOperateEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atu.mutation.OutOperateStoreIDs(); len(nodes) > 0 {
+	if nodes := atu.mutation.OutOperateEmployeeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.OutOperateStoreTable,
-			Columns: []string{assettransfer.OutOperateStoreColumn},
+			Table:   assettransfer.OutOperateEmployeeTable,
+			Columns: []string{assettransfer.OutOperateEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -2302,23 +2303,23 @@ func (atuo *AssetTransferUpdateOne) SetOutOperateAssetManager(a *AssetManager) *
 	return atuo.SetOutOperateAssetManagerID(a.ID)
 }
 
-// SetOutOperateStoreID sets the "out_operate_store" edge to the Store entity by ID.
-func (atuo *AssetTransferUpdateOne) SetOutOperateStoreID(id uint64) *AssetTransferUpdateOne {
-	atuo.mutation.SetOutOperateStoreID(id)
+// SetOutOperateEmployeeID sets the "out_operate_employee" edge to the Employee entity by ID.
+func (atuo *AssetTransferUpdateOne) SetOutOperateEmployeeID(id uint64) *AssetTransferUpdateOne {
+	atuo.mutation.SetOutOperateEmployeeID(id)
 	return atuo
 }
 
-// SetNillableOutOperateStoreID sets the "out_operate_store" edge to the Store entity by ID if the given value is not nil.
-func (atuo *AssetTransferUpdateOne) SetNillableOutOperateStoreID(id *uint64) *AssetTransferUpdateOne {
+// SetNillableOutOperateEmployeeID sets the "out_operate_employee" edge to the Employee entity by ID if the given value is not nil.
+func (atuo *AssetTransferUpdateOne) SetNillableOutOperateEmployeeID(id *uint64) *AssetTransferUpdateOne {
 	if id != nil {
-		atuo = atuo.SetOutOperateStoreID(*id)
+		atuo = atuo.SetOutOperateEmployeeID(*id)
 	}
 	return atuo
 }
 
-// SetOutOperateStore sets the "out_operate_store" edge to the Store entity.
-func (atuo *AssetTransferUpdateOne) SetOutOperateStore(s *Store) *AssetTransferUpdateOne {
-	return atuo.SetOutOperateStoreID(s.ID)
+// SetOutOperateEmployee sets the "out_operate_employee" edge to the Employee entity.
+func (atuo *AssetTransferUpdateOne) SetOutOperateEmployee(e *Employee) *AssetTransferUpdateOne {
+	return atuo.SetOutOperateEmployeeID(e.ID)
 }
 
 // SetOutOperateAgentID sets the "out_operate_agent" edge to the Agent entity by ID.
@@ -2520,9 +2521,9 @@ func (atuo *AssetTransferUpdateOne) ClearOutOperateAssetManager() *AssetTransfer
 	return atuo
 }
 
-// ClearOutOperateStore clears the "out_operate_store" edge to the Store entity.
-func (atuo *AssetTransferUpdateOne) ClearOutOperateStore() *AssetTransferUpdateOne {
-	atuo.mutation.ClearOutOperateStore()
+// ClearOutOperateEmployee clears the "out_operate_employee" edge to the Employee entity.
+func (atuo *AssetTransferUpdateOne) ClearOutOperateEmployee() *AssetTransferUpdateOne {
+	atuo.mutation.ClearOutOperateEmployee()
 	return atuo
 }
 
@@ -3164,28 +3165,28 @@ func (atuo *AssetTransferUpdateOne) sqlSave(ctx context.Context) (_node *AssetTr
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atuo.mutation.OutOperateStoreCleared() {
+	if atuo.mutation.OutOperateEmployeeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.OutOperateStoreTable,
-			Columns: []string{assettransfer.OutOperateStoreColumn},
+			Table:   assettransfer.OutOperateEmployeeTable,
+			Columns: []string{assettransfer.OutOperateEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atuo.mutation.OutOperateStoreIDs(); len(nodes) > 0 {
+	if nodes := atuo.mutation.OutOperateEmployeeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.OutOperateStoreTable,
-			Columns: []string{assettransfer.OutOperateStoreColumn},
+			Table:   assettransfer.OutOperateEmployeeTable,
+			Columns: []string{assettransfer.OutOperateEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

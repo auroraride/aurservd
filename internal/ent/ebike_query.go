@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -229,7 +230,7 @@ func (eq *EbikeQuery) QueryRtoRider() *RiderQuery {
 // First returns the first Ebike entity from the query.
 // Returns a *NotFoundError when no Ebike was found.
 func (eq *EbikeQuery) First(ctx context.Context) (*Ebike, error) {
-	nodes, err := eq.Limit(1).All(setContextOp(ctx, eq.ctx, "First"))
+	nodes, err := eq.Limit(1).All(setContextOp(ctx, eq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -252,7 +253,7 @@ func (eq *EbikeQuery) FirstX(ctx context.Context) *Ebike {
 // Returns a *NotFoundError when no Ebike ID was found.
 func (eq *EbikeQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(1).IDs(setContextOp(ctx, eq.ctx, "FirstID")); err != nil {
+	if ids, err = eq.Limit(1).IDs(setContextOp(ctx, eq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -275,7 +276,7 @@ func (eq *EbikeQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Ebike entity is found.
 // Returns a *NotFoundError when no Ebike entities are found.
 func (eq *EbikeQuery) Only(ctx context.Context) (*Ebike, error) {
-	nodes, err := eq.Limit(2).All(setContextOp(ctx, eq.ctx, "Only"))
+	nodes, err := eq.Limit(2).All(setContextOp(ctx, eq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -303,7 +304,7 @@ func (eq *EbikeQuery) OnlyX(ctx context.Context) *Ebike {
 // Returns a *NotFoundError when no entities are found.
 func (eq *EbikeQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(2).IDs(setContextOp(ctx, eq.ctx, "OnlyID")); err != nil {
+	if ids, err = eq.Limit(2).IDs(setContextOp(ctx, eq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -328,7 +329,7 @@ func (eq *EbikeQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Ebikes.
 func (eq *EbikeQuery) All(ctx context.Context) ([]*Ebike, error) {
-	ctx = setContextOp(ctx, eq.ctx, "All")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryAll)
 	if err := eq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -350,7 +351,7 @@ func (eq *EbikeQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if eq.ctx.Unique == nil && eq.path != nil {
 		eq.Unique(true)
 	}
-	ctx = setContextOp(ctx, eq.ctx, "IDs")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryIDs)
 	if err = eq.Select(ebike.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -368,7 +369,7 @@ func (eq *EbikeQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (eq *EbikeQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, eq.ctx, "Count")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryCount)
 	if err := eq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -386,7 +387,7 @@ func (eq *EbikeQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (eq *EbikeQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, eq.ctx, "Exist")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryExist)
 	switch _, err := eq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -426,8 +427,9 @@ func (eq *EbikeQuery) Clone() *EbikeQuery {
 		withAllocates:  eq.withAllocates.Clone(),
 		withRtoRider:   eq.withRtoRider.Clone(),
 		// clone intermediate query.
-		sql:  eq.sql.Clone(),
-		path: eq.path,
+		sql:       eq.sql.Clone(),
+		path:      eq.path,
+		modifiers: append([]func(*sql.Selector){}, eq.modifiers...),
 	}
 }
 
@@ -1043,7 +1045,7 @@ func (egb *EbikeGroupBy) Aggregate(fns ...AggregateFunc) *EbikeGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (egb *EbikeGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, egb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, egb.build.ctx, ent.OpQueryGroupBy)
 	if err := egb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1091,7 +1093,7 @@ func (es *EbikeSelect) Aggregate(fns ...AggregateFunc) *EbikeSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (es *EbikeSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, es.ctx, "Select")
+	ctx = setContextOp(ctx, es.ctx, ent.OpQuerySelect)
 	if err := es.prepareQuery(ctx); err != nil {
 		return err
 	}

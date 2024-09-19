@@ -1186,10 +1186,10 @@ func (su *SubscribeUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (su *SubscribeUpdate) check() error {
-	if _, ok := su.mutation.CityID(); su.mutation.CityCleared() && !ok {
+	if su.mutation.CityCleared() && len(su.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Subscribe.city"`)
 	}
-	if _, ok := su.mutation.RiderID(); su.mutation.RiderCleared() && !ok {
+	if su.mutation.RiderCleared() && len(su.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Subscribe.rider"`)
 	}
 	return nil
@@ -3162,10 +3162,10 @@ func (suo *SubscribeUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (suo *SubscribeUpdateOne) check() error {
-	if _, ok := suo.mutation.CityID(); suo.mutation.CityCleared() && !ok {
+	if suo.mutation.CityCleared() && len(suo.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Subscribe.city"`)
 	}
-	if _, ok := suo.mutation.RiderID(); suo.mutation.RiderCleared() && !ok {
+	if suo.mutation.RiderCleared() && len(suo.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Subscribe.rider"`)
 	}
 	return nil

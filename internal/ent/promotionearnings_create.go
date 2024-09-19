@@ -294,13 +294,13 @@ func (pec *PromotionEarningsCreate) check() error {
 	if _, ok := pec.mutation.Amount(); !ok {
 		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "PromotionEarnings.amount"`)}
 	}
-	if _, ok := pec.mutation.CommissionID(); !ok {
+	if len(pec.mutation.CommissionIDs()) == 0 {
 		return &ValidationError{Name: "commission", err: errors.New(`ent: missing required edge "PromotionEarnings.commission"`)}
 	}
-	if _, ok := pec.mutation.MemberID(); !ok {
+	if len(pec.mutation.MemberIDs()) == 0 {
 		return &ValidationError{Name: "member", err: errors.New(`ent: missing required edge "PromotionEarnings.member"`)}
 	}
-	if _, ok := pec.mutation.RiderID(); !ok {
+	if len(pec.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "PromotionEarnings.rider"`)}
 	}
 	return nil

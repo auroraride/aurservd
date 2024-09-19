@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -61,7 +62,7 @@ func (pltq *PromotionLevelTaskQuery) Order(o ...promotionleveltask.OrderOption) 
 // First returns the first PromotionLevelTask entity from the query.
 // Returns a *NotFoundError when no PromotionLevelTask was found.
 func (pltq *PromotionLevelTaskQuery) First(ctx context.Context) (*PromotionLevelTask, error) {
-	nodes, err := pltq.Limit(1).All(setContextOp(ctx, pltq.ctx, "First"))
+	nodes, err := pltq.Limit(1).All(setContextOp(ctx, pltq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +85,7 @@ func (pltq *PromotionLevelTaskQuery) FirstX(ctx context.Context) *PromotionLevel
 // Returns a *NotFoundError when no PromotionLevelTask ID was found.
 func (pltq *PromotionLevelTaskQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = pltq.Limit(1).IDs(setContextOp(ctx, pltq.ctx, "FirstID")); err != nil {
+	if ids, err = pltq.Limit(1).IDs(setContextOp(ctx, pltq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -107,7 +108,7 @@ func (pltq *PromotionLevelTaskQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one PromotionLevelTask entity is found.
 // Returns a *NotFoundError when no PromotionLevelTask entities are found.
 func (pltq *PromotionLevelTaskQuery) Only(ctx context.Context) (*PromotionLevelTask, error) {
-	nodes, err := pltq.Limit(2).All(setContextOp(ctx, pltq.ctx, "Only"))
+	nodes, err := pltq.Limit(2).All(setContextOp(ctx, pltq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +136,7 @@ func (pltq *PromotionLevelTaskQuery) OnlyX(ctx context.Context) *PromotionLevelT
 // Returns a *NotFoundError when no entities are found.
 func (pltq *PromotionLevelTaskQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = pltq.Limit(2).IDs(setContextOp(ctx, pltq.ctx, "OnlyID")); err != nil {
+	if ids, err = pltq.Limit(2).IDs(setContextOp(ctx, pltq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -160,7 +161,7 @@ func (pltq *PromotionLevelTaskQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of PromotionLevelTasks.
 func (pltq *PromotionLevelTaskQuery) All(ctx context.Context) ([]*PromotionLevelTask, error) {
-	ctx = setContextOp(ctx, pltq.ctx, "All")
+	ctx = setContextOp(ctx, pltq.ctx, ent.OpQueryAll)
 	if err := pltq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -182,7 +183,7 @@ func (pltq *PromotionLevelTaskQuery) IDs(ctx context.Context) (ids []uint64, err
 	if pltq.ctx.Unique == nil && pltq.path != nil {
 		pltq.Unique(true)
 	}
-	ctx = setContextOp(ctx, pltq.ctx, "IDs")
+	ctx = setContextOp(ctx, pltq.ctx, ent.OpQueryIDs)
 	if err = pltq.Select(promotionleveltask.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -200,7 +201,7 @@ func (pltq *PromotionLevelTaskQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (pltq *PromotionLevelTaskQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, pltq.ctx, "Count")
+	ctx = setContextOp(ctx, pltq.ctx, ent.OpQueryCount)
 	if err := pltq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -218,7 +219,7 @@ func (pltq *PromotionLevelTaskQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (pltq *PromotionLevelTaskQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, pltq.ctx, "Exist")
+	ctx = setContextOp(ctx, pltq.ctx, ent.OpQueryExist)
 	switch _, err := pltq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -251,8 +252,9 @@ func (pltq *PromotionLevelTaskQuery) Clone() *PromotionLevelTaskQuery {
 		inters:     append([]Interceptor{}, pltq.inters...),
 		predicates: append([]predicate.PromotionLevelTask{}, pltq.predicates...),
 		// clone intermediate query.
-		sql:  pltq.sql.Clone(),
-		path: pltq.path,
+		sql:       pltq.sql.Clone(),
+		path:      pltq.path,
+		modifiers: append([]func(*sql.Selector){}, pltq.modifiers...),
 	}
 }
 
@@ -477,7 +479,7 @@ func (pltgb *PromotionLevelTaskGroupBy) Aggregate(fns ...AggregateFunc) *Promoti
 
 // Scan applies the selector query and scans the result into the given value.
 func (pltgb *PromotionLevelTaskGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, pltgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, pltgb.build.ctx, ent.OpQueryGroupBy)
 	if err := pltgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -525,7 +527,7 @@ func (plts *PromotionLevelTaskSelect) Aggregate(fns ...AggregateFunc) *Promotion
 
 // Scan applies the selector query and scans the result into the given value.
 func (plts *PromotionLevelTaskSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, plts.ctx, "Select")
+	ctx = setContextOp(ctx, plts.ctx, ent.OpQuerySelect)
 	if err := plts.prepareQuery(ctx); err != nil {
 		return err
 	}

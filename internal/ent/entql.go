@@ -3867,16 +3867,16 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"AssetManager",
 	)
 	graph.MustAddE(
-		"out_operate_store",
+		"out_operate_employee",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransfer.OutOperateStoreTable,
-			Columns: []string{assettransfer.OutOperateStoreColumn},
+			Table:   assettransfer.OutOperateEmployeeTable,
+			Columns: []string{assettransfer.OutOperateEmployeeColumn},
 			Bidi:    false,
 		},
 		"AssetTransfer",
-		"Store",
+		"Employee",
 	)
 	graph.MustAddE(
 		"out_operate_agent",
@@ -10674,14 +10674,14 @@ func (f *AssetTransferFilter) WhereHasOutOperateAssetManagerWith(preds ...predic
 	})))
 }
 
-// WhereHasOutOperateStore applies a predicate to check if query has an edge out_operate_store.
-func (f *AssetTransferFilter) WhereHasOutOperateStore() {
-	f.Where(entql.HasEdge("out_operate_store"))
+// WhereHasOutOperateEmployee applies a predicate to check if query has an edge out_operate_employee.
+func (f *AssetTransferFilter) WhereHasOutOperateEmployee() {
+	f.Where(entql.HasEdge("out_operate_employee"))
 }
 
-// WhereHasOutOperateStoreWith applies a predicate to check if query has an edge out_operate_store with a given conditions (other predicates).
-func (f *AssetTransferFilter) WhereHasOutOperateStoreWith(preds ...predicate.Store) {
-	f.Where(entql.HasEdgeWith("out_operate_store", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasOutOperateEmployeeWith applies a predicate to check if query has an edge out_operate_employee with a given conditions (other predicates).
+func (f *AssetTransferFilter) WhereHasOutOperateEmployeeWith(preds ...predicate.Employee) {
+	f.Where(entql.HasEdgeWith("out_operate_employee", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

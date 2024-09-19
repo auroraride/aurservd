@@ -550,10 +550,10 @@ func (sc *StoreCreate) check() error {
 	if _, ok := sc.mutation.HeadPic(); !ok {
 		return &ValidationError{Name: "head_pic", err: errors.New(`ent: missing required field "Store.head_pic"`)}
 	}
-	if _, ok := sc.mutation.CityID(); !ok {
+	if len(sc.mutation.CityIDs()) == 0 {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Store.city"`)}
 	}
-	if _, ok := sc.mutation.BranchID(); !ok {
+	if len(sc.mutation.BranchIDs()) == 0 {
 		return &ValidationError{Name: "branch", err: errors.New(`ent: missing required edge "Store.branch"`)}
 	}
 	return nil

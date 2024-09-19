@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -85,7 +86,7 @@ func (prpq *PromotionReferralsProgressQuery) QueryRider() *RiderQuery {
 // First returns the first PromotionReferralsProgress entity from the query.
 // Returns a *NotFoundError when no PromotionReferralsProgress was found.
 func (prpq *PromotionReferralsProgressQuery) First(ctx context.Context) (*PromotionReferralsProgress, error) {
-	nodes, err := prpq.Limit(1).All(setContextOp(ctx, prpq.ctx, "First"))
+	nodes, err := prpq.Limit(1).All(setContextOp(ctx, prpq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +109,7 @@ func (prpq *PromotionReferralsProgressQuery) FirstX(ctx context.Context) *Promot
 // Returns a *NotFoundError when no PromotionReferralsProgress ID was found.
 func (prpq *PromotionReferralsProgressQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = prpq.Limit(1).IDs(setContextOp(ctx, prpq.ctx, "FirstID")); err != nil {
+	if ids, err = prpq.Limit(1).IDs(setContextOp(ctx, prpq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -131,7 +132,7 @@ func (prpq *PromotionReferralsProgressQuery) FirstIDX(ctx context.Context) uint6
 // Returns a *NotSingularError when more than one PromotionReferralsProgress entity is found.
 // Returns a *NotFoundError when no PromotionReferralsProgress entities are found.
 func (prpq *PromotionReferralsProgressQuery) Only(ctx context.Context) (*PromotionReferralsProgress, error) {
-	nodes, err := prpq.Limit(2).All(setContextOp(ctx, prpq.ctx, "Only"))
+	nodes, err := prpq.Limit(2).All(setContextOp(ctx, prpq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +160,7 @@ func (prpq *PromotionReferralsProgressQuery) OnlyX(ctx context.Context) *Promoti
 // Returns a *NotFoundError when no entities are found.
 func (prpq *PromotionReferralsProgressQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = prpq.Limit(2).IDs(setContextOp(ctx, prpq.ctx, "OnlyID")); err != nil {
+	if ids, err = prpq.Limit(2).IDs(setContextOp(ctx, prpq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -184,7 +185,7 @@ func (prpq *PromotionReferralsProgressQuery) OnlyIDX(ctx context.Context) uint64
 
 // All executes the query and returns a list of PromotionReferralsProgresses.
 func (prpq *PromotionReferralsProgressQuery) All(ctx context.Context) ([]*PromotionReferralsProgress, error) {
-	ctx = setContextOp(ctx, prpq.ctx, "All")
+	ctx = setContextOp(ctx, prpq.ctx, ent.OpQueryAll)
 	if err := prpq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -206,7 +207,7 @@ func (prpq *PromotionReferralsProgressQuery) IDs(ctx context.Context) (ids []uin
 	if prpq.ctx.Unique == nil && prpq.path != nil {
 		prpq.Unique(true)
 	}
-	ctx = setContextOp(ctx, prpq.ctx, "IDs")
+	ctx = setContextOp(ctx, prpq.ctx, ent.OpQueryIDs)
 	if err = prpq.Select(promotionreferralsprogress.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -224,7 +225,7 @@ func (prpq *PromotionReferralsProgressQuery) IDsX(ctx context.Context) []uint64 
 
 // Count returns the count of the given query.
 func (prpq *PromotionReferralsProgressQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, prpq.ctx, "Count")
+	ctx = setContextOp(ctx, prpq.ctx, ent.OpQueryCount)
 	if err := prpq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -242,7 +243,7 @@ func (prpq *PromotionReferralsProgressQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (prpq *PromotionReferralsProgressQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, prpq.ctx, "Exist")
+	ctx = setContextOp(ctx, prpq.ctx, ent.OpQueryExist)
 	switch _, err := prpq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -276,8 +277,9 @@ func (prpq *PromotionReferralsProgressQuery) Clone() *PromotionReferralsProgress
 		predicates: append([]predicate.PromotionReferralsProgress{}, prpq.predicates...),
 		withRider:  prpq.withRider.Clone(),
 		// clone intermediate query.
-		sql:  prpq.sql.Clone(),
-		path: prpq.path,
+		sql:       prpq.sql.Clone(),
+		path:      prpq.path,
+		modifiers: append([]func(*sql.Selector){}, prpq.modifiers...),
 	}
 }
 
@@ -563,7 +565,7 @@ func (prpgb *PromotionReferralsProgressGroupBy) Aggregate(fns ...AggregateFunc) 
 
 // Scan applies the selector query and scans the result into the given value.
 func (prpgb *PromotionReferralsProgressGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, prpgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, prpgb.build.ctx, ent.OpQueryGroupBy)
 	if err := prpgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -611,7 +613,7 @@ func (prps *PromotionReferralsProgressSelect) Aggregate(fns ...AggregateFunc) *P
 
 // Scan applies the selector query and scans the result into the given value.
 func (prps *PromotionReferralsProgressSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, prps.ctx, "Select")
+	ctx = setContextOp(ctx, prps.ctx, ent.OpQuerySelect)
 	if err := prps.prepareQuery(ctx); err != nil {
 		return err
 	}

@@ -30,6 +30,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/es"
 	"github.com/auroraride/aurservd/pkg/cache"
@@ -605,14 +606,16 @@ func (b *cabinetBiz) checkSignInfo(assetSignInfo definition.AssetSignInfo, seria
 	case assetSignInfo.Agent != nil:
 		eCab, _ := b.orm.QueryNotDeleted().Where(
 			cabinet.Serial(serial),
-			cabinet.HasEnterpriseWith(
-				enterprise.HasAgentsWith(
-					agent.ID(assetSignInfo.Agent.ID),
+			cabinet.HasStationWith(
+				enterprisestation.HasEnterpriseWith(
+					enterprise.HasAgentsWith(
+						agent.ID(assetSignInfo.Agent.ID),
+					),
 				),
 			),
 		).First(b.ctx)
 		if eCab == nil {
-			return errors.New("当前无该电柜操作权限")
+			return errors.New("当前代理所属站点无该电柜操作权限")
 		}
 
 	}
@@ -625,9 +628,7 @@ func (b *cabinetBiz) Detail(assetSignInfo definition.AssetSignInfo, serial strin
 	if err != nil {
 		return res, err
 	}
-
-	service.NewMaintainerCabinet().Detail(&model.MaintainerCabinetDetailReq{Serial: serial})
-
+	res = service.NewMaintainerCabinet().Detail(&model.MaintainerCabinetDetailReq{Serial: serial})
 	return
 }
 

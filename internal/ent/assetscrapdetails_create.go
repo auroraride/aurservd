@@ -138,7 +138,7 @@ func (asdc *AssetScrapDetailsCreate) check() error {
 	if _, ok := asdc.mutation.AssetID(); !ok {
 		return &ValidationError{Name: "asset_id", err: errors.New(`ent: missing required field "AssetScrapDetails.asset_id"`)}
 	}
-	if _, ok := asdc.mutation.AssetID(); !ok {
+	if len(asdc.mutation.AssetIDs()) == 0 {
 		return &ValidationError{Name: "asset", err: errors.New(`ent: missing required edge "AssetScrapDetails.asset"`)}
 	}
 	return nil

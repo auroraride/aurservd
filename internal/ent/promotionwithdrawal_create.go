@@ -344,7 +344,7 @@ func (pwc *PromotionWithdrawalCreate) check() error {
 	if _, ok := pwc.mutation.Method(); !ok {
 		return &ValidationError{Name: "method", err: errors.New(`ent: missing required field "PromotionWithdrawal.method"`)}
 	}
-	if _, ok := pwc.mutation.MemberID(); !ok {
+	if len(pwc.mutation.MemberIDs()) == 0 {
 		return &ValidationError{Name: "member", err: errors.New(`ent: missing required edge "PromotionWithdrawal.member"`)}
 	}
 	return nil

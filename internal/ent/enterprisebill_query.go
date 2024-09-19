@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -205,7 +206,7 @@ func (ebq *EnterpriseBillQuery) QuerySubscribe() *SubscribeQuery {
 // First returns the first EnterpriseBill entity from the query.
 // Returns a *NotFoundError when no EnterpriseBill was found.
 func (ebq *EnterpriseBillQuery) First(ctx context.Context) (*EnterpriseBill, error) {
-	nodes, err := ebq.Limit(1).All(setContextOp(ctx, ebq.ctx, "First"))
+	nodes, err := ebq.Limit(1).All(setContextOp(ctx, ebq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -228,7 +229,7 @@ func (ebq *EnterpriseBillQuery) FirstX(ctx context.Context) *EnterpriseBill {
 // Returns a *NotFoundError when no EnterpriseBill ID was found.
 func (ebq *EnterpriseBillQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ebq.Limit(1).IDs(setContextOp(ctx, ebq.ctx, "FirstID")); err != nil {
+	if ids, err = ebq.Limit(1).IDs(setContextOp(ctx, ebq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -251,7 +252,7 @@ func (ebq *EnterpriseBillQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one EnterpriseBill entity is found.
 // Returns a *NotFoundError when no EnterpriseBill entities are found.
 func (ebq *EnterpriseBillQuery) Only(ctx context.Context) (*EnterpriseBill, error) {
-	nodes, err := ebq.Limit(2).All(setContextOp(ctx, ebq.ctx, "Only"))
+	nodes, err := ebq.Limit(2).All(setContextOp(ctx, ebq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -279,7 +280,7 @@ func (ebq *EnterpriseBillQuery) OnlyX(ctx context.Context) *EnterpriseBill {
 // Returns a *NotFoundError when no entities are found.
 func (ebq *EnterpriseBillQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ebq.Limit(2).IDs(setContextOp(ctx, ebq.ctx, "OnlyID")); err != nil {
+	if ids, err = ebq.Limit(2).IDs(setContextOp(ctx, ebq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -304,7 +305,7 @@ func (ebq *EnterpriseBillQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of EnterpriseBills.
 func (ebq *EnterpriseBillQuery) All(ctx context.Context) ([]*EnterpriseBill, error) {
-	ctx = setContextOp(ctx, ebq.ctx, "All")
+	ctx = setContextOp(ctx, ebq.ctx, ent.OpQueryAll)
 	if err := ebq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -326,7 +327,7 @@ func (ebq *EnterpriseBillQuery) IDs(ctx context.Context) (ids []uint64, err erro
 	if ebq.ctx.Unique == nil && ebq.path != nil {
 		ebq.Unique(true)
 	}
-	ctx = setContextOp(ctx, ebq.ctx, "IDs")
+	ctx = setContextOp(ctx, ebq.ctx, ent.OpQueryIDs)
 	if err = ebq.Select(enterprisebill.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -344,7 +345,7 @@ func (ebq *EnterpriseBillQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (ebq *EnterpriseBillQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, ebq.ctx, "Count")
+	ctx = setContextOp(ctx, ebq.ctx, ent.OpQueryCount)
 	if err := ebq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -362,7 +363,7 @@ func (ebq *EnterpriseBillQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (ebq *EnterpriseBillQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, ebq.ctx, "Exist")
+	ctx = setContextOp(ctx, ebq.ctx, ent.OpQueryExist)
 	switch _, err := ebq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -401,8 +402,9 @@ func (ebq *EnterpriseBillQuery) Clone() *EnterpriseBillQuery {
 		withStatement:  ebq.withStatement.Clone(),
 		withSubscribe:  ebq.withSubscribe.Clone(),
 		// clone intermediate query.
-		sql:  ebq.sql.Clone(),
-		path: ebq.path,
+		sql:       ebq.sql.Clone(),
+		path:      ebq.path,
+		modifiers: append([]func(*sql.Selector){}, ebq.modifiers...),
 	}
 }
 
@@ -953,7 +955,7 @@ func (ebgb *EnterpriseBillGroupBy) Aggregate(fns ...AggregateFunc) *EnterpriseBi
 
 // Scan applies the selector query and scans the result into the given value.
 func (ebgb *EnterpriseBillGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ebgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, ebgb.build.ctx, ent.OpQueryGroupBy)
 	if err := ebgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1001,7 +1003,7 @@ func (ebs *EnterpriseBillSelect) Aggregate(fns ...AggregateFunc) *EnterpriseBill
 
 // Scan applies the selector query and scans the result into the given value.
 func (ebs *EnterpriseBillSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ebs.ctx, "Select")
+	ctx = setContextOp(ctx, ebs.ctx, ent.OpQuerySelect)
 	if err := ebs.prepareQuery(ctx); err != nil {
 		return err
 	}

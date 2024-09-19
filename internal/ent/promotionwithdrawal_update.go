@@ -375,7 +375,7 @@ func (pwu *PromotionWithdrawalUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (pwu *PromotionWithdrawalUpdate) check() error {
-	if _, ok := pwu.mutation.MemberID(); pwu.mutation.MemberCleared() && !ok {
+	if pwu.mutation.MemberCleared() && len(pwu.mutation.MemberIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PromotionWithdrawal.member"`)
 	}
 	return nil
@@ -907,7 +907,7 @@ func (pwuo *PromotionWithdrawalUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (pwuo *PromotionWithdrawalUpdateOne) check() error {
-	if _, ok := pwuo.mutation.MemberID(); pwuo.mutation.MemberCleared() && !ok {
+	if pwuo.mutation.MemberCleared() && len(pwuo.mutation.MemberIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PromotionWithdrawal.member"`)
 	}
 	return nil

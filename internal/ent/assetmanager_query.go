@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -133,7 +134,7 @@ func (amq *AssetManagerQuery) QueryDutyWarehouse() *WarehouseQuery {
 // First returns the first AssetManager entity from the query.
 // Returns a *NotFoundError when no AssetManager was found.
 func (amq *AssetManagerQuery) First(ctx context.Context) (*AssetManager, error) {
-	nodes, err := amq.Limit(1).All(setContextOp(ctx, amq.ctx, "First"))
+	nodes, err := amq.Limit(1).All(setContextOp(ctx, amq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -156,7 +157,7 @@ func (amq *AssetManagerQuery) FirstX(ctx context.Context) *AssetManager {
 // Returns a *NotFoundError when no AssetManager ID was found.
 func (amq *AssetManagerQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = amq.Limit(1).IDs(setContextOp(ctx, amq.ctx, "FirstID")); err != nil {
+	if ids, err = amq.Limit(1).IDs(setContextOp(ctx, amq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -179,7 +180,7 @@ func (amq *AssetManagerQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one AssetManager entity is found.
 // Returns a *NotFoundError when no AssetManager entities are found.
 func (amq *AssetManagerQuery) Only(ctx context.Context) (*AssetManager, error) {
-	nodes, err := amq.Limit(2).All(setContextOp(ctx, amq.ctx, "Only"))
+	nodes, err := amq.Limit(2).All(setContextOp(ctx, amq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -207,7 +208,7 @@ func (amq *AssetManagerQuery) OnlyX(ctx context.Context) *AssetManager {
 // Returns a *NotFoundError when no entities are found.
 func (amq *AssetManagerQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = amq.Limit(2).IDs(setContextOp(ctx, amq.ctx, "OnlyID")); err != nil {
+	if ids, err = amq.Limit(2).IDs(setContextOp(ctx, amq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -232,7 +233,7 @@ func (amq *AssetManagerQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of AssetManagers.
 func (amq *AssetManagerQuery) All(ctx context.Context) ([]*AssetManager, error) {
-	ctx = setContextOp(ctx, amq.ctx, "All")
+	ctx = setContextOp(ctx, amq.ctx, ent.OpQueryAll)
 	if err := amq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -254,7 +255,7 @@ func (amq *AssetManagerQuery) IDs(ctx context.Context) (ids []uint64, err error)
 	if amq.ctx.Unique == nil && amq.path != nil {
 		amq.Unique(true)
 	}
-	ctx = setContextOp(ctx, amq.ctx, "IDs")
+	ctx = setContextOp(ctx, amq.ctx, ent.OpQueryIDs)
 	if err = amq.Select(assetmanager.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -272,7 +273,7 @@ func (amq *AssetManagerQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (amq *AssetManagerQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, amq.ctx, "Count")
+	ctx = setContextOp(ctx, amq.ctx, ent.OpQueryCount)
 	if err := amq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -290,7 +291,7 @@ func (amq *AssetManagerQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (amq *AssetManagerQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, amq.ctx, "Exist")
+	ctx = setContextOp(ctx, amq.ctx, ent.OpQueryExist)
 	switch _, err := amq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -326,8 +327,9 @@ func (amq *AssetManagerQuery) Clone() *AssetManagerQuery {
 		withBelongWarehouses: amq.withBelongWarehouses.Clone(),
 		withDutyWarehouse:    amq.withDutyWarehouse.Clone(),
 		// clone intermediate query.
-		sql:  amq.sql.Clone(),
-		path: amq.path,
+		sql:       amq.sql.Clone(),
+		path:      amq.path,
+		modifiers: append([]func(*sql.Selector){}, amq.modifiers...),
 	}
 }
 
@@ -752,7 +754,7 @@ func (amgb *AssetManagerGroupBy) Aggregate(fns ...AggregateFunc) *AssetManagerGr
 
 // Scan applies the selector query and scans the result into the given value.
 func (amgb *AssetManagerGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, amgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, amgb.build.ctx, ent.OpQueryGroupBy)
 	if err := amgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -800,7 +802,7 @@ func (ams *AssetManagerSelect) Aggregate(fns ...AggregateFunc) *AssetManagerSele
 
 // Scan applies the selector query and scans the result into the given value.
 func (ams *AssetManagerSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ams.ctx, "Select")
+	ctx = setContextOp(ctx, ams.ctx, ent.OpQuerySelect)
 	if err := ams.prepareQuery(ctx); err != nil {
 		return err
 	}

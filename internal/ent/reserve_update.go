@@ -282,13 +282,13 @@ func (ru *ReserveUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (ru *ReserveUpdate) check() error {
-	if _, ok := ru.mutation.CabinetID(); ru.mutation.CabinetCleared() && !ok {
+	if ru.mutation.CabinetCleared() && len(ru.mutation.CabinetIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Reserve.cabinet"`)
 	}
-	if _, ok := ru.mutation.RiderID(); ru.mutation.RiderCleared() && !ok {
+	if ru.mutation.RiderCleared() && len(ru.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Reserve.rider"`)
 	}
-	if _, ok := ru.mutation.CityID(); ru.mutation.CityCleared() && !ok {
+	if ru.mutation.CityCleared() && len(ru.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Reserve.city"`)
 	}
 	return nil
@@ -744,13 +744,13 @@ func (ruo *ReserveUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (ruo *ReserveUpdateOne) check() error {
-	if _, ok := ruo.mutation.CabinetID(); ruo.mutation.CabinetCleared() && !ok {
+	if ruo.mutation.CabinetCleared() && len(ruo.mutation.CabinetIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Reserve.cabinet"`)
 	}
-	if _, ok := ruo.mutation.RiderID(); ruo.mutation.RiderCleared() && !ok {
+	if ruo.mutation.RiderCleared() && len(ruo.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Reserve.rider"`)
 	}
-	if _, ok := ruo.mutation.CityID(); ruo.mutation.CityCleared() && !ok {
+	if ruo.mutation.CityCleared() && len(ruo.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Reserve.city"`)
 	}
 	return nil

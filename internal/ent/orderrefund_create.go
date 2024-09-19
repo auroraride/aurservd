@@ -232,7 +232,7 @@ func (orc *OrderRefundCreate) check() error {
 	if _, ok := orc.mutation.Reason(); !ok {
 		return &ValidationError{Name: "reason", err: errors.New(`ent: missing required field "OrderRefund.reason"`)}
 	}
-	if _, ok := orc.mutation.OrderID(); !ok {
+	if len(orc.mutation.OrderIDs()) == 0 {
 		return &ValidationError{Name: "order", err: errors.New(`ent: missing required edge "OrderRefund.order"`)}
 	}
 	return nil

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -300,7 +301,7 @@ func (eq *EmployeeQuery) QueryDutyStore() *StoreQuery {
 // First returns the first Employee entity from the query.
 // Returns a *NotFoundError when no Employee was found.
 func (eq *EmployeeQuery) First(ctx context.Context) (*Employee, error) {
-	nodes, err := eq.Limit(1).All(setContextOp(ctx, eq.ctx, "First"))
+	nodes, err := eq.Limit(1).All(setContextOp(ctx, eq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -323,7 +324,7 @@ func (eq *EmployeeQuery) FirstX(ctx context.Context) *Employee {
 // Returns a *NotFoundError when no Employee ID was found.
 func (eq *EmployeeQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(1).IDs(setContextOp(ctx, eq.ctx, "FirstID")); err != nil {
+	if ids, err = eq.Limit(1).IDs(setContextOp(ctx, eq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -346,7 +347,7 @@ func (eq *EmployeeQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Employee entity is found.
 // Returns a *NotFoundError when no Employee entities are found.
 func (eq *EmployeeQuery) Only(ctx context.Context) (*Employee, error) {
-	nodes, err := eq.Limit(2).All(setContextOp(ctx, eq.ctx, "Only"))
+	nodes, err := eq.Limit(2).All(setContextOp(ctx, eq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -374,7 +375,7 @@ func (eq *EmployeeQuery) OnlyX(ctx context.Context) *Employee {
 // Returns a *NotFoundError when no entities are found.
 func (eq *EmployeeQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(2).IDs(setContextOp(ctx, eq.ctx, "OnlyID")); err != nil {
+	if ids, err = eq.Limit(2).IDs(setContextOp(ctx, eq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -399,7 +400,7 @@ func (eq *EmployeeQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Employees.
 func (eq *EmployeeQuery) All(ctx context.Context) ([]*Employee, error) {
-	ctx = setContextOp(ctx, eq.ctx, "All")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryAll)
 	if err := eq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -421,7 +422,7 @@ func (eq *EmployeeQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if eq.ctx.Unique == nil && eq.path != nil {
 		eq.Unique(true)
 	}
-	ctx = setContextOp(ctx, eq.ctx, "IDs")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryIDs)
 	if err = eq.Select(employee.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -439,7 +440,7 @@ func (eq *EmployeeQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (eq *EmployeeQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, eq.ctx, "Count")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryCount)
 	if err := eq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -457,7 +458,7 @@ func (eq *EmployeeQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (eq *EmployeeQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, eq.ctx, "Exist")
+	ctx = setContextOp(ctx, eq.ctx, ent.OpQueryExist)
 	switch _, err := eq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -500,8 +501,9 @@ func (eq *EmployeeQuery) Clone() *EmployeeQuery {
 		withStores:      eq.withStores.Clone(),
 		withDutyStore:   eq.withDutyStore.Clone(),
 		// clone intermediate query.
-		sql:  eq.sql.Clone(),
-		path: eq.path,
+		sql:       eq.sql.Clone(),
+		path:      eq.path,
+		modifiers: append([]func(*sql.Selector){}, eq.modifiers...),
 	}
 }
 
@@ -1303,7 +1305,7 @@ func (egb *EmployeeGroupBy) Aggregate(fns ...AggregateFunc) *EmployeeGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (egb *EmployeeGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, egb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, egb.build.ctx, ent.OpQueryGroupBy)
 	if err := egb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1351,7 +1353,7 @@ func (es *EmployeeSelect) Aggregate(fns ...AggregateFunc) *EmployeeSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (es *EmployeeSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, es.ctx, "Select")
+	ctx = setContextOp(ctx, es.ctx, ent.OpQuerySelect)
 	if err := es.prepareQuery(ctx); err != nil {
 		return err
 	}

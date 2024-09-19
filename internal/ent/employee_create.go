@@ -411,7 +411,7 @@ func (ec *EmployeeCreate) check() error {
 	if _, ok := ec.mutation.Limit(); !ok {
 		return &ValidationError{Name: "limit", err: errors.New(`ent: missing required field "Employee.limit"`)}
 	}
-	if _, ok := ec.mutation.CityID(); !ok {
+	if len(ec.mutation.CityIDs()) == 0 {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Employee.city"`)}
 	}
 	return nil

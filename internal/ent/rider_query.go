@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -373,7 +374,7 @@ func (rq *RiderQuery) QueryBatteryFlows() *BatteryFlowQuery {
 // First returns the first Rider entity from the query.
 // Returns a *NotFoundError when no Rider was found.
 func (rq *RiderQuery) First(ctx context.Context) (*Rider, error) {
-	nodes, err := rq.Limit(1).All(setContextOp(ctx, rq.ctx, "First"))
+	nodes, err := rq.Limit(1).All(setContextOp(ctx, rq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -396,7 +397,7 @@ func (rq *RiderQuery) FirstX(ctx context.Context) *Rider {
 // Returns a *NotFoundError when no Rider ID was found.
 func (rq *RiderQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = rq.Limit(1).IDs(setContextOp(ctx, rq.ctx, "FirstID")); err != nil {
+	if ids, err = rq.Limit(1).IDs(setContextOp(ctx, rq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -419,7 +420,7 @@ func (rq *RiderQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Rider entity is found.
 // Returns a *NotFoundError when no Rider entities are found.
 func (rq *RiderQuery) Only(ctx context.Context) (*Rider, error) {
-	nodes, err := rq.Limit(2).All(setContextOp(ctx, rq.ctx, "Only"))
+	nodes, err := rq.Limit(2).All(setContextOp(ctx, rq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -447,7 +448,7 @@ func (rq *RiderQuery) OnlyX(ctx context.Context) *Rider {
 // Returns a *NotFoundError when no entities are found.
 func (rq *RiderQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = rq.Limit(2).IDs(setContextOp(ctx, rq.ctx, "OnlyID")); err != nil {
+	if ids, err = rq.Limit(2).IDs(setContextOp(ctx, rq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -472,7 +473,7 @@ func (rq *RiderQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Riders.
 func (rq *RiderQuery) All(ctx context.Context) ([]*Rider, error) {
-	ctx = setContextOp(ctx, rq.ctx, "All")
+	ctx = setContextOp(ctx, rq.ctx, ent.OpQueryAll)
 	if err := rq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -494,7 +495,7 @@ func (rq *RiderQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if rq.ctx.Unique == nil && rq.path != nil {
 		rq.Unique(true)
 	}
-	ctx = setContextOp(ctx, rq.ctx, "IDs")
+	ctx = setContextOp(ctx, rq.ctx, ent.OpQueryIDs)
 	if err = rq.Select(rider.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -512,7 +513,7 @@ func (rq *RiderQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (rq *RiderQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, rq.ctx, "Count")
+	ctx = setContextOp(ctx, rq.ctx, ent.OpQueryCount)
 	if err := rq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -530,7 +531,7 @@ func (rq *RiderQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (rq *RiderQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, rq.ctx, "Exist")
+	ctx = setContextOp(ctx, rq.ctx, ent.OpQueryExist)
 	switch _, err := rq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -576,8 +577,9 @@ func (rq *RiderQuery) Clone() *RiderQuery {
 		withBattery:      rq.withBattery.Clone(),
 		withBatteryFlows: rq.withBatteryFlows.Clone(),
 		// clone intermediate query.
-		sql:  rq.sql.Clone(),
-		path: rq.path,
+		sql:       rq.sql.Clone(),
+		path:      rq.path,
+		modifiers: append([]func(*sql.Selector){}, rq.modifiers...),
 	}
 }
 
@@ -1496,7 +1498,7 @@ func (rgb *RiderGroupBy) Aggregate(fns ...AggregateFunc) *RiderGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (rgb *RiderGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, rgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, rgb.build.ctx, ent.OpQueryGroupBy)
 	if err := rgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1544,7 +1546,7 @@ func (rs *RiderSelect) Aggregate(fns ...AggregateFunc) *RiderSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (rs *RiderSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, rs.ctx, "Select")
+	ctx = setContextOp(ctx, rs.ctx, ent.OpQuerySelect)
 	if err := rs.prepareQuery(ctx); err != nil {
 		return err
 	}

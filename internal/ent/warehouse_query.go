@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -157,7 +158,7 @@ func (wq *WarehouseQuery) QueryAsset() *AssetQuery {
 // First returns the first Warehouse entity from the query.
 // Returns a *NotFoundError when no Warehouse was found.
 func (wq *WarehouseQuery) First(ctx context.Context) (*Warehouse, error) {
-	nodes, err := wq.Limit(1).All(setContextOp(ctx, wq.ctx, "First"))
+	nodes, err := wq.Limit(1).All(setContextOp(ctx, wq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -180,7 +181,7 @@ func (wq *WarehouseQuery) FirstX(ctx context.Context) *Warehouse {
 // Returns a *NotFoundError when no Warehouse ID was found.
 func (wq *WarehouseQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = wq.Limit(1).IDs(setContextOp(ctx, wq.ctx, "FirstID")); err != nil {
+	if ids, err = wq.Limit(1).IDs(setContextOp(ctx, wq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -203,7 +204,7 @@ func (wq *WarehouseQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Warehouse entity is found.
 // Returns a *NotFoundError when no Warehouse entities are found.
 func (wq *WarehouseQuery) Only(ctx context.Context) (*Warehouse, error) {
-	nodes, err := wq.Limit(2).All(setContextOp(ctx, wq.ctx, "Only"))
+	nodes, err := wq.Limit(2).All(setContextOp(ctx, wq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -231,7 +232,7 @@ func (wq *WarehouseQuery) OnlyX(ctx context.Context) *Warehouse {
 // Returns a *NotFoundError when no entities are found.
 func (wq *WarehouseQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = wq.Limit(2).IDs(setContextOp(ctx, wq.ctx, "OnlyID")); err != nil {
+	if ids, err = wq.Limit(2).IDs(setContextOp(ctx, wq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -256,7 +257,7 @@ func (wq *WarehouseQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Warehouses.
 func (wq *WarehouseQuery) All(ctx context.Context) ([]*Warehouse, error) {
-	ctx = setContextOp(ctx, wq.ctx, "All")
+	ctx = setContextOp(ctx, wq.ctx, ent.OpQueryAll)
 	if err := wq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -278,7 +279,7 @@ func (wq *WarehouseQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if wq.ctx.Unique == nil && wq.path != nil {
 		wq.Unique(true)
 	}
-	ctx = setContextOp(ctx, wq.ctx, "IDs")
+	ctx = setContextOp(ctx, wq.ctx, ent.OpQueryIDs)
 	if err = wq.Select(warehouse.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -296,7 +297,7 @@ func (wq *WarehouseQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (wq *WarehouseQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, wq.ctx, "Count")
+	ctx = setContextOp(ctx, wq.ctx, ent.OpQueryCount)
 	if err := wq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -314,7 +315,7 @@ func (wq *WarehouseQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (wq *WarehouseQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, wq.ctx, "Exist")
+	ctx = setContextOp(ctx, wq.ctx, ent.OpQueryExist)
 	switch _, err := wq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -351,8 +352,9 @@ func (wq *WarehouseQuery) Clone() *WarehouseQuery {
 		withDutyAssetManagers:   wq.withDutyAssetManagers.Clone(),
 		withAsset:               wq.withAsset.Clone(),
 		// clone intermediate query.
-		sql:  wq.sql.Clone(),
-		path: wq.path,
+		sql:       wq.sql.Clone(),
+		path:      wq.path,
+		modifiers: append([]func(*sql.Selector){}, wq.modifiers...),
 	}
 }
 
@@ -827,7 +829,7 @@ func (wgb *WarehouseGroupBy) Aggregate(fns ...AggregateFunc) *WarehouseGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (wgb *WarehouseGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, wgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, wgb.build.ctx, ent.OpQueryGroupBy)
 	if err := wgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -875,7 +877,7 @@ func (ws *WarehouseSelect) Aggregate(fns ...AggregateFunc) *WarehouseSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ws *WarehouseSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ws.ctx, "Select")
+	ctx = setContextOp(ctx, ws.ctx, ent.OpQuerySelect)
 	if err := ws.prepareQuery(ctx); err != nil {
 		return err
 	}

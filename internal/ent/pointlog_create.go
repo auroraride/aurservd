@@ -207,7 +207,7 @@ func (plc *PointLogCreate) check() error {
 	if _, ok := plc.mutation.After(); !ok {
 		return &ValidationError{Name: "after", err: errors.New(`ent: missing required field "PointLog.after"`)}
 	}
-	if _, ok := plc.mutation.RiderID(); !ok {
+	if len(plc.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "PointLog.rider"`)}
 	}
 	return nil

@@ -335,10 +335,10 @@ func (cc *CouponCreate) check() error {
 	if _, ok := cc.mutation.Duration(); !ok {
 		return &ValidationError{Name: "duration", err: errors.New(`ent: missing required field "Coupon.duration"`)}
 	}
-	if _, ok := cc.mutation.AssemblyID(); !ok {
+	if len(cc.mutation.AssemblyIDs()) == 0 {
 		return &ValidationError{Name: "assembly", err: errors.New(`ent: missing required edge "Coupon.assembly"`)}
 	}
-	if _, ok := cc.mutation.TemplateID(); !ok {
+	if len(cc.mutation.TemplateIDs()) == 0 {
 		return &ValidationError{Name: "template", err: errors.New(`ent: missing required edge "Coupon.template"`)}
 	}
 	return nil

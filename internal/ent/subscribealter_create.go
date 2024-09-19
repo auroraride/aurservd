@@ -287,10 +287,10 @@ func (sac *SubscribeAlterCreate) check() error {
 	if _, ok := sac.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "SubscribeAlter.status"`)}
 	}
-	if _, ok := sac.mutation.RiderID(); !ok {
+	if len(sac.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "SubscribeAlter.rider"`)}
 	}
-	if _, ok := sac.mutation.SubscribeID(); !ok {
+	if len(sac.mutation.SubscribeIDs()) == 0 {
 		return &ValidationError{Name: "subscribe", err: errors.New(`ent: missing required edge "SubscribeAlter.subscribe"`)}
 	}
 	return nil

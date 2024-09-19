@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -277,7 +278,7 @@ func (atdq *AssetTransferDetailsQuery) QueryAsset() *AssetQuery {
 // First returns the first AssetTransferDetails entity from the query.
 // Returns a *NotFoundError when no AssetTransferDetails was found.
 func (atdq *AssetTransferDetailsQuery) First(ctx context.Context) (*AssetTransferDetails, error) {
-	nodes, err := atdq.Limit(1).All(setContextOp(ctx, atdq.ctx, "First"))
+	nodes, err := atdq.Limit(1).All(setContextOp(ctx, atdq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -300,7 +301,7 @@ func (atdq *AssetTransferDetailsQuery) FirstX(ctx context.Context) *AssetTransfe
 // Returns a *NotFoundError when no AssetTransferDetails ID was found.
 func (atdq *AssetTransferDetailsQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = atdq.Limit(1).IDs(setContextOp(ctx, atdq.ctx, "FirstID")); err != nil {
+	if ids, err = atdq.Limit(1).IDs(setContextOp(ctx, atdq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -323,7 +324,7 @@ func (atdq *AssetTransferDetailsQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one AssetTransferDetails entity is found.
 // Returns a *NotFoundError when no AssetTransferDetails entities are found.
 func (atdq *AssetTransferDetailsQuery) Only(ctx context.Context) (*AssetTransferDetails, error) {
-	nodes, err := atdq.Limit(2).All(setContextOp(ctx, atdq.ctx, "Only"))
+	nodes, err := atdq.Limit(2).All(setContextOp(ctx, atdq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -351,7 +352,7 @@ func (atdq *AssetTransferDetailsQuery) OnlyX(ctx context.Context) *AssetTransfer
 // Returns a *NotFoundError when no entities are found.
 func (atdq *AssetTransferDetailsQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = atdq.Limit(2).IDs(setContextOp(ctx, atdq.ctx, "OnlyID")); err != nil {
+	if ids, err = atdq.Limit(2).IDs(setContextOp(ctx, atdq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -376,7 +377,7 @@ func (atdq *AssetTransferDetailsQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of AssetTransferDetailsSlice.
 func (atdq *AssetTransferDetailsQuery) All(ctx context.Context) ([]*AssetTransferDetails, error) {
-	ctx = setContextOp(ctx, atdq.ctx, "All")
+	ctx = setContextOp(ctx, atdq.ctx, ent.OpQueryAll)
 	if err := atdq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -398,7 +399,7 @@ func (atdq *AssetTransferDetailsQuery) IDs(ctx context.Context) (ids []uint64, e
 	if atdq.ctx.Unique == nil && atdq.path != nil {
 		atdq.Unique(true)
 	}
-	ctx = setContextOp(ctx, atdq.ctx, "IDs")
+	ctx = setContextOp(ctx, atdq.ctx, ent.OpQueryIDs)
 	if err = atdq.Select(assettransferdetails.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -416,7 +417,7 @@ func (atdq *AssetTransferDetailsQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (atdq *AssetTransferDetailsQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, atdq.ctx, "Count")
+	ctx = setContextOp(ctx, atdq.ctx, ent.OpQueryCount)
 	if err := atdq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -434,7 +435,7 @@ func (atdq *AssetTransferDetailsQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (atdq *AssetTransferDetailsQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, atdq.ctx, "Exist")
+	ctx = setContextOp(ctx, atdq.ctx, ent.OpQueryExist)
 	switch _, err := atdq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -476,8 +477,9 @@ func (atdq *AssetTransferDetailsQuery) Clone() *AssetTransferDetailsQuery {
 		withInOperateManager:      atdq.withInOperateManager.Clone(),
 		withAsset:                 atdq.withAsset.Clone(),
 		// clone intermediate query.
-		sql:  atdq.sql.Clone(),
-		path: atdq.path,
+		sql:       atdq.sql.Clone(),
+		path:      atdq.path,
+		modifiers: append([]func(*sql.Selector){}, atdq.modifiers...),
 	}
 }
 
@@ -1184,7 +1186,7 @@ func (atdgb *AssetTransferDetailsGroupBy) Aggregate(fns ...AggregateFunc) *Asset
 
 // Scan applies the selector query and scans the result into the given value.
 func (atdgb *AssetTransferDetailsGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, atdgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, atdgb.build.ctx, ent.OpQueryGroupBy)
 	if err := atdgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1232,7 +1234,7 @@ func (atds *AssetTransferDetailsSelect) Aggregate(fns ...AggregateFunc) *AssetTr
 
 // Scan applies the selector query and scans the result into the given value.
 func (atds *AssetTransferDetailsSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, atds.ctx, "Select")
+	ctx = setContextOp(ctx, atds.ctx, ent.OpQuerySelect)
 	if err := atds.prepareQuery(ctx); err != nil {
 		return err
 	}

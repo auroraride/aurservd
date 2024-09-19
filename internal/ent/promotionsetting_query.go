@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -61,7 +62,7 @@ func (psq *PromotionSettingQuery) Order(o ...promotionsetting.OrderOption) *Prom
 // First returns the first PromotionSetting entity from the query.
 // Returns a *NotFoundError when no PromotionSetting was found.
 func (psq *PromotionSettingQuery) First(ctx context.Context) (*PromotionSetting, error) {
-	nodes, err := psq.Limit(1).All(setContextOp(ctx, psq.ctx, "First"))
+	nodes, err := psq.Limit(1).All(setContextOp(ctx, psq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +85,7 @@ func (psq *PromotionSettingQuery) FirstX(ctx context.Context) *PromotionSetting 
 // Returns a *NotFoundError when no PromotionSetting ID was found.
 func (psq *PromotionSettingQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = psq.Limit(1).IDs(setContextOp(ctx, psq.ctx, "FirstID")); err != nil {
+	if ids, err = psq.Limit(1).IDs(setContextOp(ctx, psq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -107,7 +108,7 @@ func (psq *PromotionSettingQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one PromotionSetting entity is found.
 // Returns a *NotFoundError when no PromotionSetting entities are found.
 func (psq *PromotionSettingQuery) Only(ctx context.Context) (*PromotionSetting, error) {
-	nodes, err := psq.Limit(2).All(setContextOp(ctx, psq.ctx, "Only"))
+	nodes, err := psq.Limit(2).All(setContextOp(ctx, psq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +136,7 @@ func (psq *PromotionSettingQuery) OnlyX(ctx context.Context) *PromotionSetting {
 // Returns a *NotFoundError when no entities are found.
 func (psq *PromotionSettingQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = psq.Limit(2).IDs(setContextOp(ctx, psq.ctx, "OnlyID")); err != nil {
+	if ids, err = psq.Limit(2).IDs(setContextOp(ctx, psq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -160,7 +161,7 @@ func (psq *PromotionSettingQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of PromotionSettings.
 func (psq *PromotionSettingQuery) All(ctx context.Context) ([]*PromotionSetting, error) {
-	ctx = setContextOp(ctx, psq.ctx, "All")
+	ctx = setContextOp(ctx, psq.ctx, ent.OpQueryAll)
 	if err := psq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -182,7 +183,7 @@ func (psq *PromotionSettingQuery) IDs(ctx context.Context) (ids []uint64, err er
 	if psq.ctx.Unique == nil && psq.path != nil {
 		psq.Unique(true)
 	}
-	ctx = setContextOp(ctx, psq.ctx, "IDs")
+	ctx = setContextOp(ctx, psq.ctx, ent.OpQueryIDs)
 	if err = psq.Select(promotionsetting.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -200,7 +201,7 @@ func (psq *PromotionSettingQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (psq *PromotionSettingQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, psq.ctx, "Count")
+	ctx = setContextOp(ctx, psq.ctx, ent.OpQueryCount)
 	if err := psq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -218,7 +219,7 @@ func (psq *PromotionSettingQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (psq *PromotionSettingQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, psq.ctx, "Exist")
+	ctx = setContextOp(ctx, psq.ctx, ent.OpQueryExist)
 	switch _, err := psq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -251,8 +252,9 @@ func (psq *PromotionSettingQuery) Clone() *PromotionSettingQuery {
 		inters:     append([]Interceptor{}, psq.inters...),
 		predicates: append([]predicate.PromotionSetting{}, psq.predicates...),
 		// clone intermediate query.
-		sql:  psq.sql.Clone(),
-		path: psq.path,
+		sql:       psq.sql.Clone(),
+		path:      psq.path,
+		modifiers: append([]func(*sql.Selector){}, psq.modifiers...),
 	}
 }
 
@@ -477,7 +479,7 @@ func (psgb *PromotionSettingGroupBy) Aggregate(fns ...AggregateFunc) *PromotionS
 
 // Scan applies the selector query and scans the result into the given value.
 func (psgb *PromotionSettingGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, psgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, psgb.build.ctx, ent.OpQueryGroupBy)
 	if err := psgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -525,7 +527,7 @@ func (pss *PromotionSettingSelect) Aggregate(fns ...AggregateFunc) *PromotionSet
 
 // Scan applies the selector query and scans the result into the given value.
 func (pss *PromotionSettingSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, pss.ctx, "Select")
+	ctx = setContextOp(ctx, pss.ctx, ent.OpQuerySelect)
 	if err := pss.prepareQuery(ctx); err != nil {
 		return err
 	}

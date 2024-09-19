@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -86,7 +87,7 @@ func (arq *AssetRoleQuery) QueryAssetManagers() *AssetManagerQuery {
 // First returns the first AssetRole entity from the query.
 // Returns a *NotFoundError when no AssetRole was found.
 func (arq *AssetRoleQuery) First(ctx context.Context) (*AssetRole, error) {
-	nodes, err := arq.Limit(1).All(setContextOp(ctx, arq.ctx, "First"))
+	nodes, err := arq.Limit(1).All(setContextOp(ctx, arq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +110,7 @@ func (arq *AssetRoleQuery) FirstX(ctx context.Context) *AssetRole {
 // Returns a *NotFoundError when no AssetRole ID was found.
 func (arq *AssetRoleQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = arq.Limit(1).IDs(setContextOp(ctx, arq.ctx, "FirstID")); err != nil {
+	if ids, err = arq.Limit(1).IDs(setContextOp(ctx, arq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -132,7 +133,7 @@ func (arq *AssetRoleQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one AssetRole entity is found.
 // Returns a *NotFoundError when no AssetRole entities are found.
 func (arq *AssetRoleQuery) Only(ctx context.Context) (*AssetRole, error) {
-	nodes, err := arq.Limit(2).All(setContextOp(ctx, arq.ctx, "Only"))
+	nodes, err := arq.Limit(2).All(setContextOp(ctx, arq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -160,7 +161,7 @@ func (arq *AssetRoleQuery) OnlyX(ctx context.Context) *AssetRole {
 // Returns a *NotFoundError when no entities are found.
 func (arq *AssetRoleQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = arq.Limit(2).IDs(setContextOp(ctx, arq.ctx, "OnlyID")); err != nil {
+	if ids, err = arq.Limit(2).IDs(setContextOp(ctx, arq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -185,7 +186,7 @@ func (arq *AssetRoleQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of AssetRoles.
 func (arq *AssetRoleQuery) All(ctx context.Context) ([]*AssetRole, error) {
-	ctx = setContextOp(ctx, arq.ctx, "All")
+	ctx = setContextOp(ctx, arq.ctx, ent.OpQueryAll)
 	if err := arq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -207,7 +208,7 @@ func (arq *AssetRoleQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if arq.ctx.Unique == nil && arq.path != nil {
 		arq.Unique(true)
 	}
-	ctx = setContextOp(ctx, arq.ctx, "IDs")
+	ctx = setContextOp(ctx, arq.ctx, ent.OpQueryIDs)
 	if err = arq.Select(assetrole.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -225,7 +226,7 @@ func (arq *AssetRoleQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (arq *AssetRoleQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, arq.ctx, "Count")
+	ctx = setContextOp(ctx, arq.ctx, ent.OpQueryCount)
 	if err := arq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -243,7 +244,7 @@ func (arq *AssetRoleQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (arq *AssetRoleQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, arq.ctx, "Exist")
+	ctx = setContextOp(ctx, arq.ctx, ent.OpQueryExist)
 	switch _, err := arq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -277,8 +278,9 @@ func (arq *AssetRoleQuery) Clone() *AssetRoleQuery {
 		predicates:        append([]predicate.AssetRole{}, arq.predicates...),
 		withAssetManagers: arq.withAssetManagers.Clone(),
 		// clone intermediate query.
-		sql:  arq.sql.Clone(),
-		path: arq.path,
+		sql:       arq.sql.Clone(),
+		path:      arq.path,
+		modifiers: append([]func(*sql.Selector){}, arq.modifiers...),
 	}
 }
 
@@ -563,7 +565,7 @@ func (argb *AssetRoleGroupBy) Aggregate(fns ...AggregateFunc) *AssetRoleGroupBy 
 
 // Scan applies the selector query and scans the result into the given value.
 func (argb *AssetRoleGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, argb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, argb.build.ctx, ent.OpQueryGroupBy)
 	if err := argb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -611,7 +613,7 @@ func (ars *AssetRoleSelect) Aggregate(fns ...AggregateFunc) *AssetRoleSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ars *AssetRoleSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ars.ctx, "Select")
+	ctx = setContextOp(ctx, ars.ctx, ent.OpQuerySelect)
 	if err := ars.prepareQuery(ctx); err != nil {
 		return err
 	}

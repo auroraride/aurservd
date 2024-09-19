@@ -389,7 +389,7 @@ func (fu *FaultUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (fu *FaultUpdate) check() error {
-	if _, ok := fu.mutation.CityID(); fu.mutation.CityCleared() && !ok {
+	if fu.mutation.CityCleared() && len(fu.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Fault.city"`)
 	}
 	return nil
@@ -1011,7 +1011,7 @@ func (fuo *FaultUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (fuo *FaultUpdateOne) check() error {
-	if _, ok := fuo.mutation.CityID(); fuo.mutation.CityCleared() && !ok {
+	if fuo.mutation.CityCleared() && len(fuo.mutation.CityIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Fault.city"`)
 	}
 	return nil

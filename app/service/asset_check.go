@@ -217,6 +217,7 @@ func (s *assetCheckService) getCheckAsset(ctx context.Context, req model.GetChec
 			asset.LocationsType(req.LocationsType.Value()),
 			asset.Type(req.AssetType.Value()),
 			asset.LocationsID(req.LocationsID),
+			asset.Status(model.AssetStatusStock.Value()),
 		).All(ctx)
 	if items == nil {
 		return nil, fmt.Errorf("未找到对应的资产")

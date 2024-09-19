@@ -442,10 +442,10 @@ func (spc *SubscribePauseCreate) check() error {
 	if _, ok := spc.mutation.SuspendDays(); !ok {
 		return &ValidationError{Name: "suspend_days", err: errors.New(`ent: missing required field "SubscribePause.suspend_days"`)}
 	}
-	if _, ok := spc.mutation.RiderID(); !ok {
+	if len(spc.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "SubscribePause.rider"`)}
 	}
-	if _, ok := spc.mutation.SubscribeID(); !ok {
+	if len(spc.mutation.SubscribeIDs()) == 0 {
 		return &ValidationError{Name: "subscribe", err: errors.New(`ent: missing required edge "SubscribePause.subscribe"`)}
 	}
 	return nil

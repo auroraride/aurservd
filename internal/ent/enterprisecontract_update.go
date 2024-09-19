@@ -205,7 +205,7 @@ func (ecu *EnterpriseContractUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (ecu *EnterpriseContractUpdate) check() error {
-	if _, ok := ecu.mutation.EnterpriseID(); ecu.mutation.EnterpriseCleared() && !ok {
+	if ecu.mutation.EnterpriseCleared() && len(ecu.mutation.EnterpriseIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseContract.enterprise"`)
 	}
 	return nil
@@ -500,7 +500,7 @@ func (ecuo *EnterpriseContractUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (ecuo *EnterpriseContractUpdateOne) check() error {
-	if _, ok := ecuo.mutation.EnterpriseID(); ecuo.mutation.EnterpriseCleared() && !ok {
+	if ecuo.mutation.EnterpriseCleared() && len(ecuo.mutation.EnterpriseIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseContract.enterprise"`)
 	}
 	return nil

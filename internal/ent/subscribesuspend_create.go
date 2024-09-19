@@ -220,13 +220,13 @@ func (ssc *SubscribeSuspendCreate) check() error {
 	if _, ok := ssc.mutation.StartAt(); !ok {
 		return &ValidationError{Name: "start_at", err: errors.New(`ent: missing required field "SubscribeSuspend.start_at"`)}
 	}
-	if _, ok := ssc.mutation.CityID(); !ok {
+	if len(ssc.mutation.CityIDs()) == 0 {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "SubscribeSuspend.city"`)}
 	}
-	if _, ok := ssc.mutation.RiderID(); !ok {
+	if len(ssc.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "SubscribeSuspend.rider"`)}
 	}
-	if _, ok := ssc.mutation.SubscribeID(); !ok {
+	if len(ssc.mutation.SubscribeIDs()) == 0 {
 		return &ValidationError{Name: "subscribe", err: errors.New(`ent: missing required edge "SubscribeSuspend.subscribe"`)}
 	}
 	return nil

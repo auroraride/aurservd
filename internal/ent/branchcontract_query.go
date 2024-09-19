@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -85,7 +86,7 @@ func (bcq *BranchContractQuery) QueryBranch() *BranchQuery {
 // First returns the first BranchContract entity from the query.
 // Returns a *NotFoundError when no BranchContract was found.
 func (bcq *BranchContractQuery) First(ctx context.Context) (*BranchContract, error) {
-	nodes, err := bcq.Limit(1).All(setContextOp(ctx, bcq.ctx, "First"))
+	nodes, err := bcq.Limit(1).All(setContextOp(ctx, bcq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +109,7 @@ func (bcq *BranchContractQuery) FirstX(ctx context.Context) *BranchContract {
 // Returns a *NotFoundError when no BranchContract ID was found.
 func (bcq *BranchContractQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = bcq.Limit(1).IDs(setContextOp(ctx, bcq.ctx, "FirstID")); err != nil {
+	if ids, err = bcq.Limit(1).IDs(setContextOp(ctx, bcq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -131,7 +132,7 @@ func (bcq *BranchContractQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one BranchContract entity is found.
 // Returns a *NotFoundError when no BranchContract entities are found.
 func (bcq *BranchContractQuery) Only(ctx context.Context) (*BranchContract, error) {
-	nodes, err := bcq.Limit(2).All(setContextOp(ctx, bcq.ctx, "Only"))
+	nodes, err := bcq.Limit(2).All(setContextOp(ctx, bcq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +160,7 @@ func (bcq *BranchContractQuery) OnlyX(ctx context.Context) *BranchContract {
 // Returns a *NotFoundError when no entities are found.
 func (bcq *BranchContractQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = bcq.Limit(2).IDs(setContextOp(ctx, bcq.ctx, "OnlyID")); err != nil {
+	if ids, err = bcq.Limit(2).IDs(setContextOp(ctx, bcq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -184,7 +185,7 @@ func (bcq *BranchContractQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of BranchContracts.
 func (bcq *BranchContractQuery) All(ctx context.Context) ([]*BranchContract, error) {
-	ctx = setContextOp(ctx, bcq.ctx, "All")
+	ctx = setContextOp(ctx, bcq.ctx, ent.OpQueryAll)
 	if err := bcq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -206,7 +207,7 @@ func (bcq *BranchContractQuery) IDs(ctx context.Context) (ids []uint64, err erro
 	if bcq.ctx.Unique == nil && bcq.path != nil {
 		bcq.Unique(true)
 	}
-	ctx = setContextOp(ctx, bcq.ctx, "IDs")
+	ctx = setContextOp(ctx, bcq.ctx, ent.OpQueryIDs)
 	if err = bcq.Select(branchcontract.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -224,7 +225,7 @@ func (bcq *BranchContractQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (bcq *BranchContractQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, bcq.ctx, "Count")
+	ctx = setContextOp(ctx, bcq.ctx, ent.OpQueryCount)
 	if err := bcq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -242,7 +243,7 @@ func (bcq *BranchContractQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (bcq *BranchContractQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, bcq.ctx, "Exist")
+	ctx = setContextOp(ctx, bcq.ctx, ent.OpQueryExist)
 	switch _, err := bcq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -276,8 +277,9 @@ func (bcq *BranchContractQuery) Clone() *BranchContractQuery {
 		predicates: append([]predicate.BranchContract{}, bcq.predicates...),
 		withBranch: bcq.withBranch.Clone(),
 		// clone intermediate query.
-		sql:  bcq.sql.Clone(),
-		path: bcq.path,
+		sql:       bcq.sql.Clone(),
+		path:      bcq.path,
+		modifiers: append([]func(*sql.Selector){}, bcq.modifiers...),
 	}
 }
 
@@ -560,7 +562,7 @@ func (bcgb *BranchContractGroupBy) Aggregate(fns ...AggregateFunc) *BranchContra
 
 // Scan applies the selector query and scans the result into the given value.
 func (bcgb *BranchContractGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, bcgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, bcgb.build.ctx, ent.OpQueryGroupBy)
 	if err := bcgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -608,7 +610,7 @@ func (bcs *BranchContractSelect) Aggregate(fns ...AggregateFunc) *BranchContract
 
 // Scan applies the selector query and scans the result into the given value.
 func (bcs *BranchContractSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, bcs.ctx, "Select")
+	ctx = setContextOp(ctx, bcs.ctx, ent.OpQuerySelect)
 	if err := bcs.prepareQuery(ctx); err != nil {
 		return err
 	}

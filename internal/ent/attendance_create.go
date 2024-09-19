@@ -277,10 +277,10 @@ func (ac *AttendanceCreate) check() error {
 	if _, ok := ac.mutation.Date(); !ok {
 		return &ValidationError{Name: "date", err: errors.New(`ent: missing required field "Attendance.date"`)}
 	}
-	if _, ok := ac.mutation.StoreID(); !ok {
+	if len(ac.mutation.StoreIDs()) == 0 {
 		return &ValidationError{Name: "store", err: errors.New(`ent: missing required edge "Attendance.store"`)}
 	}
-	if _, ok := ac.mutation.EmployeeID(); !ok {
+	if len(ac.mutation.EmployeeIDs()) == 0 {
 		return &ValidationError{Name: "employee", err: errors.New(`ent: missing required edge "Attendance.employee"`)}
 	}
 	return nil

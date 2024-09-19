@@ -251,7 +251,7 @@ func (ec *ExportCreate) check() error {
 	if _, ok := ec.mutation.Remark(); !ok {
 		return &ValidationError{Name: "remark", err: errors.New(`ent: missing required field "Export.remark"`)}
 	}
-	if _, ok := ec.mutation.ManagerID(); !ok {
+	if len(ec.mutation.ManagerIDs()) == 0 {
 		return &ValidationError{Name: "manager", err: errors.New(`ent: missing required edge "Export.manager"`)}
 	}
 	return nil

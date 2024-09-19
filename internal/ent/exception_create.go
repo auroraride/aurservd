@@ -280,13 +280,13 @@ func (ec *ExceptionCreate) check() error {
 	if _, ok := ec.mutation.Reason(); !ok {
 		return &ValidationError{Name: "reason", err: errors.New(`ent: missing required field "Exception.reason"`)}
 	}
-	if _, ok := ec.mutation.CityID(); !ok {
+	if len(ec.mutation.CityIDs()) == 0 {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Exception.city"`)}
 	}
-	if _, ok := ec.mutation.EmployeeID(); !ok {
+	if len(ec.mutation.EmployeeIDs()) == 0 {
 		return &ValidationError{Name: "employee", err: errors.New(`ent: missing required edge "Exception.employee"`)}
 	}
-	if _, ok := ec.mutation.StoreID(); !ok {
+	if len(ec.mutation.StoreIDs()) == 0 {
 		return &ValidationError{Name: "store", err: errors.New(`ent: missing required edge "Exception.store"`)}
 	}
 	return nil

@@ -443,7 +443,7 @@ func (cu *ContractUpdate) check() error {
 			return &ValidationError{Name: "sn", err: fmt.Errorf(`ent: validator failed for field "Contract.sn": %w`, err)}
 		}
 	}
-	if _, ok := cu.mutation.RiderID(); cu.mutation.RiderCleared() && !ok {
+	if cu.mutation.RiderCleared() && len(cu.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Contract.rider"`)
 	}
 	return nil
@@ -1106,7 +1106,7 @@ func (cuo *ContractUpdateOne) check() error {
 			return &ValidationError{Name: "sn", err: fmt.Errorf(`ent: validator failed for field "Contract.sn": %w`, err)}
 		}
 	}
-	if _, ok := cuo.mutation.RiderID(); cuo.mutation.RiderCleared() && !ok {
+	if cuo.mutation.RiderCleared() && len(cuo.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Contract.rider"`)
 	}
 	return nil

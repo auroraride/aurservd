@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -109,7 +110,7 @@ func (aavq *AssetAttributeValuesQuery) QueryAsset() *AssetQuery {
 // First returns the first AssetAttributeValues entity from the query.
 // Returns a *NotFoundError when no AssetAttributeValues was found.
 func (aavq *AssetAttributeValuesQuery) First(ctx context.Context) (*AssetAttributeValues, error) {
-	nodes, err := aavq.Limit(1).All(setContextOp(ctx, aavq.ctx, "First"))
+	nodes, err := aavq.Limit(1).All(setContextOp(ctx, aavq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +133,7 @@ func (aavq *AssetAttributeValuesQuery) FirstX(ctx context.Context) *AssetAttribu
 // Returns a *NotFoundError when no AssetAttributeValues ID was found.
 func (aavq *AssetAttributeValuesQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = aavq.Limit(1).IDs(setContextOp(ctx, aavq.ctx, "FirstID")); err != nil {
+	if ids, err = aavq.Limit(1).IDs(setContextOp(ctx, aavq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -155,7 +156,7 @@ func (aavq *AssetAttributeValuesQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one AssetAttributeValues entity is found.
 // Returns a *NotFoundError when no AssetAttributeValues entities are found.
 func (aavq *AssetAttributeValuesQuery) Only(ctx context.Context) (*AssetAttributeValues, error) {
-	nodes, err := aavq.Limit(2).All(setContextOp(ctx, aavq.ctx, "Only"))
+	nodes, err := aavq.Limit(2).All(setContextOp(ctx, aavq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -183,7 +184,7 @@ func (aavq *AssetAttributeValuesQuery) OnlyX(ctx context.Context) *AssetAttribut
 // Returns a *NotFoundError when no entities are found.
 func (aavq *AssetAttributeValuesQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = aavq.Limit(2).IDs(setContextOp(ctx, aavq.ctx, "OnlyID")); err != nil {
+	if ids, err = aavq.Limit(2).IDs(setContextOp(ctx, aavq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -208,7 +209,7 @@ func (aavq *AssetAttributeValuesQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of AssetAttributeValuesSlice.
 func (aavq *AssetAttributeValuesQuery) All(ctx context.Context) ([]*AssetAttributeValues, error) {
-	ctx = setContextOp(ctx, aavq.ctx, "All")
+	ctx = setContextOp(ctx, aavq.ctx, ent.OpQueryAll)
 	if err := aavq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -230,7 +231,7 @@ func (aavq *AssetAttributeValuesQuery) IDs(ctx context.Context) (ids []uint64, e
 	if aavq.ctx.Unique == nil && aavq.path != nil {
 		aavq.Unique(true)
 	}
-	ctx = setContextOp(ctx, aavq.ctx, "IDs")
+	ctx = setContextOp(ctx, aavq.ctx, ent.OpQueryIDs)
 	if err = aavq.Select(assetattributevalues.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -248,7 +249,7 @@ func (aavq *AssetAttributeValuesQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (aavq *AssetAttributeValuesQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, aavq.ctx, "Count")
+	ctx = setContextOp(ctx, aavq.ctx, ent.OpQueryCount)
 	if err := aavq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -266,7 +267,7 @@ func (aavq *AssetAttributeValuesQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (aavq *AssetAttributeValuesQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, aavq.ctx, "Exist")
+	ctx = setContextOp(ctx, aavq.ctx, ent.OpQueryExist)
 	switch _, err := aavq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -301,8 +302,9 @@ func (aavq *AssetAttributeValuesQuery) Clone() *AssetAttributeValuesQuery {
 		withAttribute: aavq.withAttribute.Clone(),
 		withAsset:     aavq.withAsset.Clone(),
 		// clone intermediate query.
-		sql:  aavq.sql.Clone(),
-		path: aavq.path,
+		sql:       aavq.sql.Clone(),
+		path:      aavq.path,
+		modifiers: append([]func(*sql.Selector){}, aavq.modifiers...),
 	}
 }
 
@@ -638,7 +640,7 @@ func (aavgb *AssetAttributeValuesGroupBy) Aggregate(fns ...AggregateFunc) *Asset
 
 // Scan applies the selector query and scans the result into the given value.
 func (aavgb *AssetAttributeValuesGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, aavgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, aavgb.build.ctx, ent.OpQueryGroupBy)
 	if err := aavgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -686,7 +688,7 @@ func (aavs *AssetAttributeValuesSelect) Aggregate(fns ...AggregateFunc) *AssetAt
 
 // Scan applies the selector query and scans the result into the given value.
 func (aavs *AssetAttributeValuesSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, aavs.ctx, "Select")
+	ctx = setContextOp(ctx, aavs.ctx, ent.OpQuerySelect)
 	if err := aavs.prepareQuery(ctx); err != nil {
 		return err
 	}
