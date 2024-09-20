@@ -1,11 +1,18 @@
 package amapi
 
 import (
+	"context"
+
 	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
+	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/assetmanager"
+	"github.com/auroraride/aurservd/internal/ent/assettransfer"
+	"github.com/auroraride/aurservd/pkg/silk"
 )
 
 type assetTransfer struct{}
@@ -133,4 +140,62 @@ func (*assetTransfer) TransferDetailsList(c echo.Context) (err error) {
 func (*assetTransfer) Modify(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.AssetTransferModifyReq](c)
 	return ctx.SendResponse(service.NewAssetTransfer().Modify(ctx.Request().Context(), req, ctx.Modifier))
+}
+
+// TransferCbw
+// @ID		AssetTransferCbw
+// @Router	/manager/v2/asset/transfer/cbw/{sn} [GET]
+// @Summary	资产调拨确认入库曹博文专用
+// @Tags	资产
+// @Accept	json
+// @Produce	json
+// @Param	sn		path		string						true	"调拨sn"
+// @Param	body	body		model.GetTransferBySNReq	true	"参数"
+// @Success	200		{object}	model.StatusResponse		"请求成功"
+func (*assetTransfer) TransferCbw(c echo.Context) (err error) {
+	ctx, req := app.ContextBinding[model.GetTransferBySNReq](c)
+	am, _ := ent.Database.AssetManager.Query().Where(assetmanager.PhoneEQ("17719646710")).Only(context.Background())
+	if am == nil {
+		return nil
+	}
+	m := &model.Modifier{
+		ID:    am.ID,
+		Name:  am.Name,
+		Phone: am.Phone,
+	}
+	at, _ := ent.Database.AssetTransfer.QueryNotDeleted().
+		Where(
+			assettransfer.Sn(req.SN),
+		).WithTransferDetails(func(query *ent.AssetTransferDetailsQuery) {
+		query.WithAsset()
+	}).All(context.Background())
+	for _, v := range at {
+		detail := make([]model.AssetTransferReceiveDetail, 0)
+		for _, vl := range v.Edges.TransferDetails {
+			if vl.Edges.Asset != nil {
+				detail = append(detail, model.AssetTransferReceiveDetail{
+					AssetType:  model.AssetType(vl.Edges.Asset.Type),
+					SN:         silk.String(vl.Edges.Asset.Sn),
+					ModelID:    vl.Edges.Asset.ModelID,
+					Num:        silk.UInt(1),
+					MaterialID: vl.Edges.Asset.MaterialID,
+				})
+			}
+		}
+		err = service.NewAssetTransfer().TransferReceive(context.Background(), &model.AssetTransferReceiveBatchReq{
+			OperateType: model.OperatorTypeAssetManager,
+			AssetTransferReceive: []model.AssetTransferReceiveReq{
+				{
+					ID:     v.ID,
+					Detail: detail,
+					Remark: silk.String("2024-9-20曹博文自动入库"),
+				},
+			},
+		}, m)
+		if err != nil {
+			zap.L().Error("自动入库失败", zap.Error(err))
+			continue
+		}
+	}
+	return ctx.SendResponse()
 }
