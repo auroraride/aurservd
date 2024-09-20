@@ -3008,7 +3008,7 @@
                             "AssetTypeEbikeAccessory",
                             "AssetTypeOtherAccessory"
                         ],
-                        "description": "物资类型",
+                        "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
                         "name": "assetType",
                         "in": "query"
                     },

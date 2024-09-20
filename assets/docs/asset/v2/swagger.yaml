@@ -1078,6 +1078,9 @@ definitions:
       remark:
         description: 备注
         type: string
+      rto:
+        description: 电车是否赠送
+        type: string
       sn:
         description: 编号
         type: string
@@ -2147,7 +2150,7 @@ info:
       }
     }
     ```
-  title: 极光出行API - 资产api
+  title: 极光出行API - 资产后台api
   version: "2.0"
 paths:
   /manager/v2/asset:
@@ -4722,6 +4725,31 @@ paths:
         in: query
         name: assetManagerID
         type: integer
+      - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        in: query
+        name: assetType
+        type: integer
+        x-enum-comments:
+          AssetTypeCabinetAccessory: 电柜配件
+          AssetTypeEbike: 电车
+          AssetTypeEbikeAccessory: 电车配件
+          AssetTypeNonSmartBattery: 非智能电池
+          AssetTypeOtherAccessory: 其它配件
+          AssetTypeSmartBattery: 智能电池
+        x-enum-varnames:
+        - AssetTypeEbike
+        - AssetTypeSmartBattery
+        - AssetTypeNonSmartBattery
+        - AssetTypeCabinetAccessory
+        - AssetTypeEbikeAccessory
+        - AssetTypeOtherAccessory
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
