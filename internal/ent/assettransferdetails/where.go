@@ -576,21 +576,21 @@ func HasInOperateAssetManagerWith(preds ...predicate.AssetManager) predicate.Ass
 	})
 }
 
-// HasInOperateStore applies the HasEdge predicate on the "in_operate_store" edge.
-func HasInOperateStore() predicate.AssetTransferDetails {
+// HasInOperateEmployee applies the HasEdge predicate on the "in_operate_employee" edge.
+func HasInOperateEmployee() predicate.AssetTransferDetails {
 	return predicate.AssetTransferDetails(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, InOperateStoreTable, InOperateStoreColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, InOperateEmployeeTable, InOperateEmployeeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasInOperateStoreWith applies the HasEdge predicate on the "in_operate_store" edge with a given conditions (other predicates).
-func HasInOperateStoreWith(preds ...predicate.Store) predicate.AssetTransferDetails {
+// HasInOperateEmployeeWith applies the HasEdge predicate on the "in_operate_employee" edge with a given conditions (other predicates).
+func HasInOperateEmployeeWith(preds ...predicate.Employee) predicate.AssetTransferDetails {
 	return predicate.AssetTransferDetails(func(s *sql.Selector) {
-		step := newInOperateStoreStep()
+		step := newInOperateEmployeeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

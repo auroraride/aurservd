@@ -18,10 +18,10 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 // AssetTransferDetailsCreate is the builder for creating a AssetTransferDetails entity.
@@ -208,23 +208,23 @@ func (atdc *AssetTransferDetailsCreate) SetInOperateAssetManager(a *AssetManager
 	return atdc.SetInOperateAssetManagerID(a.ID)
 }
 
-// SetInOperateStoreID sets the "in_operate_store" edge to the Store entity by ID.
-func (atdc *AssetTransferDetailsCreate) SetInOperateStoreID(id uint64) *AssetTransferDetailsCreate {
-	atdc.mutation.SetInOperateStoreID(id)
+// SetInOperateEmployeeID sets the "in_operate_employee" edge to the Employee entity by ID.
+func (atdc *AssetTransferDetailsCreate) SetInOperateEmployeeID(id uint64) *AssetTransferDetailsCreate {
+	atdc.mutation.SetInOperateEmployeeID(id)
 	return atdc
 }
 
-// SetNillableInOperateStoreID sets the "in_operate_store" edge to the Store entity by ID if the given value is not nil.
-func (atdc *AssetTransferDetailsCreate) SetNillableInOperateStoreID(id *uint64) *AssetTransferDetailsCreate {
+// SetNillableInOperateEmployeeID sets the "in_operate_employee" edge to the Employee entity by ID if the given value is not nil.
+func (atdc *AssetTransferDetailsCreate) SetNillableInOperateEmployeeID(id *uint64) *AssetTransferDetailsCreate {
 	if id != nil {
-		atdc = atdc.SetInOperateStoreID(*id)
+		atdc = atdc.SetInOperateEmployeeID(*id)
 	}
 	return atdc
 }
 
-// SetInOperateStore sets the "in_operate_store" edge to the Store entity.
-func (atdc *AssetTransferDetailsCreate) SetInOperateStore(s *Store) *AssetTransferDetailsCreate {
-	return atdc.SetInOperateStoreID(s.ID)
+// SetInOperateEmployee sets the "in_operate_employee" edge to the Employee entity.
+func (atdc *AssetTransferDetailsCreate) SetInOperateEmployee(e *Employee) *AssetTransferDetailsCreate {
+	return atdc.SetInOperateEmployeeID(e.ID)
 }
 
 // SetInOperateAgentID sets the "in_operate_agent" edge to the Agent entity by ID.
@@ -493,15 +493,15 @@ func (atdc *AssetTransferDetailsCreate) createSpec() (*AssetTransferDetails, *sq
 		_node.InOperateID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := atdc.mutation.InOperateStoreIDs(); len(nodes) > 0 {
+	if nodes := atdc.mutation.InOperateEmployeeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransferdetails.InOperateStoreTable,
-			Columns: []string{assettransferdetails.InOperateStoreColumn},
+			Table:   assettransferdetails.InOperateEmployeeTable,
+			Columns: []string{assettransferdetails.InOperateEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

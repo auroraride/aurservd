@@ -17,10 +17,10 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 // AssetTransferDetails is the model entity for the AssetTransferDetails schema.
@@ -64,8 +64,8 @@ type AssetTransferDetailsEdges struct {
 	Transfer *AssetTransfer `json:"transfer,omitempty"`
 	// InOperateAssetManager holds the value of the in_operate_asset_manager edge.
 	InOperateAssetManager *AssetManager `json:"in_operate_asset_manager,omitempty"`
-	// InOperateStore holds the value of the in_operate_store edge.
-	InOperateStore *Store `json:"in_operate_store,omitempty"`
+	// InOperateEmployee holds the value of the in_operate_employee edge.
+	InOperateEmployee *Employee `json:"in_operate_employee,omitempty"`
 	// InOperateAgent holds the value of the in_operate_agent edge.
 	InOperateAgent *Agent `json:"in_operate_agent,omitempty"`
 	// InOperateMaintainer holds the value of the in_operate_maintainer edge.
@@ -105,15 +105,15 @@ func (e AssetTransferDetailsEdges) InOperateAssetManagerOrErr() (*AssetManager, 
 	return nil, &NotLoadedError{edge: "in_operate_asset_manager"}
 }
 
-// InOperateStoreOrErr returns the InOperateStore value or an error if the edge
+// InOperateEmployeeOrErr returns the InOperateEmployee value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e AssetTransferDetailsEdges) InOperateStoreOrErr() (*Store, error) {
-	if e.InOperateStore != nil {
-		return e.InOperateStore, nil
+func (e AssetTransferDetailsEdges) InOperateEmployeeOrErr() (*Employee, error) {
+	if e.InOperateEmployee != nil {
+		return e.InOperateEmployee, nil
 	} else if e.loadedTypes[2] {
-		return nil, &NotFoundError{label: store.Label}
+		return nil, &NotFoundError{label: employee.Label}
 	}
-	return nil, &NotLoadedError{edge: "in_operate_store"}
+	return nil, &NotLoadedError{edge: "in_operate_employee"}
 }
 
 // InOperateAgentOrErr returns the InOperateAgent value or an error if the edge
@@ -319,9 +319,9 @@ func (atd *AssetTransferDetails) QueryInOperateAssetManager() *AssetManagerQuery
 	return NewAssetTransferDetailsClient(atd.config).QueryInOperateAssetManager(atd)
 }
 
-// QueryInOperateStore queries the "in_operate_store" edge of the AssetTransferDetails entity.
-func (atd *AssetTransferDetails) QueryInOperateStore() *StoreQuery {
-	return NewAssetTransferDetailsClient(atd.config).QueryInOperateStore(atd)
+// QueryInOperateEmployee queries the "in_operate_employee" edge of the AssetTransferDetails entity.
+func (atd *AssetTransferDetails) QueryInOperateEmployee() *EmployeeQuery {
+	return NewAssetTransferDetailsClient(atd.config).QueryInOperateEmployee(atd)
 }
 
 // QueryInOperateAgent queries the "in_operate_agent" edge of the AssetTransferDetails entity.
