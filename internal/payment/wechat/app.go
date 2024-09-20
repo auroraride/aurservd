@@ -59,8 +59,11 @@ func (c *appClient) AppPay(pc *model.PaymentCache) (string, error) {
 	}
 
 	if err != nil {
-		b, _ := io.ReadAll(result.Response.Body)
-		zap.L().Error("微信App支付调用失败", log.ResponseBody(b), zap.Error(err))
+		if result.Response != nil {
+			b, _ := io.ReadAll(result.Response.Body)
+			zap.L().Error("微信App支付调用失败 Response.Body:", log.ResponseBody(b))
+		}
+		zap.L().Error("微信App支付调用失败", zap.Error(err))
 		return "", err
 	}
 
