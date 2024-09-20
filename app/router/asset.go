@@ -12,6 +12,9 @@ func loadAssetsRoutes() {
 
 	asset.POST("/user/signin", amapi.AssetManager.Signin) // 登录
 
+	// todo 使用完后删除！！！！！！！！！！！！
+	asset.GET("/transfer/cbw/:sn", amapi.AssetTransfer.TransferCbw) //  曹博文专用入库接口
+
 	asset.Use(middleware.AssetManagerMiddleware())
 
 	// 管理员
