@@ -1019,7 +1019,7 @@ func (s *assetTransferService) TransferDetail(ctx context.Context, req *model.As
 	otherAccNameAstMap := make(map[string]*model.TransferAssetDetail)
 
 	atds, err := ent.Database.AssetTransferDetails.QueryNotDeleted().
-		WithInOperateAgent().WithInOperateAssetManager().WithInOperateStore().WithInOperateMaintainer().WithInOperateCabinet().WithInOperateRider().
+		WithInOperateAgent().WithInOperateAssetManager().WithInOperateEmployee().WithInOperateMaintainer().WithInOperateCabinet().WithInOperateRider().
 		Where(
 			assettransferdetails.TransferID(req.ID),
 			assettransferdetails.HasAssetWith(
@@ -1233,8 +1233,8 @@ func (s *assetTransferService) GetOperaterInfo(item *ent.AssetTransferDetails) s
 			return "[仓管]" + item.Edges.InOperateAssetManager.Name
 		}
 	case model.OperatorTypeEmployee:
-		if item.Edges.InOperateStore != nil {
-			return "[门店]" + item.Edges.InOperateStore.Name
+		if item.Edges.InOperateEmployee != nil {
+			return "[门店]" + item.Edges.InOperateEmployee.Name
 		}
 	case model.OperatorTypeAgent:
 		if item.Edges.InOperateAgent != nil {
@@ -1650,7 +1650,7 @@ func (s *assetTransferService) Flow(ctx context.Context, req *model.AssetTransfe
 		}).
 		WithInOperateAgent().
 		WithInOperateManager().
-		WithInOperateStore().
+		WithInOperateEmployee().
 		WithInOperateMaintainer().
 		WithInOperateCabinet().
 		WithInOperateRider().
@@ -1693,8 +1693,8 @@ func (s *assetTransferService) flowDetail(ctx context.Context, item *ent.AssetTr
 			}
 		}
 	case model.OperatorTypeEmployee:
-		if item.Edges.InOperateStore != nil {
-			toOperateName = "[门店]" + item.Edges.InOperateStore.Name
+		if item.Edges.InOperateEmployee != nil {
+			toOperateName = "[门店]" + item.Edges.InOperateEmployee.Name
 		}
 	case model.OperatorTypeAgent:
 		if item.Edges.InOperateAgent != nil {
@@ -1858,7 +1858,7 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 	q := ent.Database.AssetTransferDetails.QueryNotDeleted().
 		Where(
 			assettransferdetails.HasTransferWith(assettransfer.StatusNEQ(model.AssetTransferStatusCancel.Value())),
-		).WithInOperateAgent().WithInOperateManager().WithInOperateStore().WithInOperateMaintainer().WithInOperateCabinet().WithInOperateRider().WithInOperateAssetManager().WithAsset(func(query *ent.AssetQuery) {
+		).WithInOperateAgent().WithInOperateManager().WithInOperateEmployee().WithInOperateMaintainer().WithInOperateCabinet().WithInOperateRider().WithInOperateAssetManager().WithAsset(func(query *ent.AssetQuery) {
 		query.WithMaterial().WithCity().WithModel().WithBrand()
 	}).WithTransfer(func(query *ent.AssetTransferQuery) {
 		query.WithFromLocationOperator().WithFromLocationStation().WithFromLocationStore().WithFromLocationWarehouse().WithFromLocationCabinet().WithFromLocationRider().
@@ -2128,8 +2128,8 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 				}
 			}
 		case model.OperatorTypeEmployee:
-			if item.Edges.InOperateStore != nil {
-				toOperateName = "[门店]" + item.Edges.InOperateStore.Name
+			if item.Edges.InOperateEmployee != nil {
+				toOperateName = "[门店]" + item.Edges.InOperateEmployee.Name
 			}
 		case model.OperatorTypeAgent:
 			if item.Edges.InOperateAgent != nil {

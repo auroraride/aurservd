@@ -18,11 +18,11 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 // AssetTransferDetailsUpdate is the builder for updating AssetTransferDetails entities.
@@ -242,23 +242,23 @@ func (atdu *AssetTransferDetailsUpdate) SetInOperateAssetManager(a *AssetManager
 	return atdu.SetInOperateAssetManagerID(a.ID)
 }
 
-// SetInOperateStoreID sets the "in_operate_store" edge to the Store entity by ID.
-func (atdu *AssetTransferDetailsUpdate) SetInOperateStoreID(id uint64) *AssetTransferDetailsUpdate {
-	atdu.mutation.SetInOperateStoreID(id)
+// SetInOperateEmployeeID sets the "in_operate_employee" edge to the Employee entity by ID.
+func (atdu *AssetTransferDetailsUpdate) SetInOperateEmployeeID(id uint64) *AssetTransferDetailsUpdate {
+	atdu.mutation.SetInOperateEmployeeID(id)
 	return atdu
 }
 
-// SetNillableInOperateStoreID sets the "in_operate_store" edge to the Store entity by ID if the given value is not nil.
-func (atdu *AssetTransferDetailsUpdate) SetNillableInOperateStoreID(id *uint64) *AssetTransferDetailsUpdate {
+// SetNillableInOperateEmployeeID sets the "in_operate_employee" edge to the Employee entity by ID if the given value is not nil.
+func (atdu *AssetTransferDetailsUpdate) SetNillableInOperateEmployeeID(id *uint64) *AssetTransferDetailsUpdate {
 	if id != nil {
-		atdu = atdu.SetInOperateStoreID(*id)
+		atdu = atdu.SetInOperateEmployeeID(*id)
 	}
 	return atdu
 }
 
-// SetInOperateStore sets the "in_operate_store" edge to the Store entity.
-func (atdu *AssetTransferDetailsUpdate) SetInOperateStore(s *Store) *AssetTransferDetailsUpdate {
-	return atdu.SetInOperateStoreID(s.ID)
+// SetInOperateEmployee sets the "in_operate_employee" edge to the Employee entity.
+func (atdu *AssetTransferDetailsUpdate) SetInOperateEmployee(e *Employee) *AssetTransferDetailsUpdate {
+	return atdu.SetInOperateEmployeeID(e.ID)
 }
 
 // SetInOperateAgentID sets the "in_operate_agent" edge to the Agent entity by ID.
@@ -378,9 +378,9 @@ func (atdu *AssetTransferDetailsUpdate) ClearInOperateAssetManager() *AssetTrans
 	return atdu
 }
 
-// ClearInOperateStore clears the "in_operate_store" edge to the Store entity.
-func (atdu *AssetTransferDetailsUpdate) ClearInOperateStore() *AssetTransferDetailsUpdate {
-	atdu.mutation.ClearInOperateStore()
+// ClearInOperateEmployee clears the "in_operate_employee" edge to the Employee entity.
+func (atdu *AssetTransferDetailsUpdate) ClearInOperateEmployee() *AssetTransferDetailsUpdate {
+	atdu.mutation.ClearInOperateEmployee()
 	return atdu
 }
 
@@ -577,28 +577,28 @@ func (atdu *AssetTransferDetailsUpdate) sqlSave(ctx context.Context) (n int, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atdu.mutation.InOperateStoreCleared() {
+	if atdu.mutation.InOperateEmployeeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransferdetails.InOperateStoreTable,
-			Columns: []string{assettransferdetails.InOperateStoreColumn},
+			Table:   assettransferdetails.InOperateEmployeeTable,
+			Columns: []string{assettransferdetails.InOperateEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atdu.mutation.InOperateStoreIDs(); len(nodes) > 0 {
+	if nodes := atdu.mutation.InOperateEmployeeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransferdetails.InOperateStoreTable,
-			Columns: []string{assettransferdetails.InOperateStoreColumn},
+			Table:   assettransferdetails.InOperateEmployeeTable,
+			Columns: []string{assettransferdetails.InOperateEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1005,23 +1005,23 @@ func (atduo *AssetTransferDetailsUpdateOne) SetInOperateAssetManager(a *AssetMan
 	return atduo.SetInOperateAssetManagerID(a.ID)
 }
 
-// SetInOperateStoreID sets the "in_operate_store" edge to the Store entity by ID.
-func (atduo *AssetTransferDetailsUpdateOne) SetInOperateStoreID(id uint64) *AssetTransferDetailsUpdateOne {
-	atduo.mutation.SetInOperateStoreID(id)
+// SetInOperateEmployeeID sets the "in_operate_employee" edge to the Employee entity by ID.
+func (atduo *AssetTransferDetailsUpdateOne) SetInOperateEmployeeID(id uint64) *AssetTransferDetailsUpdateOne {
+	atduo.mutation.SetInOperateEmployeeID(id)
 	return atduo
 }
 
-// SetNillableInOperateStoreID sets the "in_operate_store" edge to the Store entity by ID if the given value is not nil.
-func (atduo *AssetTransferDetailsUpdateOne) SetNillableInOperateStoreID(id *uint64) *AssetTransferDetailsUpdateOne {
+// SetNillableInOperateEmployeeID sets the "in_operate_employee" edge to the Employee entity by ID if the given value is not nil.
+func (atduo *AssetTransferDetailsUpdateOne) SetNillableInOperateEmployeeID(id *uint64) *AssetTransferDetailsUpdateOne {
 	if id != nil {
-		atduo = atduo.SetInOperateStoreID(*id)
+		atduo = atduo.SetInOperateEmployeeID(*id)
 	}
 	return atduo
 }
 
-// SetInOperateStore sets the "in_operate_store" edge to the Store entity.
-func (atduo *AssetTransferDetailsUpdateOne) SetInOperateStore(s *Store) *AssetTransferDetailsUpdateOne {
-	return atduo.SetInOperateStoreID(s.ID)
+// SetInOperateEmployee sets the "in_operate_employee" edge to the Employee entity.
+func (atduo *AssetTransferDetailsUpdateOne) SetInOperateEmployee(e *Employee) *AssetTransferDetailsUpdateOne {
+	return atduo.SetInOperateEmployeeID(e.ID)
 }
 
 // SetInOperateAgentID sets the "in_operate_agent" edge to the Agent entity by ID.
@@ -1141,9 +1141,9 @@ func (atduo *AssetTransferDetailsUpdateOne) ClearInOperateAssetManager() *AssetT
 	return atduo
 }
 
-// ClearInOperateStore clears the "in_operate_store" edge to the Store entity.
-func (atduo *AssetTransferDetailsUpdateOne) ClearInOperateStore() *AssetTransferDetailsUpdateOne {
-	atduo.mutation.ClearInOperateStore()
+// ClearInOperateEmployee clears the "in_operate_employee" edge to the Employee entity.
+func (atduo *AssetTransferDetailsUpdateOne) ClearInOperateEmployee() *AssetTransferDetailsUpdateOne {
+	atduo.mutation.ClearInOperateEmployee()
 	return atduo
 }
 
@@ -1370,28 +1370,28 @@ func (atduo *AssetTransferDetailsUpdateOne) sqlSave(ctx context.Context) (_node 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atduo.mutation.InOperateStoreCleared() {
+	if atduo.mutation.InOperateEmployeeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransferdetails.InOperateStoreTable,
-			Columns: []string{assettransferdetails.InOperateStoreColumn},
+			Table:   assettransferdetails.InOperateEmployeeTable,
+			Columns: []string{assettransferdetails.InOperateEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atduo.mutation.InOperateStoreIDs(); len(nodes) > 0 {
+	if nodes := atduo.mutation.InOperateEmployeeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransferdetails.InOperateStoreTable,
-			Columns: []string{assettransferdetails.InOperateStoreColumn},
+			Table:   assettransferdetails.InOperateEmployeeTable,
+			Columns: []string{assettransferdetails.InOperateEmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

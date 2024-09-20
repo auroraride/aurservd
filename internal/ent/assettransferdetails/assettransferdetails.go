@@ -43,8 +43,8 @@ const (
 	EdgeTransfer = "transfer"
 	// EdgeInOperateAssetManager holds the string denoting the in_operate_asset_manager edge name in mutations.
 	EdgeInOperateAssetManager = "in_operate_asset_manager"
-	// EdgeInOperateStore holds the string denoting the in_operate_store edge name in mutations.
-	EdgeInOperateStore = "in_operate_store"
+	// EdgeInOperateEmployee holds the string denoting the in_operate_employee edge name in mutations.
+	EdgeInOperateEmployee = "in_operate_employee"
 	// EdgeInOperateAgent holds the string denoting the in_operate_agent edge name in mutations.
 	EdgeInOperateAgent = "in_operate_agent"
 	// EdgeInOperateMaintainer holds the string denoting the in_operate_maintainer edge name in mutations.
@@ -73,13 +73,13 @@ const (
 	InOperateAssetManagerInverseTable = "asset_manager"
 	// InOperateAssetManagerColumn is the table column denoting the in_operate_asset_manager relation/edge.
 	InOperateAssetManagerColumn = "in_operate_id"
-	// InOperateStoreTable is the table that holds the in_operate_store relation/edge.
-	InOperateStoreTable = "asset_transfer_details"
-	// InOperateStoreInverseTable is the table name for the Store entity.
-	// It exists in this package in order to avoid circular dependency with the "store" package.
-	InOperateStoreInverseTable = "store"
-	// InOperateStoreColumn is the table column denoting the in_operate_store relation/edge.
-	InOperateStoreColumn = "in_operate_id"
+	// InOperateEmployeeTable is the table that holds the in_operate_employee relation/edge.
+	InOperateEmployeeTable = "asset_transfer_details"
+	// InOperateEmployeeInverseTable is the table name for the Employee entity.
+	// It exists in this package in order to avoid circular dependency with the "employee" package.
+	InOperateEmployeeInverseTable = "employee"
+	// InOperateEmployeeColumn is the table column denoting the in_operate_employee relation/edge.
+	InOperateEmployeeColumn = "in_operate_id"
 	// InOperateAgentTable is the table that holds the in_operate_agent relation/edge.
 	InOperateAgentTable = "asset_transfer_details"
 	// InOperateAgentInverseTable is the table name for the Agent entity.
@@ -240,10 +240,10 @@ func ByInOperateAssetManagerField(field string, opts ...sql.OrderTermOption) Ord
 	}
 }
 
-// ByInOperateStoreField orders the results by in_operate_store field.
-func ByInOperateStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByInOperateEmployeeField orders the results by in_operate_employee field.
+func ByInOperateEmployeeField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newInOperateStoreStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newInOperateEmployeeStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -302,11 +302,11 @@ func newInOperateAssetManagerStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, false, InOperateAssetManagerTable, InOperateAssetManagerColumn),
 	)
 }
-func newInOperateStoreStep() *sqlgraph.Step {
+func newInOperateEmployeeStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(InOperateStoreInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, InOperateStoreTable, InOperateStoreColumn),
+		sqlgraph.To(InOperateEmployeeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, InOperateEmployeeTable, InOperateEmployeeColumn),
 	)
 }
 func newInOperateAgentStep() *sqlgraph.Step {
