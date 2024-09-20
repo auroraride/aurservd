@@ -1471,7 +1471,7 @@ func (s *assetTransferService) GetTransferBySN(assetSignInfo definition.AssetSig
 		),
 		assettransferdetails.IsIn(false),
 		assettransferdetails.HasTransferWith(
-			assettransfer.Status(model.AssetTransferStatusDelivering.Value()),
+			assettransfer.StatusNEQ(model.AssetTransferStatusCancel.Value()),
 		),
 	).WithTransfer(func(query *ent.AssetTransferQuery) {
 		query.
