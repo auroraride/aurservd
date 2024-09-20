@@ -129,7 +129,7 @@ type AssetTransferFilter struct {
 	AgentID           uint64                 `json:"agentID" query:"agentID"`                                         // 代理员ID
 	MaintainerID      uint64                 `json:"maintainerID" query:"maintainerID"`                               // 运维ID
 	MainPage          *AssetTransferMainPage `json:"mainPage" query:"mainPage" enums:"1,2"`                           // 是否首页跳转查询
-	AssetType         *AssetType             `json:"assetType" query:"assetType" enums:"1,2,3,4,5,6"`                 // 物资类型
+	AssetType         *AssetType             `json:"assetType" query:"assetType" enums:"1,2,3,4,5,6"`                 // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
 }
 
 // AssetTransferListRes 资产调拨列表响应

@@ -3963,16 +3963,16 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"AssetManager",
 	)
 	graph.MustAddE(
-		"in_operate_store",
+		"in_operate_employee",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   assettransferdetails.InOperateStoreTable,
-			Columns: []string{assettransferdetails.InOperateStoreColumn},
+			Table:   assettransferdetails.InOperateEmployeeTable,
+			Columns: []string{assettransferdetails.InOperateEmployeeColumn},
 			Bidi:    false,
 		},
 		"AssetTransferDetails",
-		"Store",
+		"Employee",
 	)
 	graph.MustAddE(
 		"in_operate_agent",
@@ -10886,14 +10886,14 @@ func (f *AssetTransferDetailsFilter) WhereHasInOperateAssetManagerWith(preds ...
 	})))
 }
 
-// WhereHasInOperateStore applies a predicate to check if query has an edge in_operate_store.
-func (f *AssetTransferDetailsFilter) WhereHasInOperateStore() {
-	f.Where(entql.HasEdge("in_operate_store"))
+// WhereHasInOperateEmployee applies a predicate to check if query has an edge in_operate_employee.
+func (f *AssetTransferDetailsFilter) WhereHasInOperateEmployee() {
+	f.Where(entql.HasEdge("in_operate_employee"))
 }
 
-// WhereHasInOperateStoreWith applies a predicate to check if query has an edge in_operate_store with a given conditions (other predicates).
-func (f *AssetTransferDetailsFilter) WhereHasInOperateStoreWith(preds ...predicate.Store) {
-	f.Where(entql.HasEdgeWith("in_operate_store", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasInOperateEmployeeWith applies a predicate to check if query has an edge in_operate_employee with a given conditions (other predicates).
+func (f *AssetTransferDetailsFilter) WhereHasInOperateEmployeeWith(preds ...predicate.Employee) {
+	f.Where(entql.HasEdgeWith("in_operate_employee", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

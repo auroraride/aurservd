@@ -19,7 +19,7 @@ APIS=(
   'controller/v2/mapi/mapi.go'
   'controller/v1/oapi/oapi.go'
   'controller/v1/papi/papi.go'
-  'controller/v2/assetapi/assetapi.go'
+  'controller/v2/amapi/amapi.go'
   'controller/v2/wapi/wapi.go'
 )
 

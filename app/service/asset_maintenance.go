@@ -104,7 +104,7 @@ func (s *assetMaintenanceService) List(ctx context.Context, req *model.AssetMain
 			assetmaintenance.Or(
 				assetmaintenance.HasMaintainerWith(maintainer.NameContains(*req.Keyword)),
 				assetmaintenance.HasMaintainerWith(maintainer.PhoneContains(*req.Keyword)),
-				assetmaintenance.HasCabinetWith(cabinet.SnContains(*req.Keyword)),
+				assetmaintenance.HasCabinetWith(cabinet.SerialContains(*req.Keyword)),
 			),
 		)
 	}

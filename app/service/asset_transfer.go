@@ -829,7 +829,7 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 		)
 	}
 	if req.AssetManagerID != 0 {
-		q.Where(assettransfer.Type(model.AssetTransferTypeTransfer.Value()))
+		q.Where(assettransfer.TypeIn(model.AssetTransferTypeInitial.Value(), model.AssetTransferTypeTransfer.Value()))
 		wq := warehouse.HasBelongAssetManagersWith(assetmanager.ID(req.AssetManagerID))
 		// 判断是否首页跳转查询
 		if req.MainPage == nil {
@@ -897,7 +897,7 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 
 	}
 	if req.EmployeeID != 0 {
-		q.Where(assettransfer.Type(model.AssetTransferTypeTransfer.Value()))
+		q.Where(assettransfer.TypeIn(model.AssetTransferTypeInitial.Value(), model.AssetTransferTypeTransfer.Value()))
 		wq := store.HasEmployeesWith(employee.ID(req.EmployeeID))
 
 		// 判断是否首页跳转查询
@@ -956,7 +956,7 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 		}
 	}
 	if req.AgentID != 0 {
-		q.Where(assettransfer.Type(model.AssetTransferTypeTransfer.Value()))
+		q.Where(assettransfer.TypeIn(model.AssetTransferTypeInitial.Value(), model.AssetTransferTypeTransfer.Value()))
 		// 查询代理人员配置的代理站点
 		ids := make([]uint64, 0)
 		ag, _ := ent.Database.Agent.QueryNotDeleted().
@@ -980,7 +980,7 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 
 	}
 	if req.MaintainerID != 0 {
-		q.Where(assettransfer.Type(model.AssetTransferTypeTransfer.Value()))
+		q.Where(assettransfer.TypeIn(model.AssetTransferTypeInitial.Value(), model.AssetTransferTypeTransfer.Value()))
 		q.Where(
 			assettransfer.Or(
 				assettransfer.HasFromLocationOperatorWith(maintainer.ID(req.MaintainerID)),
@@ -1019,7 +1019,7 @@ func (s *assetTransferService) TransferDetail(ctx context.Context, req *model.As
 	otherAccNameAstMap := make(map[string]*model.TransferAssetDetail)
 
 	atds, err := ent.Database.AssetTransferDetails.QueryNotDeleted().
-		WithInOperateAgent().WithInOperateAssetManager().WithInOperateStore().WithInOperateMaintainer().WithInOperateCabinet().WithInOperateRider().
+		WithInOperateAgent().WithInOperateAssetManager().WithInOperateEmployee().WithInOperateMaintainer().WithInOperateCabinet().WithInOperateRider().
 		Where(
 			assettransferdetails.TransferID(req.ID),
 			assettransferdetails.HasAssetWith(
@@ -1233,8 +1233,8 @@ func (s *assetTransferService) GetOperaterInfo(item *ent.AssetTransferDetails) s
 			return "[仓管]" + item.Edges.InOperateAssetManager.Name
 		}
 	case model.OperatorTypeEmployee:
-		if item.Edges.InOperateStore != nil {
-			return "[门店]" + item.Edges.InOperateStore.Name
+		if item.Edges.InOperateEmployee != nil {
+			return "[门店]" + item.Edges.InOperateEmployee.Name
 		}
 	case model.OperatorTypeAgent:
 		if item.Edges.InOperateAgent != nil {
@@ -1471,7 +1471,7 @@ func (s *assetTransferService) GetTransferBySN(assetSignInfo definition.AssetSig
 		),
 		assettransferdetails.IsIn(false),
 		assettransferdetails.HasTransferWith(
-			assettransfer.Status(model.AssetTransferStatusDelivering.Value()),
+			assettransfer.StatusNEQ(model.AssetTransferStatusCancel.Value()),
 		),
 	).WithTransfer(func(query *ent.AssetTransferQuery) {
 		query.
@@ -1650,10 +1650,11 @@ func (s *assetTransferService) Flow(ctx context.Context, req *model.AssetTransfe
 		}).
 		WithInOperateAgent().
 		WithInOperateManager().
-		WithInOperateStore().
+		WithInOperateEmployee().
 		WithInOperateMaintainer().
 		WithInOperateCabinet().
 		WithInOperateRider().
+		WithInOperateAssetManager().
 		Order(ent.Desc(assettransferdetails.FieldID))
 	if req.Start != nil && req.End != nil {
 		start := tools.NewTime().ParseDateStringX(*req.Start)
@@ -1692,8 +1693,8 @@ func (s *assetTransferService) flowDetail(ctx context.Context, item *ent.AssetTr
 			}
 		}
 	case model.OperatorTypeEmployee:
-		if item.Edges.InOperateStore != nil {
-			toOperateName = "[门店]" + item.Edges.InOperateStore.Name
+		if item.Edges.InOperateEmployee != nil {
+			toOperateName = "[门店]" + item.Edges.InOperateEmployee.Name
 		}
 	case model.OperatorTypeAgent:
 		if item.Edges.InOperateAgent != nil {
@@ -1710,6 +1711,10 @@ func (s *assetTransferService) flowDetail(ctx context.Context, item *ent.AssetTr
 	case model.OperatorTypeRider:
 		if item.Edges.InOperateRider != nil {
 			toOperateName = "[骑手]" + item.Edges.InOperateRider.Name
+		}
+	case model.OperatorTypeManager:
+		if r, _ := item.Edges.InOperateAssetManager.QueryRole().First(ctx); r != nil {
+			toOperateName = "[" + r.Name + "]" + item.Edges.InOperateAssetManager.Name
 		}
 	default:
 	}
@@ -1853,7 +1858,7 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 	q := ent.Database.AssetTransferDetails.QueryNotDeleted().
 		Where(
 			assettransferdetails.HasTransferWith(assettransfer.StatusNEQ(model.AssetTransferStatusCancel.Value())),
-		).WithInOperateAgent().WithInOperateManager().WithInOperateStore().WithInOperateMaintainer().WithInOperateCabinet().WithInOperateRider().WithInOperateAssetManager().WithAsset(func(query *ent.AssetQuery) {
+		).WithInOperateAgent().WithInOperateManager().WithInOperateEmployee().WithInOperateMaintainer().WithInOperateCabinet().WithInOperateRider().WithInOperateAssetManager().WithAsset(func(query *ent.AssetQuery) {
 		query.WithMaterial().WithCity().WithModel().WithBrand()
 	}).WithTransfer(func(query *ent.AssetTransferQuery) {
 		query.WithFromLocationOperator().WithFromLocationStation().WithFromLocationStore().WithFromLocationWarehouse().WithFromLocationCabinet().WithFromLocationRider().
@@ -2123,8 +2128,8 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 				}
 			}
 		case model.OperatorTypeEmployee:
-			if item.Edges.InOperateStore != nil {
-				toOperateName = "[门店]" + item.Edges.InOperateStore.Name
+			if item.Edges.InOperateEmployee != nil {
+				toOperateName = "[门店]" + item.Edges.InOperateEmployee.Name
 			}
 		case model.OperatorTypeAgent:
 			if item.Edges.InOperateAgent != nil {
@@ -2250,12 +2255,17 @@ func (s *assetTransferService) QueryTransferByAssetID(ctx context.Context, id ui
 
 // QueryTransferBySN 获取调拨信息
 func (s *assetTransferService) QueryTransferBySN(ctx context.Context, sn string) (res *ent.AssetTransfer, err error) {
-	item, _ := s.orm.QueryNotDeleted().
-		Where(assettransfer.HasTransferDetailsWith(assettransferdetails.HasAssetWith(asset.Sn(sn))), assettransfer.Status(model.AssetTransferStatusDelivering.Value())).
+	res, _ = s.orm.QueryNotDeleted().
+		Where(
+			assettransfer.HasTransferDetailsWith(
+				assettransferdetails.HasAssetWith(asset.Sn(sn)),
+				assettransferdetails.IsIn(false),
+			),
+		).
 		Order(ent.Desc(assettransfer.FieldCreatedAt)).
 		First(ctx)
-	if item == nil {
+	if res == nil {
 		return nil, errors.New("调拨单不存在或已入库")
 	}
-	return item, nil
+	return
 }

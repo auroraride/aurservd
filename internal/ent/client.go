@@ -4842,15 +4842,15 @@ func (c *AssetTransferDetailsClient) QueryInOperateAssetManager(atd *AssetTransf
 	return query
 }
 
-// QueryInOperateStore queries the in_operate_store edge of a AssetTransferDetails.
-func (c *AssetTransferDetailsClient) QueryInOperateStore(atd *AssetTransferDetails) *StoreQuery {
-	query := (&StoreClient{config: c.config}).Query()
+// QueryInOperateEmployee queries the in_operate_employee edge of a AssetTransferDetails.
+func (c *AssetTransferDetailsClient) QueryInOperateEmployee(atd *AssetTransferDetails) *EmployeeQuery {
+	query := (&EmployeeClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := atd.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assettransferdetails.Table, assettransferdetails.FieldID, id),
-			sqlgraph.To(store.Table, store.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, assettransferdetails.InOperateStoreTable, assettransferdetails.InOperateStoreColumn),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assettransferdetails.InOperateEmployeeTable, assettransferdetails.InOperateEmployeeColumn),
 		)
 		fromV = sqlgraph.Neighbors(atd.driver.Dialect(), step)
 		return fromV, nil
