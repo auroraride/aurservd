@@ -829,7 +829,7 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 		)
 	}
 	if req.AssetManagerID != 0 {
-		q.Where(assettransfer.Type(model.AssetTransferTypeTransfer.Value()))
+		q.Where(assettransfer.TypeIn(model.AssetTransferTypeInitial.Value(), model.AssetTransferTypeTransfer.Value()))
 		wq := warehouse.HasBelongAssetManagersWith(assetmanager.ID(req.AssetManagerID))
 		// 判断是否首页跳转查询
 		if req.MainPage == nil {
@@ -897,7 +897,7 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 
 	}
 	if req.EmployeeID != 0 {
-		q.Where(assettransfer.Type(model.AssetTransferTypeTransfer.Value()))
+		q.Where(assettransfer.TypeIn(model.AssetTransferTypeInitial.Value(), model.AssetTransferTypeTransfer.Value()))
 		wq := store.HasEmployeesWith(employee.ID(req.EmployeeID))
 
 		// 判断是否首页跳转查询
@@ -956,7 +956,7 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 		}
 	}
 	if req.AgentID != 0 {
-		q.Where(assettransfer.Type(model.AssetTransferTypeTransfer.Value()))
+		q.Where(assettransfer.TypeIn(model.AssetTransferTypeInitial.Value(), model.AssetTransferTypeTransfer.Value()))
 		// 查询代理人员配置的代理站点
 		ids := make([]uint64, 0)
 		ag, _ := ent.Database.Agent.QueryNotDeleted().
@@ -980,7 +980,7 @@ func (s *assetTransferService) filter(ctx context.Context, q *ent.AssetTransferQ
 
 	}
 	if req.MaintainerID != 0 {
-		q.Where(assettransfer.Type(model.AssetTransferTypeTransfer.Value()))
+		q.Where(assettransfer.TypeIn(model.AssetTransferTypeInitial.Value(), model.AssetTransferTypeTransfer.Value()))
 		q.Where(
 			assettransfer.Or(
 				assettransfer.HasFromLocationOperatorWith(maintainer.ID(req.MaintainerID)),
