@@ -47,7 +47,7 @@ func (s *batteryService) QuerySn(sn string) (bat *ent.Asset, err error) {
 	bat, _ = NewAsset().QuerySn(sn)
 	if bat == nil {
 		zap.L().Error("查询电池失败，未找到电池: " + sn)
-		return
+		return nil, errors.New("未找到电池: " + sn)
 	}
 	return
 }
@@ -669,10 +669,10 @@ func (s *batteryService) StationBusinessTransfer(cabinetID, exchangeID uint64, p
 	// 若放入是其他站点的电池, 其本质是两个站点(代理)的电池互换
 
 	// 放入到该站点的电池
-	s.updateStation(in, putout.StationID, putout.EnterpriseID)
+	s.updateStation(in, putout.StationID)
 
 	// 从该站点取出的电池
-	s.updateStation(out, putin.StationID, putin.EnterpriseID)
+	s.updateStation(out, putin.StationID)
 
 	// 记录
 	err := ent.Database.EnterpriseBatterySwap.Create().
@@ -695,7 +695,7 @@ func (s *batteryService) StationBusinessTransfer(cabinetID, exchangeID uint64, p
 }
 
 // 更新电池站点信息
-func (s *batteryService) updateStation(bat *ent.Asset, stationID, enterpriseID *uint64) {
+func (s *batteryService) updateStation(bat *ent.Asset, stationID *uint64) {
 	updater := s.orm.UpdateOne(bat)
 	switch {
 	default:
