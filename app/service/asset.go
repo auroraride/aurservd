@@ -1101,6 +1101,22 @@ func (s *assetService) QueryID(id uint64) (*ent.Asset, error) {
 	return s.orm.Query().WithModel().Where(asset.ID(id), asset.CheckAtIsNil()).First(s.ctx)
 }
 
+// QueryAssetByLocation 查询某个位置在库存中的资产
+func (s *assetService) QueryAssetByLocation(req model.QueryAssetReq) (*ent.Asset, error) {
+	q := s.orm.Query().WithModel().Where(
+		asset.LocationsType(req.LocationsType.Value()),
+		asset.LocationsID(req.LocationsID),
+		asset.CheckAtIsNil(),
+	)
+	if req.ID != nil {
+		q.Where(asset.ID(*req.ID))
+	}
+	if req.Sn != nil {
+		q.Where(asset.Sn(*req.Sn))
+	}
+	return q.First(s.ctx)
+}
+
 // QueryRiderID 通过骑手ID查询电池资产
 func (s *assetService) QueryRiderID(id uint64) (*ent.Asset, error) {
 	return s.orm.Query().WithModel().Where(
@@ -1112,7 +1128,7 @@ func (s *assetService) QueryRiderID(id uint64) (*ent.Asset, error) {
 }
 
 // QueryNonSmartBattery 查询一个符合条件的非智能电池
-func (s *assetService) QueryNonSmartBattery(req *model.QueryAssetReq) (bat *ent.Asset, err error) {
+func (s *assetService) QueryNonSmartBattery(req *model.QueryAssetBatteryReq) (bat *ent.Asset, err error) {
 	q := s.orm.Query().WithModel().Where(asset.Type(model.AssetTypeNonSmartBattery.Value()), asset.CheckAtIsNil(), asset.Status(model.AssetStatusStock.Value())).Limit(1)
 	if req.LocationsType != nil {
 		q.Where(asset.LocationsType(req.LocationsType.Value()))

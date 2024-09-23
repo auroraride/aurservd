@@ -248,7 +248,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 							modelID = models[0].ID
 						}
 						locationsType := model.AssetLocationsTypeCabinet
-						newBattery, _ := NewAsset().QueryNonSmartBattery(&model.QueryAssetReq{
+						newBattery, _ := NewAsset().QueryNonSmartBattery(&model.QueryAssetBatteryReq{
 							LocationsType: &locationsType,
 							LocationsID:   silk.UInt64(cab.ID),
 							ModelID:       modelID,
