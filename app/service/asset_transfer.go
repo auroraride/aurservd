@@ -1787,7 +1787,7 @@ func (s *assetTransferService) flowDetail(ctx context.Context, item *ent.AssetTr
 		// 出库操作人
 		if item.Edges.Transfer.OutOperateType != nil && item.Edges.Transfer.OutOperateID != nil {
 			switch model.OperatorType(*item.Edges.Transfer.OutOperateType) {
-			case model.OperatorTypeAssetManager:
+			case model.OperatorTypeManager:
 				if item.Edges.Transfer.Edges.OutOperateManager != nil {
 					if r, _ := item.Edges.Transfer.Edges.OutOperateManager.QueryRole().First(ctx); r != nil {
 						fromoperateName = "[" + r.Name + "]" + item.Edges.Transfer.Edges.OutOperateManager.Name
@@ -1812,6 +1812,10 @@ func (s *assetTransferService) flowDetail(ctx context.Context, item *ent.AssetTr
 			case model.OperatorTypeRider:
 				if item.Edges.Transfer.Edges.OutOperateRider != nil {
 					fromoperateName = "[骑手]" + item.Edges.Transfer.Edges.OutOperateRider.Name
+				}
+			case model.OperatorTypeAssetManager:
+				if r, _ := item.Edges.Transfer.Edges.OutOperateAssetManager.QueryRole().First(ctx); r != nil {
+					fromoperateName = "[" + r.Name + "]" + item.Edges.Transfer.Edges.OutOperateAssetManager.Name
 				}
 			default:
 			}
