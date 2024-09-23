@@ -138,9 +138,6 @@ func (b *enterpriseAssetBiz) AssetTotal(req *definition.EnterpriseAssetListReq, 
 			entasset.LocationsIDIn(id),
 			entasset.Status(model.AssetStatusStock.Value()),
 		)
-	if req.CityID != nil {
-		q.Where(entasset.CityID(*req.CityID))
-	}
 
 	if req.ModelID != nil {
 		q.Where(

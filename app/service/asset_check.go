@@ -560,6 +560,7 @@ func (s *assetCheckService) detail(item *ent.AssetCheck) *model.AssetCheckListRe
 
 // ListAbnormal 查询盘点异常资产
 func (s *assetCheckService) ListAbnormal(ctx context.Context, req *model.AssetCheckListAbnormalReq) (res []*model.AssetCheckAbnormal, err error) {
+	res = make([]*model.AssetCheckAbnormal, 0)
 	// 查询异常资产
 	abnormalAll, _ := ent.Database.AssetCheckDetails.QueryNotDeleted().
 		Where(
