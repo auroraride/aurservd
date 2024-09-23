@@ -93,10 +93,6 @@ func (s *managerSubscribeService) ChangeEbike(req *model.ManagerSubscribeChangeE
 		toLocationID = *storeID
 	}
 	if req.EbikeKeyword != nil {
-		q.Where(
-			asset.Or(
-				asset.SnContainsFold(*req.EbikeKeyword),
-			))
 		attributes, _ := ent.Database.AssetAttributes.Query().Where(assetattributes.Key("plate")).First(s.ctx)
 		if attributes != nil {
 			q.Where(
@@ -105,6 +101,7 @@ func (s *managerSubscribeService) ChangeEbike(req *model.ManagerSubscribeChangeE
 						assetattributevalues.AttributeID(attributes.ID),
 						assetattributevalues.ValueContainsFold(*req.EbikeKeyword),
 					),
+					asset.Sn(*req.EbikeKeyword),
 				),
 			)
 		}
@@ -138,6 +135,7 @@ func (s *managerSubscribeService) ChangeEbike(req *model.ManagerSubscribeChangeE
 			OperatorID:        s.modifier.ID,
 			OperatorType:      model.OperatorTypeManager,
 			AutoIn:            true,
+			SkipLimit:         true,
 		}, s.modifier)
 		if err != nil {
 			snag.Panic(err)
@@ -166,6 +164,7 @@ func (s *managerSubscribeService) ChangeEbike(req *model.ManagerSubscribeChangeE
 		OperatorID:        s.modifier.ID,
 		OperatorType:      model.OperatorTypeManager,
 		AutoIn:            true,
+		SkipLimit:         true,
 	}, s.modifier)
 	if err != nil {
 		snag.Panic(err)
