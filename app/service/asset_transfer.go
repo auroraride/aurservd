@@ -1620,17 +1620,12 @@ func (s *assetTransferService) GetTransferBySN(assetSignInfo definition.AssetSig
 // Flow 电池流转明细
 func (s *assetTransferService) Flow(ctx context.Context, req *model.AssetTransferFlowReq) (res *model.PaginationRes) {
 	q := ent.Database.AssetTransferDetails.QueryNotDeleted().
-		// Modify(func(sel *sql.Selector) {
-		// 	// 去重
-		// 	sel.FromExpr(sql.Raw("(SELECT DISTINCT ON sn * FROM asset_transfer_details) asset_transfer_details"))
-		// }).
 		Where(
 			assettransferdetails.IsIn(true),
 			assettransferdetails.HasTransferWith(
 				assettransfer.StatusNEQ(model.AssetTransferStatusCancel.Value()),
 			),
 			assettransferdetails.HasAssetWith(
-				// asset.SnContains(req.SN),
 				asset.Sn(req.SN),
 			),
 		).
@@ -1646,7 +1641,14 @@ func (s *assetTransferService) Flow(ctx context.Context, req *model.AssetTransfe
 				WithToLocationStore().
 				WithToLocationWarehouse().
 				WithToLocationCabinet().
-				WithToLocationRider()
+				WithToLocationRider().
+				WithOutOperateEmployee().
+				WithOutOperateAgent().
+				WithOutOperateManager().
+				WithOutOperateMaintainer().
+				WithOutOperateCabinet().
+				WithOutOperateRider().
+				WithOutOperateAssetManager()
 		}).
 		WithInOperateAgent().
 		WithInOperateManager().

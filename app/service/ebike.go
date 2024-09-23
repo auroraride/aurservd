@@ -402,17 +402,6 @@ func (s *ebikeService) SearchUnallocated(params *model.EbikeUnallocatedParams) (
 			asset.Or(
 				asset.SnContainsFold(*params.Keyword),
 			))
-		// attributes, _ := ent.Database.AssetAttributes.Query().Where(assetattributes.Key("plate")).First(s.ctx)
-		// if attributes != nil {
-		// 	q.Where(
-		// 		asset.Or(
-		// 			asset.HasValuesWith(
-		// 				assetattributevalues.AttributeID(attributes.ID),
-		// 				assetattributevalues.ValueContainsFold(*params.Keyword),
-		// 			),
-		// 		),
-		// 	)
-		// }
 	}
 
 	// 站点
@@ -426,13 +415,24 @@ func (s *ebikeService) SearchUnallocated(params *model.EbikeUnallocatedParams) (
 	}
 
 	// 查找电车
-	bikes, _ := q.WithBrand().WithValues().All(s.ctx)
+	bikes, _ := q.WithBrand().WithValues().WithStation(func(query *ent.EnterpriseStationQuery) {
+		query.WithEnterprise()
+	}).WithStore().All(s.ctx)
 
 	res = make([]*model.Ebike, len(bikes))
 	for i, bike := range bikes {
 		if len(bike.Edges.EbikeAllocates) > 0 {
 			continue
 		}
+		var stationID, enterpriseID, storeID *uint64
+		if bike.Edges.Store != nil {
+			storeID = &bike.Edges.Store.ID
+		}
+		if bike.Edges.Station != nil && bike.Edges.Station.Edges.Enterprise != nil {
+			stationID = &bike.Edges.Station.ID
+			enterpriseID = &bike.Edges.Station.Edges.Enterprise.ID
+		}
+
 		brand := bike.Edges.Brand
 		res[i] = &model.Ebike{
 			EbikeInfo: model.EbikeInfo{
@@ -444,6 +444,9 @@ func (s *ebikeService) SearchUnallocated(params *model.EbikeUnallocatedParams) (
 				Name:  brand.Name,
 				Cover: brand.Cover,
 			},
+			StationID:    stationID,
+			EnterpriseID: enterpriseID,
+			StoreID:      storeID,
 		}
 		// 查询电车属性
 		ab, _ := ent.Database.AssetAttributes.Query().Where(assetattributes.AssetType(model.AssetTypeEbike.Value())).All(s.ctx)
