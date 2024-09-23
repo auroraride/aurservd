@@ -10,7 +10,6 @@ import (
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/agreement"
 	entasset "github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
@@ -44,7 +43,16 @@ func NewStoreAssetWithModifier(m *model.Modifier) *storeAssetBiz {
 // Assets 资产列表
 func (b *storeAssetBiz) Assets(req *definition.StoreAssetListReq) (res *model.PaginationRes) {
 	// 查询分页的门店数据
-	q := b.orm.QueryNotDeleted().WithCity().WithGroup().Order(ent.Desc(agreement.FieldCreatedAt))
+	q := b.orm.QueryNotDeleted().
+		Where(
+			store.HasAssetWith(
+				entasset.LocationsType(model.AssetLocationsTypeStore.Value()),
+				entasset.Status(model.AssetStatusStock.Value()),
+			),
+		).
+		WithCity().
+		WithGroup().
+		Order(ent.Desc(store.FieldCreatedAt))
 	b.assetsFilter(q, req)
 	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Store) (result *definition.StoreAssetDetail) {
 		result = &definition.StoreAssetDetail{
@@ -82,57 +90,18 @@ func (b *storeAssetBiz) assetsFilter(q *ent.StoreQuery, req *definition.StoreAss
 		q.Where(store.ID(*req.StoreID))
 	}
 	if req.ModelID != nil {
-		// 查询型号资产
-		ids := make([]uint64, 0)
-		list, _ := ent.Database.Asset.QueryNotDeleted().WithStore().Where(
-			entasset.ModelID(*req.ModelID),
-			entasset.LocationsType(model.AssetLocationsTypeStore.Value()),
-			entasset.Status(model.AssetStatusStock.Value()),
-		).All(b.ctx)
-		for _, v := range list {
-			if v.Edges.Store != nil {
-				ids = append(ids, v.Edges.Store.ID)
-			}
-		}
-
 		q.Where(
-			store.IDIn(ids...),
+			store.HasAssetWith(entasset.ModelID(*req.ModelID)),
 		)
 	}
 	if req.BrandId != nil {
-		// 查询品牌资产
-		ids := make([]uint64, 0)
-		list, _ := ent.Database.Asset.QueryNotDeleted().WithStore().Where(
-			entasset.BrandID(*req.BrandId),
-			entasset.LocationsType(model.AssetLocationsTypeStore.Value()),
-			entasset.Status(model.AssetStatusStock.Value()),
-		).All(b.ctx)
-		for _, v := range list {
-			if v.Edges.Store != nil {
-				ids = append(ids, v.Edges.Store.ID)
-			}
-		}
-
 		q.Where(
-			store.IDIn(ids...),
+			store.HasAssetWith(entasset.BrandID(*req.BrandId)),
 		)
 	}
 	if req.OtherName != nil {
-		// 查询其他物资资产
-		ids := make([]uint64, 0)
-		list, _ := ent.Database.Asset.QueryNotDeleted().WithStore().Where(
-			entasset.LocationsType(model.AssetLocationsTypeStore.Value()),
-			entasset.Status(model.AssetStatusStock.Value()),
-			entasset.HasMaterialWith(material.NameContainsFold(*req.OtherName)),
-		).All(b.ctx)
-		for _, v := range list {
-			if v.Edges.Store != nil {
-				ids = append(ids, v.Edges.Store.ID)
-			}
-		}
-
 		q.Where(
-			store.IDIn(ids...),
+			store.HasAssetWith(entasset.HasMaterialWith(material.NameContains(*req.OtherName))),
 		)
 	}
 	if req.Start != nil && req.End != nil {
@@ -152,10 +121,6 @@ func (b *storeAssetBiz) AssetTotal(req *definition.StoreAssetListReq, sId uint64
 			entasset.LocationsIDIn(sId),
 			entasset.Status(model.AssetStatusStock.Value()),
 		)
-	if req.CityID != nil {
-		q.Where(entasset.CityID(*req.CityID))
-	}
-
 	if req.ModelID != nil {
 		q.Where(
 			entasset.ModelID(*req.ModelID),
