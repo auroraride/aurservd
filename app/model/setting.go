@@ -7,7 +7,7 @@ package model
 
 const (
 	CabinetBusinessScanExpires int64   = 30  // 电柜业务 - 扫码有效期(s)
-	CabinetBusinessStepTimeout int64   = 200 // 电柜业务 - 操作超时(s)
+	CabinetBusinessStepTimeout int64   = 120 // 电柜业务 - 操作超时(s)
 	DailyRentDefault           float64 = 99999.0
 )
 
