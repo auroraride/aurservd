@@ -502,10 +502,30 @@ func (s *assetTransferService) initialTransferWithSN(ctx context.Context, req mo
 
 // TransferList 调拨列表
 func (s *assetTransferService) TransferList(ctx context.Context, req *model.AssetTransferListReq) (res *model.PaginationRes, err error) {
-	q := ent.Database.AssetTransfer.QueryNotDeleted().WithTransferDetails().
-		WithOutOperateAgent().WithOutOperateManager().WithOutOperateEmployee().WithOutOperateMaintainer().WithOutOperateRider().WithOutOperateCabinet().WithOutOperateAssetManager().
-		WithFromLocationWarehouse().WithFromLocationStore().WithFromLocationStation().WithFromLocationOperator().WithFromLocationRider().WithFromLocationCabinet().
-		WithToLocationWarehouse().WithToLocationStore().WithToLocationStation().WithToLocationOperator().WithToLocationRider().WithToLocationCabinet()
+	q := ent.Database.AssetTransfer.QueryNotDeleted().
+		Where(
+			assettransfer.TypeNotIn(model.AssetTransferTypeExchange.Value()),
+		).
+		WithTransferDetails().
+		WithOutOperateAgent().
+		WithOutOperateManager().
+		WithOutOperateEmployee().
+		WithOutOperateMaintainer().
+		WithOutOperateRider().
+		WithOutOperateCabinet().
+		WithOutOperateAssetManager().
+		WithFromLocationWarehouse().
+		WithFromLocationStore().
+		WithFromLocationStation().
+		WithFromLocationOperator().
+		WithFromLocationRider().
+		WithFromLocationCabinet().
+		WithToLocationWarehouse().
+		WithToLocationStore().
+		WithToLocationStation().
+		WithToLocationOperator().
+		WithToLocationRider().
+		WithToLocationCabinet()
 	s.filter(ctx, q, &req.AssetTransferFilter)
 	q.Order(ent.Desc(assettransfer.FieldCreatedAt))
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.AssetTransfer) (res *model.AssetTransferListRes) {
