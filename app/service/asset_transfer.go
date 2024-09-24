@@ -1019,7 +1019,13 @@ func (s *assetTransferService) TransferDetail(ctx context.Context, req *model.As
 	otherAccNameAstMap := make(map[string]*model.TransferAssetDetail)
 
 	atds, err := ent.Database.AssetTransferDetails.QueryNotDeleted().
-		WithInOperateAgent().WithInOperateAssetManager().WithInOperateEmployee().WithInOperateMaintainer().WithInOperateCabinet().WithInOperateRider().
+		WithInOperateManager().
+		WithInOperateAgent().
+		WithInOperateAssetManager().
+		WithInOperateEmployee().
+		WithInOperateMaintainer().
+		WithInOperateCabinet().
+		WithInOperateRider().
 		Where(
 			assettransferdetails.TransferID(req.ID),
 			assettransferdetails.HasAssetWith(
@@ -1251,6 +1257,12 @@ func (s *assetTransferService) GetOperaterInfo(item *ent.AssetTransferDetails) s
 	case model.OperatorTypeRider:
 		if item.Edges.InOperateRider != nil {
 			return "[骑手]" + item.Edges.InOperateRider.Name
+		}
+	case model.OperatorTypeManager:
+		if item.Edges.InOperateManager != nil {
+			if r, _ := item.Edges.InOperateManager.QueryRole().First(context.Background()); r != nil {
+				return "[" + r.Name + "]" + item.Edges.InOperateManager.Name
+			}
 		}
 	default:
 	}
