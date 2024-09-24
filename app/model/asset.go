@@ -91,9 +91,17 @@ type AssetNumRes struct {
 	Num int `json:"num"` // 有效数量
 }
 
-// QueryAssetReq 查询资产请求
-type QueryAssetReq struct {
+// QueryAssetBatteryReq 查询资产请求
+type QueryAssetBatteryReq struct {
 	LocationsType *AssetLocationsType `json:"locationsType" query:"locationsType" enums:"1,2,3,4,5,6"` // 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
 	LocationsID   *uint64             `json:"locationsId" query:"locationsId"`                         // 资产位置ID
 	ModelID       uint64              `json:"modelId" query:"modelId"`                                 // 型号ID
+}
+
+// QueryAssetReq 查询资产请求
+type QueryAssetReq struct {
+	LocationsType AssetLocationsType `json:"locationsType" query:"locationsType" enums:"1,2,3,4,5,6"` // 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+	LocationsID   uint64             `json:"locationsId" query:"locationsId"`                         // 资产位置ID
+	ID            *uint64            `json:"id" query:"id"`                                           // 资产ID
+	Sn            *string            `json:"sn" query:"sn"`                                           // 资产编号
 }

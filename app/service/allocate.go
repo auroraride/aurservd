@@ -155,16 +155,20 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 	}
 
 	var (
-		cityID     uint64
-		entStore   *ent.Store
-		entStation *ent.EnterpriseStation
+		cityID        uint64
+		entStore      *ent.Store
+		entStation    *ent.EnterpriseStation
+		locationsType model.AssetLocationsType
+		locationsID   uint64
 	)
 
 	// 门店
 	if params.StoreID != nil {
 		entStore = NewStore().Query(*params.StoreID)
 		cityID = entStore.CityID
-		checkAsset, _ := NewAsset().CheckAsset(model.AssetLocationsTypeStore, *params.StoreID, sub.Model)
+		locationsType = model.AssetLocationsTypeStore
+		locationsID = *params.StoreID
+		checkAsset, _ := NewAsset().CheckAsset(locationsType, *params.StoreID, sub.Model)
 		// 判定门店非智能电池库存
 		if params.BatteryID == nil && checkAsset == nil {
 			snag.Panic("电池库存不足")
@@ -175,6 +179,8 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 	if sub.StationID != nil {
 		entStation = NewEnterpriseStation().QueryX(*sub.StationID)
 		cityID = *entStation.CityID
+		locationsType = model.AssetLocationsTypeStation
+		locationsID = *sub.StationID
 		checkAsset, _ := NewAsset().CheckAsset(model.AssetLocationsTypeStation, *sub.StationID, sub.Model)
 		if params.BatteryID == nil && checkAsset == nil {
 			snag.Panic("站点电池库存不足")
@@ -192,32 +198,23 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 
 	// 如果为非智能套餐 找一个非智能电池电池
 	if params.BatteryID == nil && !sub.Intelligent {
-		var locationsID uint64
-		var locationsType model.AssetLocationsType
-		// 如果为门店非智能电池
-		if params.StoreID != nil {
-			locationsType = model.AssetLocationsTypeStore
-			locationsID = *params.StoreID
-		}
-		// 如果是代理骑手
-		if sub.StationID != nil {
-			locationsType = model.AssetLocationsTypeStation
-			locationsID = *sub.StationID
-		}
-
 		md := ent.Database.BatteryModel.Query().Where(batterymodel.Model(sub.Model)).FirstX(s.ctx)
 		if md == nil {
 			snag.Panic("未找到电池型号")
 			return model.AllocateCreateRes{}
 		}
-		bat, _ = NewAsset().QueryNonSmartBattery(&model.QueryAssetReq{
+		bat, _ = NewAsset().QueryNonSmartBattery(&model.QueryAssetBatteryReq{
 			LocationsType: &locationsType,
 			LocationsID:   &locationsID,
 			ModelID:       md.ID,
 		})
 	} else {
 		// 智能电池
-		bat, _ = NewAsset().QueryID(*params.BatteryID)
+		bat, _ = NewAsset().QueryAssetByLocation(model.QueryAssetReq{
+			LocationsType: locationsType,
+			LocationsID:   locationsID,
+			ID:            params.BatteryID,
+		})
 	}
 	if bat == nil {
 		snag.Panic("未找到电池信息")
@@ -263,8 +260,13 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 			Keyword:   params.EbikeParam.Keyword,
 		})
 
-		if sub.StationID != nil && bike.EbikeInfo.StationID != nil && *sub.StationID != *bike.EbikeInfo.StationID {
+		if sub.StationID != nil && bike.StationID != nil && *sub.StationID != *bike.StationID {
 			snag.Panic("车辆站点归属不一致")
+		}
+
+		// 判定电池是不是在同一个门店 或者站点
+		if bike.StoreID != nil && bat.LocationsID != *bike.StoreID || bike.StationID != nil && bat.LocationsID != *bike.StationID {
+			snag.Panic("电池与车辆不在同一位置")
 		}
 
 		if bike == nil {

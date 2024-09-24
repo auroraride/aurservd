@@ -1620,17 +1620,12 @@ func (s *assetTransferService) GetTransferBySN(assetSignInfo definition.AssetSig
 // Flow 电池流转明细
 func (s *assetTransferService) Flow(ctx context.Context, req *model.AssetTransferFlowReq) (res *model.PaginationRes) {
 	q := ent.Database.AssetTransferDetails.QueryNotDeleted().
-		// Modify(func(sel *sql.Selector) {
-		// 	// 去重
-		// 	sel.FromExpr(sql.Raw("(SELECT DISTINCT ON sn * FROM asset_transfer_details) asset_transfer_details"))
-		// }).
 		Where(
 			assettransferdetails.IsIn(true),
 			assettransferdetails.HasTransferWith(
 				assettransfer.StatusNEQ(model.AssetTransferStatusCancel.Value()),
 			),
 			assettransferdetails.HasAssetWith(
-				// asset.SnContains(req.SN),
 				asset.Sn(req.SN),
 			),
 		).
@@ -1646,7 +1641,14 @@ func (s *assetTransferService) Flow(ctx context.Context, req *model.AssetTransfe
 				WithToLocationStore().
 				WithToLocationWarehouse().
 				WithToLocationCabinet().
-				WithToLocationRider()
+				WithToLocationRider().
+				WithOutOperateEmployee().
+				WithOutOperateAgent().
+				WithOutOperateManager().
+				WithOutOperateMaintainer().
+				WithOutOperateCabinet().
+				WithOutOperateRider().
+				WithOutOperateAssetManager()
 		}).
 		WithInOperateAgent().
 		WithInOperateManager().
@@ -1686,7 +1688,7 @@ func (s *assetTransferService) flowDetail(ctx context.Context, item *ent.AssetTr
 	var fromLocationType, toLocationType model.AssetLocationsType
 	// 入库操作人
 	switch model.OperatorType(item.InOperateType) {
-	case model.OperatorTypeAssetManager:
+	case model.OperatorTypeManager:
 		if item.Edges.InOperateManager != nil {
 			if r, _ := item.Edges.InOperateManager.QueryRole().First(ctx); r != nil {
 				toOperateName = "[" + r.Name + "]" + item.Edges.InOperateManager.Name
@@ -1712,7 +1714,7 @@ func (s *assetTransferService) flowDetail(ctx context.Context, item *ent.AssetTr
 		if item.Edges.InOperateRider != nil {
 			toOperateName = "[骑手]" + item.Edges.InOperateRider.Name
 		}
-	case model.OperatorTypeManager:
+	case model.OperatorTypeAssetManager:
 		if r, _ := item.Edges.InOperateAssetManager.QueryRole().First(ctx); r != nil {
 			toOperateName = "[" + r.Name + "]" + item.Edges.InOperateAssetManager.Name
 		}
@@ -1785,7 +1787,7 @@ func (s *assetTransferService) flowDetail(ctx context.Context, item *ent.AssetTr
 		// 出库操作人
 		if item.Edges.Transfer.OutOperateType != nil && item.Edges.Transfer.OutOperateID != nil {
 			switch model.OperatorType(*item.Edges.Transfer.OutOperateType) {
-			case model.OperatorTypeAssetManager:
+			case model.OperatorTypeManager:
 				if item.Edges.Transfer.Edges.OutOperateManager != nil {
 					if r, _ := item.Edges.Transfer.Edges.OutOperateManager.QueryRole().First(ctx); r != nil {
 						fromoperateName = "[" + r.Name + "]" + item.Edges.Transfer.Edges.OutOperateManager.Name
@@ -1810,6 +1812,10 @@ func (s *assetTransferService) flowDetail(ctx context.Context, item *ent.AssetTr
 			case model.OperatorTypeRider:
 				if item.Edges.Transfer.Edges.OutOperateRider != nil {
 					fromoperateName = "[骑手]" + item.Edges.Transfer.Edges.OutOperateRider.Name
+				}
+			case model.OperatorTypeAssetManager:
+				if r, _ := item.Edges.Transfer.Edges.OutOperateAssetManager.QueryRole().First(ctx); r != nil {
+					fromoperateName = "[" + r.Name + "]" + item.Edges.Transfer.Edges.OutOperateAssetManager.Name
 				}
 			default:
 			}

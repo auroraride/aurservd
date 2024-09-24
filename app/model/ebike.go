@@ -117,18 +117,19 @@ type EbikeModifyReq struct {
 }
 
 type EbikeInfo struct {
-	ID           uint64  `json:"id,omitempty"`
-	SN           string  `json:"sn,omitempty"`           // 车架号
-	ExFactory    string  `json:"exFactory,omitempty"`    // 生产批次
-	Plate        *string `json:"plate,omitempty"`        // 车牌号
-	Color        string  `json:"color,omitempty"`        // 颜色
-	EnterpriseID *uint64 `json:"enterpriseId,omitempty"` // 团签ID
-	StationID    *uint64 `json:"stationId,omitempty"`    // 站点ID
+	ID        uint64  `json:"id,omitempty"`
+	SN        string  `json:"sn,omitempty"`        // 车架号
+	ExFactory string  `json:"exFactory,omitempty"` // 生产批次
+	Plate     *string `json:"plate,omitempty"`     // 车牌号
+	Color     string  `json:"color,omitempty"`     // 颜色
 }
 
 type Ebike struct {
 	EbikeInfo
-	Brand *EbikeBrand `json:"brand,omitempty" bson:"brand,omitempty"` // 品牌信息
+	Brand        *EbikeBrand `json:"brand,omitempty" bson:"brand,omitempty"` // 品牌信息
+	EnterpriseID *uint64     `json:"enterpriseId,omitempty"`                 // 团签ID
+	StationID    *uint64     `json:"stationId,omitempty"`                    // 站点ID
+	StoreID      *uint64     `json:"storeId,omitempty"`                      // 门店ID
 }
 
 type EbikeBusinessInfo struct {

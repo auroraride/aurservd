@@ -165,7 +165,7 @@ func (s *cabinetMgrService) BinOperateAssetTransfer(operator *logging.Operator, 
 					toLocationID = cab.ID
 					in = true
 					// 查找电池数量是否满足
-					bat, _ := NewAsset().QueryNonSmartBattery(&model.QueryAssetReq{
+					bat, _ := NewAsset().QueryNonSmartBattery(&model.QueryAssetBatteryReq{
 						LocationsID:   silk.UInt64(fromLocationID),
 						LocationsType: &fromLocationType,
 						ModelID:       modelID,
