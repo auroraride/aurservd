@@ -39,7 +39,7 @@ type AssetScrap struct {
 	ScrapAt time.Time `json:"scrap_at,omitempty"`
 	// 操作报废人员ID
 	OperateID *uint64 `json:"operate_id,omitempty"`
-	// 报废人员角色类型 1:后台管理 2:门店 3:代理 4:运维 5:电柜 6:骑手
+	// 报废人员角色类型 0:业务后台 1:门店 2:代理 3:运维 4:电柜 5:骑手 6:资产后台
 	OperateRoleType *uint8 `json:"operate_role_type,omitempty"`
 	// 报废编号
 	Sn string `json:"sn,omitempty"`

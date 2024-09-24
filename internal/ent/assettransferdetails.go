@@ -46,7 +46,7 @@ type AssetTransferDetails struct {
 	IsIn bool `json:"is_in,omitempty"`
 	// 入库人id
 	InOperateID uint64 `json:"in_operate_id,omitempty"`
-	// 入库角色类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手
+	// 入库角色类型 0:业务后台 1:门店 2:代理 3:运维 4:电柜 5:骑手 6:资产后台
 	InOperateType uint8 `json:"in_operate_type,omitempty"`
 	// 入库时间
 	InTimeAt *time.Time `json:"in_time_at,omitempty"`

@@ -85,7 +85,7 @@ func (s *batteryBmsService) SyncPutin(sn string, cab *ent.Cabinet, ordinal int) 
 	// 查询电池
 	bat, err = NewBattery().QuerySn(sn)
 	if err != nil {
-		zap.L().Error("电池信息创建失败", zap.Error(err))
+		zap.L().Error("[SyncPutin] 电池信息查询失败", zap.Error(err))
 		return
 	}
 
@@ -146,13 +146,15 @@ func (s *batteryBmsService) Detail(req *model.BatterySNRequest) (detail *model.B
 	// 请求bms rpc
 	r := rpc.BmsBatch(ab.Brand, &pb.BatteryBatchRequest{Sn: []string{req.SN}})
 	if r == nil || r.Items[req.SN] == nil {
-		snag.Panic("电池信息查询失败")
+		snag.Panic("[Detail] 电池信息查询失败")
+		return
 	}
 
 	// 查询电池
 	bat := ent.Database.Asset.Query().Where(asset.Sn(req.SN)).WithRider().WithCabinet().FirstX(s.ctx)
 	if bat == nil {
 		snag.Panic("电池未录入")
+		return
 	}
 
 	var (
@@ -239,6 +241,7 @@ func (s *batteryBmsService) Statistics(req *model.BatterySNRequest) (detail *mod
 	r := rpc.BmsStatistics(ab.Brand, &pb.BatterySnRequest{Sn: req.SN})
 	if r == nil {
 		snag.Panic("电池数据查询失败")
+		return
 	}
 
 	return &model.BatteryStatistics{

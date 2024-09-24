@@ -49,7 +49,6 @@ func (s *batteryFlowService) Create(tx *ent.Tx, bat *ent.Asset, req model.Batter
 	}
 }
 
-//
 // func (s *batteryFlowService) QueryFromBin(cabinetID uint64, ordinal int, sn string) {
 //
 // }

@@ -62,7 +62,7 @@ func (AssetTransferDetails) Fields() []ent.Field {
 		field.Uint64("transfer_id").Optional().Comment("调拨ID"),
 		field.Bool("is_in").Default(false).Comment("是否入库"),
 		field.Uint64("in_operate_id").Optional().Comment("入库人id"),
-		field.Uint8("in_operate_type").Optional().Comment("入库角色类型 1:资产后台 2:门店 3:代理 4:运维 5:电柜 6:骑手"),
+		field.Uint8("in_operate_type").Optional().Comment("入库角色类型 0:业务后台 1:门店 2:代理 3:运维 4:电柜 5:骑手 6:资产后台"),
 		field.Time("in_time_at").Optional().Nillable().Comment("入库时间"),
 		field.Uint64("asset_id").Optional().Comment("资产ID"),
 	}
