@@ -9,14 +9,14 @@ require (
 	entgo.io/ent v0.14.1
 	github.com/LucaTheHacker/go-haversine v0.0.0-20220213075817-0d811fb84a1a
 	github.com/PuerkitoBio/goquery v1.10.0
-	github.com/alibabacloud-go/cloudauth-20190307/v3 v3.9.0
+	github.com/alibabacloud-go/cloudauth-20190307/v3 v3.9.1
 	github.com/alibabacloud-go/darabonba-openapi v0.2.1
-	github.com/alibabacloud-go/darabonba-openapi/v2 v2.0.9
+	github.com/alibabacloud-go/darabonba-openapi/v2 v2.0.10
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.18
 	github.com/alibabacloud-go/dyvmsapi-20170525/v2 v2.1.4
 	github.com/alibabacloud-go/openapi-util v0.1.1
 	github.com/alibabacloud-go/tea v1.2.2
-	github.com/aliyun/alibaba-cloud-sdk-go v1.63.16
+	github.com/aliyun/alibaba-cloud-sdk-go v1.63.18
 	github.com/aliyun/aliyun-log-go-sdk v0.1.83
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
 	github.com/aliyun/credentials-go v1.3.10
@@ -27,7 +27,7 @@ require (
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
 	github.com/go-playground/validator/v10 v10.22.1
-	github.com/go-resty/resty/v2 v2.14.0
+	github.com/go-resty/resty/v2 v2.15.2
 	github.com/golang-module/carbon/v2 v2.3.12
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.3
@@ -60,8 +60,8 @@ require (
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.9.0
 	github.com/swaggo/echo-swagger v1.4.1
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.1002
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/faceid v1.0.1002
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.1009
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/faceid v1.0.1009
 	github.com/wechatpay-apiv3/wechatpay-go v0.2.20
 	github.com/xuri/excelize/v2 v2.8.1
 	go.uber.org/atomic v1.11.0
@@ -70,7 +70,7 @@ require (
 	golang.org/x/exp v0.0.0-20240909161429-701f63a606c0
 	golang.org/x/time v0.6.0
 	golang.org/x/tools v0.25.0
-	google.golang.org/grpc v1.66.2
+	google.golang.org/grpc v1.67.0
 	google.golang.org/protobuf v1.34.2
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -134,7 +134,7 @@ require (
 	github.com/jackc/pgtype v1.14.3 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
-	github.com/klauspost/compress v1.17.9 // indirect
+	github.com/klauspost/compress v1.17.10 // indirect
 	github.com/knadh/koanf v1.5.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect

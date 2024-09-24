@@ -689,7 +689,12 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 		Modify(func(sel *sql.Selector) {
 			// 不做对象查询时需要去重排除配偶
 			if req.Goal == 0 && req.Serial == "" && req.StoreID == 0 && req.CabinetID == 0 && req.EnterpriseID == 0 && req.StationID == 0 {
-				sel.FromExpr(sql.Raw("(SELECT DISTINCT ON (id + COALESCE(stock_spouse, 0)) * FROM stock) stock"))
+				// sel.FromExpr(sql.Raw("(SELECT DISTINCT ON (id + COALESCE(stock_spouse, 0)) * FROM stock) stock"))
+				// sel.From(sel.Clone().SelectDistinct("ON (id + COALESCE(stock_spouse, 0)) *").As("stock"))
+				builder := sql.Dialect(sel.Builder.Dialect())
+				t1 := builder.Table(stock.Table)
+				selector := builder.Select(t1.Columns(stock.Columns...)...).From(t1)
+				sel.From(selector.SelectDistinct("ON (id + COALESCE(stock_spouse, 0)) *").As("stock"))
 			}
 		}).
 		WithCabinet().
