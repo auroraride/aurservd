@@ -12,11 +12,11 @@ type assetCheck struct{}
 
 var AssetCheck = new(assetCheck)
 
-// Create 盘点资产
+// Create
 // @ID		AssetCheckCreate
 // @Router	/manager/v2/asset/check [POST]
 // @Summary	盘点资产
-// @Tags	资产
+// @Tags	AssetCheck - 盘点
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string						true	"管理员校验token"
@@ -29,11 +29,11 @@ func (*assetCheck) Create(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewAssetCheck().CreateAssetCheck(ctx.Request().Context(), req, ctx.Modifier))
 }
 
-// GetAssetBySN 通过SN查询资产
+// GetAssetBySN
 // @ID		AssetCheckGetAssetBySN
 // @Router	/manager/v2/asset/check/sn/{sn} [GET]
 // @Summary	通过SN查询资产
-// @Tags	资产
+// @Tags	AssetCheck - 盘点
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
@@ -50,7 +50,7 @@ func (*assetCheck) GetAssetBySN(c echo.Context) (err error) {
 // @ID		AssetCheckList
 // @Router	/manager/v2/asset/check [GET]
 // @Summary	盘点列表
-// @Tags	资产
+// @Tags	AssetCheck - 盘点
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string													true	"管理员校验token"
@@ -65,7 +65,7 @@ func (*assetCheck) List(c echo.Context) (err error) {
 // @ID		AssetCheckAbnormal
 // @Router	/manager/v2/asset/check/abnormal/{id} [GET]
 // @Summary	盘点异常
-// @Tags	资产
+// @Tags	AssetCheck - 盘点
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
@@ -81,7 +81,7 @@ func (*assetCheck) Abnormal(c echo.Context) (err error) {
 // @ID		AssetCheckDetailList
 // @Router	/manager/v2/asset/check/asset/{id} [GET]
 // @Summary	盘点资产明细
-// @Tags	资产
+// @Tags	AssetCheck - 盘点
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string												true	"管理员校验token"
@@ -97,7 +97,7 @@ func (*assetCheck) AssetDetailList(c echo.Context) (err error) {
 // @ID		AssetCheckAbnormalOperate
 // @Router	/manager/v2/asset/check/abnormal/operate/{id} [PUT]
 // @Summary	盘点操作
-// @Tags	资产
+// @Tags	AssetCheck - 盘点
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string								true	"管理员校验token"
@@ -113,7 +113,7 @@ func (*assetCheck) AbnormalOperate(c echo.Context) (err error) {
 // @ID		AssetCheckDetail
 // @Router	/manager/v2/asset/check/{id} [GET]
 // @Summary	盘点详情
-// @Tags	资产
+// @Tags	AssetCheck - 盘点
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"

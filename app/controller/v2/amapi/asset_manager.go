@@ -22,7 +22,7 @@ var AssetManager = new(assetManager)
 // @ID		AssetManagerSignin
 // @Router	/manager/v2/asset/user/signin [POST]
 // @Summary	管理员登录
-// @Tags	管理 - AssetManager
+// @Tags	AssetManager - 管理
 // @Accept	json
 // @Produce	json
 // @Param	body	body		definition.AssetManagerSigninReq	true	"desc"
@@ -40,7 +40,7 @@ func (*assetManager) Signin(c echo.Context) (err error) {
 // @ID		AssetManagerCreate
 // @Router	/manager/v2/asset/user [POST]
 // @Summary	新增管理员
-// @Tags	管理 - AssetManager
+// @Tags	AssetManager - 管理
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string								true	"管理员校验token"
@@ -59,7 +59,7 @@ func (*assetManager) Create(c echo.Context) (err error) {
 // @ID		AssetManagerList
 // @Router	/manager/v2/asset/user [GET]
 // @Summary	列举管理员
-// @Tags	管理 - AssetManager
+// @Tags	AssetManager - 管理
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string														true	"管理员校验token"
@@ -74,7 +74,7 @@ func (*assetManager) List(c echo.Context) (err error) {
 // @ID		AssetManagerDelete
 // @Router	/manager/v2/asset/user/{id} [DELETE]
 // @Summary	删除管理员
-// @Tags	管理 - AssetManager
+// @Tags	AssetManager - 管理
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
@@ -89,7 +89,7 @@ func (*assetManager) Delete(c echo.Context) (err error) {
 // @ID		AssetManagerModify
 // @Router	/manager/v2/asset/user/{id} [PUT]
 // @Summary	编辑管理员
-// @Tags	管理 - AssetManager
+// @Tags	AssetManager - 管理
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string								true	"管理员校验token"
@@ -105,7 +105,7 @@ func (*assetManager) Modify(c echo.Context) (err error) {
 // @ID		AssetManagerProfile
 // @Router	/manager/v2/asset/user/profile [GET]
 // @Summary	管理员信息
-// @Tags	管理 - AssetManager
+// @Tags	AssetManager - 管理
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string	true	"管理员校验token"

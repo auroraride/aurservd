@@ -21,7 +21,7 @@ var EbikeBrand = new(ebikeBrand)
 // @ID		EbikeBrandList
 // @Router	/manager/v2/asset/ebike/brand [GET]
 // @Summary	品牌列表
-// @Tags	电车型号 - EbikeBrand
+// @Tags	EbikeBrand - 电车型号
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string											true	"管理员校验token"
@@ -36,7 +36,7 @@ func (*ebikeBrand) List(c echo.Context) (err error) {
 // @ID		EbikeBrandCreate
 // @Router	/manager/v2/asset/ebike/brand [POST]
 // @Summary	创建品牌
-// @Tags	电车型号 - EbikeBrand
+// @Tags	EbikeBrand - 电车型号
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string						true	"管理员校验token"
@@ -51,7 +51,7 @@ func (*ebikeBrand) Create(c echo.Context) (err error) {
 // @ID		EbikeBrandModify
 // @Router	/manager/v2/asset/ebike/brand/{id} [PUT]
 // @Summary	修改品牌
-// @Tags	电车型号 - EbikeBrand
+// @Tags	EbikeBrand - 电车型号
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string						true	"管理员校验token"
@@ -67,7 +67,7 @@ func (*ebikeBrand) Modify(c echo.Context) (err error) {
 // @ID		EbikeBrandDelete
 // @Router	/manager/v2/asset/ebike/brand/{id} [DELETE]
 // @Summary	删除品牌
-// @Tags	电车型号 - EbikeBrand
+// @Tags	EbikeBrand - 电车型号
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
 // @Param	id						path		uint64					true	"品牌ID"

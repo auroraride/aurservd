@@ -16,7 +16,7 @@ var AssetMaintenance = new(assetMaintenance)
 // @ID		AssetMaintenanceList
 // @Router	/manager/v2/asset/maintenance [GET]
 // @Summary	维修记录列表
-// @Tags	资产
+// @Tags	AssetMaintenance - 维修记录
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string														true	"管理员校验token"
@@ -27,11 +27,11 @@ func (*assetMaintenance) List(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewAssetMaintenance().List(ctx.Request().Context(), req))
 }
 
-// Modify 修改维修记录
+// Modify
 // @ID		AssetMaintenanceModify
 // @Router	/manager/v2/asset/maintenance/{id} [PUT]
 // @Summary	修改维修记录
-// @Tags	资产
+// @Tags	AssetMaintenance - 维修记录
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
