@@ -981,7 +981,10 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 	}
 	if req.Status != nil {
 		if *req.Status == model.AssetStatusUsing {
-			q.Where(asset.LocationsType(model.AssetLocationsTypeRider.Value()))
+			q.Where(
+				asset.LocationsType(model.AssetLocationsTypeRider.Value()),
+				asset.Status(model.AssetStatusStock.Value()),
+			)
 		} else {
 			q.Where(asset.Status(req.Status.Value()))
 		}
