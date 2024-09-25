@@ -10,7 +10,6 @@ import (
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/agreement"
 	entasset "github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
@@ -43,7 +42,9 @@ func NewMaintainerAssetWithModifier(m *model.Modifier) *maintainerAssetBiz {
 // Assets 资产列表
 func (b *maintainerAssetBiz) Assets(req *definition.MaintainerAssetListReq) (res *model.PaginationRes) {
 	// 查询分页数据
-	q := b.orm.Query().Where(maintainer.Enable(true)).Order(ent.Desc(agreement.FieldID))
+	q := b.orm.Query().
+		Where(maintainer.Enable(true)).
+		Order(ent.Desc(maintainer.FieldID))
 	b.assetsFilter(q, req)
 	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Maintainer) (result *definition.MaintainerAssetDetail) {
 		result = &definition.MaintainerAssetDetail{
@@ -65,57 +66,18 @@ func (b *maintainerAssetBiz) assetsFilter(q *ent.MaintainerQuery, req *definitio
 	}
 
 	if req.ModelID != nil {
-		// 查询型号资产
-		ids := make([]uint64, 0)
-		list, _ := ent.Database.Asset.QueryNotDeleted().WithOperator().Where(
-			entasset.ModelID(*req.ModelID),
-			entasset.LocationsType(model.AssetLocationsTypeOperation.Value()),
-			entasset.Status(model.AssetStatusStock.Value()),
-		).All(b.ctx)
-		for _, v := range list {
-			if v.Edges.Operator != nil {
-				ids = append(ids, v.Edges.Operator.ID)
-			}
-		}
-
 		q.Where(
-			maintainer.IDIn(ids...),
+			maintainer.HasAssetWith(entasset.ModelID(*req.ModelID)),
 		)
 	}
 	if req.BrandID != nil {
-		// 查询品牌资产
-		ids := make([]uint64, 0)
-		list, _ := ent.Database.Asset.QueryNotDeleted().WithOperator().Where(
-			entasset.BrandID(*req.BrandID),
-			entasset.LocationsType(model.AssetLocationsTypeOperation.Value()),
-			entasset.Status(model.AssetStatusStock.Value()),
-		).All(b.ctx)
-		for _, v := range list {
-			if v.Edges.Operator != nil {
-				ids = append(ids, v.Edges.Operator.ID)
-			}
-		}
-
 		q.Where(
-			maintainer.IDIn(ids...),
+			maintainer.HasAssetWith(entasset.BrandID(*req.BrandID)),
 		)
 	}
 	if req.OtherName != nil {
-		// 查询其他物资资产
-		ids := make([]uint64, 0)
-		list, _ := ent.Database.Asset.QueryNotDeleted().WithOperator().Where(
-			entasset.LocationsType(model.AssetLocationsTypeOperation.Value()),
-			entasset.Status(model.AssetStatusStock.Value()),
-			entasset.HasMaterialWith(material.NameContainsFold(*req.OtherName)),
-		).All(b.ctx)
-		for _, v := range list {
-			if v.Edges.Operator != nil {
-				ids = append(ids, v.Edges.Operator.ID)
-			}
-		}
-
 		q.Where(
-			maintainer.IDIn(ids...),
+			maintainer.HasAssetWith(entasset.HasMaterialWith(material.NameContains(*req.OtherName))),
 		)
 	}
 }
@@ -132,19 +94,16 @@ func (b *maintainerAssetBiz) AssetTotal(req *definition.MaintainerAssetListReq, 
 	if req.ModelID != nil {
 		q.Where(
 			entasset.ModelID(*req.ModelID),
-			entasset.TypeIn(model.AssetTypeSmartBattery.Value(), model.AssetTypeNonSmartBattery.Value()),
 		)
 	}
 	if req.BrandID != nil {
 		q.Where(
 			entasset.BrandID(*req.BrandID),
-			entasset.Type(model.AssetTypeEbike.Value()),
 		)
 	}
 	if req.OtherName != nil {
 		q.Where(
-			entasset.NameContains(*req.OtherName),
-			entasset.TypeIn(model.AssetTypeCabinetAccessory.Value(), model.AssetTypeEbikeAccessory.Value(), model.AssetTypeOtherAccessory.Value()),
+			entasset.HasMaterialWith(material.NameContains(*req.OtherName)),
 		)
 	}
 	list, _ := q.All(b.ctx)
