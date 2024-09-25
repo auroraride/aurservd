@@ -6517,6 +6517,10 @@ const docTemplate = `{
                 "stationId": {
                     "description": "站点ID",
                     "type": "integer"
+                },
+                "storeId": {
+                    "description": "门店ID",
+                    "type": "integer"
                 }
             }
         },

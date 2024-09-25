@@ -16,7 +16,7 @@ var AssetAttributes = new(assetAttributes)
 // @ID		AssetAttributesList
 // @Router	/manager/v2/asset/attributes [GET]
 // @Summary	资产属性列表
-// @Tags	资产
+// @Tags	Assets - 基础档案
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"

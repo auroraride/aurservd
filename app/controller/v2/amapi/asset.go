@@ -16,7 +16,7 @@ var Assets = new(assets)
 // @ID		AssetList
 // @Router	/manager/v2/asset [GET]
 // @Summary	资产列表
-// @Tags	资产
+// @Tags	Assets - 基础档案
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string											true	"管理员校验token"
@@ -31,7 +31,7 @@ func (*assets) List(c echo.Context) (err error) {
 // @ID		AssetDetail
 // @Router	/manager/v2/asset/{id} [GET]
 // @Summary	资产详情
-// @Tags	资产
+// @Tags	Assets - 基础档案
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string				true	"管理员校验token"
@@ -45,7 +45,7 @@ func (*assets) Detail(c echo.Context) (err error) {
 // @ID		AssetCreate
 // @Router	/manager/v2/asset [POST]
 // @Summary	创建资产
-// @Tags	资产
+// @Tags	Assets - 基础档案
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
@@ -60,7 +60,7 @@ func (*assets) Create(c echo.Context) (err error) {
 // @ID		AssetUpdate
 // @Router	/manager/v2/asset/{id} [PUT]
 // @Summary	修改资产
-// @Tags	资产
+// @Tags	Assets - 基础档案
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
@@ -76,7 +76,7 @@ func (*assets) Update(c echo.Context) (err error) {
 // @ID		AssetBatchCreate
 // @Router	/manager/v2/asset/batch [POST]
 // @Summary	批量创建资产
-// @Tags	资产
+// @Tags	Assets - 基础档案
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
@@ -92,7 +92,7 @@ func (*assets) BatchCreate(c echo.Context) (err error) {
 // @ID		AssetTemplate
 // @Router	/manager/v2/asset/template [GET]
 // @Summary	导出资产模板
-// @Tags	资产
+// @Tags	Assets - 基础档案
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
@@ -111,7 +111,7 @@ func (*assets) Template(c echo.Context) (err error) {
 // @ID		AssetExport
 // @Router	/manager/v2/asset/export [POST]
 // @Summary	导出资产
-// @Tags	资产
+// @Tags	Assets - 基础档案
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string				true	"管理员校验token"
@@ -126,7 +126,7 @@ func (*assets) Export(c echo.Context) (err error) {
 // @ID		AssetCount
 // @Router	/manager/v2/asset/count [GET]
 // @Summary	查询有效的资产数量
-// @Tags	资产
+// @Tags	Assets - 基础档案
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string				true	"管理员校验token"
@@ -135,4 +135,19 @@ func (*assets) Export(c echo.Context) (err error) {
 func (*assets) Count(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.AssetFilter](c)
 	return ctx.SendResponse(service.NewAsset().Count(ctx.Request().Context(), req))
+}
+
+// BatteryTrack
+// @ID		AssetBatteryTrack
+// @Router	/manager/v2/asset/battery/track/{sn} [GET]
+// @Summary	电池轨迹详情
+// @Tags	Assets - 基础档案
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
+// @Param	sn						path		string					true	"电池编号"
+// @Success	200						{object}	model.BatteryBmsDetail	"请求成功"
+func (*assets) BatteryTrack(c echo.Context) (err error) {
+	ctx, req := app.AssetManagerContextAndBinding[model.BatterySNRequest](c)
+	return ctx.SendResponse(service.NewBatteryBms().Detail(req))
 }

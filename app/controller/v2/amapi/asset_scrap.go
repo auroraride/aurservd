@@ -16,7 +16,7 @@ var AssetScrap = new(assetScrap)
 // @ID		AssetScrap
 // @Router	/manager/v2/asset/scrap [POST]
 // @Summary	报废资产
-// @Tags	资产
+// @Tags	AssetScrap - 报废
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
@@ -31,7 +31,7 @@ func (*assetScrap) Scrap(c echo.Context) (err error) {
 // @ID		AssetScrapList
 // @Router	/manager/v2/asset/scrap [GET]
 // @Summary	资产报废列表
-// @Tags	资产
+// @Tags	AssetScrap - 报废
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string													true	"管理员校验token"
@@ -46,7 +46,7 @@ func (*assetScrap) ScrapList(c echo.Context) (err error) {
 // @ID		AssetScrapBatchRestore
 // @Router	/manager/v2/asset/scrap/batch/restore [POST]
 // @Summary	资产报废还原
-// @Tags	资产
+// @Tags	AssetScrap - 报废
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
@@ -61,7 +61,7 @@ func (*assetScrap) ScrapBatchRestore(c echo.Context) (err error) {
 // @ID		AssetScrapReasonSelect
 // @Router	/manager/v2/asset/scrap/reason [GET]
 // @Summary	报废理由
-// @Tags	资产
+// @Tags	AssetScrap - 报废
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"

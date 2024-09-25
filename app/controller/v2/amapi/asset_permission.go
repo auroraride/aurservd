@@ -25,7 +25,7 @@ var AssetPermission = new(assetPermission)
 // @ID		AssetManagerPermissionList
 // @Router	/manager/v2/asset/permission [GET]
 // @Summary	权限列表
-// @Tags	权限 - AssetPermission
+// @Tags	AssetPermission - 权限
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string				true	"管理员校验token"
@@ -48,7 +48,7 @@ func (*assetPermission) List(c echo.Context) (err error) {
 // @ID		AssetManagerPermissionListRole
 // @Router	/manager/v2/asset/permission/role [GET]
 // @Summary	角色列表
-// @Tags	权限 - AssetPermission
+// @Tags	AssetPermission - 权限
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string			true	"管理员校验token"
@@ -62,7 +62,7 @@ func (*assetPermission) ListRole(c echo.Context) (err error) {
 // @ID		AssetManagerPermissionCreateRole
 // @Router	/manager/v2/asset/permission/role [POST]
 // @Summary	创建角色
-// @Tags	权限 - AssetPermission
+// @Tags	AssetPermission - 权限
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
@@ -79,7 +79,7 @@ func (*assetPermission) CreateRole(c echo.Context) (err error) {
 // @ID		AssetManagerPermissionModifyRole
 // @Router	/manager/v2/asset/permission/role/{id} [PUT]
 // @Summary	修改角色
-// @Tags	权限 - AssetPermission
+// @Tags	AssetPermission - 权限
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
@@ -95,7 +95,7 @@ func (*assetPermission) ModifyRole(c echo.Context) (err error) {
 // @ID		AssetManagerPermissionDeleteRole
 // @Router	/manager/v2/asset/permission/role/{id} [DELETE]
 // @Summary	删除角色
-// @Tags	权限 - AssetPermission
+// @Tags	AssetPermission - 权限
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"

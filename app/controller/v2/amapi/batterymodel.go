@@ -20,7 +20,7 @@ var BatteryModel = new(batterymodel)
 // @ID		BatteryModelList
 // @Router	/manager/v2/asset/batterymodel [GET]
 // @Summary	列表
-// @Tags	电池型号 - BatteryModel
+// @Tags	BatteryModel - 电池型号
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string													true	"管理员校验token"
@@ -35,7 +35,7 @@ func (*batterymodel) List(c echo.Context) (err error) {
 // @ID		BatteryModelCreate
 // @Router	/manager/v2/asset/batterymodel [POST]
 // @Summary	创建
-// @Tags	电池型号 - BatteryModel
+// @Tags	BatteryModel - 电池型号
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string						true	"管理员校验token"
@@ -50,7 +50,7 @@ func (*batterymodel) Create(c echo.Context) (err error) {
 // @ID		BatteryModelDelete
 // @Router	/manager/v2/asset/batterymodel/{id} [DELETE]
 // @Summary	删除
-// @Tags	电池型号 - BatteryModel
+// @Tags	BatteryModel - 电池型号
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
