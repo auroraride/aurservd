@@ -7,6 +7,7 @@ package middleware
 
 import (
 	"fmt"
+	"runtime"
 
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
@@ -20,6 +21,9 @@ func Recover() echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			defer func() {
 				if r := recover(); r != nil {
+					buf := make([]byte, 1<<20)
+					stacklen := runtime.Stack(buf, true)
+					fmt.Printf("---------\n捕获错误: %v\n%s\n\n", r, buf[:stacklen])
 					switch v := r.(type) {
 					case *snag.Error:
 						c.Error(r.(*snag.Error))
