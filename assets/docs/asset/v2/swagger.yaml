@@ -1948,6 +1948,95 @@ definitions:
         description: 电压
         type: integer
     type: object
+  model.BatteryPoint:
+    properties:
+      latitude:
+        description: 纬度
+        type: number
+      locTime:
+        description: 时间UNIX时间戳（秒级）
+        type: integer
+      longitude:
+        description: 经度
+        type: number
+    required:
+      - latitude
+      - locTime
+      - longitude
+    type: object
+  model.BatteryPosition:
+    properties:
+      at:
+        description: '时间 (格式为: yyyy-mm-dd hh:mm:ss)'
+        type: string
+      gsm:
+        description: GSM信号强度
+        type: integer
+      inCabinet:
+        description: 是否在电柜中
+        type: boolean
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      soc:
+        description: 电量
+        type: integer
+      stationary:
+        description: 是否停留
+        type: boolean
+      voltage:
+        description: 电压
+        type: number
+    type: object
+  model.BatteryPositionRes:
+    properties:
+      end:
+        description: 结束时间
+        type: string
+      positions:
+        description: 所有位置信息
+        items:
+          $ref: '#/definitions/model.BatteryPosition'
+        type: array
+      start:
+        description: 开始时间
+        type: string
+      stationary:
+        description: 静止位置信息
+        items:
+          $ref: '#/definitions/model.BatteryStationary'
+        type: array
+    type: object
+  model.BatteryStationary:
+    properties:
+      duration:
+        description: 停留时间 (秒)
+        type: integer
+      endAt:
+        description: '结束时间 (格式为: yyyy-mm-dd hh:mm:ss)'
+        type: string
+      endSoc:
+        description: 结束电量, 可能为空
+        type: integer
+      inCabinet:
+        description: 是否在电柜中
+        type: boolean
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      startAt:
+        description: '开始时间 (格式为: yyyy-mm-dd hh:mm:ss)'
+        type: string
+      startSoc:
+        description: 开始电量
+        type: integer
+    type: object
   model.BatteryStatus:
     enum:
       - 0
@@ -1965,6 +2054,22 @@ definitions:
       - BatteryStatusCharging
       - BatteryStatusDisCharging
       - BatteryStatusFault
+  model.BatteryTrackReq:
+    properties:
+      points:
+        description: 轨迹点
+        items:
+          $ref: '#/definitions/model.BatteryPoint'
+        type: array
+    type: object
+  model.BatteryTrackRes:
+    properties:
+      points:
+        description: 轨迹点
+        items:
+          $ref: '#/definitions/model.BatteryPoint'
+        type: array
+    type: object
   model.CascaderOptionLevel2:
     properties:
       children:
@@ -2731,11 +2836,11 @@ paths:
       summary: 批量创建资产
       tags:
         - Assets - 基础档案
-  /manager/v2/asset/battery/track/{sn}:
+  /manager/v2/asset/battery/detail/{sn}:
     get:
       consumes:
         - application/json
-      operationId: AssetBatteryTrack
+      operationId: AssetBatteryDetail
       parameters:
         - description: 管理员校验token
           in: header
@@ -2754,7 +2859,68 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.BatteryBmsDetail'
-      summary: 电池轨迹详情
+      summary: 电池详情
+      tags:
+        - Assets - 基础档案
+  /manager/v2/asset/battery/track/rectify:
+    post:
+      consumes:
+        - application/json
+      operationId: AssetBatteryTrackRectify
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Asset-Manager-Token
+          required: true
+          type: string
+        - description: 轨迹点
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/model.BatteryTrackReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BatteryTrackRes'
+      summary: 电池轨迹纠偏
+      tags:
+        - Assets - 基础档案
+  /manager/v2/asset/battery/xc/position/{sn}:
+    get:
+      consumes:
+        - application/json
+      operationId: AssetBatteryPosition
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Asset-Manager-Token
+          required: true
+          type: string
+        - description: 电池编号
+          in: path
+          name: sn
+          required: true
+          type: string
+        - description: '开始时间 (精确到秒, 默认6小时前, 格式为: yyyy-mm-dd hh:mm:ss)'
+          in: query
+          name: start
+          type: string
+        - description: '结束时间 (精确到秒, 默认当前时间, 格式为: yyyy-mm-dd hh:mm:ss)'
+          in: query
+          name: end
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BatteryPositionRes'
+      summary: 电池位置
       tags:
         - Assets - 基础档案
   /manager/v2/asset/batterymodel:

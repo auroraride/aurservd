@@ -408,7 +408,7 @@
                 }
             }
         },
-      "/manager/v2/asset/battery/track/{sn}": {
+      "/manager/v2/asset/battery/detail/{sn}": {
         "get": {
           "consumes": [
             "application/json"
@@ -419,8 +419,8 @@
           "tags": [
             "Assets - 基础档案"
           ],
-          "summary": "电池轨迹详情",
-          "operationId": "AssetBatteryTrack",
+          "summary": "电池详情",
+          "operationId": "AssetBatteryDetail",
           "parameters": [
             {
               "type": "string",
@@ -442,6 +442,98 @@
               "description": "请求成功",
               "schema": {
                 "$ref": "#/definitions/model.BatteryBmsDetail"
+              }
+            }
+          }
+        }
+      },
+      "/manager/v2/asset/battery/track/rectify": {
+        "post": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "Assets - 基础档案"
+          ],
+          "summary": "电池轨迹纠偏",
+          "operationId": "AssetBatteryTrackRectify",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "管理员校验token",
+              "name": "X-Asset-Manager-Token",
+              "in": "header",
+              "required": true
+            },
+            {
+              "description": "轨迹点",
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/model.BatteryTrackReq"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "$ref": "#/definitions/model.BatteryTrackRes"
+              }
+            }
+          }
+        }
+      },
+      "/manager/v2/asset/battery/xc/position/{sn}": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "Assets - 基础档案"
+          ],
+          "summary": "电池位置",
+          "operationId": "AssetBatteryPosition",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "管理员校验token",
+              "name": "X-Asset-Manager-Token",
+              "in": "header",
+              "required": true
+            },
+            {
+              "type": "string",
+              "description": "电池编号",
+              "name": "sn",
+              "in": "path",
+              "required": true
+            },
+            {
+              "type": "string",
+              "description": "开始时间 (精确到秒, 默认6小时前, 格式为: yyyy-mm-dd hh:mm:ss)",
+              "name": "start",
+              "in": "query"
+            },
+            {
+              "type": "string",
+              "description": "结束时间 (精确到秒, 默认当前时间, 格式为: yyyy-mm-dd hh:mm:ss)",
+              "name": "end",
+              "in": "query"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "$ref": "#/definitions/model.BatteryPositionRes"
               }
             }
           }
@@ -8109,6 +8201,129 @@
                 }
             }
         },
+      "model.BatteryPoint": {
+        "type": "object",
+        "required": [
+          "latitude",
+          "locTime",
+          "longitude"
+        ],
+        "properties": {
+          "latitude": {
+            "description": "纬度",
+            "type": "number"
+          },
+          "locTime": {
+            "description": "时间UNIX时间戳（秒级）",
+            "type": "integer"
+          },
+          "longitude": {
+            "description": "经度",
+            "type": "number"
+          }
+        }
+      },
+      "model.BatteryPosition": {
+        "type": "object",
+        "properties": {
+          "at": {
+            "description": "时间 (格式为: yyyy-mm-dd hh:mm:ss)",
+            "type": "string"
+          },
+          "gsm": {
+            "description": "GSM信号强度",
+            "type": "integer"
+          },
+          "inCabinet": {
+            "description": "是否在电柜中",
+            "type": "boolean"
+          },
+          "lat": {
+            "description": "纬度",
+            "type": "number"
+          },
+          "lng": {
+            "description": "经度",
+            "type": "number"
+          },
+          "soc": {
+            "description": "电量",
+            "type": "integer"
+          },
+          "stationary": {
+            "description": "是否停留",
+            "type": "boolean"
+          },
+          "voltage": {
+            "description": "电压",
+            "type": "number"
+          }
+        }
+      },
+      "model.BatteryPositionRes": {
+        "type": "object",
+        "properties": {
+          "end": {
+            "description": "结束时间",
+            "type": "string"
+          },
+          "positions": {
+            "description": "所有位置信息",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/model.BatteryPosition"
+            }
+          },
+          "start": {
+            "description": "开始时间",
+            "type": "string"
+          },
+          "stationary": {
+            "description": "静止位置信息",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/model.BatteryStationary"
+            }
+          }
+        }
+      },
+      "model.BatteryStationary": {
+        "type": "object",
+        "properties": {
+          "duration": {
+            "description": "停留时间 (秒)",
+            "type": "integer"
+          },
+          "endAt": {
+            "description": "结束时间 (格式为: yyyy-mm-dd hh:mm:ss)",
+            "type": "string"
+          },
+          "endSoc": {
+            "description": "结束电量, 可能为空",
+            "type": "integer"
+          },
+          "inCabinet": {
+            "description": "是否在电柜中",
+            "type": "boolean"
+          },
+          "lat": {
+            "description": "纬度",
+            "type": "number"
+          },
+          "lng": {
+            "description": "经度",
+            "type": "number"
+          },
+          "startAt": {
+            "description": "开始时间 (格式为: yyyy-mm-dd hh:mm:ss)",
+            "type": "string"
+          },
+          "startSoc": {
+            "description": "开始电量",
+            "type": "integer"
+                }
+            }
+        },
       "model.BatteryStatus": {
         "type": "integer",
         "enum": [
@@ -8129,6 +8344,30 @@
           "BatteryStatusDisCharging",
           "BatteryStatusFault"
         ]
+      },
+      "model.BatteryTrackReq": {
+        "type": "object",
+        "properties": {
+          "points": {
+            "description": "轨迹点",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/model.BatteryPoint"
+            }
+          }
+        }
+      },
+      "model.BatteryTrackRes": {
+        "type": "object",
+        "properties": {
+          "points": {
+            "description": "轨迹点",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/model.BatteryPoint"
+            }
+          }
+        }
       },
         "model.CascaderOptionLevel2": {
             "type": "object",

@@ -156,6 +156,21 @@ func (*battery) Unbind(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewBattery(ctx.Modifier, ctx.Operator).Unbind(req))
 }
 
+// Detail
+// @ID		ManagerBatteryDetail
+// @Router	/manager/v1/battery/xc/{sn} [GET]
+// @Summary	电池详情
+// @Tags	电池
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	sn				path		string					true	"电池编号"
+// @Success	200				{object}	model.BatteryBmsDetail	"请求成功"
+func (*battery) Detail(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.BatterySNRequest](c)
+	return ctx.SendResponse(service.NewBatteryBms().Detail(req))
+}
+
 // Statistics
 // @ID		ManagerBatteryStatistics
 // @Router	/manager/v1/battery/xc/statistics/{sn} [GET]

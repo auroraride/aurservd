@@ -137,17 +137,49 @@ func (*assets) Count(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewAsset().Count(ctx.Request().Context(), req))
 }
 
-// BatteryTrack
-// @ID		AssetBatteryTrack
-// @Router	/manager/v2/asset/battery/track/{sn} [GET]
-// @Summary	电池轨迹详情
+// BatteryDetail
+// @ID		AssetBatteryDetail
+// @Router	/manager/v2/asset/battery/detail/{sn} [GET]
+// @Summary	电池详情
 // @Tags	Assets - 基础档案
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
 // @Param	sn						path		string					true	"电池编号"
 // @Success	200						{object}	model.BatteryBmsDetail	"请求成功"
-func (*assets) BatteryTrack(c echo.Context) (err error) {
+func (*assets) BatteryDetail(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.BatterySNRequest](c)
 	return ctx.SendResponse(service.NewBatteryBms().Detail(req))
+}
+
+// TrackRectify
+// @ID		AssetBatteryTrackRectify
+// @Router	/manager/v2/asset/battery/track/rectify [POST]
+// @Summary	电池轨迹纠偏
+// @Tags	Assets - 基础档案
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
+// @Param	body					body		model.BatteryTrackReq	true	"轨迹点"
+// @Success	200						{object}	model.BatteryTrackRes	"请求成功"
+func (*assets) TrackRectify(c echo.Context) (err error) {
+	ctx, req := app.AssetManagerContextAndBinding[model.BatteryTrackReq](c)
+	return ctx.SendResponse(service.NewBatteryBms().TrackRectify(req))
+}
+
+// Position
+// @ID		AssetBatteryPosition
+// @Router	/manager/v2/asset/battery/xc/position/{sn} [GET]
+// @Summary	电池位置
+// @Tags	Assets - 基础档案
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string						true	"管理员校验token"
+// @Param	sn						path		string						true	"电池编号"
+// @Param	start					query		string						false	"开始时间 (精确到秒, 默认6小时前, 格式为: yyyy-mm-dd hh:mm:ss)"
+// @Param	end						query		string						false	"结束时间 (精确到秒, 默认当前时间, 格式为: yyyy-mm-dd hh:mm:ss)"
+// @Success	200						{object}	model.BatteryPositionRes	"请求成功"
+func (*assets) Position(c echo.Context) (err error) {
+	ctx, req := app.AssetManagerContextAndBinding[model.BatteryPositionReq](c)
+	return ctx.SendResponse(service.NewBatteryBms().Position(req))
 }

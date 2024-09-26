@@ -51,12 +51,14 @@ func loadAssetsRoutes() {
 	asset.GET("/selection/cabinet", amapi.Selection.Cabinet)                // 筛选电柜
 
 	// 基础档案
-	asset.POST("", amapi.Assets.Create)                        // 创建资产
-	asset.GET("", amapi.Assets.List)                           // 资产列表
-	asset.GET("/:id", amapi.Assets.Detail)                     // 资产详情
-	asset.PUT("/:id", amapi.Assets.Update)                     // 更新资产
-	asset.GET("/count", amapi.Assets.Count)                    // 资产数量
-	asset.GET("/battery/track/:sn", amapi.Assets.BatteryTrack) // 查询电池轨迹
+	asset.POST("", amapi.Assets.Create)                             // 创建资产
+	asset.GET("", amapi.Assets.List)                                // 资产列表
+	asset.GET("/:id", amapi.Assets.Detail)                          // 资产详情
+	asset.PUT("/:id", amapi.Assets.Update)                          // 更新资产
+	asset.GET("/count", amapi.Assets.Count)                         // 资产数量
+	asset.GET("/battery/detail/:sn", amapi.Assets.BatteryDetail)    // 查询电池详情
+	asset.GET("/battery/xc/position/:sn", amapi.Assets.Position)    // 查询电池位置
+	asset.POST("/battery/track/rectify", amapi.Assets.TrackRectify) // 电池轨迹纠偏
 
 	// 资产属性
 	asset.GET("/attributes", amapi.AssetAttributes.List) // 资产属性列表
