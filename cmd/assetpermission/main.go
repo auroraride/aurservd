@@ -19,13 +19,18 @@ import (
 
 var (
 	nameSkipper = map[string]bool{
-		"selection": true,
+		"selection":        true,
+		"asset_attributes": true,
+		"assetapi":         true,
 	}
 	apiSkipper = map[string]bool{
 		"/manager/v2/asset/permission":    true,
 		"/manager/v2/asset/user/signin":   true,
 		"/manager/v2/asset/battery/model": true,
 		"/manager/v2/asset/city":          true,
+		"/manager/v2/asset/count":         true,
+		"/manager/v2/asset/scrap/reason":  true,
+		"/manager/v2/asset/check/sn/{sn}": true,
 	}
 )
 
@@ -37,7 +42,7 @@ func main() {
 	for _, d := range ds {
 		files, _ := os.ReadDir(d)
 		for _, f := range files {
-			if f.IsDir() || f.Name() == "mapi.go" {
+			if f.IsDir() || f.Name() == "amapi.go" {
 				continue
 			}
 			name := strings.TrimSuffix(f.Name(), filepath.Ext(f.Name()))

@@ -1896,13 +1896,40 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 	q := ent.Database.AssetTransferDetails.QueryNotDeleted().
 		Where(
 			assettransferdetails.HasTransferWith(assettransfer.StatusNEQ(model.AssetTransferStatusCancel.Value())),
-		).WithInOperateAgent().WithInOperateManager().WithInOperateEmployee().WithInOperateMaintainer().WithInOperateCabinet().WithInOperateRider().WithInOperateAssetManager().WithAsset(func(query *ent.AssetQuery) {
-		query.WithMaterial().WithCity().WithModel().WithBrand()
-	}).WithTransfer(func(query *ent.AssetTransferQuery) {
-		query.WithFromLocationOperator().WithFromLocationStation().WithFromLocationStore().WithFromLocationWarehouse().WithFromLocationCabinet().WithFromLocationRider().
-			WithToLocationOperator().WithToLocationStation().WithToLocationStore().WithToLocationWarehouse().WithToLocationCabinet().WithToLocationRider().
-			WithOutOperateAgent().WithOutOperateManager().WithOutOperateEmployee().WithOutOperateMaintainer().WithOutOperateCabinet().WithOutOperateRider().WithOutOperateAssetManager()
-	}).Order(ent.Desc(assettransferdetails.FieldCreatedAt))
+		).
+		WithInOperateAgent().
+		WithInOperateManager().
+		WithInOperateEmployee().
+		WithInOperateMaintainer().
+		WithInOperateCabinet().
+		WithInOperateRider().
+		WithInOperateAssetManager().
+		WithAsset(func(query *ent.AssetQuery) {
+			query.WithMaterial().WithCity().WithModel().WithBrand()
+		}).
+		WithTransfer(func(query *ent.AssetTransferQuery) {
+			query.
+				WithFromLocationOperator().
+				WithFromLocationStation().
+				WithFromLocationStore().
+				WithFromLocationWarehouse().
+				WithFromLocationCabinet().
+				WithFromLocationRider().
+				WithToLocationOperator().
+				WithToLocationStation().
+				WithToLocationStore().
+				WithToLocationWarehouse().
+				WithToLocationCabinet().
+				WithToLocationRider().
+				WithOutOperateAgent().
+				WithOutOperateManager().
+				WithOutOperateEmployee().
+				WithOutOperateMaintainer().
+				WithOutOperateCabinet().
+				WithOutOperateRider().
+				WithOutOperateAssetManager()
+		}).
+		Order(ent.Desc(assettransferdetails.FieldCreatedAt))
 
 	if req.Start != nil && req.End != nil {
 		start := tools.NewTime().ParseDateStringX(*req.Start)
@@ -1969,8 +1996,8 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 	if req.CabinetSN != nil {
 		q.Where(
 			assettransferdetails.Or(
-				assettransferdetails.HasInOperateCabinetWith(cabinet.SnContainsFold(*req.CabinetSN)),
-				assettransferdetails.HasTransferWith(assettransfer.HasOutOperateCabinetWith(cabinet.SnContainsFold(*req.CabinetSN))),
+				assettransferdetails.HasInOperateCabinetWith(cabinet.SerialContains(*req.CabinetSN)),
+				assettransferdetails.HasTransferWith(assettransfer.HasOutOperateCabinetWith(cabinet.SerialContains(*req.CabinetSN))),
 			),
 		)
 	}

@@ -224,13 +224,22 @@ func (s *assetScrapService) filter(ctx context.Context, q *ent.AssetScrapQuery, 
 			)
 		}
 	}
-	if req.AssetName != nil && req.AssetType != nil {
-		switch *req.AssetType {
-		case model.AssetTypeEbike, model.AssetTypeSmartBattery:
-			q.Where(assetscrap.HasScrapDetailsWith(assetscrapdetails.HasAssetWith(asset.NameContains(*req.AssetName))))
-		case model.AssetTypeNonSmartBattery, model.AssetTypeEbikeAccessory, model.AssetTypeCabinetAccessory, model.AssetTypeOtherAccessory:
-			q.Where(assetscrap.HasScrapDetailsWith(assetscrapdetails.HasAssetWith(asset.HasMaterialWith(material.NameContains(*req.AssetName)))))
-		}
+
+	if req.AssetType != nil {
+		q.Where(assetscrap.HasScrapDetailsWith(assetscrapdetails.HasAssetWith(asset.Type(req.AssetType.Value()))))
+	}
+
+	if req.AssetName != nil {
+		q.Where(
+			assetscrap.HasScrapDetailsWith(
+				assetscrapdetails.HasAssetWith(
+					asset.Or(
+						asset.NameContains(*req.AssetName),
+						asset.HasMaterialWith(material.NameContains(*req.AssetName)),
+					),
+				),
+			),
+		)
 	}
 }
 
