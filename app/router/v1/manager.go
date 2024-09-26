@@ -92,9 +92,9 @@ func LoadManagerV1Routes(root *echo.Group) {
 	// g.POST("/battery/batch", mapi.Battery.BatchCreate)
 	g.POST("/battery/bind", mapi.Battery.Bind)
 	g.POST("/battery/unbind", mapi.Battery.Unbind)
-	// g.GET("/battery/xc/:sn", mapi.Battery.Detail)
+	g.GET("/battery/xc/:sn", mapi.Battery.Detail)
 	g.GET("/battery/xc/statistics/:sn", mapi.Battery.Statistics)
-	g.GET("/battery/xc/position/:sn", mapi.Battery.Position)
+
 	g.GET("/battery/xc/fault", mapi.Battery.Fault)
 	g.POST("/battery/track/rectify", mapi.Battery.TrackRectify)
 

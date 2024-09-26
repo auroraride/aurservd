@@ -928,6 +928,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/battery/xc/{sn}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "电池"
+                ],
+                "summary": "电池详情",
+                "operationId": "ManagerBatteryDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池编号",
+                        "name": "sn",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.BatteryBmsDetail"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/branch": {
             "get": {
                 "consumes": [
@@ -12892,6 +12931,17 @@ const docTemplate = `{
                 "CabinetBrandXiliulouServer"
             ]
         },
+        "adapter.Geometry": {
+            "type": "object",
+            "properties": {
+                "lat": {
+                    "type": "number"
+                },
+                "lng": {
+                    "type": "number"
+                }
+            }
+        },
         "definition.ActivityCreateReq": {
             "type": "object",
             "required": [
@@ -14563,6 +14613,214 @@ const docTemplate = `{
                 }
             }
         },
+        "model.BatteryBmsDetail": {
+            "type": "object",
+            "properties": {
+                "belongsTo": {
+                    "description": "当前位置",
+                    "type": "string"
+                },
+                "capacity": {
+                    "description": "剩余容量 (单位AH)",
+                    "type": "number"
+                },
+                "charge": {
+                    "description": "充电是否开启",
+                    "type": "boolean"
+                },
+                "chargingTime": {
+                    "description": "本次充电时长",
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "description": "入库时间",
+                    "type": "string"
+                },
+                "current": {
+                    "description": "电流 (A, 充电为正, 放电为负)",
+                    "type": "number"
+                },
+                "cycles": {
+                    "description": "电池包循环次数 (80%累加一次)",
+                    "type": "integer"
+                },
+                "disCharge": {
+                    "description": "放电是否开启",
+                    "type": "boolean"
+                },
+                "disChargingTime": {
+                    "description": "本次放电时长",
+                    "type": "integer"
+                },
+                "envTemp": {
+                    "description": "环境温度 (1个环境温度传感器, 单位1℃)",
+                    "type": "integer"
+                },
+                "faults": {
+                    "description": "故障列表, ` + "`" + `0` + "`" + `:总压低, ` + "`" + `1` + "`" + `:总压高, ` + "`" + `2` + "`" + `:单体低, ` + "`" + `3` + "`" + `:单体高, ` + "`" + `6` + "`" + `:放电过流, ` + "`" + `7` + "`" + `:充电过流, ` + "`" + `8` + "`" + `:SOC低, ` + "`" + `11` + "`" + `:充电高温, ` + "`" + `12` + "`" + `:充电低温, ` + "`" + `13` + "`" + `:放电高温, ` + "`" + `14` + "`" + `:放电低温, ` + "`" + `15` + "`" + `:短路, ` + "`" + `16` + "`" + `:MOS高温",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "faultsOverview": {
+                    "description": "故障统计, 需要将13种故障都显示出来, 若无返回则数量为0 (` + "`" + `0` + "`" + `:总压低, ` + "`" + `1` + "`" + `:总压高, ` + "`" + `2` + "`" + `:单体低, ` + "`" + `3` + "`" + `:单体高, ` + "`" + `6` + "`" + `:放电过流, ` + "`" + `7` + "`" + `:充电过流, ` + "`" + `8` + "`" + `:SOC低, ` + "`" + `11` + "`" + `:充电高温, ` + "`" + `12` + "`" + `:充电低温, ` + "`" + `13` + "`" + `:放电高温, ` + "`" + `14` + "`" + `:放电低温, ` + "`" + `15` + "`" + `:短路, ` + "`" + `16` + "`" + `:MOS高温)",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/pb.BatteryFaultOverview"
+                    }
+                },
+                "geom": {
+                    "description": "坐标",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/adapter.Geometry"
+                        }
+                    ]
+                },
+                "gps": {
+                    "description": "GPS定位状态 (0=未定位 1=GPS定位 4=LBS定位)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/xcdef.GPSStatus"
+                        }
+                    ]
+                },
+                "hard4GVersion": {
+                    "description": "4G硬件版本",
+                    "type": "integer"
+                },
+                "hardVersion": {
+                    "description": "BMS硬件版本",
+                    "type": "integer"
+                },
+                "iccid": {
+                    "description": "SIM卡ICCID",
+                    "type": "string"
+                },
+                "inCabinet": {
+                    "description": "是否在电柜",
+                    "type": "boolean"
+                },
+                "maxTemp": {
+                    "description": "最大温度 (单位1℃)",
+                    "type": "integer"
+                },
+                "minTemp": {
+                    "description": "最小温度 (单位1℃)",
+                    "type": "integer"
+                },
+                "monMaxVoltage": {
+                    "description": "最大单体电压 (mV)",
+                    "type": "integer"
+                },
+                "monMaxVoltagePos": {
+                    "description": "最大单体电压位置 (第x串)",
+                    "type": "integer"
+                },
+                "monMinVoltage": {
+                    "description": "最小单体电压 (mV)",
+                    "type": "integer"
+                },
+                "monMinVoltagePos": {
+                    "description": "最小单体电压位置 (第x串)",
+                    "type": "integer"
+                },
+                "monVoltage": {
+                    "description": "单体电压 (24个单体电压, 单位mV)",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "mosStatus": {
+                    "description": "MOS状态 (Bit0表示充电, Bit1表示放电, 此字段无法判定电池是否充放电状态)",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "mosTemp": {
+                    "description": "MOS温度 (1个MOS温度传感器, 单位1℃)",
+                    "type": "integer"
+                },
+                "online": {
+                    "description": "电池是否在线",
+                    "type": "boolean"
+                },
+                "power": {
+                    "description": "功率 (Kw)",
+                    "type": "number"
+                },
+                "sn": {
+                    "description": "电池编号",
+                    "type": "string"
+                },
+                "sn4G": {
+                    "description": "4G板SN",
+                    "type": "integer"
+                },
+                "soc": {
+                    "description": "剩余容量, 单位1%",
+                    "type": "integer"
+                },
+                "soft4GVersion": {
+                    "description": "4G软件版本",
+                    "type": "integer"
+                },
+                "softVersion": {
+                    "description": "BMS软件版本",
+                    "type": "integer"
+                },
+                "soh": {
+                    "description": "健康度 单位1%",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "状态, 0:静置 1:充电 2:放电 3:异常(此时faults字段存在)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.BatteryStatus"
+                        }
+                    ]
+                },
+                "strength": {
+                    "description": "4G通讯信号强度 (0-100 百分比形式)",
+                    "type": "integer"
+                },
+                "temp": {
+                    "description": "电池温度 (4个电池温度传感器, 单位1℃)",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "totalChargingTime": {
+                    "description": "总充电时长",
+                    "type": "integer"
+                },
+                "totalDisChargingTime": {
+                    "description": "总放电时长",
+                    "type": "integer"
+                },
+                "totalUsingTime": {
+                    "description": "总使用时长",
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "最后通讯时间",
+                    "type": "string"
+                },
+                "usingTime": {
+                    "description": "本次使用时长",
+                    "type": "integer"
+                },
+                "voltage": {
+                    "description": "电池总压 (V)",
+                    "type": "number"
+                }
+            }
+        },
         "model.BatteryFaultRes": {
             "type": "object",
             "properties": {
@@ -14782,6 +15040,27 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "model.BatteryStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "BatteryStatusCharging": "充电中",
+                "BatteryStatusDisCharging": "放电中",
+                "BatteryStatusFault": "异常",
+                "BatteryStatusIdle": "充电中"
+            },
+            "x-enum-varnames": [
+                "BatteryStatusIdle",
+                "BatteryStatusCharging",
+                "BatteryStatusDisCharging",
+                "BatteryStatusFault"
+            ]
         },
         "model.BatteryTrackReq": {
             "type": "object",
@@ -21513,6 +21792,17 @@ const docTemplate = `{
                 }
             }
         },
+        "pb.BatteryFaultOverview": {
+            "type": "object",
+            "properties": {
+                "fault": {
+                    "$ref": "#/definitions/pb.BatteryFaultType"
+                },
+                "times": {
+                    "type": "integer"
+                }
+            }
+        },
         "pb.BatteryFaultType": {
             "type": "integer",
             "enum": [
@@ -22859,6 +23149,19 @@ const docTemplate = `{
                     "type": "number"
                 }
             }
+        },
+        "xcdef.GPSStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                4
+            ],
+            "x-enum-varnames": [
+                "GPSStatusNone",
+                "GPSStatusRaw",
+                "GPSStatusLBS"
+            ]
         }
     }
 }`
