@@ -19,7 +19,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
 	"github.com/auroraride/aurservd/internal/ent/employee"
-	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/warehouse"
 	"github.com/auroraride/aurservd/pkg/silk"
@@ -415,19 +414,24 @@ func (s *assetCheckService) List(ctx context.Context, req *model.AssetCheckListR
 }
 
 func (s *assetCheckService) listFilter(q *ent.AssetCheckQuery, req *model.AssetCheckListReq) {
-	if req.LocationsID != nil && req.LocationsType != nil {
+	if req.LocationsType != nil {
+		q.Where(
+			assetcheck.LocationsType(req.LocationsType.Value()),
+		)
+	}
+
+	if req.LocationsID != nil {
 		q.Where(
 			assetcheck.LocationsID(*req.LocationsID),
-			assetcheck.LocationsType(req.LocationsType.Value()),
 		)
 	}
 
 	if req.Keyword != nil {
 		q.Where(
 			assetcheck.Or(
-				assetcheck.HasWarehouseWith(warehouse.NameContains(*req.Keyword)),
-				assetcheck.HasStationWith(enterprisestation.HasAgentsWith(agent.NameContains(*req.Keyword))),
-				assetcheck.HasStoreWith(store.NameContains(*req.Keyword)),
+				assetcheck.HasOperateAssetManagerWith(assetmanager.NameContains(*req.Keyword)),
+				assetcheck.HasOperateAgentWith(agent.NameContains(*req.Keyword)),
+				assetcheck.HasOperateEmployeeWith(employee.NameContains(*req.Keyword)),
 			),
 		)
 	}
