@@ -5624,6 +5624,10 @@ const docTemplate = `{
                     "description": "出库数量",
                     "type": "integer"
                 },
+                "scrap": {
+                    "description": "报废数量",
+                    "type": "integer"
+                },
                 "surplus": {
                     "description": "剩余",
                     "type": "integer"

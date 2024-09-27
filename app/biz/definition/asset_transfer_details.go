@@ -12,4 +12,5 @@ type AssetMaterial struct {
 	Inbound   int    `json:"inbound"`             // 入库数量
 	Surplus   int    `json:"surplus"`             // 剩余
 	Exception int    `json:"exception,omitempty"` // 异常数量(电柜无)
+	Scrap     int    `json:"scrap"`               // 报废数量
 }

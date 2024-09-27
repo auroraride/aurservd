@@ -1232,11 +1232,11 @@ definitions:
         type: array
       geom:
         allOf:
-          - $ref: '#/definitions/adapter.Geometry'
+        - $ref: '#/definitions/adapter.Geometry'
         description: 坐标
       gps:
         allOf:
-          - $ref: '#/definitions/xcdef.GPSStatus'
+        - $ref: '#/definitions/xcdef.GPSStatus'
         description: GPS定位状态 (0=未定位 1=GPS定位 4=LBS定位)
       hard4GVersion:
         description: 4G硬件版本
@@ -1307,7 +1307,7 @@ definitions:
         type: integer
       status:
         allOf:
-          - $ref: '#/definitions/model.BatteryStatus'
+        - $ref: '#/definitions/model.BatteryStatus'
         description: 状态, 0:静置 1:充电 2:放电 3:异常(此时faults字段存在)
       strength:
         description: 4G通讯信号强度 (0-100 百分比形式)
@@ -1494,10 +1494,10 @@ definitions:
     type: object
   model.BatteryStatus:
     enum:
-      - 0
-      - 1
-      - 2
-      - 3
+    - 0
+    - 1
+    - 2
+    - 3
     type: integer
     x-enum-comments:
       BatteryStatusCharging: 充电中
@@ -1505,10 +1505,10 @@ definitions:
       BatteryStatusFault: 异常
       BatteryStatusIdle: 充电中
     x-enum-varnames:
-      - BatteryStatusIdle
-      - BatteryStatusCharging
-      - BatteryStatusDisCharging
-      - BatteryStatusFault
+    - BatteryStatusIdle
+    - BatteryStatusCharging
+    - BatteryStatusDisCharging
+    - BatteryStatusFault
   model.BatteryTrackReq:
     properties:
       points:
@@ -7191,14 +7191,14 @@ definitions:
     type: object
   xcdef.GPSStatus:
     enum:
-      - 0
-      - 1
-      - 4
+    - 0
+    - 1
+    - 4
     type: integer
     x-enum-varnames:
-      - GPSStatusNone
-      - GPSStatusRaw
-      - GPSStatusLBS
+    - GPSStatusNone
+    - GPSStatusRaw
+    - GPSStatusLBS
 info:
   contact: {}
   description: |
@@ -7772,25 +7772,25 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 解绑骑手
       tags:
-        - 电池
+      - 电池
   /manager/v1/battery/xc/{sn}:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: ManagerBatteryDetail
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 电池编号
-          in: path
-          name: sn
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 电池编号
+        in: path
+        name: sn
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
