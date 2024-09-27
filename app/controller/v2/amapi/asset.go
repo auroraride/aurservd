@@ -186,14 +186,14 @@ func (*assets) Position(c echo.Context) (err error) {
 
 // Statistics
 // @ID		AssetBatteryStatistics
-// @Router	/manager/v1/asset/battery/xc/statistics/{sn} [GET]
+// @Router	/manager/v2/asset/battery/xc/statistics/{sn} [GET]
 // @Summary	电池数据
 // @Tags	Assets - 基础档案
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	sn				path		string					true	"电池编号"
-// @Success	200				{object}	model.BatteryStatistics	"请求成功"
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
+// @Param	sn						path		string					true	"电池编号"
+// @Success	200						{object}	model.BatteryStatistics	"请求成功"
 func (*assets) Statistics(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.BatterySNRequest](c)
 	return ctx.SendResponse(service.NewBatteryBms().Statistics(req))

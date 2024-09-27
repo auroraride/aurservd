@@ -578,6 +578,45 @@
           }
         }
       },
+      "/manager/v2/asset/battery/xc/statistics/{sn}": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "Assets - 基础档案"
+          ],
+          "summary": "电池数据",
+          "operationId": "AssetBatteryStatistics",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "管理员校验token",
+              "name": "X-Asset-Manager-Token",
+              "in": "header",
+              "required": true
+            },
+            {
+              "type": "string",
+              "description": "电池编号",
+              "name": "sn",
+              "in": "path",
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "$ref": "#/definitions/model.BatteryStatistics"
+              }
+            }
+          }
+        }
+      },
         "/manager/v2/asset/batterymodel": {
             "get": {
                 "consumes": [
