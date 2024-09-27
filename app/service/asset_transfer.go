@@ -1995,9 +1995,11 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 	}
 	if req.CabinetSN != nil {
 		q.Where(
-			assettransferdetails.Or(
-				assettransferdetails.HasInOperateCabinetWith(cabinet.SerialContains(*req.CabinetSN)),
-				assettransferdetails.HasTransferWith(assettransfer.HasOutOperateCabinetWith(cabinet.SerialContains(*req.CabinetSN))),
+			assettransferdetails.HasTransferWith(
+				assettransfer.Or(
+					assettransfer.HasFromLocationCabinetWith(cabinet.SerialContains(*req.CabinetSN)),
+					assettransfer.HasToLocationCabinetWith(cabinet.SerialContains(*req.CabinetSN)),
+				),
 			),
 		)
 	}
