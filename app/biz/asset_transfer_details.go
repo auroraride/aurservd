@@ -24,7 +24,7 @@ func NewAssetTransferDetails() *assetTransferDetailsBiz {
 }
 
 // InOutCount 调拨详情出入库统计
-func (s *assetTransferDetailsBiz) InOutCount(items map[string]*definition.AssetMaterial, key string, outTransfer bool, id uint64) {
+func (s *assetTransferDetailsBiz) InOutCount(items map[string]*definition.AssetMaterial, key string, outTransfer bool, id uint64, scrap bool) {
 	if _, ok := items[key]; !ok {
 		items[key] = &definition.AssetMaterial{
 			ID:       id,
@@ -45,6 +45,11 @@ func (s *assetTransferDetailsBiz) InOutCount(items map[string]*definition.AssetM
 		items[key].Surplus += 1
 	}
 
+	if scrap {
+		items[key].Scrap += 1
+		items[key].Surplus -= 1
+	}
+
 }
 
 // TransferInOut 物资出入库统计
@@ -54,36 +59,38 @@ func (b *assetTransferDetailsBiz) TransferInOut(ebikeNameMap, sBNameMap, nSbName
 	for _, inAt := range ats {
 		ws := inAt.Edges.Asset
 		if ws != nil {
+			scrap := ws.Status == model.AssetStatusScrap.Value()
+
 			switch ws.Type {
 			case model.AssetTypeEbike.Value():
 				if ws.Edges.Brand != nil {
 					brandName := ws.Edges.Brand.Name
-					b.InOutCount(ebikeNameMap, brandName, outTrans, ws.Edges.Brand.ID)
+					b.InOutCount(ebikeNameMap, brandName, outTrans, ws.Edges.Brand.ID, scrap)
 				}
 			case model.AssetTypeSmartBattery.Value():
 				if ws.Edges.Model != nil {
 					modelName := ws.Edges.Model.Model
-					b.InOutCount(sBNameMap, modelName, outTrans, ws.Edges.Model.ID)
+					b.InOutCount(sBNameMap, modelName, outTrans, ws.Edges.Model.ID, scrap)
 				}
 			case model.AssetTypeNonSmartBattery.Value():
 				if ws.Edges.Model != nil {
 					modelName := ws.Edges.Model.Model
-					b.InOutCount(nSbNameMap, modelName, outTrans, ws.Edges.Model.ID)
+					b.InOutCount(nSbNameMap, modelName, outTrans, ws.Edges.Model.ID, scrap)
 				}
 			case model.AssetTypeCabinetAccessory.Value():
 				if ws.Edges.Material != nil {
 					materialName := ws.Edges.Material.Name
-					b.InOutCount(cabAccNameMap, materialName, outTrans, ws.Edges.Material.ID)
+					b.InOutCount(cabAccNameMap, materialName, outTrans, ws.Edges.Material.ID, scrap)
 				}
 			case model.AssetTypeEbikeAccessory.Value():
 				if ws.Edges.Material != nil {
 					materialName := ws.Edges.Material.Name
-					b.InOutCount(ebikeAccNameMap, materialName, outTrans, ws.Edges.Material.ID)
+					b.InOutCount(ebikeAccNameMap, materialName, outTrans, ws.Edges.Material.ID, scrap)
 				}
 			case model.AssetTypeOtherAccessory.Value():
 				if ws.Edges.Material != nil {
 					materialName := ws.Edges.Material.Name
-					b.InOutCount(otherAccNameMap, materialName, outTrans, ws.Edges.Material.ID)
+					b.InOutCount(otherAccNameMap, materialName, outTrans, ws.Edges.Material.ID, scrap)
 				}
 			}
 		}

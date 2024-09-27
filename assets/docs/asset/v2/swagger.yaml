@@ -120,6 +120,9 @@ definitions:
       outbound:
         description: 出库数量
         type: integer
+      scrap:
+        description: 报废数量
+        type: integer
       surplus:
         description: 剩余
         type: integer
@@ -1817,11 +1820,11 @@ definitions:
         type: array
       geom:
         allOf:
-          - $ref: '#/definitions/adapter.Geometry'
+        - $ref: '#/definitions/adapter.Geometry'
         description: 坐标
       gps:
         allOf:
-          - $ref: '#/definitions/xcdef.GPSStatus'
+        - $ref: '#/definitions/xcdef.GPSStatus'
         description: GPS定位状态 (0=未定位 1=GPS定位 4=LBS定位)
       hard4GVersion:
         description: 4G硬件版本
@@ -1892,7 +1895,7 @@ definitions:
         type: integer
       status:
         allOf:
-          - $ref: '#/definitions/model.BatteryStatus'
+        - $ref: '#/definitions/model.BatteryStatus'
         description: 状态, 0:静置 1:充电 2:放电 3:异常(此时faults字段存在)
       strength:
         description: 4G通讯信号强度 (0-100 百分比形式)
@@ -1960,9 +1963,9 @@ definitions:
         description: 经度
         type: number
     required:
-      - latitude
-      - locTime
-      - longitude
+    - latitude
+    - locTime
+    - longitude
     type: object
   model.BatteryPosition:
     properties:
@@ -2087,10 +2090,10 @@ definitions:
     type: object
   model.BatteryStatus:
     enum:
-      - 0
-      - 1
-      - 2
-      - 3
+    - 0
+    - 1
+    - 2
+    - 3
     type: integer
     x-enum-comments:
       BatteryStatusCharging: 充电中
@@ -2098,10 +2101,10 @@ definitions:
       BatteryStatusFault: 异常
       BatteryStatusIdle: 充电中
     x-enum-varnames:
-      - BatteryStatusIdle
-      - BatteryStatusCharging
-      - BatteryStatusDisCharging
-      - BatteryStatusFault
+    - BatteryStatusIdle
+    - BatteryStatusCharging
+    - BatteryStatusDisCharging
+    - BatteryStatusFault
   model.BatteryTrackReq:
     properties:
       points:
@@ -2377,19 +2380,19 @@ definitions:
     type: object
   pb.BatteryFaultType:
     enum:
-      - 0
-      - 1
-      - 2
-      - 3
-      - 6
-      - 7
-      - 8
-      - 11
-      - 12
-      - 13
-      - 14
-      - 15
-      - 16
+    - 0
+    - 1
+    - 2
+    - 3
+    - 6
+    - 7
+    - 8
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
     type: integer
     x-enum-comments:
       BatteryFaultType_BatteryFaultChargeOvercurrent: 充电过流
@@ -2406,19 +2409,19 @@ definitions:
       BatteryFaultType_BatteryFaultVoltageHigh: 总压高
       BatteryFaultType_BatteryFaultVoltageLow: 总压低
     x-enum-varnames:
-      - BatteryFaultType_BatteryFaultVoltageLow
-      - BatteryFaultType_BatteryFaultVoltageHigh
-      - BatteryFaultType_BatteryFaultMonVoltageLow
-      - BatteryFaultType_BatteryFaultMonVoltageHigh
-      - BatteryFaultType_BatteryFaultDischargeOvercurrent
-      - BatteryFaultType_BatteryFaultChargeOvercurrent
-      - BatteryFaultType_BatteryFaultSocLow
-      - BatteryFaultType_BatteryFaultChargingTemperatureHigh
-      - BatteryFaultType_BatteryFaultChargingTemperatureLow
-      - BatteryFaultType_BatteryFaultDisChargingTemperatureHigh
-      - BatteryFaultType_BatteryFaultDisChargingTemperatureLow
-      - BatteryFaultType_BatteryFaultShortCircuit
-      - BatteryFaultType_BatteryFaultMosTemperatureHigh
+    - BatteryFaultType_BatteryFaultVoltageLow
+    - BatteryFaultType_BatteryFaultVoltageHigh
+    - BatteryFaultType_BatteryFaultMonVoltageLow
+    - BatteryFaultType_BatteryFaultMonVoltageHigh
+    - BatteryFaultType_BatteryFaultDischargeOvercurrent
+    - BatteryFaultType_BatteryFaultChargeOvercurrent
+    - BatteryFaultType_BatteryFaultSocLow
+    - BatteryFaultType_BatteryFaultChargingTemperatureHigh
+    - BatteryFaultType_BatteryFaultChargingTemperatureLow
+    - BatteryFaultType_BatteryFaultDisChargingTemperatureHigh
+    - BatteryFaultType_BatteryFaultDisChargingTemperatureLow
+    - BatteryFaultType_BatteryFaultShortCircuit
+    - BatteryFaultType_BatteryFaultMosTemperatureHigh
   permission.Group:
     properties:
       desc:
@@ -2450,14 +2453,14 @@ definitions:
     type: object
   xcdef.GPSStatus:
     enum:
-      - 0
-      - 1
-      - 4
+    - 0
+    - 1
+    - 4
     type: integer
     x-enum-varnames:
-      - GPSStatusNone
-      - GPSStatusRaw
-      - GPSStatusLBS
+    - GPSStatusNone
+    - GPSStatusRaw
+    - GPSStatusLBS
 info:
   contact: {}
   description: |
@@ -2544,32 +2547,6 @@ info:
   title: 极光出行API - 资产后台api
   version: "2.0"
 paths:
-  /manager/v1/asset/battery/xc/statistics/{sn}:
-    get:
-      consumes:
-        - application/json
-      operationId: AssetBatteryStatistics
-      parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 电池编号
-          in: path
-          name: sn
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.BatteryStatistics'
-      summary: 电池数据
-      tags:
-        - Assets - 基础档案
   /manager/v2/asset:
     get:
       consumes:
@@ -2748,7 +2725,7 @@ paths:
               type: object
       summary: 资产列表
       tags:
-        - Assets - 基础档案
+      - Assets - 基础档案
     post:
       consumes:
       - application/json
@@ -2774,7 +2751,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 创建资产
       tags:
-        - Assets - 基础档案
+      - Assets - 基础档案
   /manager/v2/asset/{id}:
     get:
       consumes:
@@ -2800,7 +2777,7 @@ paths:
             $ref: '#/definitions/model.AssetListRes'
       summary: 资产详情
       tags:
-        - Assets - 基础档案
+      - Assets - 基础档案
     put:
       consumes:
       - application/json
@@ -2831,7 +2808,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 修改资产
       tags:
-        - Assets - 基础档案
+      - Assets - 基础档案
   /manager/v2/asset/attributes:
     get:
       consumes:
@@ -2878,7 +2855,7 @@ paths:
             $ref: '#/definitions/model.AssetAttributesListRes'
       summary: 资产属性列表
       tags:
-        - Assets - 基础档案
+      - Assets - 基础档案
   /manager/v2/asset/batch:
     post:
       consumes:
@@ -2909,25 +2886,25 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 批量创建资产
       tags:
-        - Assets - 基础档案
+      - Assets - 基础档案
   /manager/v2/asset/battery/detail/{sn}:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetBatteryDetail
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Asset-Manager-Token
-          required: true
-          type: string
-        - description: 电池编号
-          in: path
-          name: sn
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 电池编号
+        in: path
+        name: sn
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2935,26 +2912,26 @@ paths:
             $ref: '#/definitions/model.BatteryBmsDetail'
       summary: 电池详情
       tags:
-        - Assets - 基础档案
+      - Assets - 基础档案
   /manager/v2/asset/battery/track/rectify:
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetBatteryTrackRectify
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Asset-Manager-Token
-          required: true
-          type: string
-        - description: 轨迹点
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/model.BatteryTrackReq'
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 轨迹点
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BatteryTrackReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2962,33 +2939,33 @@ paths:
             $ref: '#/definitions/model.BatteryTrackRes'
       summary: 电池轨迹纠偏
       tags:
-        - Assets - 基础档案
+      - Assets - 基础档案
   /manager/v2/asset/battery/xc/position/{sn}:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetBatteryPosition
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Asset-Manager-Token
-          required: true
-          type: string
-        - description: 电池编号
-          in: path
-          name: sn
-          required: true
-          type: string
-        - description: '开始时间 (精确到秒, 默认6小时前, 格式为: yyyy-mm-dd hh:mm:ss)'
-          in: query
-          name: start
-          type: string
-        - description: '结束时间 (精确到秒, 默认当前时间, 格式为: yyyy-mm-dd hh:mm:ss)'
-          in: query
-          name: end
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 电池编号
+        in: path
+        name: sn
+        required: true
+        type: string
+      - description: '开始时间 (精确到秒, 默认6小时前, 格式为: yyyy-mm-dd hh:mm:ss)'
+        in: query
+        name: start
+        type: string
+      - description: '结束时间 (精确到秒, 默认当前时间, 格式为: yyyy-mm-dd hh:mm:ss)'
+        in: query
+        name: end
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2996,25 +2973,25 @@ paths:
             $ref: '#/definitions/model.BatteryPositionRes'
       summary: 电池位置
       tags:
-        - Assets - 基础档案
+      - Assets - 基础档案
   /manager/v2/asset/battery/xc/statistics/{sn}:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetBatteryStatistics
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Asset-Manager-Token
-          required: true
-          type: string
-        - description: 电池编号
-          in: path
-          name: sn
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 电池编号
+        in: path
+        name: sn
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -3022,7 +2999,7 @@ paths:
             $ref: '#/definitions/model.BatteryStatistics'
       summary: 电池数据
       tags:
-        - Assets - 基础档案
+      - Assets - 基础档案
   /manager/v2/asset/batterymodel:
     get:
       consumes:
@@ -3058,7 +3035,7 @@ paths:
               type: object
       summary: 列表
       tags:
-        - BatteryModel - 电池型号
+      - BatteryModel - 电池型号
     post:
       consumes:
       - application/json
@@ -3084,7 +3061,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 创建
       tags:
-        - BatteryModel - 电池型号
+      - BatteryModel - 电池型号
   /manager/v2/asset/batterymodel/{id}:
     delete:
       consumes:
@@ -3110,7 +3087,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 删除
       tags:
-        - BatteryModel - 电池型号
+      - BatteryModel - 电池型号
   /manager/v2/asset/cabinet_assets:
     get:
       consumes:
@@ -3284,7 +3261,7 @@ paths:
               type: object
       summary: 盘点列表
       tags:
-        - AssetCheck - 盘点
+      - AssetCheck - 盘点
     post:
       consumes:
       - application/json
@@ -3310,7 +3287,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 盘点资产
       tags:
-        - AssetCheck - 盘点
+      - AssetCheck - 盘点
   /manager/v2/asset/check/{id}:
     get:
       consumes:
@@ -3336,7 +3313,7 @@ paths:
             $ref: '#/definitions/model.AssetCheckListRes'
       summary: 盘点详情
       tags:
-        - AssetCheck - 盘点
+      - AssetCheck - 盘点
   /manager/v2/asset/check/abnormal/{id}:
     get:
       consumes:
@@ -3364,7 +3341,7 @@ paths:
             type: array
       summary: 盘点异常
       tags:
-        - AssetCheck - 盘点
+      - AssetCheck - 盘点
   /manager/v2/asset/check/abnormal/operate/{id}:
     put:
       consumes:
@@ -3396,7 +3373,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 盘点操作
       tags:
-        - AssetCheck - 盘点
+      - AssetCheck - 盘点
   /manager/v2/asset/check/asset/{id}:
     get:
       consumes:
@@ -3482,7 +3459,7 @@ paths:
               type: object
       summary: 盘点资产明细
       tags:
-        - AssetCheck - 盘点
+      - AssetCheck - 盘点
   /manager/v2/asset/check/sn/{sn}:
     get:
       consumes:
@@ -3508,7 +3485,7 @@ paths:
             $ref: '#/definitions/model.AssetCheckByAssetSnRes'
       summary: 通过SN查询资产
       tags:
-        - AssetCheck - 盘点
+      - AssetCheck - 盘点
   /manager/v2/asset/city:
     get:
       consumes:
@@ -3733,7 +3710,7 @@ paths:
             $ref: '#/definitions/model.AssetNumRes'
       summary: 查询有效的资产数量
       tags:
-        - Assets - 基础档案
+      - Assets - 基础档案
   /manager/v2/asset/ebike/brand:
     get:
       consumes:
@@ -3773,7 +3750,7 @@ paths:
               type: object
       summary: 品牌列表
       tags:
-        - EbikeBrand - 电车型号
+      - EbikeBrand - 电车型号
     post:
       consumes:
       - application/json
@@ -3799,7 +3776,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 创建品牌
       tags:
-        - EbikeBrand - 电车型号
+      - EbikeBrand - 电车型号
   /manager/v2/asset/ebike/brand/{id}:
     delete:
       operationId: EbikeBrandDelete
@@ -3823,7 +3800,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 删除品牌
       tags:
-        - EbikeBrand - 电车型号
+      - EbikeBrand - 电车型号
     put:
       consumes:
       - application/json
@@ -3854,7 +3831,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 修改品牌
       tags:
-        - EbikeBrand - 电车型号
+      - EbikeBrand - 电车型号
   /manager/v2/asset/employee:
     get:
       consumes:
@@ -3902,7 +3879,7 @@ paths:
               type: object
       summary: 列表
       tags:
-        - Employee - 门店店员
+      - Employee - 门店店员
     post:
       consumes:
       - application/json
@@ -3928,7 +3905,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 创建
       tags:
-        - Employee - 门店店员
+      - Employee - 门店店员
   /manager/v2/asset/employee/{id}:
     delete:
       consumes:
@@ -3954,7 +3931,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 删除
       tags:
-        - Employee - 门店店员
+      - Employee - 门店店员
     put:
       consumes:
       - application/json
@@ -3985,7 +3962,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 修改
       tags:
-        - Employee - 门店店员
+      - Employee - 门店店员
   /manager/v2/asset/enterprise_assets:
     get:
       consumes:
@@ -4106,7 +4083,7 @@ paths:
             $ref: '#/definitions/model.ExportRes'
       summary: 导出资产
       tags:
-        - Assets - 基础档案
+      - Assets - 基础档案
   /manager/v2/asset/maintainer_assets:
     get:
       consumes:
@@ -4239,7 +4216,7 @@ paths:
               type: object
       summary: 维修记录列表
       tags:
-        - AssetMaintenance - 维修记录
+      - AssetMaintenance - 维修记录
   /manager/v2/asset/maintenance/{id}:
     put:
       consumes:
@@ -4271,7 +4248,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 修改维修记录
       tags:
-        - AssetMaintenance - 维修记录
+      - AssetMaintenance - 维修记录
   /manager/v2/asset/material:
     get:
       consumes:
@@ -4336,7 +4313,7 @@ paths:
               type: object
       summary: 列表
       tags:
-        - Material - 其他物资
+      - Material - 其他物资
     post:
       consumes:
       - application/json
@@ -4362,7 +4339,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 创建
       tags:
-        - Material - 其他物资
+      - Material - 其他物资
   /manager/v2/asset/material/{id}:
     delete:
       consumes:
@@ -4388,7 +4365,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 删除
       tags:
-        - Material - 其他物资
+      - Material - 其他物资
     put:
       consumes:
       - application/json
@@ -4419,7 +4396,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 修改
       tags:
-        - Material - 其他物资
+      - Material - 其他物资
   /manager/v2/asset/permission:
     get:
       consumes:
@@ -4442,7 +4419,7 @@ paths:
             type: array
       summary: 权限列表
       tags:
-        - AssetPermission - 权限
+      - AssetPermission - 权限
   /manager/v2/asset/permission/role:
     get:
       consumes:
@@ -4465,7 +4442,7 @@ paths:
             type: array
       summary: 角色列表
       tags:
-        - AssetPermission - 权限
+      - AssetPermission - 权限
     post:
       consumes:
       - application/json
@@ -4491,7 +4468,7 @@ paths:
             $ref: '#/definitions/definition.AssetRole'
       summary: 创建角色
       tags:
-        - AssetPermission - 权限
+      - AssetPermission - 权限
   /manager/v2/asset/permission/role/{id}:
     delete:
       consumes:
@@ -4517,7 +4494,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 删除角色
       tags:
-        - AssetPermission - 权限
+      - AssetPermission - 权限
     put:
       consumes:
       - application/json
@@ -4548,7 +4525,7 @@ paths:
             $ref: '#/definitions/definition.AssetRole'
       summary: 修改角色
       tags:
-        - AssetPermission - 权限
+      - AssetPermission - 权限
   /manager/v2/asset/scrap:
     get:
       consumes:
@@ -4657,7 +4634,7 @@ paths:
               type: object
       summary: 资产报废列表
       tags:
-        - AssetScrap - 报废
+      - AssetScrap - 报废
     post:
       consumes:
       - application/json
@@ -4683,7 +4660,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 报废资产
       tags:
-        - AssetScrap - 报废
+      - AssetScrap - 报废
   /manager/v2/asset/scrap/batch/restore:
     post:
       consumes:
@@ -4710,7 +4687,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 资产报废还原
       tags:
-        - AssetScrap - 报废
+      - AssetScrap - 报废
   /manager/v2/asset/scrap/reason:
     get:
       consumes:
@@ -4733,7 +4710,7 @@ paths:
             type: array
       summary: 报废理由
       tags:
-        - AssetScrap - 报废
+      - AssetScrap - 报废
   /manager/v2/asset/selection/cabinet:
     get:
       consumes:
@@ -5235,7 +5212,7 @@ paths:
             $ref: '#/definitions/model.ExportRes'
       summary: 导出资产模板
       tags:
-        - Assets - 基础档案
+      - Assets - 基础档案
   /manager/v2/asset/transfer:
     get:
       consumes:
@@ -5419,7 +5396,7 @@ paths:
               type: object
       summary: 资产调拨列表
       tags:
-        - AssetTransfer - 调拨
+      - AssetTransfer - 调拨
     post:
       consumes:
       - application/json
@@ -5445,7 +5422,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 资产调拨
       tags:
-        - AssetTransfer - 调拨
+      - AssetTransfer - 调拨
   /manager/v2/asset/transfer/{id}:
     get:
       consumes:
@@ -5473,7 +5450,7 @@ paths:
             type: array
       summary: 资产调拨详情
       tags:
-        - AssetTransfer - 调拨
+      - AssetTransfer - 调拨
     put:
       consumes:
       - application/json
@@ -5504,7 +5481,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 修改资产调拨
       tags:
-        - AssetTransfer - 调拨
+      - AssetTransfer - 调拨
   /manager/v2/asset/transfer/cancel/{id}:
     put:
       consumes:
@@ -5530,26 +5507,26 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 取消资产调拨
       tags:
-        - AssetTransfer - 调拨
+      - AssetTransfer - 调拨
   /manager/v2/asset/transfer/cbw/{sn}:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetTransferCbw
       parameters:
-        - description: 调拨sn
-          in: path
-          name: sn
-          required: true
-          type: string
-        - description: 参数
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/model.GetTransferBySNReq'
+      - description: 调拨sn
+        in: path
+        name: sn
+        required: true
+        type: string
+      - description: 参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.GetTransferBySNReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -5557,7 +5534,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 资产调拨确认入库曹博文专用
       tags:
-        - AssetTransfer - 调拨
+      - AssetTransfer - 调拨
   /manager/v2/asset/transfer/details:
     get:
       consumes:
@@ -5715,7 +5692,7 @@ paths:
               type: object
       summary: 调拨详情列表(出入库明细)
       tags:
-        - AssetTransfer - 调拨
+      - AssetTransfer - 调拨
   /manager/v2/asset/transfer/flow:
     get:
       consumes:
@@ -5789,7 +5766,7 @@ paths:
               type: object
       summary: 资产流转明细
       tags:
-        - AssetTransfer - 调拨
+      - AssetTransfer - 调拨
   /manager/v2/asset/transfer/receive:
     post:
       consumes:
@@ -5816,7 +5793,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 接收资产调拨
       tags:
-        - AssetTransfer - 调拨
+      - AssetTransfer - 调拨
   /manager/v2/asset/user:
     get:
       consumes:
@@ -5868,7 +5845,7 @@ paths:
               type: object
       summary: 列举管理员
       tags:
-        - AssetManager - 管理
+      - AssetManager - 管理
     post:
       consumes:
       - application/json
@@ -5894,7 +5871,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 新增管理员
       tags:
-        - AssetManager - 管理
+      - AssetManager - 管理
   /manager/v2/asset/user/{id}:
     delete:
       consumes:
@@ -5920,7 +5897,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 删除管理员
       tags:
-        - AssetManager - 管理
+      - AssetManager - 管理
     put:
       consumes:
       - application/json
@@ -5951,7 +5928,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 编辑管理员
       tags:
-        - AssetManager - 管理
+      - AssetManager - 管理
   /manager/v2/asset/user/profile:
     get:
       consumes:
@@ -5972,7 +5949,7 @@ paths:
             $ref: '#/definitions/model.ManagerSigninRes'
       summary: 管理员信息
       tags:
-        - AssetManager - 管理
+      - AssetManager - 管理
   /manager/v2/asset/user/signin:
     post:
       consumes:
@@ -5994,7 +5971,7 @@ paths:
             $ref: '#/definitions/model.ManagerSigninRes'
       summary: 管理员登录
       tags:
-        - AssetManager - 管理
+      - AssetManager - 管理
   /manager/v2/asset/warehouse:
     get:
       consumes:
