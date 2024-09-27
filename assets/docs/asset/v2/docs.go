@@ -15,45 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/manager/v1/asset/battery/xc/statistics/{sn}": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Assets - 基础档案"
-                ],
-                "summary": "电池数据",
-                "operationId": "AssetBatteryStatistics",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "电池编号",
-                        "name": "sn",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.BatteryStatistics"
-                        }
-                    }
-                }
-            }
-        },
         "/manager/v2/asset": {
             "get": {
                 "consumes": [
@@ -5661,6 +5622,10 @@ const docTemplate = `{
                 },
                 "outbound": {
                     "description": "出库数量",
+                    "type": "integer"
+                },
+                "scrap": {
+                    "description": "报废数量",
                     "type": "integer"
                 },
                 "surplus": {
