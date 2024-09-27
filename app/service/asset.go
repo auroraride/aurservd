@@ -915,6 +915,13 @@ func (s *assetService) DetailForList(item *ent.Asset) *model.AssetListRes {
 		}
 	}
 	res.Attribute = assetAttributeMap
+
+	// 库存为骑手即为使用中状态
+	if item.LocationsType == model.AssetLocationsTypeRider.Value() {
+		res.Status = model.AssetStatusUsing
+		res.AssetStatus = model.AssetStatusUsing.String()
+	}
+
 	return res
 }
 
@@ -973,7 +980,14 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 		}
 	}
 	if req.Status != nil {
-		q.Where(asset.Status(req.Status.Value()))
+		if *req.Status == model.AssetStatusUsing {
+			q.Where(
+				asset.LocationsType(model.AssetLocationsTypeRider.Value()),
+				asset.Status(model.AssetStatusStock.Value()),
+			)
+		} else {
+			q.Where(asset.Status(req.Status.Value()))
+		}
 	}
 	if req.Enable != nil {
 		q.Where(asset.Enable(*req.Enable))

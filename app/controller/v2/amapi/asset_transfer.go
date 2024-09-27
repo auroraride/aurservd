@@ -23,7 +23,7 @@ var AssetTransfer = new(assetTransfer)
 // @ID		AssetTransfer
 // @Router	/manager/v2/asset/transfer [POST]
 // @Summary	资产调拨
-// @Tags	资产
+// @Tags	AssetTransfer - 调拨
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
@@ -40,7 +40,7 @@ func (*assetTransfer) Transfer(c echo.Context) (err error) {
 // @ID		AssetTransferList
 // @Router	/manager/v2/asset/transfer [GET]
 // @Summary	资产调拨列表
-// @Tags	资产
+// @Tags	AssetTransfer - 调拨
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string													true	"管理员校验token"
@@ -55,7 +55,7 @@ func (*assetTransfer) TransferList(c echo.Context) (err error) {
 // @ID		AssetTransferDetail
 // @Router	/manager/v2/asset/transfer/{id} [GET]
 // @Summary	资产调拨详情
-// @Tags	资产
+// @Tags	AssetTransfer - 调拨
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string						true	"管理员校验token"
@@ -70,7 +70,7 @@ func (*assetTransfer) TransferDetail(c echo.Context) (err error) {
 // @ID		AssetTransferCancel
 // @Router	/manager/v2/asset/transfer/cancel/{id} [PUT]
 // @Summary	取消资产调拨
-// @Tags	资产
+// @Tags	AssetTransfer - 调拨
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
@@ -85,7 +85,7 @@ func (*assetTransfer) TransferCancel(c echo.Context) (err error) {
 // @ID		AssetTransferReceive
 // @Router	/manager/v2/asset/transfer/receive [POST]
 // @Summary	接收资产调拨
-// @Tags	资产
+// @Tags	AssetTransfer - 调拨
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string								true	"管理员校验token"
@@ -100,7 +100,7 @@ func (*assetTransfer) TransferReceive(c echo.Context) (err error) {
 // @ID		AssetTransferFlow
 // @Router	/manager/v2/asset/transfer/flow [GET]
 // @Summary	资产流转明细
-// @Tags	资产
+// @Tags	AssetTransfer - 调拨
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string													true	"管理员校验token"
@@ -115,7 +115,7 @@ func (*assetTransfer) TransferFlow(c echo.Context) (err error) {
 // @ID		AssetTransferDetailsList
 // @Router	/manager/v2/asset/transfer/details [GET]
 // @Summary	调拨详情列表(出入库明细)
-// @Tags	资产
+// @Tags	AssetTransfer - 调拨
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string															true	"管理员校验token"
@@ -130,7 +130,7 @@ func (*assetTransfer) TransferDetailsList(c echo.Context) (err error) {
 // @ID		AssetTransferModify
 // @Router	/manager/v2/asset/transfer/{id} [PUT]
 // @Summary	修改资产调拨
-// @Tags	资产
+// @Tags	AssetTransfer - 调拨
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
@@ -146,7 +146,7 @@ func (*assetTransfer) Modify(c echo.Context) (err error) {
 // @ID		AssetTransferCbw
 // @Router	/manager/v2/asset/transfer/cbw/{sn} [GET]
 // @Summary	资产调拨确认入库曹博文专用
-// @Tags	资产
+// @Tags	AssetTransfer - 调拨
 // @Accept	json
 // @Produce	json
 // @Param	sn		path		string						true	"调拨sn"

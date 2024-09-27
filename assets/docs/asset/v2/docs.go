@@ -24,7 +24,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "Assets - 基础档案"
                 ],
                 "summary": "资产列表",
                 "operationId": "AssetList",
@@ -274,7 +274,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "Assets - 基础档案"
                 ],
                 "summary": "创建资产",
                 "operationId": "AssetCreate",
@@ -315,7 +315,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "Assets - 基础档案"
                 ],
                 "summary": "资产属性列表",
                 "operationId": "AssetAttributesList",
@@ -378,7 +378,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "Assets - 基础档案"
                 ],
                 "summary": "批量创建资产",
                 "operationId": "AssetBatchCreate",
@@ -415,6 +415,176 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v2/asset/battery/detail/{sn}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assets - 基础档案"
+                ],
+                "summary": "电池详情",
+                "operationId": "AssetBatteryDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池编号",
+                        "name": "sn",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.BatteryBmsDetail"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/battery/track/rectify": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assets - 基础档案"
+                ],
+                "summary": "电池轨迹纠偏",
+                "operationId": "AssetBatteryTrackRectify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "轨迹点",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BatteryTrackReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.BatteryTrackRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/battery/xc/position/{sn}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assets - 基础档案"
+                ],
+                "summary": "电池位置",
+                "operationId": "AssetBatteryPosition",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池编号",
+                        "name": "sn",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间 (精确到秒, 默认6小时前, 格式为: yyyy-mm-dd hh:mm:ss)",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间 (精确到秒, 默认当前时间, 格式为: yyyy-mm-dd hh:mm:ss)",
+                        "name": "end",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.BatteryPositionRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/battery/xc/statistics/{sn}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assets - 基础档案"
+                ],
+                "summary": "电池数据",
+                "operationId": "AssetBatteryStatistics",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池编号",
+                        "name": "sn",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.BatteryStatistics"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v2/asset/batterymodel": {
             "get": {
                 "consumes": [
@@ -424,7 +594,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "电池型号 - BatteryModel"
+                    "BatteryModel - 电池型号"
                 ],
                 "summary": "列表",
                 "operationId": "BatteryModelList",
@@ -481,7 +651,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "电池型号 - BatteryModel"
+                    "BatteryModel - 电池型号"
                 ],
                 "summary": "创建",
                 "operationId": "BatteryModelCreate",
@@ -522,7 +692,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "电池型号 - BatteryModel"
+                    "BatteryModel - 电池型号"
                 ],
                 "summary": "删除",
                 "operationId": "BatteryModelDelete",
@@ -695,7 +865,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetCheck - 盘点"
                 ],
                 "summary": "盘点列表",
                 "operationId": "AssetCheckList",
@@ -822,7 +992,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetCheck - 盘点"
                 ],
                 "summary": "盘点资产",
                 "operationId": "AssetCheckCreate",
@@ -863,7 +1033,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetCheck - 盘点"
                 ],
                 "summary": "盘点操作",
                 "operationId": "AssetCheckAbnormalOperate",
@@ -911,7 +1081,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetCheck - 盘点"
                 ],
                 "summary": "盘点异常",
                 "operationId": "AssetCheckAbnormal",
@@ -953,7 +1123,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetCheck - 盘点"
                 ],
                 "summary": "盘点资产明细",
                 "operationId": "AssetCheckDetailList",
@@ -1079,7 +1249,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetCheck - 盘点"
                 ],
                 "summary": "通过SN查询资产",
                 "operationId": "AssetCheckGetAssetBySN",
@@ -1118,7 +1288,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetCheck - 盘点"
                 ],
                 "summary": "盘点详情",
                 "operationId": "AssetCheckDetail",
@@ -1248,7 +1418,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "Assets - 基础档案"
                 ],
                 "summary": "查询有效的资产数量",
                 "operationId": "AssetCount",
@@ -1473,7 +1643,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "电车型号 - EbikeBrand"
+                    "EbikeBrand - 电车型号"
                 ],
                 "summary": "品牌列表",
                 "operationId": "EbikeBrandList",
@@ -1536,7 +1706,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "电车型号 - EbikeBrand"
+                    "EbikeBrand - 电车型号"
                 ],
                 "summary": "创建品牌",
                 "operationId": "EbikeBrandCreate",
@@ -1577,7 +1747,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "电车型号 - EbikeBrand"
+                    "EbikeBrand - 电车型号"
                 ],
                 "summary": "修改品牌",
                 "operationId": "EbikeBrandModify",
@@ -1620,7 +1790,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "电车型号 - EbikeBrand"
+                    "EbikeBrand - 电车型号"
                 ],
                 "summary": "删除品牌",
                 "operationId": "EbikeBrandDelete",
@@ -1659,7 +1829,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "门店店员 - Employee"
+                    "Employee - 门店店员"
                 ],
                 "summary": "列表",
                 "operationId": "EmployeeList",
@@ -1734,7 +1904,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "门店店员 - Employee"
+                    "Employee - 门店店员"
                 ],
                 "summary": "创建",
                 "operationId": "EmployeeCreate",
@@ -1775,7 +1945,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "门店店员 - Employee"
+                    "Employee - 门店店员"
                 ],
                 "summary": "修改",
                 "operationId": "EmployeeModify",
@@ -1821,7 +1991,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "门店店员 - Employee"
+                    "Employee - 门店店员"
                 ],
                 "summary": "删除",
                 "operationId": "EmployeeDelete",
@@ -2006,7 +2176,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "Assets - 基础档案"
                 ],
                 "summary": "导出资产",
                 "operationId": "AssetExport",
@@ -2169,7 +2339,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetMaintenance - 维修记录"
                 ],
                 "summary": "维修记录列表",
                 "operationId": "AssetMaintenanceList",
@@ -2257,7 +2427,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetMaintenance - 维修记录"
                 ],
                 "summary": "修改维修记录",
                 "operationId": "AssetMaintenanceModify",
@@ -2305,7 +2475,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "其他物资 - Material"
+                    "Material - 其他物资"
                 ],
                 "summary": "列表",
                 "operationId": "MaterialList",
@@ -2398,7 +2568,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "其他物资 - Material"
+                    "Material - 其他物资"
                 ],
                 "summary": "创建",
                 "operationId": "MaterialCreate",
@@ -2439,7 +2609,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "其他物资 - Material"
+                    "Material - 其他物资"
                 ],
                 "summary": "修改",
                 "operationId": "MaterialModify",
@@ -2485,7 +2655,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "其他物资 - Material"
+                    "Material - 其他物资"
                 ],
                 "summary": "删除",
                 "operationId": "MaterialDelete",
@@ -2524,7 +2694,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "权限 - AssetPermission"
+                    "AssetPermission - 权限"
                 ],
                 "summary": "权限列表",
                 "operationId": "AssetManagerPermissionList",
@@ -2559,7 +2729,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "权限 - AssetPermission"
+                    "AssetPermission - 权限"
                 ],
                 "summary": "角色列表",
                 "operationId": "AssetManagerPermissionListRole",
@@ -2592,7 +2762,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "权限 - AssetPermission"
+                    "AssetPermission - 权限"
                 ],
                 "summary": "创建角色",
                 "operationId": "AssetManagerPermissionCreateRole",
@@ -2633,7 +2803,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "权限 - AssetPermission"
+                    "AssetPermission - 权限"
                 ],
                 "summary": "修改角色",
                 "operationId": "AssetManagerPermissionModifyRole",
@@ -2679,7 +2849,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "权限 - AssetPermission"
+                    "AssetPermission - 权限"
                 ],
                 "summary": "删除角色",
                 "operationId": "AssetManagerPermissionDeleteRole",
@@ -2718,7 +2888,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetScrap - 报废"
                 ],
                 "summary": "资产报废列表",
                 "operationId": "AssetScrapList",
@@ -2874,7 +3044,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetScrap - 报废"
                 ],
                 "summary": "报废资产",
                 "operationId": "AssetScrap",
@@ -2915,7 +3085,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetScrap - 报废"
                 ],
                 "summary": "资产报废还原",
                 "operationId": "AssetScrapBatchRestore",
@@ -2956,7 +3126,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetScrap - 报废"
                 ],
                 "summary": "报废理由",
                 "operationId": "AssetScrapReasonSelect",
@@ -3677,7 +3847,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "Assets - 基础档案"
                 ],
                 "summary": "导出资产模板",
                 "operationId": "AssetTemplate",
@@ -3740,7 +3910,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetTransfer - 调拨"
                 ],
                 "summary": "资产调拨列表",
                 "operationId": "AssetTransferList",
@@ -3992,7 +4162,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetTransfer - 调拨"
                 ],
                 "summary": "资产调拨",
                 "operationId": "AssetTransfer",
@@ -4033,7 +4203,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetTransfer - 调拨"
                 ],
                 "summary": "取消资产调拨",
                 "operationId": "AssetTransferCancel",
@@ -4063,6 +4233,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v2/asset/transfer/cbw/{sn}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetTransfer - 调拨"
+                ],
+                "summary": "资产调拨确认入库曹博文专用",
+                "operationId": "AssetTransferCbw",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "调拨sn",
+                        "name": "sn",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.GetTransferBySNReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v2/asset/transfer/details": {
             "get": {
                 "consumes": [
@@ -4072,7 +4283,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetTransfer - 调拨"
                 ],
                 "summary": "调拨详情列表(出入库明细)",
                 "operationId": "AssetTransferDetailsList",
@@ -4290,7 +4501,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetTransfer - 调拨"
                 ],
                 "summary": "资产流转明细",
                 "operationId": "AssetTransferFlow",
@@ -4398,7 +4609,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetTransfer - 调拨"
                 ],
                 "summary": "接收资产调拨",
                 "operationId": "AssetTransferReceive",
@@ -4439,7 +4650,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetTransfer - 调拨"
                 ],
                 "summary": "资产调拨详情",
                 "operationId": "AssetTransferDetail",
@@ -4479,7 +4690,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "AssetTransfer - 调拨"
                 ],
                 "summary": "修改资产调拨",
                 "operationId": "AssetTransferModify",
@@ -4527,7 +4738,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "管理 - AssetManager"
+                    "AssetManager - 管理"
                 ],
                 "summary": "列举管理员",
                 "operationId": "AssetManagerList",
@@ -4608,7 +4819,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "管理 - AssetManager"
+                    "AssetManager - 管理"
                 ],
                 "summary": "新增管理员",
                 "operationId": "AssetManagerCreate",
@@ -4649,7 +4860,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "管理 - AssetManager"
+                    "AssetManager - 管理"
                 ],
                 "summary": "管理员信息",
                 "operationId": "AssetManagerProfile",
@@ -4681,7 +4892,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "管理 - AssetManager"
+                    "AssetManager - 管理"
                 ],
                 "summary": "管理员登录",
                 "operationId": "AssetManagerSignin",
@@ -4715,7 +4926,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "管理 - AssetManager"
+                    "AssetManager - 管理"
                 ],
                 "summary": "编辑管理员",
                 "operationId": "AssetManagerModify",
@@ -4761,7 +4972,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "管理 - AssetManager"
+                    "AssetManager - 管理"
                 ],
                 "summary": "删除管理员",
                 "operationId": "AssetManagerDelete",
@@ -5165,7 +5376,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "Assets - 基础档案"
                 ],
                 "summary": "资产详情",
                 "operationId": "AssetDetail",
@@ -5202,7 +5413,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "资产"
+                    "Assets - 基础档案"
                 ],
                 "summary": "修改资产",
                 "operationId": "AssetUpdate",
@@ -5243,6 +5454,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "adapter.Geometry": {
+            "type": "object",
+            "properties": {
+                "lat": {
+                    "type": "number"
+                },
+                "lng": {
+                    "type": "number"
+                }
+            }
+        },
         "definition.AssetManagerCreateReq": {
             "type": "object",
             "required": [
@@ -5400,6 +5622,10 @@ const docTemplate = `{
                 },
                 "outbound": {
                     "description": "出库数量",
+                    "type": "integer"
+                },
+                "scrap": {
+                    "description": "报废数量",
                     "type": "integer"
                 },
                 "surplus": {
@@ -7779,6 +8005,214 @@ const docTemplate = `{
                 "AssetTypeOtherAccessory"
             ]
         },
+        "model.BatteryBmsDetail": {
+            "type": "object",
+            "properties": {
+                "belongsTo": {
+                    "description": "当前位置",
+                    "type": "string"
+                },
+                "capacity": {
+                    "description": "剩余容量 (单位AH)",
+                    "type": "number"
+                },
+                "charge": {
+                    "description": "充电是否开启",
+                    "type": "boolean"
+                },
+                "chargingTime": {
+                    "description": "本次充电时长",
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "description": "入库时间",
+                    "type": "string"
+                },
+                "current": {
+                    "description": "电流 (A, 充电为正, 放电为负)",
+                    "type": "number"
+                },
+                "cycles": {
+                    "description": "电池包循环次数 (80%累加一次)",
+                    "type": "integer"
+                },
+                "disCharge": {
+                    "description": "放电是否开启",
+                    "type": "boolean"
+                },
+                "disChargingTime": {
+                    "description": "本次放电时长",
+                    "type": "integer"
+                },
+                "envTemp": {
+                    "description": "环境温度 (1个环境温度传感器, 单位1℃)",
+                    "type": "integer"
+                },
+                "faults": {
+                    "description": "故障列表, ` + "`" + `0` + "`" + `:总压低, ` + "`" + `1` + "`" + `:总压高, ` + "`" + `2` + "`" + `:单体低, ` + "`" + `3` + "`" + `:单体高, ` + "`" + `6` + "`" + `:放电过流, ` + "`" + `7` + "`" + `:充电过流, ` + "`" + `8` + "`" + `:SOC低, ` + "`" + `11` + "`" + `:充电高温, ` + "`" + `12` + "`" + `:充电低温, ` + "`" + `13` + "`" + `:放电高温, ` + "`" + `14` + "`" + `:放电低温, ` + "`" + `15` + "`" + `:短路, ` + "`" + `16` + "`" + `:MOS高温",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "faultsOverview": {
+                    "description": "故障统计, 需要将13种故障都显示出来, 若无返回则数量为0 (` + "`" + `0` + "`" + `:总压低, ` + "`" + `1` + "`" + `:总压高, ` + "`" + `2` + "`" + `:单体低, ` + "`" + `3` + "`" + `:单体高, ` + "`" + `6` + "`" + `:放电过流, ` + "`" + `7` + "`" + `:充电过流, ` + "`" + `8` + "`" + `:SOC低, ` + "`" + `11` + "`" + `:充电高温, ` + "`" + `12` + "`" + `:充电低温, ` + "`" + `13` + "`" + `:放电高温, ` + "`" + `14` + "`" + `:放电低温, ` + "`" + `15` + "`" + `:短路, ` + "`" + `16` + "`" + `:MOS高温)",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/pb.BatteryFaultOverview"
+                    }
+                },
+                "geom": {
+                    "description": "坐标",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/adapter.Geometry"
+                        }
+                    ]
+                },
+                "gps": {
+                    "description": "GPS定位状态 (0=未定位 1=GPS定位 4=LBS定位)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/xcdef.GPSStatus"
+                        }
+                    ]
+                },
+                "hard4GVersion": {
+                    "description": "4G硬件版本",
+                    "type": "integer"
+                },
+                "hardVersion": {
+                    "description": "BMS硬件版本",
+                    "type": "integer"
+                },
+                "iccid": {
+                    "description": "SIM卡ICCID",
+                    "type": "string"
+                },
+                "inCabinet": {
+                    "description": "是否在电柜",
+                    "type": "boolean"
+                },
+                "maxTemp": {
+                    "description": "最大温度 (单位1℃)",
+                    "type": "integer"
+                },
+                "minTemp": {
+                    "description": "最小温度 (单位1℃)",
+                    "type": "integer"
+                },
+                "monMaxVoltage": {
+                    "description": "最大单体电压 (mV)",
+                    "type": "integer"
+                },
+                "monMaxVoltagePos": {
+                    "description": "最大单体电压位置 (第x串)",
+                    "type": "integer"
+                },
+                "monMinVoltage": {
+                    "description": "最小单体电压 (mV)",
+                    "type": "integer"
+                },
+                "monMinVoltagePos": {
+                    "description": "最小单体电压位置 (第x串)",
+                    "type": "integer"
+                },
+                "monVoltage": {
+                    "description": "单体电压 (24个单体电压, 单位mV)",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "mosStatus": {
+                    "description": "MOS状态 (Bit0表示充电, Bit1表示放电, 此字段无法判定电池是否充放电状态)",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "mosTemp": {
+                    "description": "MOS温度 (1个MOS温度传感器, 单位1℃)",
+                    "type": "integer"
+                },
+                "online": {
+                    "description": "电池是否在线",
+                    "type": "boolean"
+                },
+                "power": {
+                    "description": "功率 (Kw)",
+                    "type": "number"
+                },
+                "sn": {
+                    "description": "电池编号",
+                    "type": "string"
+                },
+                "sn4G": {
+                    "description": "4G板SN",
+                    "type": "integer"
+                },
+                "soc": {
+                    "description": "剩余容量, 单位1%",
+                    "type": "integer"
+                },
+                "soft4GVersion": {
+                    "description": "4G软件版本",
+                    "type": "integer"
+                },
+                "softVersion": {
+                    "description": "BMS软件版本",
+                    "type": "integer"
+                },
+                "soh": {
+                    "description": "健康度 单位1%",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "状态, 0:静置 1:充电 2:放电 3:异常(此时faults字段存在)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.BatteryStatus"
+                        }
+                    ]
+                },
+                "strength": {
+                    "description": "4G通讯信号强度 (0-100 百分比形式)",
+                    "type": "integer"
+                },
+                "temp": {
+                    "description": "电池温度 (4个电池温度传感器, 单位1℃)",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "totalChargingTime": {
+                    "description": "总充电时长",
+                    "type": "integer"
+                },
+                "totalDisChargingTime": {
+                    "description": "总放电时长",
+                    "type": "integer"
+                },
+                "totalUsingTime": {
+                    "description": "总使用时长",
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "最后通讯时间",
+                    "type": "string"
+                },
+                "usingTime": {
+                    "description": "本次使用时长",
+                    "type": "integer"
+                },
+                "voltage": {
+                    "description": "电池总压 (V)",
+                    "type": "number"
+                }
+            }
+        },
         "model.BatteryModelCreateReq": {
             "type": "object",
             "required": [
@@ -7814,6 +8248,242 @@ const docTemplate = `{
                 "voltage": {
                     "description": "电压",
                     "type": "integer"
+                }
+            }
+        },
+        "model.BatteryPoint": {
+            "type": "object",
+            "required": [
+                "latitude",
+                "locTime",
+                "longitude"
+            ],
+            "properties": {
+                "latitude": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "locTime": {
+                    "description": "时间UNIX时间戳（秒级）",
+                    "type": "integer"
+                },
+                "longitude": {
+                    "description": "经度",
+                    "type": "number"
+                }
+            }
+        },
+        "model.BatteryPosition": {
+            "type": "object",
+            "properties": {
+                "at": {
+                    "description": "时间 (格式为: yyyy-mm-dd hh:mm:ss)",
+                    "type": "string"
+                },
+                "gsm": {
+                    "description": "GSM信号强度",
+                    "type": "integer"
+                },
+                "inCabinet": {
+                    "description": "是否在电柜中",
+                    "type": "boolean"
+                },
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
+                "soc": {
+                    "description": "电量",
+                    "type": "integer"
+                },
+                "stationary": {
+                    "description": "是否停留",
+                    "type": "boolean"
+                },
+                "voltage": {
+                    "description": "电压",
+                    "type": "number"
+                }
+            }
+        },
+        "model.BatteryPositionRes": {
+            "type": "object",
+            "properties": {
+                "end": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
+                "positions": {
+                    "description": "所有位置信息",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BatteryPosition"
+                    }
+                },
+                "start": {
+                    "description": "开始时间",
+                    "type": "string"
+                },
+                "stationary": {
+                    "description": "静止位置信息",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BatteryStationary"
+                    }
+                }
+            }
+        },
+        "model.BatteryStationary": {
+            "type": "object",
+            "properties": {
+                "duration": {
+                    "description": "停留时间 (秒)",
+                    "type": "integer"
+                },
+                "endAt": {
+                    "description": "结束时间 (格式为: yyyy-mm-dd hh:mm:ss)",
+                    "type": "string"
+                },
+                "endSoc": {
+                    "description": "结束电量, 可能为空",
+                    "type": "integer"
+                },
+                "inCabinet": {
+                    "description": "是否在电柜中",
+                    "type": "boolean"
+                },
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
+                "startAt": {
+                    "description": "开始时间 (格式为: yyyy-mm-dd hh:mm:ss)",
+                    "type": "string"
+                },
+                "startSoc": {
+                    "description": "开始电量",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.BatteryStatistics": {
+            "type": "object",
+            "properties": {
+                "batTemp": {
+                    "description": "电池温度(℃)",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "charging": {
+                    "description": "充电电流(A)",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "dateHour": {
+                    "description": "整点",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "disCharging": {
+                    "description": "放电电流(A)",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "envTemp": {
+                    "description": "环境温度(℃)",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "mosTemp": {
+                    "description": "Mos温度(℃)",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "soc": {
+                    "description": "剩余容量(%)",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "strength": {
+                    "description": "信号强度(%)",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "voltage": {
+                    "description": "电压(V)",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            }
+        },
+        "model.BatteryStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "BatteryStatusCharging": "充电中",
+                "BatteryStatusDisCharging": "放电中",
+                "BatteryStatusFault": "异常",
+                "BatteryStatusIdle": "充电中"
+            },
+            "x-enum-varnames": [
+                "BatteryStatusIdle",
+                "BatteryStatusCharging",
+                "BatteryStatusDisCharging",
+                "BatteryStatusFault"
+            ]
+        },
+        "model.BatteryTrackReq": {
+            "type": "object",
+            "properties": {
+                "points": {
+                    "description": "轨迹点",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BatteryPoint"
+                    }
+                }
+            }
+        },
+        "model.BatteryTrackRes": {
+            "type": "object",
+            "properties": {
+                "points": {
+                    "description": "轨迹点",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BatteryPoint"
+                    }
                 }
             }
         },
@@ -8006,6 +8676,9 @@ const docTemplate = `{
                 }
             }
         },
+        "model.GetTransferBySNReq": {
+            "type": "object"
+        },
         "model.ManagerSigninRes": {
             "type": "object",
             "properties": {
@@ -8167,6 +8840,65 @@ const docTemplate = `{
                 }
             }
         },
+        "pb.BatteryFaultOverview": {
+            "type": "object",
+            "properties": {
+                "fault": {
+                    "$ref": "#/definitions/pb.BatteryFaultType"
+                },
+                "times": {
+                    "type": "integer"
+                }
+            }
+        },
+        "pb.BatteryFaultType": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                6,
+                7,
+                8,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16
+            ],
+            "x-enum-comments": {
+                "BatteryFaultType_BatteryFaultChargeOvercurrent": "充电过流",
+                "BatteryFaultType_BatteryFaultChargingTemperatureHigh": "充电高温",
+                "BatteryFaultType_BatteryFaultChargingTemperatureLow": "充电低温",
+                "BatteryFaultType_BatteryFaultDisChargingTemperatureHigh": "放电高温",
+                "BatteryFaultType_BatteryFaultDisChargingTemperatureLow": "放电低温",
+                "BatteryFaultType_BatteryFaultDischargeOvercurrent": "放电过流",
+                "BatteryFaultType_BatteryFaultMonVoltageHigh": "单体高",
+                "BatteryFaultType_BatteryFaultMonVoltageLow": "单体低",
+                "BatteryFaultType_BatteryFaultMosTemperatureHigh": "MOS高温",
+                "BatteryFaultType_BatteryFaultShortCircuit": "短路",
+                "BatteryFaultType_BatteryFaultSocLow": "SOC低",
+                "BatteryFaultType_BatteryFaultVoltageHigh": "总压高",
+                "BatteryFaultType_BatteryFaultVoltageLow": "总压低"
+            },
+            "x-enum-varnames": [
+                "BatteryFaultType_BatteryFaultVoltageLow",
+                "BatteryFaultType_BatteryFaultVoltageHigh",
+                "BatteryFaultType_BatteryFaultMonVoltageLow",
+                "BatteryFaultType_BatteryFaultMonVoltageHigh",
+                "BatteryFaultType_BatteryFaultDischargeOvercurrent",
+                "BatteryFaultType_BatteryFaultChargeOvercurrent",
+                "BatteryFaultType_BatteryFaultSocLow",
+                "BatteryFaultType_BatteryFaultChargingTemperatureHigh",
+                "BatteryFaultType_BatteryFaultChargingTemperatureLow",
+                "BatteryFaultType_BatteryFaultDisChargingTemperatureHigh",
+                "BatteryFaultType_BatteryFaultDisChargingTemperatureLow",
+                "BatteryFaultType_BatteryFaultShortCircuit",
+                "BatteryFaultType_BatteryFaultMosTemperatureHigh"
+            ]
+        },
         "permission.Group": {
             "type": "object",
             "properties": {
@@ -8207,6 +8939,19 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "xcdef.GPSStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                4
+            ],
+            "x-enum-varnames": [
+                "GPSStatusNone",
+                "GPSStatusRaw",
+                "GPSStatusLBS"
+            ]
         }
     }
 }`

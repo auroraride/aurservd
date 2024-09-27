@@ -51,11 +51,15 @@ func loadAssetsRoutes() {
 	asset.GET("/selection/cabinet", amapi.Selection.Cabinet)                // 筛选电柜
 
 	// 基础档案
-	asset.POST("", amapi.Assets.Create)     // 创建资产
-	asset.GET("", amapi.Assets.List)        // 资产列表
-	asset.GET("/:id", amapi.Assets.Detail)  // 资产详情
-	asset.PUT("/:id", amapi.Assets.Update)  // 更新资产
-	asset.GET("/count", amapi.Assets.Count) // 资产数量
+	asset.POST("", amapi.Assets.Create)                              // 创建资产
+	asset.GET("", amapi.Assets.List)                                 // 资产列表
+	asset.GET("/:id", amapi.Assets.Detail)                           // 资产详情
+	asset.PUT("/:id", amapi.Assets.Update)                           // 更新资产
+	asset.GET("/count", amapi.Assets.Count)                          // 资产数量
+	asset.GET("/battery/detail/:sn", amapi.Assets.BatteryDetail)     // 查询电池详情
+	asset.GET("/battery/xc/position/:sn", amapi.Assets.Position)     // 查询电池位置
+	asset.POST("/battery/track/rectify", amapi.Assets.TrackRectify)  // 电池轨迹纠偏
+	asset.GET("/battery/xc/statistics/:sn", amapi.Assets.Statistics) // 电池数据
 
 	// 资产属性
 	asset.GET("/attributes", amapi.AssetAttributes.List) // 资产属性列表
@@ -110,10 +114,10 @@ func loadAssetsRoutes() {
 	asset.DELETE("/batterymodel/:id", amapi.BatteryModel.Delete) // 删除电池型号
 
 	// 电车型号
-	asset.GET("/ebike/brand", amapi.EbikeBrand.List)          // 电池型号列表
-	asset.POST("/ebike/brand", amapi.EbikeBrand.Create)       // 创建电池型号
-	asset.PUT("/ebike/brand/:id", amapi.EbikeBrand.Modify)    // 更新电池型号
-	asset.DELETE("/ebike/brand/:id", amapi.EbikeBrand.Delete) // 删除电池型号
+	asset.GET("/ebike/brand", amapi.EbikeBrand.List)          // 电车品牌列表
+	asset.POST("/ebike/brand", amapi.EbikeBrand.Create)       // 创建电车品牌
+	asset.PUT("/ebike/brand/:id", amapi.EbikeBrand.Modify)    // 更新电车品牌
+	asset.DELETE("/ebike/brand/:id", amapi.EbikeBrand.Delete) // 删除电车品牌
 
 	// 其他物资
 	asset.POST("/material", amapi.Material.Create)       // 创建其他物资

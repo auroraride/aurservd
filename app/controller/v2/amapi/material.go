@@ -21,7 +21,7 @@ var Material = new(material)
 // @ID		MaterialList
 // @Router	/manager/v2/asset/material [GET]
 // @Summary	列表
-// @Tags	其他物资 - Material
+// @Tags	Material - 其他物资
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string													true	"管理员校验token"
@@ -36,7 +36,7 @@ func (*material) List(c echo.Context) (err error) {
 // @ID		MaterialCreate
 // @Router	/manager/v2/asset/material [POST]
 // @Summary	创建
-// @Tags	其他物资 - Material
+// @Tags	Material - 其他物资
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
@@ -51,7 +51,7 @@ func (*material) Create(c echo.Context) (err error) {
 // @ID		MaterialDelete
 // @Router	/manager/v2/asset/material/{id} [DELETE]
 // @Summary	删除
-// @Tags	其他物资 - Material
+// @Tags	Material - 其他物资
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
@@ -66,7 +66,7 @@ func (*material) Delete(c echo.Context) (err error) {
 // @ID		MaterialModify
 // @Router	/manager/v2/asset/material/{id} [PUT]
 // @Summary	修改
-// @Tags	其他物资 - Material
+// @Tags	Material - 其他物资
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"

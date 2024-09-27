@@ -21,7 +21,7 @@ var Employee = new(employee)
 // @ID		EmployeeList
 // @Router	/manager/v2/asset/employee [GET]
 // @Summary	列表
-// @Tags	门店店员 - Employee
+// @Tags	Employee - 门店店员
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string													true	"管理员校验token"
@@ -36,7 +36,7 @@ func (*employee) List(c echo.Context) (err error) {
 // @ID		EmployeeCreate
 // @Router	/manager/v2/asset/employee [POST]
 // @Summary	创建
-// @Tags	门店店员 - Employee
+// @Tags	Employee - 门店店员
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
@@ -51,7 +51,7 @@ func (*employee) Create(c echo.Context) (err error) {
 // @ID		EmployeeDelete
 // @Router	/manager/v2/asset/employee/{id} [DELETE]
 // @Summary	删除
-// @Tags	门店店员 - Employee
+// @Tags	Employee - 门店店员
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
@@ -66,7 +66,7 @@ func (*employee) Delete(c echo.Context) (err error) {
 // @ID		EmployeeModify
 // @Router	/manager/v2/asset/employee/{id} [PUT]
 // @Summary	修改
-// @Tags	门店店员 - Employee
+// @Tags	Employee - 门店店员
 // @Accept	json
 // @Produce	json
 // @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"

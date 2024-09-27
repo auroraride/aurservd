@@ -12,7 +12,6 @@ import (
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/agreement"
 	entasset "github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
@@ -45,7 +44,9 @@ func NewCabinetAssetWithModifier(m *model.Modifier) *cabinetAssetBiz {
 // Assets 资产列表
 func (b *cabinetAssetBiz) Assets(req *definition.CabinetAssetListReq) (res *model.PaginationRes) {
 	// 查询分页的门店数据
-	q := b.orm.QueryNotDeleted().WithCity().Order(ent.Desc(agreement.FieldCreatedAt))
+	q := b.orm.QueryNotDeleted().
+		WithCity().
+		Order(ent.Desc(cabinet.FieldCreatedAt))
 	b.assetsFilter(q, req)
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Cabinet) (result *definition.CabinetAssetDetail) {
 		result = &definition.CabinetAssetDetail{
@@ -70,20 +71,8 @@ func (b *cabinetAssetBiz) assetsFilter(q *ent.CabinetQuery, req *definition.Cabi
 		q.Where(cabinet.CityID(*req.CityID))
 	}
 	if req.ModelID != nil {
-		// 查询型号资产
-		ids := make([]uint64, 0)
-		list, _ := ent.Database.Asset.QueryNotDeleted().WithCabinet().Where(
-			entasset.ModelID(*req.ModelID),
-			entasset.LocationsType(model.AssetLocationsTypeCabinet.Value()),
-			entasset.Status(model.AssetStatusStock.Value()),
-		).All(b.ctx)
-		for _, v := range list {
-			if v.Edges.Cabinet != nil {
-				ids = append(ids, v.Edges.Cabinet.ID)
-			}
-		}
 		q.Where(
-			cabinet.IDIn(ids...),
+			cabinet.HasAssetWith(entasset.ModelID(*req.ModelID)),
 		)
 	}
 	if req.Name != nil {
@@ -113,7 +102,6 @@ func (b *cabinetAssetBiz) AssetTotal(req *definition.CabinetAssetListReq, id uin
 	if req.ModelID != nil {
 		q.Where(
 			entasset.ModelID(*req.ModelID),
-			entasset.TypeIn(model.AssetTypeSmartBattery.Value(), model.AssetTypeNonSmartBattery.Value()),
 		)
 	}
 

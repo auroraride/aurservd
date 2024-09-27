@@ -44,12 +44,6 @@ func NewStoreAssetWithModifier(m *model.Modifier) *storeAssetBiz {
 func (b *storeAssetBiz) Assets(req *definition.StoreAssetListReq) (res *model.PaginationRes) {
 	// 查询分页的门店数据
 	q := b.orm.QueryNotDeleted().
-		Where(
-			store.HasAssetWith(
-				entasset.LocationsType(model.AssetLocationsTypeStore.Value()),
-				entasset.Status(model.AssetStatusStock.Value()),
-			),
-		).
 		WithCity().
 		WithGroup().
 		Order(ent.Desc(store.FieldCreatedAt))
@@ -79,7 +73,6 @@ func (b *storeAssetBiz) Assets(req *definition.StoreAssetListReq) (res *model.Pa
 
 // assetsFilter 条件筛选
 func (b *storeAssetBiz) assetsFilter(q *ent.StoreQuery, req *definition.StoreAssetListReq) {
-
 	if req.CityID != nil {
 		q.Where(store.CityID(*req.CityID))
 	}
@@ -124,19 +117,16 @@ func (b *storeAssetBiz) AssetTotal(req *definition.StoreAssetListReq, sId uint64
 	if req.ModelID != nil {
 		q.Where(
 			entasset.ModelID(*req.ModelID),
-			entasset.TypeIn(model.AssetTypeSmartBattery.Value(), model.AssetTypeNonSmartBattery.Value()),
 		)
 	}
 	if req.BrandId != nil {
 		q.Where(
 			entasset.BrandID(*req.BrandId),
-			entasset.Type(model.AssetTypeEbike.Value()),
 		)
 	}
 	if req.OtherName != nil {
 		q.Where(
-			entasset.NameContains(*req.OtherName),
-			entasset.TypeIn(model.AssetTypeCabinetAccessory.Value(), model.AssetTypeEbikeAccessory.Value(), model.AssetTypeOtherAccessory.Value()),
+			entasset.HasMaterialWith(material.NameContains(*req.OtherName)),
 		)
 	}
 	list, _ := q.All(b.ctx)
