@@ -2997,6 +2997,32 @@ paths:
       summary: 电池位置
       tags:
         - Assets - 基础档案
+  /manager/v2/asset/battery/xc/statistics/{sn}:
+    get:
+      consumes:
+        - application/json
+      operationId: AssetBatteryStatistics
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Asset-Manager-Token
+          required: true
+          type: string
+        - description: 电池编号
+          in: path
+          name: sn
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BatteryStatistics'
+      summary: 电池数据
+      tags:
+        - Assets - 基础档案
   /manager/v2/asset/batterymodel:
     get:
       consumes:
