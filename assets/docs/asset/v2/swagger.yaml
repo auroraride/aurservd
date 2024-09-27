@@ -2037,6 +2037,54 @@ definitions:
         description: 开始电量
         type: integer
     type: object
+  model.BatteryStatistics:
+    properties:
+      batTemp:
+        description: 电池温度(℃)
+        items:
+          type: number
+        type: array
+      charging:
+        description: 充电电流(A)
+        items:
+          type: number
+        type: array
+      dateHour:
+        description: 整点
+        items:
+          type: string
+        type: array
+      disCharging:
+        description: 放电电流(A)
+        items:
+          type: number
+        type: array
+      envTemp:
+        description: 环境温度(℃)
+        items:
+          type: number
+        type: array
+      mosTemp:
+        description: Mos温度(℃)
+        items:
+          type: number
+        type: array
+      soc:
+        description: 剩余容量(%)
+        items:
+          type: number
+        type: array
+      strength:
+        description: 信号强度(%)
+        items:
+          type: number
+        type: array
+      voltage:
+        description: 电压(V)
+        items:
+          type: number
+        type: array
+    type: object
   model.BatteryStatus:
     enum:
       - 0
@@ -2496,6 +2544,32 @@ info:
   title: 极光出行API - 资产后台api
   version: "2.0"
 paths:
+  /manager/v1/asset/battery/xc/statistics/{sn}:
+    get:
+      consumes:
+        - application/json
+      operationId: AssetBatteryStatistics
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 电池编号
+          in: path
+          name: sn
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BatteryStatistics'
+      summary: 电池数据
+      tags:
+        - Assets - 基础档案
   /manager/v2/asset:
     get:
       consumes:
