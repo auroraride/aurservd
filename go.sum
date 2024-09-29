@@ -140,6 +140,8 @@ github.com/auroraride/adapter v0.0.0-20240914083031-845f5d538659 h1:HhB2bn0FtVNN
 github.com/auroraride/adapter v0.0.0-20240914083031-845f5d538659/go.mod h1:PPAVF13B52QB1uJRVg6IVnj4/alABeQMYeHgpGYPeFU=
 github.com/auroraride/adapter v0.0.0-20240926053735-9c64217acc8d h1:OmTRl9QRQtpHyLyor91P15xUmVsK4ixmff7BI1fGE6I=
 github.com/auroraride/adapter v0.0.0-20240926053735-9c64217acc8d/go.mod h1:PPAVF13B52QB1uJRVg6IVnj4/alABeQMYeHgpGYPeFU=
+github.com/auroraride/adapter v0.0.0-20240929100942-6715e8e30dbb h1:JBwdZ3kkWMbnakH3SlkjYIjh6Rczt3Bhn1cWRdLUj9c=
+github.com/auroraride/adapter v0.0.0-20240929100942-6715e8e30dbb/go.mod h1:PPAVF13B52QB1uJRVg6IVnj4/alABeQMYeHgpGYPeFU=
 github.com/aws/aws-sdk-go-v2 v1.9.2/go.mod h1:cK/D0BBs0b/oWPIcX/Z/obahJK1TT7IPVjy53i/mX/4=
 github.com/aws/aws-sdk-go-v2/config v1.8.3/go.mod h1:4AEiLtAb8kLs7vgw2ZV3p2VZ1+hBavOc84hqxVNpCyw=
 github.com/aws/aws-sdk-go-v2/credentials v1.4.3/go.mod h1:FNNC6nQZQUuyhq5aE5c7ata8o9e4ECGmS4lAXC7o1mQ=
@@ -265,6 +267,8 @@ github.com/go-redis/redis/v8 v8.11.5 h1:AcZZR7igkdvfVmQTPnu9WE37LRrO/YrBH5zWyjDC
 github.com/go-redis/redis/v8 v8.11.5/go.mod h1:gREzHqY1hg6oD9ngVRbLStwAWKhA0FEgq8Jd4h5lpwo=
 github.com/go-resty/resty/v2 v2.15.2 h1:wLGqKU9l9tOIa2RyePoyu4ZUnDkUWfp2LZ0u6fMXExc=
 github.com/go-resty/resty/v2 v2.15.2/go.mod h1:0fHAoK7JoBy/Ch36N8VFeMsK7xQOHhvWaC3iOktwmIU=
+github.com/go-resty/resty/v2 v2.15.3 h1:bqff+hcqAflpiF591hhJzNdkRsFhlB96CYfBwSFvql8=
+github.com/go-resty/resty/v2 v2.15.3/go.mod h1:0fHAoK7JoBy/Ch36N8VFeMsK7xQOHhvWaC3iOktwmIU=
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
 github.com/go-task/slim-sprig v0.0.0-20210107165309-348f09dbbbc0/go.mod h1:fyg7847qk6SyHyPtNmDHnmrv/HOrqktSC+C9fM+CJOE=
 github.com/go-test/deep v1.0.2-0.20181118220953-042da051cf31/go.mod h1:wGDj63lr65AM2AQyKZd/NYHGb0R+1RLqB8NKt3aSFNA=

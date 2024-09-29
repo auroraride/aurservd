@@ -20,14 +20,14 @@ require (
 	github.com/aliyun/aliyun-log-go-sdk v0.1.83
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
 	github.com/aliyun/credentials-go v1.3.10
-	github.com/auroraride/adapter v0.0.0-20240926053735-9c64217acc8d
+	github.com/auroraride/adapter v0.0.0-20240929100942-6715e8e30dbb
 	github.com/elastic/go-elasticsearch/v8 v8.15.0
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/getkin/kin-openapi v0.127.0
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
 	github.com/go-playground/validator/v10 v10.22.1
-	github.com/go-resty/resty/v2 v2.15.2
+	github.com/go-resty/resty/v2 v2.15.3
 	github.com/golang-module/carbon/v2 v2.3.12
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.3
