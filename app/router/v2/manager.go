@@ -31,7 +31,7 @@ func LoadManagerV2Routes(root *echo.Group) {
 		)
 		tokenString, _ := token.SignedString([]byte(ar.Config.App.RetryTokenSecret))
 
-		return c.JSON(200, tokenString)
+		return c.String(200, tokenString)
 	})
 
 	g.Use(middleware.ManagerMiddleware())
