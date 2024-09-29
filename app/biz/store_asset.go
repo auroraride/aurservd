@@ -181,7 +181,7 @@ func (b *storeAssetBiz) AssetDetail(id uint64) (ast *definition.CommonAssetDetai
 			query.WithBrand().WithModel().WithMaterial()
 		}).All(b.ctx)
 
-	NewAssetTransferDetails().TransferInOut(ebikeNameMap, sBNameMap, nSbNameMap, cabAccNameMap, ebikeAccNameMap, otherAccNameMap, inAts, false)
+	NewAssetTransferDetails().TransferInOut(ebikeNameMap, sBNameMap, nSbNameMap, cabAccNameMap, ebikeAccNameMap, otherAccNameMap, inAts, false, id)
 
 	// 出库物资调拨详情
 	outAts, _ := ent.Database.AssetTransferDetails.QueryNotDeleted().
@@ -197,7 +197,7 @@ func (b *storeAssetBiz) AssetDetail(id uint64) (ast *definition.CommonAssetDetai
 			query.WithBrand().WithModel().WithMaterial()
 		}).All(b.ctx)
 
-	NewAssetTransferDetails().TransferInOut(ebikeNameMap, sBNameMap, nSbNameMap, cabAccNameMap, ebikeAccNameMap, otherAccNameMap, outAts, true)
+	NewAssetTransferDetails().TransferInOut(ebikeNameMap, sBNameMap, nSbNameMap, cabAccNameMap, ebikeAccNameMap, otherAccNameMap, outAts, true, id)
 
 	NewAssetTransferDetails().GetCommonAssetDetail(ebikeNameMap, sBNameMap, nSbNameMap, cabAccNameMap, ebikeAccNameMap, otherAccNameMap, ast)
 

@@ -55,11 +55,15 @@ func (s *assetTransferDetailsBiz) InOutCount(items map[string]*definition.AssetM
 // TransferInOut 物资出入库统计
 func (b *assetTransferDetailsBiz) TransferInOut(ebikeNameMap, sBNameMap, nSbNameMap,
 	cabAccNameMap, ebikeAccNameMap, otherAccNameMap map[string]*definition.AssetMaterial,
-	ats []*ent.AssetTransferDetails, outTrans bool) {
-	for _, inAt := range ats {
-		ws := inAt.Edges.Asset
+	ats []*ent.AssetTransferDetails, outTrans bool, toLocID uint64) {
+	// 判断已经计算报废过的资产
+	assetCheckMap := make(map[uint64]bool)
+	for _, atd := range ats {
+		ws := atd.Edges.Asset
 		if ws != nil {
-			scrap := ws.Status == model.AssetStatusScrap.Value()
+			// 以入库数据的资产报废状态为主计算报废数据, 且当前物资在该目标库存中
+			scrap := ws.Status == model.AssetStatusScrap.Value() && !outTrans && ws.LocationsID == toLocID && !assetCheckMap[ws.ID]
+			assetCheckMap[ws.ID] = true
 
 			switch ws.Type {
 			case model.AssetTypeEbike.Value():
