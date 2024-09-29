@@ -62,10 +62,11 @@ type config struct {
 	LoggerDebug bool
 
 	App struct {
-		Host         string
-		SQL          bool
-		CabinetDebug bool
-		Debug        struct {
+		Host             string
+		SQL              bool
+		CabinetDebug     bool
+		RetryTokenSecret string
+		Debug            struct {
 			Phone map[string]bool
 		}
 		Captcha struct {
