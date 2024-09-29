@@ -142,7 +142,7 @@ func (b *cabinetAssetBiz) AssetDetail(id uint64) (ast *definition.CabinetTotalDe
 			query.WithBrand().WithModel().WithMaterial()
 		}).All(b.ctx)
 
-	NewAssetTransferDetails().TransferInOut(nil, sBNameMap, nSbNameMap, nil, nil, nil, inAts, false)
+	NewAssetTransferDetails().TransferInOut(nil, sBNameMap, nSbNameMap, nil, nil, nil, inAts, false, id)
 
 	// 出库物资调拨详情
 	outAts, _ := ent.Database.AssetTransferDetails.QueryNotDeleted().
@@ -158,7 +158,7 @@ func (b *cabinetAssetBiz) AssetDetail(id uint64) (ast *definition.CabinetTotalDe
 			query.WithBrand().WithModel().WithMaterial()
 		}).All(b.ctx)
 
-	NewAssetTransferDetails().TransferInOut(nil, sBNameMap, nSbNameMap, nil, nil, nil, outAts, true)
+	NewAssetTransferDetails().TransferInOut(nil, sBNameMap, nSbNameMap, nil, nil, nil, outAts, true, id)
 
 	// 组装出入库数据
 
