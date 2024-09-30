@@ -167,6 +167,9 @@ func (s *Contract) Sign(r *ent.Rider, req *definition.ContractSignNewReq) (res *
 
 // Create 骑手添加合同
 func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*definition.ContractCreateRes, error) {
+	if r.Contact == nil {
+		return nil, errors.New("请先添加紧急联系人")
+	}
 	sub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.ID(req.SubscribeID), subscribe.Status(model.SubscribeStatusInactive)).WithCity().WithPlan().First(s.ctx)
 	if sub == nil {
 		return nil, errors.New("未找到骑士卡")
