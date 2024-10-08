@@ -1246,6 +1246,8 @@ func (s *assetService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 	var fromLocationID uint64
 	var toLocationType model.AssetLocationsType
 	var toLocationID uint64
+	var ebiketoLocationID uint64
+	var ebiketoLocationType model.AssetLocationsType
 	details := make([]model.AssetTransferCreateDetail, 0)
 	ebikeDetails := make([]model.AssetTransferCreateDetail, 0)
 	assetType := model.AssetTypeSmartBattery
@@ -1270,11 +1272,12 @@ func (s *assetService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 		}
 	}
 	var storeID uint64
-	if req.StoreID != nil {
-		storeID = *req.StoreID
-	}
+	var ebikeStoreID uint64
 	if req.BatStoreID != nil {
 		storeID = *req.BatStoreID
+	}
+	if req.EbikeStoreID != nil {
+		ebikeStoreID = *req.EbikeStoreID
 	}
 
 	// 激活和取消寄存 需要判定非智能库存
@@ -1317,6 +1320,7 @@ func (s *assetService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 		// 寄存和退租 骑手的库存调拨到某个位置
 		fromLocationType = model.AssetLocationsTypeRider
 		fromLocationID = req.RiderID
+		// 电池退租使用参数
 		if req.BatStoreID != nil || req.StoreID != nil {
 			toLocationType = model.AssetLocationsTypeStore
 			toLocationID = storeID
@@ -1334,6 +1338,11 @@ func (s *assetService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 	}
 
 	if ebikeInfo != nil {
+		// 电车退租使用参数
+		if req.EbikeStoreID != nil {
+			ebiketoLocationType = model.AssetLocationsTypeStore
+			ebiketoLocationID = ebikeStoreID
+		}
 		ebikeDetails = append(ebikeDetails, model.AssetTransferCreateDetail{
 			AssetType: model.AssetTypeEbike,
 			SN:        silk.String(ebikeInfo.Sn),
@@ -1386,8 +1395,8 @@ func (s *assetService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 		_, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
 			FromLocationType:  &fromLocationType,
 			FromLocationID:    &fromLocationID,
-			ToLocationType:    toLocationType,
-			ToLocationID:      toLocationID,
+			ToLocationType:    ebiketoLocationType,
+			ToLocationID:      ebiketoLocationID,
 			Details:           ebikeDetails,
 			Reason:            req.AssetTransferType.String() + "骑手业务",
 			AssetTransferType: req.AssetTransferType,
