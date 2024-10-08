@@ -144,6 +144,20 @@ func (vu *VersionUpdate) SetNillableForce(b *bool) *VersionUpdate {
 	return vu
 }
 
+// SetEnable sets the "enable" field.
+func (vu *VersionUpdate) SetEnable(b bool) *VersionUpdate {
+	vu.mutation.SetEnable(b)
+	return vu
+}
+
+// SetNillableEnable sets the "enable" field if the given value is not nil.
+func (vu *VersionUpdate) SetNillableEnable(b *bool) *VersionUpdate {
+	if b != nil {
+		vu.SetEnable(*b)
+	}
+	return vu
+}
+
 // Mutation returns the VersionMutation object of the builder.
 func (vu *VersionUpdate) Mutation() *VersionMutation {
 	return vu.mutation
@@ -241,6 +255,9 @@ func (vu *VersionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := vu.mutation.Force(); ok {
 		_spec.SetField(version.FieldForce, field.TypeBool, value)
+	}
+	if value, ok := vu.mutation.Enable(); ok {
+		_spec.SetField(version.FieldEnable, field.TypeBool, value)
 	}
 	_spec.AddModifiers(vu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, vu.driver, _spec); err != nil {
@@ -378,6 +395,20 @@ func (vuo *VersionUpdateOne) SetNillableForce(b *bool) *VersionUpdateOne {
 	return vuo
 }
 
+// SetEnable sets the "enable" field.
+func (vuo *VersionUpdateOne) SetEnable(b bool) *VersionUpdateOne {
+	vuo.mutation.SetEnable(b)
+	return vuo
+}
+
+// SetNillableEnable sets the "enable" field if the given value is not nil.
+func (vuo *VersionUpdateOne) SetNillableEnable(b *bool) *VersionUpdateOne {
+	if b != nil {
+		vuo.SetEnable(*b)
+	}
+	return vuo
+}
+
 // Mutation returns the VersionMutation object of the builder.
 func (vuo *VersionUpdateOne) Mutation() *VersionMutation {
 	return vuo.mutation
@@ -505,6 +536,9 @@ func (vuo *VersionUpdateOne) sqlSave(ctx context.Context) (_node *Version, err e
 	}
 	if value, ok := vuo.mutation.Force(); ok {
 		_spec.SetField(version.FieldForce, field.TypeBool, value)
+	}
+	if value, ok := vuo.mutation.Enable(); ok {
+		_spec.SetField(version.FieldEnable, field.TypeBool, value)
 	}
 	_spec.AddModifiers(vuo.modifiers...)
 	_node = &Version{config: vuo.config}

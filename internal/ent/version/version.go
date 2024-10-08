@@ -35,6 +35,8 @@ const (
 	FieldContent = "content"
 	// FieldForce holds the string denoting the force field in the database.
 	FieldForce = "force"
+	// FieldEnable holds the string denoting the enable field in the database.
+	FieldEnable = "enable"
 	// Table holds the table name of the version in the database.
 	Table = "version"
 )
@@ -52,6 +54,7 @@ var Columns = []string{
 	FieldVersion,
 	FieldContent,
 	FieldForce,
+	FieldEnable,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -79,6 +82,8 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultPlatform holds the default value on creation for the "platform" field.
 	DefaultPlatform model.AppPlatform
+	// DefaultEnable holds the default value on creation for the "enable" field.
+	DefaultEnable bool
 )
 
 // OrderOption defines the ordering options for the Version queries.
@@ -127,4 +132,9 @@ func ByContent(opts ...sql.OrderTermOption) OrderOption {
 // ByForce orders the results by the force field.
 func ByForce(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldForce, opts...).ToFunc()
+}
+
+// ByEnable orders the results by the enable field.
+func ByEnable(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEnable, opts...).ToFunc()
 }

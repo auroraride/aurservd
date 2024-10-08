@@ -2771,6 +2771,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			version.FieldVersion:      {Type: field.TypeString, Column: version.FieldVersion},
 			version.FieldContent:      {Type: field.TypeString, Column: version.FieldContent},
 			version.FieldForce:        {Type: field.TypeBool, Column: version.FieldForce},
+			version.FieldEnable:       {Type: field.TypeBool, Column: version.FieldEnable},
 		},
 	}
 	graph.Nodes[99] = &sqlgraph.Node{
@@ -24437,6 +24438,11 @@ func (f *VersionFilter) WhereContent(p entql.StringP) {
 // WhereForce applies the entql bool predicate on the force field.
 func (f *VersionFilter) WhereForce(p entql.BoolP) {
 	f.Where(p.Field(version.FieldForce))
+}
+
+// WhereEnable applies the entql bool predicate on the enable field.
+func (f *VersionFilter) WhereEnable(p entql.BoolP) {
+	f.Where(p.Field(version.FieldEnable))
 }
 
 // addPredicate implements the predicateAdder interface.

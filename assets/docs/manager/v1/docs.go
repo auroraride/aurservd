@@ -14015,6 +14015,10 @@ const docTemplate = `{
                     "description": "下载链接(Android)",
                     "type": "string"
                 },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
                 "force": {
                     "description": "是否强制更新",
                     "type": "boolean"
@@ -14034,6 +14038,7 @@ const docTemplate = `{
             "required": [
                 "appPlatform",
                 "content",
+                "enable",
                 "version"
             ],
             "properties": {
@@ -14052,6 +14057,10 @@ const docTemplate = `{
                 "content": {
                     "description": "更新内容",
                     "type": "string"
+                },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
                 },
                 "force": {
                     "description": "是否强制更新",
@@ -14068,6 +14077,7 @@ const docTemplate = `{
             "required": [
                 "appPlatform",
                 "content",
+                "enable",
                 "version"
             ],
             "properties": {
@@ -14086,6 +14096,10 @@ const docTemplate = `{
                 "content": {
                     "description": "更新内容",
                     "type": "string"
+                },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
                 },
                 "force": {
                     "description": "是否强制更新",
