@@ -1978,11 +1978,9 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 				case model.AssetLocationsTypeWarehouse, model.AssetLocationsTypeStore, model.AssetLocationsTypeStation, model.AssetLocationsTypeOperation:
 					if req.LocationsID != nil {
 						q.Where(
-							assettransferdetails.Or(
-								assettransferdetails.HasTransferWith(
-									assettransfer.FromLocationIDEQ(*req.LocationsID),
-									assettransfer.FromLocationTypeEQ(req.LocationsType.Value()),
-								),
+							assettransferdetails.HasTransferWith(
+								assettransfer.FromLocationIDEQ(*req.LocationsID),
+								assettransfer.FromLocationTypeEQ(req.LocationsType.Value()),
 							),
 						)
 					}
