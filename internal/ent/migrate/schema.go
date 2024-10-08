@@ -7241,6 +7241,7 @@ var (
 		{Name: "version", Type: field.TypeString, Unique: true, Comment: "版本号"},
 		{Name: "content", Type: field.TypeString, Comment: "更新内容"},
 		{Name: "force", Type: field.TypeBool, Comment: "是否强制更新"},
+		{Name: "enable", Type: field.TypeBool, Comment: "是否启用", Default: true},
 	}
 	// VersionTable holds the schema information for the "version" table.
 	VersionTable = &schema.Table{

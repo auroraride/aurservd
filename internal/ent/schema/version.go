@@ -69,6 +69,7 @@ func (Version) Fields() []ent.Field {
 		field.String("version").Unique().Comment("版本号"),
 		field.String("content").Comment("更新内容"),
 		field.Bool("force").Comment("是否强制更新"),
+		field.Bool("enable").Default(true).Comment("是否启用"),
 	}
 }
 

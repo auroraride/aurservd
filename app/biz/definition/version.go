@@ -10,7 +10,8 @@ type VersionReq struct {
 	AppPlatform model.AppPlatform `json:"appPlatform" query:"appPlatform" validate:"required,oneof=android ios" trans:"平台" enums:"android,ios"`
 	Version     string            `json:"version" validate:"required"` // 版本号
 	Content     string            `json:"content" validate:"required"` // 更新内容
-	Force       bool              `json:"force" `                      // 是否强制更新
+	Force       bool              `json:"force"`                       // 是否强制更新
+	Enable      bool              `json:"enable"  validate:"required"` // 是否启用
 }
 
 type VersionRes struct {
@@ -25,6 +26,7 @@ type Version struct {
 	Force        bool              `json:"force"`                  // 是否强制更新
 	CreatedAt    string            `json:"createdAt"`              // 创建时间
 	DownloadLink string            `json:"downloadLink,omitempty"` // 下载链接(Android)
+	Enable       bool              `json:"enable"`                 // 是否启用
 }
 
 type VersionModifyReq struct {

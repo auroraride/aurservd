@@ -95,6 +95,11 @@ func Force(v bool) predicate.Version {
 	return predicate.Version(sql.FieldEQ(FieldForce, v))
 }
 
+// Enable applies equality check predicate on the "enable" field. It's identical to EnableEQ.
+func Enable(v bool) predicate.Version {
+	return predicate.Version(sql.FieldEQ(FieldEnable, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Version {
 	return predicate.Version(sql.FieldEQ(FieldCreatedAt, v))
@@ -498,6 +503,16 @@ func ForceEQ(v bool) predicate.Version {
 // ForceNEQ applies the NEQ predicate on the "force" field.
 func ForceNEQ(v bool) predicate.Version {
 	return predicate.Version(sql.FieldNEQ(FieldForce, v))
+}
+
+// EnableEQ applies the EQ predicate on the "enable" field.
+func EnableEQ(v bool) predicate.Version {
+	return predicate.Version(sql.FieldEQ(FieldEnable, v))
+}
+
+// EnableNEQ applies the NEQ predicate on the "enable" field.
+func EnableNEQ(v bool) predicate.Version {
+	return predicate.Version(sql.FieldNEQ(FieldEnable, v))
 }
 
 // And groups predicates with the AND operator between them.
