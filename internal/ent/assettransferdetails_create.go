@@ -100,6 +100,20 @@ func (atdc *AssetTransferDetailsCreate) SetNillableRemark(s *string) *AssetTrans
 	return atdc
 }
 
+// SetSn sets the "sn" field.
+func (atdc *AssetTransferDetailsCreate) SetSn(s string) *AssetTransferDetailsCreate {
+	atdc.mutation.SetSn(s)
+	return atdc
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (atdc *AssetTransferDetailsCreate) SetNillableSn(s *string) *AssetTransferDetailsCreate {
+	if s != nil {
+		atdc.SetSn(*s)
+	}
+	return atdc
+}
+
 // SetTransferID sets the "transfer_id" field.
 func (atdc *AssetTransferDetailsCreate) SetTransferID(u uint64) *AssetTransferDetailsCreate {
 	atdc.mutation.SetTransferID(u)
@@ -447,6 +461,10 @@ func (atdc *AssetTransferDetailsCreate) createSpec() (*AssetTransferDetails, *sq
 		_spec.SetField(assettransferdetails.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
+	if value, ok := atdc.mutation.Sn(); ok {
+		_spec.SetField(assettransferdetails.FieldSn, field.TypeString, value)
+		_node.Sn = value
+	}
 	if value, ok := atdc.mutation.IsIn(); ok {
 		_spec.SetField(assettransferdetails.FieldIsIn, field.TypeBool, value)
 		_node.IsIn = value
@@ -730,6 +748,24 @@ func (u *AssetTransferDetailsUpsert) ClearRemark() *AssetTransferDetailsUpsert {
 	return u
 }
 
+// SetSn sets the "sn" field.
+func (u *AssetTransferDetailsUpsert) SetSn(v string) *AssetTransferDetailsUpsert {
+	u.Set(assettransferdetails.FieldSn, v)
+	return u
+}
+
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *AssetTransferDetailsUpsert) UpdateSn() *AssetTransferDetailsUpsert {
+	u.SetExcluded(assettransferdetails.FieldSn)
+	return u
+}
+
+// ClearSn clears the value of the "sn" field.
+func (u *AssetTransferDetailsUpsert) ClearSn() *AssetTransferDetailsUpsert {
+	u.SetNull(assettransferdetails.FieldSn)
+	return u
+}
+
 // SetTransferID sets the "transfer_id" field.
 func (u *AssetTransferDetailsUpsert) SetTransferID(v uint64) *AssetTransferDetailsUpsert {
 	u.Set(assettransferdetails.FieldTransferID, v)
@@ -960,6 +996,27 @@ func (u *AssetTransferDetailsUpsertOne) UpdateRemark() *AssetTransferDetailsUpse
 func (u *AssetTransferDetailsUpsertOne) ClearRemark() *AssetTransferDetailsUpsertOne {
 	return u.Update(func(s *AssetTransferDetailsUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetSn sets the "sn" field.
+func (u *AssetTransferDetailsUpsertOne) SetSn(v string) *AssetTransferDetailsUpsertOne {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.SetSn(v)
+	})
+}
+
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *AssetTransferDetailsUpsertOne) UpdateSn() *AssetTransferDetailsUpsertOne {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.UpdateSn()
+	})
+}
+
+// ClearSn clears the value of the "sn" field.
+func (u *AssetTransferDetailsUpsertOne) ClearSn() *AssetTransferDetailsUpsertOne {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.ClearSn()
 	})
 }
 
@@ -1377,6 +1434,27 @@ func (u *AssetTransferDetailsUpsertBulk) UpdateRemark() *AssetTransferDetailsUps
 func (u *AssetTransferDetailsUpsertBulk) ClearRemark() *AssetTransferDetailsUpsertBulk {
 	return u.Update(func(s *AssetTransferDetailsUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetSn sets the "sn" field.
+func (u *AssetTransferDetailsUpsertBulk) SetSn(v string) *AssetTransferDetailsUpsertBulk {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.SetSn(v)
+	})
+}
+
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *AssetTransferDetailsUpsertBulk) UpdateSn() *AssetTransferDetailsUpsertBulk {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.UpdateSn()
+	})
+}
+
+// ClearSn clears the value of the "sn" field.
+func (u *AssetTransferDetailsUpsertBulk) ClearSn() *AssetTransferDetailsUpsertBulk {
+	return u.Update(func(s *AssetTransferDetailsUpsert) {
+		s.ClearSn()
 	})
 }
 

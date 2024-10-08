@@ -65,6 +65,11 @@ func UpdatedAt(v time.Time) predicate.AssetScrapDetails {
 	return predicate.AssetScrapDetails(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
+// Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
+func Sn(v string) predicate.AssetScrapDetails {
+	return predicate.AssetScrapDetails(sql.FieldEQ(FieldSn, v))
+}
+
 // AssetID applies equality check predicate on the "asset_id" field. It's identical to AssetIDEQ.
 func AssetID(v uint64) predicate.AssetScrapDetails {
 	return predicate.AssetScrapDetails(sql.FieldEQ(FieldAssetID, v))
@@ -153,6 +158,81 @@ func UpdatedAtLT(v time.Time) predicate.AssetScrapDetails {
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.AssetScrapDetails {
 	return predicate.AssetScrapDetails(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
+// SnEQ applies the EQ predicate on the "sn" field.
+func SnEQ(v string) predicate.AssetScrapDetails {
+	return predicate.AssetScrapDetails(sql.FieldEQ(FieldSn, v))
+}
+
+// SnNEQ applies the NEQ predicate on the "sn" field.
+func SnNEQ(v string) predicate.AssetScrapDetails {
+	return predicate.AssetScrapDetails(sql.FieldNEQ(FieldSn, v))
+}
+
+// SnIn applies the In predicate on the "sn" field.
+func SnIn(vs ...string) predicate.AssetScrapDetails {
+	return predicate.AssetScrapDetails(sql.FieldIn(FieldSn, vs...))
+}
+
+// SnNotIn applies the NotIn predicate on the "sn" field.
+func SnNotIn(vs ...string) predicate.AssetScrapDetails {
+	return predicate.AssetScrapDetails(sql.FieldNotIn(FieldSn, vs...))
+}
+
+// SnGT applies the GT predicate on the "sn" field.
+func SnGT(v string) predicate.AssetScrapDetails {
+	return predicate.AssetScrapDetails(sql.FieldGT(FieldSn, v))
+}
+
+// SnGTE applies the GTE predicate on the "sn" field.
+func SnGTE(v string) predicate.AssetScrapDetails {
+	return predicate.AssetScrapDetails(sql.FieldGTE(FieldSn, v))
+}
+
+// SnLT applies the LT predicate on the "sn" field.
+func SnLT(v string) predicate.AssetScrapDetails {
+	return predicate.AssetScrapDetails(sql.FieldLT(FieldSn, v))
+}
+
+// SnLTE applies the LTE predicate on the "sn" field.
+func SnLTE(v string) predicate.AssetScrapDetails {
+	return predicate.AssetScrapDetails(sql.FieldLTE(FieldSn, v))
+}
+
+// SnContains applies the Contains predicate on the "sn" field.
+func SnContains(v string) predicate.AssetScrapDetails {
+	return predicate.AssetScrapDetails(sql.FieldContains(FieldSn, v))
+}
+
+// SnHasPrefix applies the HasPrefix predicate on the "sn" field.
+func SnHasPrefix(v string) predicate.AssetScrapDetails {
+	return predicate.AssetScrapDetails(sql.FieldHasPrefix(FieldSn, v))
+}
+
+// SnHasSuffix applies the HasSuffix predicate on the "sn" field.
+func SnHasSuffix(v string) predicate.AssetScrapDetails {
+	return predicate.AssetScrapDetails(sql.FieldHasSuffix(FieldSn, v))
+}
+
+// SnIsNil applies the IsNil predicate on the "sn" field.
+func SnIsNil() predicate.AssetScrapDetails {
+	return predicate.AssetScrapDetails(sql.FieldIsNull(FieldSn))
+}
+
+// SnNotNil applies the NotNil predicate on the "sn" field.
+func SnNotNil() predicate.AssetScrapDetails {
+	return predicate.AssetScrapDetails(sql.FieldNotNull(FieldSn))
+}
+
+// SnEqualFold applies the EqualFold predicate on the "sn" field.
+func SnEqualFold(v string) predicate.AssetScrapDetails {
+	return predicate.AssetScrapDetails(sql.FieldEqualFold(FieldSn, v))
+}
+
+// SnContainsFold applies the ContainsFold predicate on the "sn" field.
+func SnContainsFold(v string) predicate.AssetScrapDetails {
+	return predicate.AssetScrapDetails(sql.FieldContainsFold(FieldSn, v))
 }
 
 // AssetIDEQ applies the EQ predicate on the "asset_id" field.

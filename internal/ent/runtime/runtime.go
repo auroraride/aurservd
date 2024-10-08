@@ -302,11 +302,11 @@ func init() {
 	// assetcheckdetails.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	assetcheckdetails.UpdateDefaultUpdatedAt = assetcheckdetailsDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// assetcheckdetailsDescStatus is the schema descriptor for status field.
-	assetcheckdetailsDescStatus := assetcheckdetailsFields[6].Descriptor()
+	assetcheckdetailsDescStatus := assetcheckdetailsFields[7].Descriptor()
 	// assetcheckdetails.DefaultStatus holds the default value on creation for the status field.
 	assetcheckdetails.DefaultStatus = assetcheckdetailsDescStatus.Default.(uint8)
 	// assetcheckdetailsDescResult is the schema descriptor for result field.
-	assetcheckdetailsDescResult := assetcheckdetailsFields[7].Descriptor()
+	assetcheckdetailsDescResult := assetcheckdetailsFields[8].Descriptor()
 	// assetcheckdetails.DefaultResult holds the default value on creation for the result field.
 	assetcheckdetails.DefaultResult = assetcheckdetailsDescResult.Default.(uint8)
 	assetexportMixin := schema.AssetExport{}.Mixin()
@@ -484,7 +484,7 @@ func init() {
 	// assettransferdetails.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	assettransferdetails.UpdateDefaultUpdatedAt = assettransferdetailsDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// assettransferdetailsDescIsIn is the schema descriptor for is_in field.
-	assettransferdetailsDescIsIn := assettransferdetailsFields[1].Descriptor()
+	assettransferdetailsDescIsIn := assettransferdetailsFields[2].Descriptor()
 	// assettransferdetails.DefaultIsIn holds the default value on creation for the is_in field.
 	assettransferdetails.DefaultIsIn = assettransferdetailsDescIsIn.Default.(bool)
 	assistanceMixin := schema.Assistance{}.Mixin()

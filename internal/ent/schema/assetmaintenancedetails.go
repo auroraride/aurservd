@@ -59,6 +59,7 @@ func (AssetMaintenanceDetails) Annotations() []schema.Annotation {
 // Fields of the AssetMaintenanceDetails.
 func (AssetMaintenanceDetails) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("sn").Optional().Comment("资产SN"),
 		field.Uint64("asset_id").Optional().Comment("资产ID"),
 		field.Uint64("maintenance_id").Optional().Comment("维修ID"),
 	}

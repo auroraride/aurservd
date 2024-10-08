@@ -52,6 +52,20 @@ func (asdc *AssetScrapDetailsCreate) SetNillableUpdatedAt(t *time.Time) *AssetSc
 	return asdc
 }
 
+// SetSn sets the "sn" field.
+func (asdc *AssetScrapDetailsCreate) SetSn(s string) *AssetScrapDetailsCreate {
+	asdc.mutation.SetSn(s)
+	return asdc
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (asdc *AssetScrapDetailsCreate) SetNillableSn(s *string) *AssetScrapDetailsCreate {
+	if s != nil {
+		asdc.SetSn(*s)
+	}
+	return asdc
+}
+
 // SetAssetID sets the "asset_id" field.
 func (asdc *AssetScrapDetailsCreate) SetAssetID(u uint64) *AssetScrapDetailsCreate {
 	asdc.mutation.SetAssetID(u)
@@ -176,6 +190,10 @@ func (asdc *AssetScrapDetailsCreate) createSpec() (*AssetScrapDetails, *sqlgraph
 		_spec.SetField(assetscrapdetails.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
+	if value, ok := asdc.mutation.Sn(); ok {
+		_spec.SetField(assetscrapdetails.FieldSn, field.TypeString, value)
+		_node.Sn = value
+	}
 	if nodes := asdc.mutation.AssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -274,6 +292,24 @@ func (u *AssetScrapDetailsUpsert) UpdateUpdatedAt() *AssetScrapDetailsUpsert {
 	return u
 }
 
+// SetSn sets the "sn" field.
+func (u *AssetScrapDetailsUpsert) SetSn(v string) *AssetScrapDetailsUpsert {
+	u.Set(assetscrapdetails.FieldSn, v)
+	return u
+}
+
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *AssetScrapDetailsUpsert) UpdateSn() *AssetScrapDetailsUpsert {
+	u.SetExcluded(assetscrapdetails.FieldSn)
+	return u
+}
+
+// ClearSn clears the value of the "sn" field.
+func (u *AssetScrapDetailsUpsert) ClearSn() *AssetScrapDetailsUpsert {
+	u.SetNull(assetscrapdetails.FieldSn)
+	return u
+}
+
 // SetAssetID sets the "asset_id" field.
 func (u *AssetScrapDetailsUpsert) SetAssetID(v uint64) *AssetScrapDetailsUpsert {
 	u.Set(assetscrapdetails.FieldAssetID, v)
@@ -360,6 +396,27 @@ func (u *AssetScrapDetailsUpsertOne) SetUpdatedAt(v time.Time) *AssetScrapDetail
 func (u *AssetScrapDetailsUpsertOne) UpdateUpdatedAt() *AssetScrapDetailsUpsertOne {
 	return u.Update(func(s *AssetScrapDetailsUpsert) {
 		s.UpdateUpdatedAt()
+	})
+}
+
+// SetSn sets the "sn" field.
+func (u *AssetScrapDetailsUpsertOne) SetSn(v string) *AssetScrapDetailsUpsertOne {
+	return u.Update(func(s *AssetScrapDetailsUpsert) {
+		s.SetSn(v)
+	})
+}
+
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *AssetScrapDetailsUpsertOne) UpdateSn() *AssetScrapDetailsUpsertOne {
+	return u.Update(func(s *AssetScrapDetailsUpsert) {
+		s.UpdateSn()
+	})
+}
+
+// ClearSn clears the value of the "sn" field.
+func (u *AssetScrapDetailsUpsertOne) ClearSn() *AssetScrapDetailsUpsertOne {
+	return u.Update(func(s *AssetScrapDetailsUpsert) {
+		s.ClearSn()
 	})
 }
 
@@ -620,6 +677,27 @@ func (u *AssetScrapDetailsUpsertBulk) SetUpdatedAt(v time.Time) *AssetScrapDetai
 func (u *AssetScrapDetailsUpsertBulk) UpdateUpdatedAt() *AssetScrapDetailsUpsertBulk {
 	return u.Update(func(s *AssetScrapDetailsUpsert) {
 		s.UpdateUpdatedAt()
+	})
+}
+
+// SetSn sets the "sn" field.
+func (u *AssetScrapDetailsUpsertBulk) SetSn(v string) *AssetScrapDetailsUpsertBulk {
+	return u.Update(func(s *AssetScrapDetailsUpsert) {
+		s.SetSn(v)
+	})
+}
+
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *AssetScrapDetailsUpsertBulk) UpdateSn() *AssetScrapDetailsUpsertBulk {
+	return u.Update(func(s *AssetScrapDetailsUpsert) {
+		s.UpdateSn()
+	})
+}
+
+// ClearSn clears the value of the "sn" field.
+func (u *AssetScrapDetailsUpsertBulk) ClearSn() *AssetScrapDetailsUpsertBulk {
+	return u.Update(func(s *AssetScrapDetailsUpsert) {
+		s.ClearSn()
 	})
 }
 

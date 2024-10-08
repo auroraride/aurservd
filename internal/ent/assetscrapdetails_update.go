@@ -37,6 +37,26 @@ func (asdu *AssetScrapDetailsUpdate) SetUpdatedAt(t time.Time) *AssetScrapDetail
 	return asdu
 }
 
+// SetSn sets the "sn" field.
+func (asdu *AssetScrapDetailsUpdate) SetSn(s string) *AssetScrapDetailsUpdate {
+	asdu.mutation.SetSn(s)
+	return asdu
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (asdu *AssetScrapDetailsUpdate) SetNillableSn(s *string) *AssetScrapDetailsUpdate {
+	if s != nil {
+		asdu.SetSn(*s)
+	}
+	return asdu
+}
+
+// ClearSn clears the value of the "sn" field.
+func (asdu *AssetScrapDetailsUpdate) ClearSn() *AssetScrapDetailsUpdate {
+	asdu.mutation.ClearSn()
+	return asdu
+}
+
 // SetAssetID sets the "asset_id" field.
 func (asdu *AssetScrapDetailsUpdate) SetAssetID(u uint64) *AssetScrapDetailsUpdate {
 	asdu.mutation.SetAssetID(u)
@@ -163,6 +183,12 @@ func (asdu *AssetScrapDetailsUpdate) sqlSave(ctx context.Context) (n int, err er
 	if value, ok := asdu.mutation.UpdatedAt(); ok {
 		_spec.SetField(assetscrapdetails.FieldUpdatedAt, field.TypeTime, value)
 	}
+	if value, ok := asdu.mutation.Sn(); ok {
+		_spec.SetField(assetscrapdetails.FieldSn, field.TypeString, value)
+	}
+	if asdu.mutation.SnCleared() {
+		_spec.ClearField(assetscrapdetails.FieldSn, field.TypeString)
+	}
 	if asdu.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -246,6 +272,26 @@ type AssetScrapDetailsUpdateOne struct {
 // SetUpdatedAt sets the "updated_at" field.
 func (asduo *AssetScrapDetailsUpdateOne) SetUpdatedAt(t time.Time) *AssetScrapDetailsUpdateOne {
 	asduo.mutation.SetUpdatedAt(t)
+	return asduo
+}
+
+// SetSn sets the "sn" field.
+func (asduo *AssetScrapDetailsUpdateOne) SetSn(s string) *AssetScrapDetailsUpdateOne {
+	asduo.mutation.SetSn(s)
+	return asduo
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (asduo *AssetScrapDetailsUpdateOne) SetNillableSn(s *string) *AssetScrapDetailsUpdateOne {
+	if s != nil {
+		asduo.SetSn(*s)
+	}
+	return asduo
+}
+
+// ClearSn clears the value of the "sn" field.
+func (asduo *AssetScrapDetailsUpdateOne) ClearSn() *AssetScrapDetailsUpdateOne {
+	asduo.mutation.ClearSn()
 	return asduo
 }
 
@@ -404,6 +450,12 @@ func (asduo *AssetScrapDetailsUpdateOne) sqlSave(ctx context.Context) (_node *As
 	}
 	if value, ok := asduo.mutation.UpdatedAt(); ok {
 		_spec.SetField(assetscrapdetails.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := asduo.mutation.Sn(); ok {
+		_spec.SetField(assetscrapdetails.FieldSn, field.TypeString, value)
+	}
+	if asduo.mutation.SnCleared() {
+		_spec.ClearField(assetscrapdetails.FieldSn, field.TypeString)
 	}
 	if asduo.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
