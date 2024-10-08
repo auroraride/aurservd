@@ -2791,47 +2791,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/rider/v2/phone/device": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Rider - 骑手"
-                ],
-                "summary": "上报手机设备信息",
-                "operationId": "ReportPhoneDevice",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "请求参数",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/definition.RiderPhoneDeviceReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/rider/v2/plan": {
             "get": {
                 "consumes": [
@@ -3198,6 +3157,47 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/definition.QuestionCategoryDetail"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/report/phone/device": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rider - 骑手"
+                ],
+                "summary": "上报手机设备信息",
+                "operationId": "ReportPhoneDevice",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.RiderPhoneDeviceReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -7723,6 +7723,10 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "电柜名称",
+                    "type": "string"
+                },
+                "retryToken": {
+                    "description": "重试令牌，用于重试操作，重试操作时需要携带，不可泄露，10分钟有效期",
                     "type": "string"
                 },
                 "serial": {

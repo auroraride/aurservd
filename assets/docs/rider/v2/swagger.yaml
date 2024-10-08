@@ -2605,6 +2605,9 @@ definitions:
       name:
         description: 电柜名称
         type: string
+      retryToken:
+        description: 重试令牌，用于重试操作，重试操作时需要携带，不可泄露，10分钟有效期
+        type: string
       serial:
         description: 电柜编码
         type: string
@@ -4832,33 +4835,6 @@ paths:
       summary: 订单支付状态
       tags:
       - Order - 订单
-  /rider/v2/phone/device:
-    post:
-      consumes:
-      - application/json
-      operationId: ReportPhoneDevice
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      - description: 请求参数
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/definition.RiderPhoneDeviceReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: 上报手机设备信息
-      tags:
-      - Rider - 骑手
   /rider/v2/plan:
     get:
       consumes:
@@ -5109,6 +5085,33 @@ paths:
       summary: 问题分类列表
       tags:
       - QuestionCategory - 问题分类
+  /rider/v2/report/phone/device:
+    post:
+      consumes:
+        - application/json
+      operationId: ReportPhoneDevice
+      parameters:
+        - description: 骑手校验token
+          in: header
+          name: X-Rider-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/definition.RiderPhoneDeviceReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 上报手机设备信息
+      tags:
+        - Rider - 骑手
   /rider/v2/reserve:
     get:
       consumes:
