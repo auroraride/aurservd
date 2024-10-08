@@ -497,3 +497,37 @@ func RiderBatteryDo(ctx context.Context, modifier *model.Modifier) {
 		}
 	}
 }
+
+func AssetSN() *cobra.Command {
+	return &cobra.Command{
+		Use:   "assetSN",
+		Short: "修复资产数据SN关联",
+		Run: func(cmd *cobra.Command, args []string) {
+			AssetSNDo()
+		},
+	}
+}
+
+func AssetSNDo() {
+	// 处理报废资产sn
+	assetScrap, _ := ent.Database.AssetScrapDetails.Query().WithAsset().All(context.Background())
+	for _, v := range assetScrap {
+		if v.Edges.Asset != nil {
+			_ = v.Update().SetSn(v.Edges.Asset.Sn).Exec(context.Background())
+		}
+	}
+	// 处理维修资产sn
+	am, _ := ent.Database.AssetMaintenanceDetails.Query().WithAsset().All(context.Background())
+	for _, v := range am {
+		if v.Edges.Asset != nil {
+			_ = v.Update().SetSn(v.Edges.Asset.Sn).Exec(context.Background())
+		}
+	}
+	// 处理调拨资产sn
+	at, _ := ent.Database.AssetTransferDetails.Query().WithAsset().All(context.Background())
+	for _, v := range at {
+		if v.Edges.Asset != nil {
+			_ = v.Update().SetSn(v.Edges.Asset.Sn).Exec(context.Background())
+		}
+	}
+}
