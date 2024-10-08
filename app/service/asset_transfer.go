@@ -8,8 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"entgo.io/ent/dialect/sql"
-
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -1956,37 +1954,41 @@ func (s *assetTransferService) TransferDetailsList(ctx context.Context, req *mod
 	}
 	if req.LocationsType != nil {
 		q.Where(
-			func(selector *sql.Selector) {
-				switch *req.LocationsType {
-				case model.AssetLocationsTypeRider, model.AssetLocationsTypeCabinet:
-					if req.LocationsKeyword != nil && *req.LocationsType == model.AssetLocationsTypeCabinet {
-						q.Where(
-							assettransferdetails.Or(
-								assettransferdetails.HasTransferWith(assettransfer.HasFromLocationCabinetWith(cabinet.SnContains(*req.LocationsKeyword))),
-								assettransferdetails.HasTransferWith(assettransfer.HasToLocationCabinetWith(cabinet.SnContains(*req.LocationsKeyword))),
-							),
-						)
-					}
-					if req.LocationsKeyword != nil && *req.LocationsType == model.AssetLocationsTypeRider {
-						q.Where(
-							assettransferdetails.Or(
-								assettransferdetails.HasTransferWith(assettransfer.HasFromLocationRiderWith(rider.NameContains(*req.LocationsKeyword))),
-								assettransferdetails.HasTransferWith(assettransfer.HasToLocationRiderWith(rider.NameContains(*req.LocationsKeyword))),
-							),
-						)
-					}
-				case model.AssetLocationsTypeWarehouse, model.AssetLocationsTypeStore, model.AssetLocationsTypeStation, model.AssetLocationsTypeOperation:
-					if req.LocationsID != nil {
-						q.Where(
-							assettransferdetails.HasTransferWith(
-								assettransfer.FromLocationIDEQ(*req.LocationsID),
-								assettransfer.FromLocationTypeEQ(req.LocationsType.Value()),
-							),
-						)
-					}
-				}
-			},
+			assettransferdetails.Or(
+				assettransferdetails.HasTransferWith(assettransfer.FromLocationType(req.LocationsType.Value())),
+				assettransferdetails.HasTransferWith(assettransfer.ToLocationType(req.LocationsType.Value())),
+			),
 		)
+
+		switch *req.LocationsType {
+		case model.AssetLocationsTypeRider, model.AssetLocationsTypeCabinet:
+			if req.LocationsKeyword != nil && *req.LocationsType == model.AssetLocationsTypeCabinet {
+				q.Where(
+					assettransferdetails.Or(
+						assettransferdetails.HasTransferWith(assettransfer.HasFromLocationCabinetWith(cabinet.SerialContains(*req.LocationsKeyword))),
+						assettransferdetails.HasTransferWith(assettransfer.HasToLocationCabinetWith(cabinet.SerialContains(*req.LocationsKeyword))),
+					),
+				)
+			}
+			if req.LocationsKeyword != nil && *req.LocationsType == model.AssetLocationsTypeRider {
+				q.Where(
+					assettransferdetails.Or(
+						assettransferdetails.HasTransferWith(assettransfer.HasFromLocationRiderWith(rider.NameContains(*req.LocationsKeyword))),
+						assettransferdetails.HasTransferWith(assettransfer.HasToLocationRiderWith(rider.NameContains(*req.LocationsKeyword))),
+					),
+				)
+			}
+		case model.AssetLocationsTypeWarehouse, model.AssetLocationsTypeStore, model.AssetLocationsTypeStation, model.AssetLocationsTypeOperation:
+			if req.LocationsID != nil {
+				q.Where(
+					assettransferdetails.Or(
+						assettransferdetails.HasTransferWith(assettransfer.FromLocationID(*req.LocationsID)),
+						assettransferdetails.HasTransferWith(assettransfer.ToLocationID(*req.LocationsID)),
+					),
+				)
+			}
+		}
+
 	}
 	if req.AssetTransferType != nil {
 		q.Where(assettransferdetails.HasTransferWith(assettransfer.Type(req.AssetTransferType.Value())))
