@@ -5402,6 +5402,10 @@ const docTemplate = `{
                     "description": "下载链接(Android)",
                     "type": "string"
                 },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
                 "force": {
                     "description": "是否强制更新",
                     "type": "boolean"
@@ -7723,6 +7727,10 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "电柜名称",
+                    "type": "string"
+                },
+                "retryToken": {
+                    "description": "重试令牌，用于重试操作，重试操作时需要携带，不可泄露，10分钟有效期",
                     "type": "string"
                 },
                 "serial": {
