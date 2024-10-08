@@ -58,7 +58,9 @@ func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.Ass
 			SetLastModifier(modifier).
 			SetStatus(model.AssetCheckDetailsStatusUntreated.Value()).
 			SetLocationsID(v.LocationsID).
-			SetLocationsType(v.LocationsType))
+			SetLocationsType(v.LocationsType).
+			SetSn(v.Sn),
+		)
 		assetIDs = append(assetIDs, v.ID)
 	}
 	// 查询应盘电池资产
@@ -79,7 +81,9 @@ func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.Ass
 			SetLastModifier(modifier).
 			SetStatus(model.AssetCheckDetailsStatusUntreated.Value()).
 			SetLocationsID(v.LocationsID).
-			SetLocationsType(v.LocationsType))
+			SetLocationsType(v.LocationsType).
+			SetSn(v.Sn),
+		)
 		assetIDs = append(assetIDs, v.ID)
 	}
 	var realEbikeNum, realBatteryNum uint

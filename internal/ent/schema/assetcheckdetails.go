@@ -59,6 +59,7 @@ func (AssetCheckDetails) Annotations() []schema.Annotation {
 // Fields of the AssetCheckDetails.
 func (AssetCheckDetails) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("sn").Optional().Comment("资产SN"),
 		field.Uint64("asset_id").Optional().Comment("资产ID"),
 		field.Uint64("check_id").Optional().Comment("盘点ID"),
 		field.Uint64("real_locations_id").Optional().Comment("实际位置ID"),

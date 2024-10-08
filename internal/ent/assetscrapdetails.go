@@ -23,6 +23,8 @@ type AssetScrapDetails struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// 资产SN
+	Sn string `json:"sn,omitempty"`
 	// 资产ID
 	AssetID uint64 `json:"asset_id,omitempty"`
 	// 报废ID
@@ -73,6 +75,8 @@ func (*AssetScrapDetails) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case assetscrapdetails.FieldID, assetscrapdetails.FieldAssetID, assetscrapdetails.FieldScrapID:
 			values[i] = new(sql.NullInt64)
+		case assetscrapdetails.FieldSn:
+			values[i] = new(sql.NullString)
 		case assetscrapdetails.FieldCreatedAt, assetscrapdetails.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
@@ -107,6 +111,12 @@ func (asd *AssetScrapDetails) assignValues(columns []string, values []any) error
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				asd.UpdatedAt = value.Time
+			}
+		case assetscrapdetails.FieldSn:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field sn", values[i])
+			} else if value.Valid {
+				asd.Sn = value.String
 			}
 		case assetscrapdetails.FieldAssetID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -171,6 +181,9 @@ func (asd *AssetScrapDetails) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(asd.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("sn=")
+	builder.WriteString(asd.Sn)
 	builder.WriteString(", ")
 	builder.WriteString("asset_id=")
 	builder.WriteString(fmt.Sprintf("%v", asd.AssetID))

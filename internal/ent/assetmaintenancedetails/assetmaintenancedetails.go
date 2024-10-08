@@ -29,6 +29,8 @@ const (
 	FieldRemark = "remark"
 	// FieldMaterialID holds the string denoting the material_id field in the database.
 	FieldMaterialID = "material_id"
+	// FieldSn holds the string denoting the sn field in the database.
+	FieldSn = "sn"
 	// FieldAssetID holds the string denoting the asset_id field in the database.
 	FieldAssetID = "asset_id"
 	// FieldMaintenanceID holds the string denoting the maintenance_id field in the database.
@@ -74,6 +76,7 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldMaterialID,
+	FieldSn,
 	FieldAssetID,
 	FieldMaintenanceID,
 }
@@ -134,6 +137,11 @@ func ByRemark(opts ...sql.OrderTermOption) OrderOption {
 // ByMaterialID orders the results by the material_id field.
 func ByMaterialID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldMaterialID, opts...).ToFunc()
+}
+
+// BySn orders the results by the sn field.
+func BySn(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSn, opts...).ToFunc()
 }
 
 // ByAssetID orders the results by the asset_id field.

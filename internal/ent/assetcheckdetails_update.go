@@ -116,6 +116,26 @@ func (acdu *AssetCheckDetailsUpdate) ClearMaintainerID() *AssetCheckDetailsUpdat
 	return acdu
 }
 
+// SetSn sets the "sn" field.
+func (acdu *AssetCheckDetailsUpdate) SetSn(s string) *AssetCheckDetailsUpdate {
+	acdu.mutation.SetSn(s)
+	return acdu
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (acdu *AssetCheckDetailsUpdate) SetNillableSn(s *string) *AssetCheckDetailsUpdate {
+	if s != nil {
+		acdu.SetSn(*s)
+	}
+	return acdu
+}
+
+// ClearSn clears the value of the "sn" field.
+func (acdu *AssetCheckDetailsUpdate) ClearSn() *AssetCheckDetailsUpdate {
+	acdu.mutation.ClearSn()
+	return acdu
+}
+
 // SetAssetID sets the "asset_id" field.
 func (acdu *AssetCheckDetailsUpdate) SetAssetID(u uint64) *AssetCheckDetailsUpdate {
 	acdu.mutation.SetAssetID(u)
@@ -770,6 +790,12 @@ func (acdu *AssetCheckDetailsUpdate) sqlSave(ctx context.Context) (n int, err er
 	if acdu.mutation.RemarkCleared() {
 		_spec.ClearField(assetcheckdetails.FieldRemark, field.TypeString)
 	}
+	if value, ok := acdu.mutation.Sn(); ok {
+		_spec.SetField(assetcheckdetails.FieldSn, field.TypeString, value)
+	}
+	if acdu.mutation.SnCleared() {
+		_spec.ClearField(assetcheckdetails.FieldSn, field.TypeString)
+	}
 	if value, ok := acdu.mutation.RealLocationsType(); ok {
 		_spec.SetField(assetcheckdetails.FieldRealLocationsType, field.TypeUint8, value)
 	}
@@ -1353,6 +1379,26 @@ func (acduo *AssetCheckDetailsUpdateOne) SetNillableMaintainerID(u *uint64) *Ass
 // ClearMaintainerID clears the value of the "maintainer_id" field.
 func (acduo *AssetCheckDetailsUpdateOne) ClearMaintainerID() *AssetCheckDetailsUpdateOne {
 	acduo.mutation.ClearMaintainerID()
+	return acduo
+}
+
+// SetSn sets the "sn" field.
+func (acduo *AssetCheckDetailsUpdateOne) SetSn(s string) *AssetCheckDetailsUpdateOne {
+	acduo.mutation.SetSn(s)
+	return acduo
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (acduo *AssetCheckDetailsUpdateOne) SetNillableSn(s *string) *AssetCheckDetailsUpdateOne {
+	if s != nil {
+		acduo.SetSn(*s)
+	}
+	return acduo
+}
+
+// ClearSn clears the value of the "sn" field.
+func (acduo *AssetCheckDetailsUpdateOne) ClearSn() *AssetCheckDetailsUpdateOne {
+	acduo.mutation.ClearSn()
 	return acduo
 }
 
@@ -2039,6 +2085,12 @@ func (acduo *AssetCheckDetailsUpdateOne) sqlSave(ctx context.Context) (_node *As
 	}
 	if acduo.mutation.RemarkCleared() {
 		_spec.ClearField(assetcheckdetails.FieldRemark, field.TypeString)
+	}
+	if value, ok := acduo.mutation.Sn(); ok {
+		_spec.SetField(assetcheckdetails.FieldSn, field.TypeString, value)
+	}
+	if acduo.mutation.SnCleared() {
+		_spec.ClearField(assetcheckdetails.FieldSn, field.TypeString)
 	}
 	if value, ok := acduo.mutation.RealLocationsType(); ok {
 		_spec.SetField(assetcheckdetails.FieldRealLocationsType, field.TypeUint8, value)
