@@ -2932,7 +2932,7 @@ const docTemplate = `{
                             "AssetTypeEbikeAccessory",
                             "AssetTypeOtherAccessory"
                         ],
-                        "description": "资产类型 1:电车 2:智能电池 3:其它",
+                        "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
                         "name": "assetType",
                         "in": "query"
                     },
@@ -2997,6 +2997,27 @@ const docTemplate = `{
                         ],
                         "description": "报废原因 1:丢失 2:损坏 3:其他",
                         "name": "scrapReason",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "ScrapTypeEbike": "报废电车",
+                            "ScrapTypeOther": "报废其他",
+                            "ScrapTypeSmartBattery": "报废电池"
+                        },
+                        "x-enum-varnames": [
+                            "ScrapTypeEbike",
+                            "ScrapTypeSmartBattery",
+                            "ScrapTypeOther"
+                        ],
+                        "description": "报废列表类型 1:电车 2:智能电池 3:其它",
+                        "name": "scrapType",
                         "in": "query"
                     },
                     {
@@ -8813,6 +8834,24 @@ const docTemplate = `{
                 "ScrapReasonLost",
                 "ScrapReasonDamage",
                 "ScrapReasonOther"
+            ]
+        },
+        "model.ScrapType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "ScrapTypeEbike": "报废电车",
+                "ScrapTypeOther": "报废其他",
+                "ScrapTypeSmartBattery": "报废电池"
+            },
+            "x-enum-varnames": [
+                "ScrapTypeEbike",
+                "ScrapTypeSmartBattery",
+                "ScrapTypeOther"
             ]
         },
         "model.SelectOption": {

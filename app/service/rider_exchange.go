@@ -12,6 +12,7 @@ import (
 
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/adapter/async"
+	"github.com/golang-jwt/jwt/v5"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/rs/xid"
 	"go.uber.org/zap"
@@ -20,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/provider"
+	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
@@ -151,6 +153,16 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
 		uid = t.ID
 	}
 
+	token := jwt.NewWithClaims(
+		jwt.SigningMethodHS256,
+		jwt.MapClaims{
+			"username": "retryer",
+			"exp":      time.Now().Add(time.Minute * 10).Unix(),
+			"iat":      time.Now().Unix(),
+		},
+	)
+	tokenString, _ := token.SignedString([]byte(ar.Config.App.RetryTokenSecret))
+
 	// TODO 修改前端返回值
 	res = &model.RiderExchangeInfo{
 		ID:                         cab.ID,
@@ -166,6 +178,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
 		Model:                      sub.Model,
 		CityID:                     sub.CityID,
 		Brand:                      cab.Brand,
+		RetryToken:                 tokenString,
 	}
 
 	if cab.UsingMicroService() {

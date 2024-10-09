@@ -3711,12 +3711,14 @@ const docTemplate = `{
                 "active",
                 "pause",
                 "continue",
-                "unsubscribe"
+                "unsubscribe",
+                "reopen"
             ],
             "x-enum-comments": {
                 "BusinessActive": "激活",
                 "BusinessContinue": "取消寄存",
                 "BusinessExchange": "换电",
+                "BusinessExchangeReopen": "换电重复开仓",
                 "BusinessOperate": "运维操作",
                 "BusinessPause": "寄存",
                 "BusinessUnsubscribe": "退订"
@@ -3727,7 +3729,8 @@ const docTemplate = `{
                 "BusinessActive",
                 "BusinessPause",
                 "BusinessContinue",
-                "BusinessUnsubscribe"
+                "BusinessUnsubscribe",
+                "BusinessExchangeReopen"
             ]
         },
         "adapter.CabinetBrand": {

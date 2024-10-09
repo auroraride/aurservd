@@ -90,7 +90,7 @@ func (r *rider) Profile(c echo.Context) (err error) {
 
 // ReportPhoneDevice
 // @ID		ReportPhoneDevice
-// @Router	/rider/v2/phone/device [POST]
+// @Router	/rider/v2/report/phone/device [POST]
 // @Summary	上报手机设备信息
 // @Tags	Rider - 骑手
 // @Accept	json

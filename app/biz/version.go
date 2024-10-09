@@ -45,6 +45,7 @@ func (s *versionBiz) Create(req *definition.VersionReq) (err error) {
 		SetContent(req.Content).
 		SetVersion(req.Version).
 		SetForce(req.Force).
+		SetNillableEnable(req.Enable).
 		Save(s.ctx)
 	if err != nil {
 		return err
@@ -58,6 +59,7 @@ func (s *versionBiz) Modify(req *definition.VersionModifyReq) (err error) {
 		SetPlatform(req.AppPlatform).
 		SetContent(req.Content).
 		SetVersion(req.Version).
+		SetNillableEnable(req.Enable).
 		SetForce(req.Force).
 		Save(s.ctx)
 	if err != nil {
@@ -89,6 +91,7 @@ func (s *versionBiz) List(req *definition.VersionListReq) (res *model.Pagination
 				Content:     item.Content,
 				Force:       item.Force,
 				CreatedAt:   item.CreatedAt.Format(carbon.DateTimeLayout),
+				Enable:      item.Enable,
 			}
 		},
 	)
@@ -97,7 +100,10 @@ func (s *versionBiz) List(req *definition.VersionListReq) (res *model.Pagination
 // LatestVersion 获取最新版本
 func (s *versionBiz) LatestVersion(req *definition.LatestVersionReq) *definition.Version {
 	q, _ := s.orm.QueryNotDeleted().
-		Where(version.PlatformEQ(req.AppPlatform)).
+		Where(
+			version.PlatformEQ(req.AppPlatform),
+			version.Enable(true),
+		).
 		Order(ent.Desc(version.FieldCreatedAt)).First(s.ctx)
 	if q == nil {
 		return nil
@@ -114,5 +120,6 @@ func (s *versionBiz) LatestVersion(req *definition.LatestVersionReq) *definition
 		Force:        q.Force,
 		CreatedAt:    q.CreatedAt.Format(carbon.DateTimeLayout),
 		DownloadLink: link,
+		Enable:       q.Enable,
 	}
 }

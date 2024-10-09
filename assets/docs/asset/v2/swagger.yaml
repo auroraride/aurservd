@@ -2354,6 +2354,20 @@ definitions:
     - ScrapReasonLost
     - ScrapReasonDamage
     - ScrapReasonOther
+  model.ScrapType:
+    enum:
+    - 1
+    - 2
+    - 3
+    type: integer
+    x-enum-comments:
+      ScrapTypeEbike: 报废电车
+      ScrapTypeOther: 报废其他
+      ScrapTypeSmartBattery: 报废电池
+    x-enum-varnames:
+    - ScrapTypeEbike
+    - ScrapTypeSmartBattery
+    - ScrapTypeOther
   model.SelectOption:
     properties:
       desc:
@@ -4541,7 +4555,7 @@ paths:
         in: query
         name: assetName
         type: string
-      - description: 资产类型 1:电车 2:智能电池 3:其它
+      - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
         enum:
         - 1
         - 2
@@ -4610,6 +4624,22 @@ paths:
         - ScrapReasonLost
         - ScrapReasonDamage
         - ScrapReasonOther
+      - description: 报废列表类型 1:电车 2:智能电池 3:其它
+        enum:
+        - 1
+        - 2
+        - 3
+        in: query
+        name: scrapType
+        type: integer
+        x-enum-comments:
+          ScrapTypeEbike: 报废电车
+          ScrapTypeOther: 报废其他
+          ScrapTypeSmartBattery: 报废电池
+        x-enum-varnames:
+        - ScrapTypeEbike
+        - ScrapTypeSmartBattery
+        - ScrapTypeOther
       - description: 资产编号
         in: query
         name: sn

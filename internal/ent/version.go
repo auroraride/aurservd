@@ -38,7 +38,9 @@ type Version struct {
 	// 更新内容
 	Content string `json:"content,omitempty"`
 	// 是否强制更新
-	Force        bool `json:"force,omitempty"`
+	Force bool `json:"force,omitempty"`
+	// 是否启用
+	Enable       bool `json:"enable,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -51,7 +53,7 @@ func (*Version) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case version.FieldPlatform:
 			values[i] = new(model.AppPlatform)
-		case version.FieldForce:
+		case version.FieldForce, version.FieldEnable:
 			values[i] = new(sql.NullBool)
 		case version.FieldID:
 			values[i] = new(sql.NullInt64)
@@ -145,6 +147,12 @@ func (v *Version) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				v.Force = value.Bool
 			}
+		case version.FieldEnable:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field enable", values[i])
+			} else if value.Valid {
+				v.Enable = value.Bool
+			}
 		default:
 			v.selectValues.Set(columns[i], values[i])
 		}
@@ -212,6 +220,9 @@ func (v *Version) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("force=")
 	builder.WriteString(fmt.Sprintf("%v", v.Force))
+	builder.WriteString(", ")
+	builder.WriteString("enable=")
+	builder.WriteString(fmt.Sprintf("%v", v.Enable))
 	builder.WriteByte(')')
 	return builder.String()
 }

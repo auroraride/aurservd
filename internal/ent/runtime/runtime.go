@@ -2429,6 +2429,10 @@ func init() {
 	versionDescPlatform := versionFields[0].Descriptor()
 	// version.DefaultPlatform holds the default value on creation for the platform field.
 	version.DefaultPlatform = versionDescPlatform.Default.(model.AppPlatform)
+	// versionDescEnable is the schema descriptor for enable field.
+	versionDescEnable := versionFields[4].Descriptor()
+	// version.DefaultEnable holds the default value on creation for the enable field.
+	version.DefaultEnable = versionDescEnable.Default.(bool)
 	warehouseMixin := schema.Warehouse{}.Mixin()
 	warehouseMixinHooks2 := warehouseMixin[2].Hooks()
 	warehouse.Hooks[0] = warehouseMixinHooks2[0]

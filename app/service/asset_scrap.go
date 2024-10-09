@@ -156,14 +156,20 @@ func (s *assetScrapService) ScrapList(ctx context.Context, req *model.AssetScrap
 
 // 公共筛选条件
 func (s *assetScrapService) filter(ctx context.Context, q *ent.AssetScrapQuery, req *model.AssetScrapListReq) {
-	if req.AssetType != nil {
-		if *req.AssetType == model.AssetTypeEbike || *req.AssetType == model.AssetTypeSmartBattery {
-			q.Where(assetscrap.HasScrapDetailsWith(assetscrapdetails.HasAssetWith(asset.Type(req.AssetType.Value()))))
-		} else {
-			// 配件
-			q.Where(assetscrap.HasScrapDetailsWith(assetscrapdetails.HasAssetWith(asset.TypeNotIn(model.AssetTypeEbike.Value(), model.AssetTypeSmartBattery.Value()))))
+	if req.ScrapType != nil {
+		switch *req.ScrapType {
+		case model.ScrapTypeEbike:
+			q.Where(assetscrap.HasScrapDetailsWith(assetscrapdetails.HasAssetWith(asset.Type(model.AssetTypeEbike.Value()))))
+		case model.ScrapTypeSmartBattery:
+			q.Where(assetscrap.HasScrapDetailsWith(assetscrapdetails.HasAssetWith(asset.Type(model.AssetTypeSmartBattery.Value()))))
+		case model.ScrapTypeOther:
+			q.Where(assetscrap.HasScrapDetailsWith(assetscrapdetails.HasAssetWith(asset.TypeIn(
+				model.AssetTypeNonSmartBattery.Value(),
+				model.AssetTypeCabinetAccessory.Value(),
+				model.AssetTypeEbikeAccessory.Value(),
+				model.AssetTypeOtherAccessory.Value(),
+			))))
 		}
-
 	}
 	if req.SN != nil {
 		q.Where(assetscrap.HasScrapDetailsWith(assetscrapdetails.HasAssetWith(asset.SnContains(*req.SN))))

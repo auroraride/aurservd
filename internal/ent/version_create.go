@@ -123,6 +123,20 @@ func (vc *VersionCreate) SetForce(b bool) *VersionCreate {
 	return vc
 }
 
+// SetEnable sets the "enable" field.
+func (vc *VersionCreate) SetEnable(b bool) *VersionCreate {
+	vc.mutation.SetEnable(b)
+	return vc
+}
+
+// SetNillableEnable sets the "enable" field if the given value is not nil.
+func (vc *VersionCreate) SetNillableEnable(b *bool) *VersionCreate {
+	if b != nil {
+		vc.SetEnable(*b)
+	}
+	return vc
+}
+
 // Mutation returns the VersionMutation object of the builder.
 func (vc *VersionCreate) Mutation() *VersionMutation {
 	return vc.mutation
@@ -178,6 +192,10 @@ func (vc *VersionCreate) defaults() error {
 		v := version.DefaultPlatform
 		vc.mutation.SetPlatform(v)
 	}
+	if _, ok := vc.mutation.Enable(); !ok {
+		v := version.DefaultEnable
+		vc.mutation.SetEnable(v)
+	}
 	return nil
 }
 
@@ -200,6 +218,9 @@ func (vc *VersionCreate) check() error {
 	}
 	if _, ok := vc.mutation.Force(); !ok {
 		return &ValidationError{Name: "force", err: errors.New(`ent: missing required field "Version.force"`)}
+	}
+	if _, ok := vc.mutation.Enable(); !ok {
+		return &ValidationError{Name: "enable", err: errors.New(`ent: missing required field "Version.enable"`)}
 	}
 	return nil
 }
@@ -267,6 +288,10 @@ func (vc *VersionCreate) createSpec() (*Version, *sqlgraph.CreateSpec) {
 	if value, ok := vc.mutation.Force(); ok {
 		_spec.SetField(version.FieldForce, field.TypeBool, value)
 		_node.Force = value
+	}
+	if value, ok := vc.mutation.Enable(); ok {
+		_spec.SetField(version.FieldEnable, field.TypeBool, value)
+		_node.Enable = value
 	}
 	return _node, _spec
 }
@@ -431,6 +456,18 @@ func (u *VersionUpsert) SetForce(v bool) *VersionUpsert {
 // UpdateForce sets the "force" field to the value that was provided on create.
 func (u *VersionUpsert) UpdateForce() *VersionUpsert {
 	u.SetExcluded(version.FieldForce)
+	return u
+}
+
+// SetEnable sets the "enable" field.
+func (u *VersionUpsert) SetEnable(v bool) *VersionUpsert {
+	u.Set(version.FieldEnable, v)
+	return u
+}
+
+// UpdateEnable sets the "enable" field to the value that was provided on create.
+func (u *VersionUpsert) UpdateEnable() *VersionUpsert {
+	u.SetExcluded(version.FieldEnable)
 	return u
 }
 
@@ -612,6 +649,20 @@ func (u *VersionUpsertOne) SetForce(v bool) *VersionUpsertOne {
 func (u *VersionUpsertOne) UpdateForce() *VersionUpsertOne {
 	return u.Update(func(s *VersionUpsert) {
 		s.UpdateForce()
+	})
+}
+
+// SetEnable sets the "enable" field.
+func (u *VersionUpsertOne) SetEnable(v bool) *VersionUpsertOne {
+	return u.Update(func(s *VersionUpsert) {
+		s.SetEnable(v)
+	})
+}
+
+// UpdateEnable sets the "enable" field to the value that was provided on create.
+func (u *VersionUpsertOne) UpdateEnable() *VersionUpsertOne {
+	return u.Update(func(s *VersionUpsert) {
+		s.UpdateEnable()
 	})
 }
 
@@ -959,6 +1010,20 @@ func (u *VersionUpsertBulk) SetForce(v bool) *VersionUpsertBulk {
 func (u *VersionUpsertBulk) UpdateForce() *VersionUpsertBulk {
 	return u.Update(func(s *VersionUpsert) {
 		s.UpdateForce()
+	})
+}
+
+// SetEnable sets the "enable" field.
+func (u *VersionUpsertBulk) SetEnable(v bool) *VersionUpsertBulk {
+	return u.Update(func(s *VersionUpsert) {
+		s.SetEnable(v)
+	})
+}
+
+// UpdateEnable sets the "enable" field to the value that was provided on create.
+func (u *VersionUpsertBulk) UpdateEnable() *VersionUpsertBulk {
+	return u.Update(func(s *VersionUpsert) {
+		s.UpdateEnable()
 	})
 }
 

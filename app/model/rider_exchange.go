@@ -42,6 +42,8 @@ type RiderExchangeInfo struct {
 	Model          string               `json:"model"`          // 电池型号
 	CityID         uint64               `json:"cityId"`         // 城市ID
 	*RiderCabinetOperateProcess
+
+	RetryToken string `json:"retryToken"` // 重试令牌，用于重试操作，重试操作时需要携带，不可泄露，10分钟有效期
 }
 
 func (c *RiderExchangeInfo) MarshalBinary() ([]byte, error) {
