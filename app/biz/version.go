@@ -6,6 +6,7 @@ package biz
 
 import (
 	"context"
+	"errors"
 
 	"github.com/golang-module/carbon/v2"
 
@@ -40,6 +41,11 @@ func NewVersionWithModifierBiz(m *model.Modifier) *versionBiz {
 
 // Create 创建版本
 func (s *versionBiz) Create(req *definition.VersionReq) (err error) {
+	// 判定版本是否存在
+	q, _ := s.orm.QueryNotDeleted().Where(version.Platform(req.AppPlatform), version.Version(req.Version)).First(s.ctx)
+	if q != nil {
+		return errors.New("版本已存在")
+	}
 	_, err = s.orm.Create().
 		SetPlatform(req.AppPlatform).
 		SetContent(req.Content).
@@ -55,6 +61,11 @@ func (s *versionBiz) Create(req *definition.VersionReq) (err error) {
 
 // Modify 修改
 func (s *versionBiz) Modify(req *definition.VersionModifyReq) (err error) {
+	// 判定版本是否存在 当前版本不判定
+	q, _ := s.orm.QueryNotDeleted().Where(version.Platform(req.AppPlatform), version.Version(req.Version), version.IDNEQ(req.ID)).First(s.ctx)
+	if q != nil {
+		return errors.New("版本已存在")
+	}
 	_, err = s.orm.UpdateOneID(req.ID).
 		SetPlatform(req.AppPlatform).
 		SetContent(req.Content).
