@@ -1273,6 +1273,9 @@ func (s *assetService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 	}
 	var storeID uint64
 	var ebikeStoreID uint64
+	if req.StoreID != nil {
+		storeID = *req.StoreID
+	}
 	if req.BatStoreID != nil {
 		storeID = *req.BatStoreID
 	}
