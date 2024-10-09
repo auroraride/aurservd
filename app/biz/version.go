@@ -45,7 +45,7 @@ func (s *versionBiz) Create(req *definition.VersionReq) (err error) {
 		SetContent(req.Content).
 		SetVersion(req.Version).
 		SetForce(req.Force).
-		SetEnable(req.Enable).
+		SetNillableEnable(req.Enable).
 		Save(s.ctx)
 	if err != nil {
 		return err
@@ -59,7 +59,7 @@ func (s *versionBiz) Modify(req *definition.VersionModifyReq) (err error) {
 		SetPlatform(req.AppPlatform).
 		SetContent(req.Content).
 		SetVersion(req.Version).
-		SetEnable(req.Enable).
+		SetNillableEnable(req.Enable).
 		SetForce(req.Force).
 		Save(s.ctx)
 	if err != nil {

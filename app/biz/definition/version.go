@@ -11,7 +11,7 @@ type VersionReq struct {
 	Version     string            `json:"version" validate:"required"` // 版本号
 	Content     string            `json:"content" validate:"required"` // 更新内容
 	Force       bool              `json:"force"`                       // 是否强制更新
-	Enable      bool              `json:"enable"  validate:"required"` // 是否启用
+	Enable      *bool             `json:"enable"  validate:"required"` // 是否启用
 }
 
 type VersionRes struct {
