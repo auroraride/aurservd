@@ -28,6 +28,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/asset"
+	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
@@ -590,23 +591,7 @@ func (s *intelligentCabinetService) OpenBind(req *model.CabinetOpenBindReq) {
 	rd := NewRider().QueryPhoneX(req.Phone)
 	// 查找订阅
 	sub := NewSubscribe().QueryEffectiveIntelligentX(rd.ID, ent.SubscribeQueryWithBattery, ent.SubscribeQueryWithRider)
-	if !sub.Intelligent {
-		snag.Panic("非智能电柜套餐, 无法操作")
-	}
-	// 查询电柜
-	cab := NewCabinet().QueryOne(req.ID)
-	if !cab.Intelligent {
-		snag.Panic("非智能电柜, 无法操作")
-	}
-	// 查询电柜最新信息
-	info, _ := s.Bininfo(cab, *req.Index+1)
-	if info == nil {
-		snag.Panic("获取最新仓位信息失败")
-		return
-	}
-	if info.BatterySN != req.BatterySN {
-		snag.Panic("电池编码有变动, 请刷新后重试")
-	}
+
 	// 判定
 	if exists, _ := sub.QueryBattery().Where(
 		asset.TypeIn(model.AssetTypeNonSmartBattery.Value(), model.AssetTypeSmartBattery.Value()),
@@ -615,10 +600,38 @@ func (s *intelligentCabinetService) OpenBind(req *model.CabinetOpenBindReq) {
 	).Exist(s.ctx); exists {
 		snag.Panic("该骑手当前有绑定的电池")
 	}
-	// 查找电池
-	bat, err := bs.QuerySn(req.BatterySN)
-	if err != nil {
-		snag.Panic("未找到电池信息")
+	var bat *ent.Asset
+	var err error
+	// 查询电柜
+	cab := NewCabinet().QueryOne(req.ID)
+	if cab.Intelligent {
+		// 查询电柜最新信息
+		info, _ := s.Bininfo(cab, *req.Index+1)
+		if info == nil {
+			snag.Panic("获取最新仓位信息失败")
+			return
+		}
+		if info.BatterySN != req.BatterySN {
+			snag.Panic("电池编码有变动, 请刷新后重试")
+		}
+		// 查找电池
+		bat, err = bs.QuerySn(req.BatterySN)
+		if err != nil {
+			snag.Panic("未找到电池信息")
+		}
+	} else {
+		locationsType := model.AssetLocationsTypeCabinet
+		locationsID := req.ID
+		md := ent.Database.BatteryModel.Query().Where(batterymodel.Model(sub.Model)).FirstX(s.ctx)
+		if md == nil {
+			snag.Panic("未找到电池型号")
+			return
+		}
+		bat, _ = NewAsset().QueryNonSmartBattery(&model.QueryAssetBatteryReq{
+			LocationsType: &locationsType,
+			LocationsID:   &locationsID,
+			ModelID:       md.ID,
+		})
 	}
 	// 开门
 	success, _ := s.Operate(logging.GetOperatorX(s.modifier), cab, cabdef.OperateDoorOpen, &model.CabinetDoorOperateReq{

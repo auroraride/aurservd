@@ -47,4 +47,8 @@ func LoadManagerV2Routes(root *echo.Group) {
 	ebike := g.Group("/ebike")
 	ebike.PUT("/batch", v2.Ebike.BatchModify)
 	ebike.DELETE("/brand/:id", v2.Ebike.DeleteBrand)
+
+	// 资产
+	asset := g.Group("/masset")
+	asset.GET("/count", v2.Asset.Count) // 资产数量
 }
