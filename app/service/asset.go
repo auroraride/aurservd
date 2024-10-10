@@ -1248,6 +1248,8 @@ func (s *assetService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 	var toLocationID uint64
 	var ebiketoLocationID uint64
 	var ebiketoLocationType model.AssetLocationsType
+	var ebikeFromLocationType model.AssetLocationsType
+	var ebikeFromLocationID uint64
 	details := make([]model.AssetTransferCreateDetail, 0)
 	ebikeDetails := make([]model.AssetTransferCreateDetail, 0)
 	assetType := model.AssetTypeSmartBattery
@@ -1311,18 +1313,22 @@ func (s *assetService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 		// 激活和取消寄存 某个位置的库存调拨到骑手
 		toLocationType = model.AssetLocationsTypeRider
 		toLocationID = req.RiderID
+		ebiketoLocationType = model.AssetLocationsTypeRider
+		ebiketoLocationID = req.RiderID
 		if batteryInfo != nil {
 			fromLocationType = model.AssetLocationsType(batteryInfo.LocationsType)
 			fromLocationID = batteryInfo.LocationsID
 		}
 		if ebikeInfo != nil {
-			fromLocationType = model.AssetLocationsType(ebikeInfo.LocationsType)
-			fromLocationID = ebikeInfo.LocationsID
+			ebikeFromLocationType = model.AssetLocationsType(ebikeInfo.LocationsType)
+			ebikeFromLocationID = ebikeInfo.LocationsID
 		}
 	case model.AssetTransferTypePause, model.AssetTransferTypeUnSubscribe:
 		// 寄存和退租 骑手的库存调拨到某个位置
 		fromLocationType = model.AssetLocationsTypeRider
 		fromLocationID = req.RiderID
+		ebikeFromLocationType = model.AssetLocationsTypeRider
+		ebikeFromLocationID = req.RiderID
 		// 电池退租使用参数
 		if req.BatStoreID != nil || req.StoreID != nil {
 			toLocationType = model.AssetLocationsTypeStore
@@ -1336,16 +1342,16 @@ func (s *assetService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 			toLocationType = model.AssetLocationsTypeStation
 			toLocationID = *req.StationID
 		}
-	default:
-		return errors.New("业务类型错误")
-	}
-
-	if ebikeInfo != nil {
 		// 电车退租使用参数
 		if req.EbikeStoreID != nil {
 			ebiketoLocationType = model.AssetLocationsTypeStore
 			ebiketoLocationID = ebikeStoreID
 		}
+	default:
+		return errors.New("业务类型错误")
+	}
+
+	if ebikeInfo != nil {
 		ebikeDetails = append(ebikeDetails, model.AssetTransferCreateDetail{
 			AssetType: model.AssetTypeEbike,
 			SN:        silk.String(ebikeInfo.Sn),
@@ -1396,8 +1402,8 @@ func (s *assetService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 	if len(ebikeDetails) != 0 {
 		// 电车创建调拨单
 		_, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
-			FromLocationType:  &fromLocationType,
-			FromLocationID:    &fromLocationID,
+			FromLocationType:  &ebikeFromLocationType,
+			FromLocationID:    &ebikeFromLocationID,
 			ToLocationType:    ebiketoLocationType,
 			ToLocationID:      ebiketoLocationID,
 			Details:           ebikeDetails,

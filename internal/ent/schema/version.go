@@ -66,7 +66,7 @@ func (Version) Fields() []ent.Field {
 		field.Other("platform", model.AppPlatform("")).Default(model.AppPlatform("")).SchemaType(map[string]string{
 			dialect.Postgres: postgres.TypeCharVar,
 		}).Comment("平台"),
-		field.String("version").Unique().Comment("版本号"),
+		field.String("version").Comment("版本号"),
 		field.String("content").Comment("更新内容"),
 		field.Bool("force").Comment("是否强制更新"),
 		field.Bool("enable").Default(true).Comment("是否启用"),
