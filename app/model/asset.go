@@ -88,7 +88,9 @@ type AssetExportTemplateReq struct {
 
 // AssetNumRes 资产有效数量返回
 type AssetNumRes struct {
-	Num int `json:"num"` // 有效数量
+	Num       int        `json:"num"`                 // 有效数量
+	AssetID   *uint64    `json:"assetId,omitempty"`   // 一个有效的资产ID
+	AssetType *AssetType `json:"assetType,omitempty"` // 资产类型
 }
 
 // QueryAssetBatteryReq 查询资产请求

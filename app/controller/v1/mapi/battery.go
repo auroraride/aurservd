@@ -129,7 +129,7 @@ func (*battery) ListModels(c echo.Context) (err error) {
 // Bind
 // @ID		ManagerBatteryBind
 // @Router	/manager/v1/battery/bind [POST]
-// @Summary	绑定骑手
+// @Summary	电池绑定至骑手
 // @Tags	电池
 // @Accept	json
 // @Produce	json

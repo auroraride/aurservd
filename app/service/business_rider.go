@@ -807,14 +807,19 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 // UnSubscribe 退租
 // 会抹去欠费情况
 func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns ...func(sub *ent.Subscribe)) {
+	sub := s.QuerySubscribeWithRider(req.ID)
+	// 处理单电无电池退租
+	if !sub.QueryBattery().ExistX(s.ctx) && sub.EbikeID == nil {
+		s.NoBatteryUnsubscribe(req, sub)
+		return
+	}
+
 	// 预处理业务信息
-	s.Preprocess(model.BusinessTypeUnsubscribe, s.QuerySubscribeWithRider(req.ID))
+	s.Preprocess(model.BusinessTypeUnsubscribe, sub)
 
 	if len(fns) > 0 {
 		fns[0](s.subscribe)
 	}
-
-	sub := s.subscribe
 
 	// 代理商操作退租
 	s.agentID = req.AgentID
@@ -876,10 +881,6 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 			SetStatus(model.SubscribeStatusUnSubscribed).
 			SetUnsubscribeReason(reason).
 			Save(s.ctx)
-		snag.PanicIfError(err)
-
-		// 标记需要签约
-		_, err = tx.Rider.UpdateOneID(sub.RiderID).Save(s.ctx)
 		snag.PanicIfError(err)
 
 		// 查询并标记用户合同为失效
@@ -1160,4 +1161,35 @@ func (s *businessRiderService) ForceUnsubscribe(req *model.BusinessSubscribeReq,
 		return err
 	}
 	return nil
+}
+
+// NoBatteryUnsubscribe 单电无电池退租 只能由业务后台操作
+func (s *businessRiderService) NoBatteryUnsubscribe(req *model.BusinessSubscribeReq, sub *ent.Subscribe) {
+	if s.modifier == nil {
+		snag.Panic("无权限操作")
+	}
+
+	_, err := ent.Database.Subscribe.
+		UpdateOneID(sub.ID).
+		SetEndAt(time.Now()).
+		SetStatus(model.SubscribeStatusUnSubscribed).
+		SetUnsubscribeReason("无电池后台强制退租").
+		Save(s.ctx)
+	snag.PanicIfError(err)
+
+	// 查询并标记用户合同为失效
+	_, err = ent.Database.Contract.Update().Where(contract.RiderID(sub.RiderID)).SetEffective(false).Save(s.ctx)
+	snag.PanicIfError(err)
+
+	// 更新企业账单
+	if sub.EnterpriseID != nil {
+		go NewEnterprise().UpdateStatementByID(*sub.EnterpriseID)
+	}
+
+	// 处理退款
+	err = s.ForceUnsubscribe(req, sub.ID, sub.RiderID)
+	if err != nil {
+		zap.L().Error("退款失败", zap.Error(err))
+		snag.Panic(err)
+	}
 }

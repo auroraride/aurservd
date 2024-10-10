@@ -7270,6 +7270,18 @@ const docTemplate = `{
         "model.AssetNumRes": {
             "type": "object",
             "properties": {
+                "assetId": {
+                    "description": "一个有效的资产ID",
+                    "type": "integer"
+                },
+                "assetType": {
+                    "description": "资产类型",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetType"
+                        }
+                    ]
+                },
                 "num": {
                     "description": "有效数量",
                     "type": "integer"

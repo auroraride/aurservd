@@ -1249,6 +1249,13 @@ definitions:
     type: object
   model.AssetNumRes:
     properties:
+      assetId:
+        description: 一个有效的资产ID
+        type: integer
+      assetType:
+        allOf:
+          - $ref: '#/definitions/model.AssetType'
+        description: 资产类型
       num:
         description: 有效数量
         type: integer

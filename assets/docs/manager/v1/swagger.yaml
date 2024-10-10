@@ -7699,7 +7699,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: 绑定骑手
+      summary: 电池绑定至骑手
       tags:
       - 电池
   /manager/v1/battery/model:
