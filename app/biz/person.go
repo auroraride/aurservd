@@ -239,7 +239,7 @@ func (b *personBiz) CertificationFace(r *ent.Rider, req *definition.PersonCertif
 	}
 
 	// 获取生日
-	birth := identity.IdCardNumber[7:14]
+	birth := identity.IdCardNumber[6:14]
 	birthday := carbon.Parse(birth).StdTime().AddDate(18, 0, 0)
 
 	// 未年满18岁认证标记为失败
@@ -478,7 +478,7 @@ func (b *personBiz) CertificationSupplement(r *ent.Rider, req *definition.Person
 		return errors.New("补充信息与原信息不一致")
 	}
 	// 获取生日
-	birth := result.IdCardNumber[7:14]
+	birth := result.IdCardNumber[6:14]
 	// 判定证件有效期
 	if result.ValidExpireDate != "" && result.ValidExpireDate != "长期" {
 		expireDate := carbon.Parse(result.ValidExpireDate).StdTime()
