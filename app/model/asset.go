@@ -29,6 +29,7 @@ type AssetModifyReq struct {
 type AssetFilter struct {
 	SN               *string             `json:"sn" query:"sn"`                                           // 编号
 	ModelID          *uint64             `json:"modelId" query:"modelId"`                                 // 型号ID
+	Model            *string             `json:"model" query:"model"`                                     // 型号
 	CityID           *uint64             `json:"cityId" query:"cityId"`                                   // 城市
 	OwnerType        *uint8              `json:"ownerType" query:"ownerType" enums:"1,2"`                 // 归属类型   1:平台 2:团签
 	EnterpriseID     *uint64             `json:"enterpriseId" query:"enterpriseId"`                       // 团签企业ID

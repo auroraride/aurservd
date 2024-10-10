@@ -443,6 +443,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "型号",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "型号ID",
                         "name": "modelId",
@@ -5673,6 +5679,10 @@ const docTemplate = `{
                 "model": {
                     "description": "型号",
                     "type": "string"
+                },
+                "modelId": {
+                    "description": "型号ID",
+                    "type": "integer"
                 },
                 "sn": {
                     "description": "编号",

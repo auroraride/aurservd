@@ -175,6 +175,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "型号",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "型号ID",
                         "name": "modelId",
@@ -1560,6 +1566,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "其他物资ID",
                         "name": "materialId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "型号",
+                        "name": "model",
                         "in": "query"
                     },
                     {
@@ -6946,6 +6958,10 @@ const docTemplate = `{
                 "materialId": {
                     "description": "其他物资ID",
                     "type": "integer"
+                },
+                "model": {
+                    "description": "型号",
+                    "type": "string"
                 },
                 "modelId": {
                     "description": "型号ID",
