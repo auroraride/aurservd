@@ -168,6 +168,12 @@
                         "in": "query"
                     },
                     {
+                      "type": "string",
+                      "description": "型号",
+                      "name": "model",
+                      "in": "query"
+                    },
+                  {
                         "type": "integer",
                         "description": "型号ID",
                         "name": "modelId",
@@ -1556,6 +1562,12 @@
                         "in": "query"
                     },
                     {
+                      "type": "string",
+                      "description": "型号",
+                      "name": "model",
+                      "in": "query"
+                    },
+                  {
                         "type": "integer",
                         "description": "型号ID",
                         "name": "modelId",
@@ -6940,6 +6952,10 @@
                     "description": "其他物资ID",
                     "type": "integer"
                 },
+              "model": {
+                "description": "型号",
+                "type": "string"
+              },
                 "modelId": {
                     "description": "型号ID",
                     "type": "integer"

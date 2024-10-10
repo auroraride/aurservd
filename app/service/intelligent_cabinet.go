@@ -590,7 +590,7 @@ func (s *intelligentCabinetService) OpenBind(req *model.CabinetOpenBindReq) {
 	// 查找骑手
 	rd := NewRider().QueryPhoneX(req.Phone)
 	// 查找订阅
-	sub := NewSubscribe().QueryEffectiveIntelligentX(rd.ID, ent.SubscribeQueryWithBattery, ent.SubscribeQueryWithRider)
+	sub := NewSubscribe().QueryEffectiveX(rd.ID, ent.SubscribeQueryWithBattery, ent.SubscribeQueryWithRider)
 
 	// 判定
 	if exists, _ := sub.QueryBattery().Where(

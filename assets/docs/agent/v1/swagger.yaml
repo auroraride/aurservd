@@ -1384,6 +1384,9 @@ definitions:
       model:
         description: 型号
         type: string
+      modelId:
+        description: 型号ID
+        type: integer
       sn:
         description: 编号
         type: string
@@ -2609,6 +2612,10 @@ paths:
         in: query
         name: materialId
         type: integer
+      - description: 型号
+        in: query
+        name: model
+        type: string
       - description: 型号ID
         in: query
         name: modelId

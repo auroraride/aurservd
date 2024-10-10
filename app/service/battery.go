@@ -440,7 +440,7 @@ func (s *batteryService) RiderDetail(riderID uint64) (res model.BatteryDetail) {
 // BindRequest 电池绑定至骑手
 func (s *batteryService) BindRequest(req *model.BatteryBind) error {
 	// 查找订阅
-	sub := NewSubscribe().QueryEffectiveIntelligentX(req.RiderID, ent.SubscribeQueryWithRider)
+	sub := NewSubscribe().QueryEffectiveX(req.RiderID, ent.SubscribeQueryWithRider)
 
 	// 查找电池
 	bat, _ := NewAsset().QueryID(req.BatteryID)
@@ -481,7 +481,7 @@ func (s *batteryService) Bind(bat *ent.Asset, sub *ent.Subscribe, rd *ent.Rider)
 // Unbind 解绑电池
 func (s *batteryService) Unbind(req *model.BatteryUnbindRequest) error {
 	// 查找订阅
-	sub := NewSubscribe().QueryEffectiveIntelligentX(req.RiderID, ent.SubscribeQueryWithRider)
+	sub := NewSubscribe().QueryEffectiveX(req.RiderID, ent.SubscribeQueryWithRider)
 
 	if sub != nil && len(sub.Edges.Battery) > 0 {
 		bat := sub.Edges.Battery[0]

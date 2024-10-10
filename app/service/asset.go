@@ -998,6 +998,9 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 	if req.ModelID != nil {
 		q.Where(asset.ModelID(*req.ModelID))
 	}
+	if req.Model != nil {
+		q.Where(asset.HasModelWith(batterymodel.Model(*req.Model)))
+	}
 
 	// 属性查询
 	if req.Attribute != nil {
