@@ -432,7 +432,7 @@ type CabinetOpenBindReq struct {
 	ID        uint64 `json:"id" validate:"required" trans:"电柜ID"`
 	Index     *int   `json:"index" validate:"required" trans:"仓门序号"`
 	Remark    string `json:"remark" validate:"required" trans:"操作原因"` // 可手动输入, 预留项: `吞电池` `柜门未关好` `仓位不足`
-	BatterySN string `json:"batterySn" validate:"required" trans:"电池编码"`
+	BatterySN string `json:"batterySn" trans:"电池编码"`
 }
 
 type CabinetRpcBatchRequestItem struct {
