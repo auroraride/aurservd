@@ -967,6 +967,11 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 					),
 				)
 			}
+			if req.LocationsID != nil {
+				q.Where(
+					asset.LocationsID(*req.LocationsID),
+				)
+			}
 
 		case model.AssetLocationsTypeRider:
 			if req.LocationsKeyword != nil {
