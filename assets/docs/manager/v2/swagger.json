@@ -305,6 +305,237 @@
                     }
                 }
             }
+        },
+      "/manager/v2/masset/count": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "Asset - 资产"
+          ],
+          "summary": "查询有效的资产数量",
+          "operationId": "AssetCount",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "管理员校验token",
+              "name": "X-Manager-Token",
+              "in": "header",
+              "required": true
+            },
+            {
+              "type": "integer",
+              "description": "仓管人员ID",
+              "name": "assetManagerId",
+              "in": "query"
+            },
+            {
+              "enum": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ],
+              "type": "integer",
+              "x-enum-comments": {
+                "AssetTypeCabinetAccessory": "电柜配件",
+                "AssetTypeEbike": "电车",
+                "AssetTypeEbikeAccessory": "电车配件",
+                "AssetTypeNonSmartBattery": "非智能电池",
+                "AssetTypeOtherAccessory": "其它配件",
+                "AssetTypeSmartBattery": "智能电池"
+              },
+              "x-enum-varnames": [
+                "AssetTypeEbike",
+                "AssetTypeSmartBattery",
+                "AssetTypeNonSmartBattery",
+                "AssetTypeCabinetAccessory",
+                "AssetTypeEbikeAccessory",
+                "AssetTypeOtherAccessory"
+              ],
+              "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
+              "name": "assetType",
+              "in": "query"
+            },
+            {
+              "type": "string",
+              "description": "属性 id:value",
+              "name": "attribute",
+              "in": "query"
+            },
+            {
+              "type": "boolean",
+              "description": "电池是否统一查询",
+              "name": "battery",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "电车品牌ID",
+              "name": "brandId",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "城市",
+              "name": "cityId",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "门店店员ID",
+              "name": "employeeId",
+              "in": "query"
+            },
+            {
+              "type": "boolean",
+              "description": "是否启用",
+              "name": "enable",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "团签企业ID",
+              "name": "enterpriseId",
+              "in": "query"
+            },
+            {
+              "type": "string",
+              "description": "电车关键字",
+              "name": "keyword",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "资产位置ID",
+              "name": "locationsId",
+              "in": "query"
+            },
+            {
+              "type": "string",
+              "description": "资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
+              "name": "locationsKeyword",
+              "in": "query"
+            },
+            {
+              "enum": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ],
+              "type": "integer",
+              "x-enum-comments": {
+                "AssetLocationsTypeCabinet": "电柜",
+                "AssetLocationsTypeOperation": "运维",
+                "AssetLocationsTypeRider": "骑手",
+                "AssetLocationsTypeStation": "站点",
+                "AssetLocationsTypeStore": "门店",
+                "AssetLocationsTypeWarehouse": "仓库"
+              },
+              "x-enum-varnames": [
+                "AssetLocationsTypeWarehouse",
+                "AssetLocationsTypeStore",
+                "AssetLocationsTypeStation",
+                "AssetLocationsTypeOperation",
+                "AssetLocationsTypeCabinet",
+                "AssetLocationsTypeRider"
+              ],
+              "description": "资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+              "name": "locationsType",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "其他物资ID",
+              "name": "materialId",
+              "in": "query"
+            },
+            {
+              "type": "string",
+              "description": "型号",
+              "name": "model",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "型号ID",
+              "name": "modelId",
+              "in": "query"
+            },
+            {
+              "enum": [
+                1,
+                2
+              ],
+              "type": "integer",
+              "description": "归属类型   1:平台 2:团签",
+              "name": "ownerType",
+              "in": "query"
+            },
+            {
+              "type": "boolean",
+              "description": "电车是否赠送",
+              "name": "rto",
+              "in": "query"
+            },
+            {
+              "type": "string",
+              "description": "编号",
+              "name": "sn",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "站点ID",
+              "name": "stationId",
+              "in": "query"
+            },
+            {
+              "enum": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "type": "integer",
+              "x-enum-comments": {
+                "AssetStatusDelivering": "配送中",
+                "AssetStatusFault": "故障",
+                "AssetStatusScrap": "报废",
+                "AssetStatusStock": "库存中",
+                "AssetStatusUsing": "使用中"
+              },
+              "x-enum-varnames": [
+                "AssetStatusStock",
+                "AssetStatusDelivering",
+                "AssetStatusUsing",
+                "AssetStatusFault",
+                "AssetStatusScrap"
+              ],
+              "description": "资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废",
+              "name": "status",
+              "in": "query"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "$ref": "#/definitions/model.AssetNumRes"
+              }
+            }
+          }
+        }
         }
     },
     "definitions": {
@@ -423,6 +654,105 @@
                 }
             }
         },
+      "model.AssetLocationsType": {
+        "type": "integer",
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "x-enum-comments": {
+          "AssetLocationsTypeCabinet": "电柜",
+          "AssetLocationsTypeOperation": "运维",
+          "AssetLocationsTypeRider": "骑手",
+          "AssetLocationsTypeStation": "站点",
+          "AssetLocationsTypeStore": "门店",
+          "AssetLocationsTypeWarehouse": "仓库"
+        },
+        "x-enum-varnames": [
+          "AssetLocationsTypeWarehouse",
+          "AssetLocationsTypeStore",
+          "AssetLocationsTypeStation",
+          "AssetLocationsTypeOperation",
+          "AssetLocationsTypeCabinet",
+          "AssetLocationsTypeRider"
+        ]
+      },
+      "model.AssetNumRes": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "description": "一个有效的资产ID",
+            "type": "integer"
+          },
+          "assetType": {
+            "description": "资产类型",
+            "allOf": [
+              {
+                "$ref": "#/definitions/model.AssetType"
+              }
+            ]
+          },
+          "num": {
+            "description": "有效数量",
+            "type": "integer"
+          }
+        }
+      },
+      "model.AssetStatus": {
+        "type": "integer",
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "x-enum-comments": {
+          "AssetStatusDelivering": "配送中",
+          "AssetStatusFault": "故障",
+          "AssetStatusScrap": "报废",
+          "AssetStatusStock": "库存中",
+          "AssetStatusUsing": "使用中"
+        },
+        "x-enum-varnames": [
+          "AssetStatusStock",
+          "AssetStatusDelivering",
+          "AssetStatusUsing",
+          "AssetStatusFault",
+          "AssetStatusScrap"
+        ]
+      },
+      "model.AssetType": {
+        "type": "integer",
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "x-enum-comments": {
+          "AssetTypeCabinetAccessory": "电柜配件",
+          "AssetTypeEbike": "电车",
+          "AssetTypeEbikeAccessory": "电车配件",
+          "AssetTypeNonSmartBattery": "非智能电池",
+          "AssetTypeOtherAccessory": "其它配件",
+          "AssetTypeSmartBattery": "智能电池"
+        },
+        "x-enum-varnames": [
+          "AssetTypeEbike",
+          "AssetTypeSmartBattery",
+          "AssetTypeNonSmartBattery",
+          "AssetTypeCabinetAccessory",
+          "AssetTypeEbikeAccessory",
+          "AssetTypeOtherAccessory"
+        ]
+      },
         "model.ExportRes": {
             "type": "object",
             "properties": {

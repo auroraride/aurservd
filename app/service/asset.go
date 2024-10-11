@@ -998,6 +998,9 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 	if req.ModelID != nil {
 		q.Where(asset.ModelID(*req.ModelID))
 	}
+	if req.Model != nil {
+		q.Where(asset.HasModelWith(batterymodel.Model(*req.Model)))
+	}
 
 	// 属性查询
 	if req.Attribute != nil {
@@ -1102,6 +1105,12 @@ func (s *assetService) Count(ctx context.Context, req *model.AssetFilter) (res *
 	s.filter(q, req)
 	count, _ := q.Count(ctx)
 	res = &model.AssetNumRes{Num: count}
+	as, _ := q.First(ctx)
+	if as != nil {
+		ty := model.AssetType(as.Type)
+		res.AssetType = &ty
+		res.AssetID = &as.ID
+	}
 	return
 }
 
@@ -1442,3 +1451,5 @@ func (s *assetService) CheckBusinessBattery(req *model.StockBusinessReq, locatio
 	}
 	return batteryInfo, nil
 }
+
+// 查询资产数量

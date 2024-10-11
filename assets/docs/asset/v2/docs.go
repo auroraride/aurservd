@@ -175,6 +175,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "型号",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "型号ID",
                         "name": "modelId",
@@ -1560,6 +1566,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "其他物资ID",
                         "name": "materialId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "型号",
+                        "name": "model",
                         "in": "query"
                     },
                     {
@@ -6947,6 +6959,10 @@ const docTemplate = `{
                     "description": "其他物资ID",
                     "type": "integer"
                 },
+                "model": {
+                    "description": "型号",
+                    "type": "string"
+                },
                 "modelId": {
                     "description": "型号ID",
                     "type": "integer"
@@ -7270,6 +7286,18 @@ const docTemplate = `{
         "model.AssetNumRes": {
             "type": "object",
             "properties": {
+                "assetId": {
+                    "description": "一个有效的资产ID",
+                    "type": "integer"
+                },
+                "assetType": {
+                    "description": "资产类型",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetType"
+                        }
+                    ]
+                },
                 "num": {
                     "description": "有效数量",
                     "type": "integer"

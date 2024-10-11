@@ -1180,6 +1180,9 @@ definitions:
       model:
         description: 型号
         type: string
+      modelId:
+        description: 型号ID
+        type: integer
       sn:
         description: 编号
         type: string
@@ -7699,7 +7702,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: 绑定骑手
+      summary: 电池绑定至骑手
       tags:
       - 电池
   /manager/v1/battery/model:

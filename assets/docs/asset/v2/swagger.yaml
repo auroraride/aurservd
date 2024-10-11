@@ -1013,6 +1013,9 @@ definitions:
       materialId:
         description: 其他物资ID
         type: integer
+      model:
+        description: 型号
+        type: string
       modelId:
         description: 型号ID
         type: integer
@@ -1249,6 +1252,13 @@ definitions:
     type: object
   model.AssetNumRes:
     properties:
+      assetId:
+        description: 一个有效的资产ID
+        type: integer
+      assetType:
+        allOf:
+          - $ref: '#/definitions/model.AssetType'
+        description: 资产类型
       num:
         description: 有效数量
         type: integer
@@ -2674,6 +2684,10 @@ paths:
         in: query
         name: materialId
         type: integer
+      - description: 型号
+        in: query
+        name: model
+        type: string
       - description: 型号ID
         in: query
         name: modelId
@@ -3670,6 +3684,10 @@ paths:
         in: query
         name: materialId
         type: integer
+      - description: 型号
+        in: query
+        name: model
+        type: string
       - description: 型号ID
         in: query
         name: modelId

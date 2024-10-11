@@ -551,7 +551,7 @@ const docTemplate = `{
                 "tags": [
                     "电池"
                 ],
-                "summary": "绑定骑手",
+                "summary": "电池绑定至骑手",
                 "operationId": "ManagerBatteryBind",
                 "parameters": [
                     {
@@ -14603,6 +14603,10 @@ const docTemplate = `{
                 "model": {
                     "description": "型号",
                     "type": "string"
+                },
+                "modelId": {
+                    "description": "型号ID",
+                    "type": "integer"
                 },
                 "sn": {
                     "description": "编号",

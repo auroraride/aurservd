@@ -11,7 +11,6 @@ import (
 
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/adapter/rpc/pb"
-	jsoniter "github.com/json-iterator/go"
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/logging"
@@ -438,10 +437,10 @@ func (s *batteryService) RiderDetail(riderID uint64) (res model.BatteryDetail) {
 	return
 }
 
-// BindRequest 绑定骑手
+// BindRequest 电池绑定至骑手
 func (s *batteryService) BindRequest(req *model.BatteryBind) error {
 	// 查找订阅
-	sub := NewSubscribe().QueryEffectiveIntelligentX(req.RiderID, ent.SubscribeQueryWithRider)
+	sub := NewSubscribe().QueryEffectiveX(req.RiderID, ent.SubscribeQueryWithRider)
 
 	// 查找电池
 	bat, _ := NewAsset().QueryID(req.BatteryID)
@@ -482,7 +481,7 @@ func (s *batteryService) Bind(bat *ent.Asset, sub *ent.Subscribe, rd *ent.Rider)
 // Unbind 解绑电池
 func (s *batteryService) Unbind(req *model.BatteryUnbindRequest) error {
 	// 查找订阅
-	sub := NewSubscribe().QueryEffectiveIntelligentX(req.RiderID, ent.SubscribeQueryWithRider)
+	sub := NewSubscribe().QueryEffectiveX(req.RiderID, ent.SubscribeQueryWithRider)
 
 	if sub != nil && len(sub.Edges.Battery) > 0 {
 		bat := sub.Edges.Battery[0]
@@ -589,7 +588,7 @@ func (s *batteryService) Allocate(bat *ent.Asset, sub *ent.Subscribe, transferTy
 	return nil
 }
 
-// Unallocate 清除骑手信息
+// Unallocate 清除骑手电池信息
 func (s *batteryService) Unallocate(bat *ent.Asset, toLocationType model.AssetLocationsType, toLocationID uint64, transferType model.AssetTransferType) (err error) {
 	// 出库方信息
 	fromLocationType := model.AssetLocationsType(bat.LocationsType)
@@ -640,74 +639,4 @@ func (s *batteryService) Unallocate(bat *ent.Asset, toLocationType model.AssetLo
 		return err
 	}
 	return
-}
-
-// StationBusinessTransfer 站点之间业务自动调拨
-// 目前仅有换电业务
-// 骑手从电柜中取出电池, 并将自己的电池放入电柜中, 因此:
-// sub.StationID / sub.EnterpriseID 被用作放入的代理商信息
-// cab.StationID / cab.EnterpriseID 被用作取出的代理商信息
-// 需要记录流转信息 todo 没有地方在用这个函数
-func (s *batteryService) StationBusinessTransfer(cabinetID, exchangeID uint64, putin, putout *model.BatteryEnterpriseTransfer) {
-	// 进行站点对比, 放入 == 取出, 直接跳过
-	if putin.StationID == putout.StationID {
-		return
-	}
-
-	// 放入电池
-	in, _ := NewAsset().QuerySn(putin.Sn)
-
-	// 取出电池
-	out, _ := NewAsset().QuerySn(putout.Sn)
-
-	// 未找到电池跳过
-	if in == nil || out == nil {
-		return
-	}
-
-	// 若非站点骑手取出站点电池, 需要更新
-	// 若放入是其他站点的电池, 其本质是两个站点(代理)的电池互换
-
-	// 放入到该站点的电池
-	s.updateStation(in, putout.StationID)
-
-	// 从该站点取出的电池
-	s.updateStation(out, putin.StationID)
-
-	// 记录
-	err := ent.Database.EnterpriseBatterySwap.Create().
-		SetCabinetID(cabinetID).
-		SetExchangeID(exchangeID).
-		SetPutinID(in.ID).
-		SetPutinSn(in.Sn).
-		SetNillablePutinEnterpriseID(putin.EnterpriseID).
-		SetNillablePutinStationID(putin.StationID).
-		SetPutoutID(out.ID).
-		SetPutoutSn(out.Sn).
-		SetNillablePutoutEnterpriseID(putout.EnterpriseID).
-		SetNillablePutoutStationID(putout.StationID).
-		Exec(s.ctx)
-	if err != nil {
-		inb, _ := jsoniter.Marshal(putin)
-		outb, _ := jsoniter.Marshal(putout)
-		zap.L().Error("电池交换记录失败", zap.Error(err), zap.ByteString("putin", inb), zap.ByteString("putout", outb))
-	}
-}
-
-// 更新电池站点信息
-func (s *batteryService) updateStation(bat *ent.Asset, stationID *uint64) {
-	updater := s.orm.UpdateOne(bat)
-	switch {
-	default:
-		// todo 这里因库存改造,业务逻辑需要重新变更
-		// 非站点电池, 清除站点和团签信息
-		// updater.ClearStationID().ClearEnterpriseID()
-	case stationID != nil:
-		// 站点电池, 记录站点和团签信息
-		// updater.SetNillableStationID(stationID).SetNillableEnterpriseID(enterpriseID)
-	}
-	err := updater.Exec(s.ctx)
-	if err != nil {
-		zap.L().Error("电池流转更新失败", zap.Error(err))
-	}
 }
