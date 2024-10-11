@@ -216,16 +216,15 @@ func (*cabinet) Maintain(c echo.Context) (err error) {
 }
 
 // OpenBind
-// @ID			ManagerCabinetOpenBind
-// @Router		/manager/v1/cabinet/openbind [POST]
-// @Summary		开仓取电池并绑定骑手
-// @Description	<仅智能电柜可用, 普通电柜无法请求, 判定标准: `intelligent = true`>
-// @Tags		电柜
-// @Accept		json
-// @Produce		json
-// @Param		X-Manager-Token	header		string						true	"管理员校验token"
-// @Param		body			body		model.CabinetOpenBindReq	true	"操作请求"
-// @Success		200				{object}	model.StatusResponse		"请求成功"
+// @ID		ManagerCabinetOpenBind
+// @Router	/manager/v1/cabinet/openbind [POST]
+// @Summary	开仓取电池并绑定骑手
+// @Tags	电柜
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string						true	"管理员校验token"
+// @Param	body			body		model.CabinetOpenBindReq	true	"操作请求"
+// @Success	200				{object}	model.StatusResponse		"请求成功"
 func (*cabinet) OpenBind(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.CabinetOpenBindReq](c)
 	service.NewIntelligentCabinet(ctx.Modifier, ctx.Operator).OpenBind(req)
