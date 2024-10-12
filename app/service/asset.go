@@ -672,7 +672,7 @@ func (s *assetService) exportBattery(ctx context.Context, req *model.AssetListRe
 			case model.AssetLocationsTypeRider.Value():
 				assetLocations = "[骑手]"
 				if item.Edges.Rider != nil {
-					assetLocations += item.Edges.Rider.Name
+					assetLocations += item.Edges.Rider.Name + "-" + item.Edges.Rider.Phone
 				}
 			case model.AssetLocationsTypeOperation.Value():
 				assetLocations = "[运维]"
@@ -767,7 +767,7 @@ func (s *assetService) exportEbike(ctx context.Context, req *model.AssetListReq,
 			case model.AssetLocationsTypeRider.Value():
 				assetLocations = "[骑手]"
 				if item.Edges.Rider != nil {
-					assetLocations += item.Edges.Rider.Name
+					assetLocations += item.Edges.Rider.Name + "-" + item.Edges.Rider.Phone
 				}
 			case model.AssetLocationsTypeOperation.Value():
 				assetLocations = "[运维]"
