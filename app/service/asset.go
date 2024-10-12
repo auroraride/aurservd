@@ -587,7 +587,19 @@ func (s *assetService) downloadBatteryTemplate(ctx context.Context) (path string
 
 // Export 导出资产
 func (s *assetService) Export(ctx context.Context, req *model.AssetListReq, m *model.Modifier) (model.AssetExportRes, error) {
-	q := s.orm.QueryNotDeleted().WithCabinet().WithCity().WithStation().WithModel().WithOperator().WithValues().WithStore().WithWarehouse().WithBrand().WithValues()
+	q := s.orm.QueryNotDeleted().
+		WithCabinet().
+		WithCity().
+		WithStation(func(query *ent.EnterpriseStationQuery) {
+			query.WithEnterprise()
+		}).
+		WithModel().
+		WithOperator().
+		WithValues().
+		WithStore().
+		WithWarehouse().
+		WithBrand().
+		WithValues()
 	s.filter(q, &req.AssetFilter)
 	q.Order(ent.Desc(asset.FieldCreatedAt))
 
@@ -631,6 +643,9 @@ func (s *assetService) exportBattery(ctx context.Context, req *model.AssetListRe
 			belong = "平台"
 			if item.LocationsType == model.AssetLocationsTypeStation.Value() {
 				belong = "代理商"
+				if item.Edges.Station != nil && item.Edges.Station.Edges.Enterprise != nil {
+					belong = item.Edges.Station.Edges.Enterprise.Name
+				}
 			}
 			switch item.LocationsType {
 			case model.AssetLocationsTypeWarehouse.Value():
@@ -723,6 +738,9 @@ func (s *assetService) exportEbike(ctx context.Context, req *model.AssetListReq,
 			belong = "平台"
 			if item.LocationsType == model.AssetLocationsTypeStation.Value() {
 				belong = "代理商"
+				if item.Edges.Station != nil && item.Edges.Station.Edges.Enterprise != nil {
+					belong = item.Edges.Station.Edges.Enterprise.Name
+				}
 			}
 			switch item.LocationsType {
 			case model.AssetLocationsTypeWarehouse.Value():
@@ -800,7 +818,20 @@ func (s *assetService) exportEbike(ctx context.Context, req *model.AssetListReq,
 
 // List 资产列表
 func (s *assetService) List(ctx context.Context, req *model.AssetListReq) *model.PaginationRes {
-	q := s.orm.QueryNotDeleted().WithCabinet().WithCity().WithStation().WithModel().WithOperator().WithValues().WithStore().WithWarehouse().WithBrand().WithValues().WithRider()
+	q := s.orm.QueryNotDeleted().
+		WithCabinet().
+		WithCity().
+		WithStation(func(query *ent.EnterpriseStationQuery) {
+			query.WithEnterprise()
+		}).
+		WithModel().
+		WithOperator().
+		WithValues().
+		WithStore().
+		WithWarehouse().
+		WithBrand().
+		WithValues().
+		WithRider()
 	s.filter(q, &req.AssetFilter)
 	if req.AssetType != nil {
 		switch *req.AssetType {
@@ -828,6 +859,9 @@ func (s *assetService) DetailForList(item *ent.Asset) *model.AssetListRes {
 	belong = "平台"
 	if item.LocationsType == model.AssetLocationsTypeStation.Value() {
 		belong = "代理商"
+		if item.Edges.Station != nil && item.Edges.Station.Edges.Enterprise != nil {
+			belong = item.Edges.Station.Edges.Enterprise.Name
+		}
 	}
 	switch item.LocationsType {
 	case model.AssetLocationsTypeWarehouse.Value():
