@@ -114,6 +114,13 @@ func (c *AssetCheckDetailsClient) ModifyOne(old *AssetCheckDetails, data any) *A
 	return EntitySetAttributes[AssetCheckDetailsUpdateOne, AssetCheckDetails](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for AssetExport.
+func (c *AssetExportClient) ModifyOne(old *AssetExport, data any) *AssetExportUpdateOne {
+	mutation := newAssetExportMutation(c.config, OpUpdateOne, withAssetExport(old))
+	up := &AssetExportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetExportUpdateOne, AssetExport](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for AssetMaintenance.
 func (c *AssetMaintenanceClient) ModifyOne(old *AssetMaintenance, data any) *AssetMaintenanceUpdateOne {
 	mutation := newAssetMaintenanceMutation(c.config, OpUpdateOne, withAssetMaintenance(old))

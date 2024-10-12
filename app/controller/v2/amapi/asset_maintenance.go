@@ -42,3 +42,18 @@ func (*assetMaintenance) Modify(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.AssetMaintenanceModifyReq](c)
 	return ctx.SendResponse(service.NewAssetMaintenance().Modify(ctx.Request().Context(), req, ctx.Modifier))
 }
+
+// Export
+// @ID		AssetMaintenanceExport
+// @Router	/manager/v2/asset/maintenance/export [POST]
+// @Summary	维修记录列表导出
+// @Tags	AssetMaintenance - 维修记录
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
+// @Param	body					body		model.AssetMaintenanceListReq	true	"查询参数"
+// @Success	200						{object}	model.ExportRes					"成功"
+func (*assetMaintenance) Export(c echo.Context) (err error) {
+	ctx, req := app.AssetManagerContextAndBinding[model.AssetMaintenanceListReq](c)
+	return ctx.SendResponse(service.NewAssetMaintenance().Export(ctx.Request().Context(), req, ctx.Modifier))
+}

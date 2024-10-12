@@ -123,3 +123,18 @@ func (*assetCheck) Detail(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(service.NewAssetCheck().Detail(ctx.Request().Context(), req.ID))
 }
+
+// Export
+// @ID		AssetCheckExport
+// @Router	/manager/v2/asset/check/export [POST]
+// @Summary	盘点列表导出
+// @Tags	AssetCheck - 盘点
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
+// @Param	body					body		model.AssetCheckListReq	true	"查询参数"
+// @Success	200						{object}	model.ExportRes			"成功"
+func (*assetCheck) Export(c echo.Context) (err error) {
+	ctx, req := app.AssetManagerContextAndBinding[model.AssetCheckListReq](c)
+	return ctx.SendResponse(service.NewAssetCheck().Export(req, ctx.Modifier))
+}

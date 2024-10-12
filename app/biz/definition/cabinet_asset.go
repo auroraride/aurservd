@@ -9,6 +9,10 @@ import "github.com/auroraride/aurservd/app/model"
 // CabinetAssetListReq 电柜资产列表请求
 type CabinetAssetListReq struct {
 	model.PaginationReq
+	CabinetAssetListFilter
+}
+
+type CabinetAssetListFilter struct {
 	CityID  *uint64 `json:"cityId" query:"cityId"`   // 城市ID
 	ModelID *uint64 `json:"modelID" query:"modelID"` // 电池型号ID
 	Name    *string `json:"name" query:"name"`       // 电柜名称

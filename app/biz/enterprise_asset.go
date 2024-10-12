@@ -9,6 +9,7 @@ import (
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ent"
 	entasset "github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
@@ -204,4 +205,56 @@ func (b *enterpriseAssetBiz) AssetDetail(id uint64) (ast *definition.CommonAsset
 	NewAssetTransferDetails().GetCommonAssetDetail(ebikeNameMap, sBNameMap, nSbNameMap, cabAccNameMap, ebikeAccNameMap, otherAccNameMap, ast)
 
 	return
+}
+
+// AssetsExport 资产列表导出
+func (b *enterpriseAssetBiz) AssetsExport(req *definition.EnterpriseAssetListReq) model.AssetExportRes {
+	// 查询分页数据
+	q := ent.Database.EnterpriseStation.QueryNotDeleted().
+		WithCity().
+		WithEnterprise().
+		Order(ent.Desc(enterprise.FieldCreatedAt))
+	b.assetsFilter(q, req)
+
+	return service.NewAssetExportWithModifier(b.modifier).Start("团签物资", req.EnterpriseAssetListFilter, nil, "", func(path string) {
+		items, _ := q.All(b.ctx)
+		var rows tools.ExcelItems
+		title := []any{
+			"团签企业",
+			"团签站点",
+			"城市",
+			"智能电池",
+			"非智能电池",
+			"电车",
+			"电车配件",
+			"电柜配件",
+			"其他物资",
+		}
+		rows = append(rows, title)
+		for _, item := range items {
+			assetTotal := b.AssetTotal(req, item.ID)
+
+			var cityName, enterpriseName string
+			if item.Edges.City != nil {
+				cityName = item.Edges.City.Name
+			}
+			if item.Edges.Enterprise != nil {
+				enterpriseName = item.Edges.Enterprise.Name
+			}
+
+			row := []any{
+				enterpriseName,
+				item.Name,
+				cityName,
+				assetTotal.SmartBatteryTotal,
+				assetTotal.NonSmartBatteryTotal,
+				assetTotal.EbikeTotal,
+				assetTotal.EbikeAccessoryTotal,
+				assetTotal.CabinetAccessoryTotal,
+				assetTotal.OtherAssetTotal,
+			}
+			rows = append(rows, row)
+		}
+		tools.NewExcel(path).AddValues(rows).Done()
+	})
 }

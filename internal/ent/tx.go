@@ -32,6 +32,8 @@ type Tx struct {
 	AssetCheck *AssetCheckClient
 	// AssetCheckDetails is the client for interacting with the AssetCheckDetails builders.
 	AssetCheckDetails *AssetCheckDetailsClient
+	// AssetExport is the client for interacting with the AssetExport builders.
+	AssetExport *AssetExportClient
 	// AssetMaintenance is the client for interacting with the AssetMaintenance builders.
 	AssetMaintenance *AssetMaintenanceClient
 	// AssetMaintenanceDetails is the client for interacting with the AssetMaintenanceDetails builders.
@@ -354,6 +356,7 @@ func (tx *Tx) init() {
 	tx.AssetAttributes = NewAssetAttributesClient(tx.config)
 	tx.AssetCheck = NewAssetCheckClient(tx.config)
 	tx.AssetCheckDetails = NewAssetCheckDetailsClient(tx.config)
+	tx.AssetExport = NewAssetExportClient(tx.config)
 	tx.AssetMaintenance = NewAssetMaintenanceClient(tx.config)
 	tx.AssetMaintenanceDetails = NewAssetMaintenanceDetailsClient(tx.config)
 	tx.AssetManager = NewAssetManagerClient(tx.config)

@@ -199,3 +199,33 @@ func (*assetTransfer) TransferCbw(c echo.Context) (err error) {
 	}
 	return ctx.SendResponse()
 }
+
+// TransferListExport
+// @ID		AssetTransferListExport
+// @Router	/manager/v2/asset/transfer/export [POST]
+// @Summary	资产调拨列表导出
+// @Tags	AssetTransfer - 调拨
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string						true	"管理员校验token"
+// @Param	body					body		model.AssetTransferListReq	true	"查询参数"
+// @Success	200						{object}	model.ExportRes				"成功"
+func (*assetTransfer) TransferListExport(c echo.Context) (err error) {
+	ctx, req := app.AssetManagerContextAndBinding[model.AssetTransferListReq](c)
+	return ctx.SendResponse(service.NewAssetTransfer().TransferListExport(ctx.Request().Context(), req, ctx.Modifier))
+}
+
+// TransferDetailsListExport
+// @ID		AssetTransferDetailsListExport
+// @Router	/manager/v2/asset/transfer/details/export [POST]
+// @Summary	出入库明细导出
+// @Tags	AssetTransfer - 调拨
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string								true	"管理员校验token"
+// @Param	body					body		model.AssetTransferDetailListReq	true	"查询参数"
+// @Success	200						{object}	model.ExportRes						"成功"
+func (*assetTransfer) TransferDetailsListExport(c echo.Context) (err error) {
+	ctx, req := app.AssetManagerContextAndBinding[model.AssetTransferDetailListReq](c)
+	return ctx.SendResponse(service.NewAssetTransfer().TransferDetailsListExport(req, ctx.Modifier))
+}

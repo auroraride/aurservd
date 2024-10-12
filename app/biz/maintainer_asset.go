@@ -9,12 +9,14 @@ import (
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ent"
 	entasset "github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
 	"github.com/auroraride/aurservd/internal/ent/assettransferdetails"
 	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/material"
+	"github.com/auroraride/aurservd/pkg/tools"
 )
 
 type maintainerAssetBiz struct {
@@ -181,4 +183,36 @@ func (b *maintainerAssetBiz) AssetDetail(id uint64) (ast *definition.CommonAsset
 	NewAssetTransferDetails().GetCommonAssetDetail(ebikeNameMap, sBNameMap, nSbNameMap, cabAccNameMap, ebikeAccNameMap, otherAccNameMap, ast)
 
 	return
+}
+
+// AssetsExport 资产列表导出
+func (b *maintainerAssetBiz) AssetsExport(req *definition.MaintainerAssetListReq) model.AssetExportRes {
+	q := b.orm.Query().
+		Where(maintainer.Enable(true)).
+		Order(ent.Desc(maintainer.FieldID))
+	b.assetsFilter(q, req)
+
+	return service.NewAssetExportWithModifier(b.modifier).Start("运维物资", req.MaintainerAssetListFilter, nil, "", func(path string) {
+		items, _ := q.All(b.ctx)
+		var rows tools.ExcelItems
+		title := []any{
+			"姓名",
+			"手机号",
+			"智能电池",
+			"非智能电池",
+		}
+		rows = append(rows, title)
+		for _, item := range items {
+			assetTotal := b.AssetTotal(req, item.ID)
+
+			row := []any{
+				item.Name,
+				item.Phone,
+				assetTotal.SmartBatteryTotal,
+				assetTotal.NonSmartBatteryTotal,
+			}
+			rows = append(rows, row)
+		}
+		tools.NewExcel(path).AddValues(rows).Done()
+	})
 }

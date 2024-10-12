@@ -69,19 +69,21 @@ func loadAssetsRoutes() {
 	asset.POST("/scrap/batch/restore", amapi.AssetScrap.ScrapBatchRestore) // 批量还原报废
 	asset.GET("/scrap", amapi.AssetScrap.ScrapList)                        // 报废列表
 	asset.GET("/scrap/reason", amapi.AssetScrap.ScrapReasonSelect)         // 报废理由列表
+	asset.POST("/scrap/export", amapi.AssetScrap.ScrapExport)              // 报废列表导出
 	// 导入导出
 	asset.POST("/batch", amapi.Assets.BatchCreate) // 导入资产
 	asset.POST("/export", amapi.Assets.Export)     // 导出资产
 	asset.GET("/template", amapi.Assets.Template)  // 导出模版
 
 	// 仓库
-	asset.POST("/warehouse", amapi.Warehouse.Create)                // 创建仓库
-	asset.GET("/warehouse", amapi.Warehouse.List)                   // 仓库列表
-	asset.GET("/warehouse/:id", amapi.Warehouse.Detail)             // 仓库详情
-	asset.PUT("/warehouse/:id", amapi.Warehouse.Modify)             // 更新仓库
-	asset.DELETE("/warehouse/:id", amapi.Warehouse.Delete)          // 删除仓库
-	asset.GET("/warehouse_assets", amapi.Warehouse.Assets)          // 仓库物资
-	asset.GET("/warehouse_assets/:id", amapi.Warehouse.AssetDetail) // 仓库物资详情
+	asset.POST("/warehouse", amapi.Warehouse.Create)                     // 创建仓库
+	asset.GET("/warehouse", amapi.Warehouse.List)                        // 仓库列表
+	asset.GET("/warehouse/:id", amapi.Warehouse.Detail)                  // 仓库详情
+	asset.PUT("/warehouse/:id", amapi.Warehouse.Modify)                  // 更新仓库
+	asset.DELETE("/warehouse/:id", amapi.Warehouse.Delete)               // 删除仓库
+	asset.GET("/warehouse_assets", amapi.Warehouse.Assets)               // 仓库物资
+	asset.GET("/warehouse_assets/:id", amapi.Warehouse.AssetDetail)      // 仓库物资详情
+	asset.POST("/warehouse_assets/export", amapi.Warehouse.AssetsExport) // 仓库物资导出
 
 	// 城市
 	asset.GET("/city", amapi.City.List)       // 城市列表
@@ -93,20 +95,24 @@ func loadAssetsRoutes() {
 	asset.DELETE("/store_group/:id", amapi.StoreGroup.Delete) // 删除门店集合
 
 	// 门店物资
-	asset.GET("/store_assets", amapi.Store.Asset)           // 门店物资列表
-	asset.GET("/store_assets/:id", amapi.Store.AssetDetail) // 门店物资详情
+	asset.GET("/store_assets", amapi.Store.Asset)                // 门店物资列表
+	asset.GET("/store_assets/:id", amapi.Store.AssetDetail)      // 门店物资详情
+	asset.POST("/store_assets/export", amapi.Store.AssetsExport) // 门店物资列表导出
 
 	// 运维物资
-	asset.GET("/maintainer_assets", amapi.Maintainer.Asset)           // 运维物资列表
-	asset.GET("/maintainer_assets/:id", amapi.Maintainer.AssetDetail) // 运维物资详情
+	asset.GET("/maintainer_assets", amapi.Maintainer.Asset)                // 运维物资列表
+	asset.GET("/maintainer_assets/:id", amapi.Maintainer.AssetDetail)      // 运维物资详情
+	asset.POST("/maintainer_assets/export", amapi.Maintainer.AssetsExport) // 运维物资列表导出
 
 	// 电柜物资
-	asset.GET("/cabinet_assets", amapi.Cabinet.Asset)           // 电柜物资列表
-	asset.GET("/cabinet_assets/:id", amapi.Cabinet.AssetDetail) // 电柜物资详情
+	asset.GET("/cabinet_assets", amapi.Cabinet.Asset)                // 电柜物资列表
+	asset.GET("/cabinet_assets/:id", amapi.Cabinet.AssetDetail)      // 电柜物资详情
+	asset.POST("/cabinet_assets/export", amapi.Cabinet.AssetsExport) // 电柜物资列表导出
 
 	// 团签物资
-	asset.GET("/enterprise_assets", amapi.Enterprise.Asset)           // 团签物资列表
-	asset.GET("/enterprise_assets/:id", amapi.Enterprise.AssetDetail) // 团签物资详情
+	asset.GET("/enterprise_assets", amapi.Enterprise.Asset)                // 团签物资列表
+	asset.GET("/enterprise_assets/:id", amapi.Enterprise.AssetDetail)      // 团签物资详情
+	asset.POST("/enterprise_assets/export", amapi.Enterprise.AssetsExport) // 团签物资列表导出
 
 	// 电池型号
 	asset.POST("/batterymodel", amapi.BatteryModel.Create)       // 创建电池型号
@@ -126,18 +132,21 @@ func loadAssetsRoutes() {
 	asset.DELETE("/material/:id", amapi.Material.Delete) // 删除其他物资
 
 	// 资产调拨
-	asset.POST("/transfer", amapi.AssetTransfer.Transfer)                   // 资产调拨
-	asset.GET("/transfer", amapi.AssetTransfer.TransferList)                // 资产调拨列表
-	asset.GET("/transfer/:id", amapi.AssetTransfer.TransferDetail)          // 资产调拨详情
-	asset.PUT("/transfer/cancel/:id", amapi.AssetTransfer.TransferCancel)   // 取消资产调拨
-	asset.POST("/transfer/receive", amapi.AssetTransfer.TransferReceive)    // 接收资产
-	asset.GET("/transfer/flow", amapi.AssetTransfer.TransferFlow)           // 调拨流转记录
-	asset.GET("/transfer/details", amapi.AssetTransfer.TransferDetailsList) // 调拨详情列表(出入库明细)
-	asset.PUT("/transfer/:id", amapi.AssetTransfer.Modify)                  // 修改调拨记录
+	asset.POST("/transfer", amapi.AssetTransfer.Transfer)                                 // 资产调拨
+	asset.GET("/transfer", amapi.AssetTransfer.TransferList)                              // 资产调拨列表
+	asset.GET("/transfer/:id", amapi.AssetTransfer.TransferDetail)                        // 资产调拨详情
+	asset.PUT("/transfer/cancel/:id", amapi.AssetTransfer.TransferCancel)                 // 取消资产调拨
+	asset.POST("/transfer/receive", amapi.AssetTransfer.TransferReceive)                  // 接收资产
+	asset.GET("/transfer/flow", amapi.AssetTransfer.TransferFlow)                         // 调拨流转记录
+	asset.GET("/transfer/details", amapi.AssetTransfer.TransferDetailsList)               // 调拨详情列表(出入库明细)
+	asset.PUT("/transfer/:id", amapi.AssetTransfer.Modify)                                // 修改调拨记录
+	asset.POST("/transfer/export", amapi.AssetTransfer.TransferListExport)                // 资产调拨列表导出
+	asset.POST("/transfer/details/export", amapi.AssetTransfer.TransferDetailsListExport) // 出入库明细导出
 
 	// 资产维修
-	asset.GET("/maintenance", amapi.AssetMaintenance.List)       // 资产维修列表
-	asset.PUT("/maintenance/:id", amapi.AssetMaintenance.Modify) // 修改维修记录
+	asset.GET("/maintenance", amapi.AssetMaintenance.List)           // 资产维修列表
+	asset.PUT("/maintenance/:id", amapi.AssetMaintenance.Modify)     // 修改维修记录
+	asset.POST("/maintenance/export", amapi.AssetMaintenance.Export) // 资产维修列表导出
 
 	// 资产盘点
 	asset.GET("/check", amapi.AssetCheck.List)                                 // 盘点列表
@@ -147,5 +156,9 @@ func loadAssetsRoutes() {
 	asset.GET("/check/sn/:sn", amapi.AssetCheck.GetAssetBySN)                  // 通过SN查询资产
 	asset.GET("/check/abnormal/:id", amapi.AssetCheck.Abnormal)                // 盘点异常
 	asset.PUT("/check/abnormal/operate/:id", amapi.AssetCheck.AbnormalOperate) // 盘点异常操作
+	asset.POST("/check/export", amapi.AssetCheck.Export)                       // 盘点列表导出
 
+	// 导出数据
+	asset.GET("/export", amapi.AssetExport.List)                  // 导出列表
+	asset.GET("/export/download/:sn", amapi.AssetExport.Download) // 导出下载
 }

@@ -327,6 +327,30 @@ func (f AssetCheckDetailsMutationRuleFunc) EvalMutation(ctx context.Context, m e
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AssetCheckDetailsMutation", m)
 }
 
+// The AssetExportQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type AssetExportQueryRuleFunc func(context.Context, *ent.AssetExportQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f AssetExportQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.AssetExportQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.AssetExportQuery", q)
+}
+
+// The AssetExportMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type AssetExportMutationRuleFunc func(context.Context, *ent.AssetExportMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f AssetExportMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.AssetExportMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AssetExportMutation", m)
+}
+
 // The AssetMaintenanceQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type AssetMaintenanceQueryRuleFunc func(context.Context, *ent.AssetMaintenanceQuery) error
@@ -2564,6 +2588,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.AssetCheckDetailsQuery:
 		return q.Filter(), nil
+	case *ent.AssetExportQuery:
+		return q.Filter(), nil
 	case *ent.AssetMaintenanceQuery:
 		return q.Filter(), nil
 	case *ent.AssetMaintenanceDetailsQuery:
@@ -2770,6 +2796,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.AssetCheckMutation:
 		return m.Filter(), nil
 	case *ent.AssetCheckDetailsMutation:
+		return m.Filter(), nil
+	case *ent.AssetExportMutation:
 		return m.Filter(), nil
 	case *ent.AssetMaintenanceMutation:
 		return m.Filter(), nil

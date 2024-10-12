@@ -12,6 +12,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetcheck"
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
+	"github.com/auroraride/aurservd/internal/ent/assetexport"
 	"github.com/auroraride/aurservd/internal/ent/assetmaintenance"
 	"github.com/auroraride/aurservd/internal/ent/assetmaintenancedetails"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
@@ -311,6 +312,46 @@ func (c *AssetCheckDetailsClient) GetNotDeleted(ctx context.Context, id uint64) 
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *AssetCheckDetailsClient) GetNotDeletedX(ctx context.Context, id uint64) *AssetCheckDetails {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for AssetExport.
+func (c *AssetExportClient) SoftDelete() *AssetExportUpdate {
+	mutation := newAssetExportMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &AssetExportUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *AssetExportClient) SoftDeleteOne(ae *AssetExport) *AssetExportUpdateOne {
+	mutation := newAssetExportMutation(c.config, OpUpdateOne, withAssetExport(ae))
+	mutation.SetDeletedAt(time.Now())
+	return &AssetExportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *AssetExportClient) SoftDeleteOneID(id uint64) *AssetExportUpdateOne {
+	mutation := newAssetExportMutation(c.config, OpUpdateOne, withAssetExportID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &AssetExportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for AssetExport.
+func (c *AssetExportClient) QueryNotDeleted() *AssetExportQuery {
+	return c.Query().Where(assetexport.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a AssetExport not deleted entity by its id.
+func (c *AssetExportClient) GetNotDeleted(ctx context.Context, id uint64) (*AssetExport, error) {
+	return c.Query().Where(assetexport.ID(id), assetexport.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *AssetExportClient) GetNotDeletedX(ctx context.Context, id uint64) *AssetExport {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

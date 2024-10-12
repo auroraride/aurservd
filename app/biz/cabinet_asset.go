@@ -11,6 +11,7 @@ import (
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ent"
 	entasset "github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assettransfer"
@@ -43,7 +44,6 @@ func NewCabinetAssetWithModifier(m *model.Modifier) *cabinetAssetBiz {
 
 // Assets 资产列表
 func (b *cabinetAssetBiz) Assets(req *definition.CabinetAssetListReq) (res *model.PaginationRes) {
-	// 查询分页的门店数据
 	q := b.orm.QueryNotDeleted().
 		WithCity().
 		Order(ent.Desc(cabinet.FieldCreatedAt))
@@ -177,4 +177,41 @@ func (b *cabinetAssetBiz) AssetDetail(id uint64) (ast *definition.CabinetTotalDe
 		return strings.Compare(ast.NonSmartBatteries[i].Name, ast.NonSmartBatteries[j].Name) < 0
 	})
 	return
+}
+
+// AssetsExport 资产列表导出
+func (b *cabinetAssetBiz) AssetsExport(req *definition.CabinetAssetListReq) model.AssetExportRes {
+	q := b.orm.QueryNotDeleted().
+		WithCity().
+		Order(ent.Desc(cabinet.FieldCreatedAt))
+	b.assetsFilter(q, req)
+
+	return service.NewAssetExportWithModifier(b.modifier).Start("电柜物资", req.CabinetAssetListFilter, nil, "", func(path string) {
+		items, _ := q.All(b.ctx)
+		var rows tools.ExcelItems
+		title := []any{
+			"城市",
+			"电柜编号",
+			"电柜名称",
+			"智能电池",
+			"非智能电池",
+		}
+		rows = append(rows, title)
+		for _, item := range items {
+			assetTotal := b.AssetTotal(req, item.ID)
+			var cityName string
+			if item.Edges.City != nil {
+				cityName = item.Edges.City.Name
+			}
+			row := []any{
+				cityName,
+				item.Serial,
+				item.Name,
+				assetTotal.SmartBatteryTotal,
+				assetTotal.NonSmartBatteryTotal,
+			}
+			rows = append(rows, row)
+		}
+		tools.NewExcel(path).AddValues(rows).Done()
+	})
 }

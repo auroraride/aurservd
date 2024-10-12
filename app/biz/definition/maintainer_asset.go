@@ -9,6 +9,10 @@ import "github.com/auroraride/aurservd/app/model"
 // MaintainerAssetListReq 运维资产列表请求
 type MaintainerAssetListReq struct {
 	model.PaginationReq
+	MaintainerAssetListFilter
+}
+
+type MaintainerAssetListFilter struct {
 	Keyword   *string `json:"keyword" query:"keyword"`     // 关键字 姓名，手机号
 	ModelID   *uint64 `json:"modelId" query:"modelId"`     // 电池型号ID
 	BrandID   *uint64 `json:"brandId" query:"brandId"`     // 电车型号ID

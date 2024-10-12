@@ -24,6 +24,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
 	"github.com/auroraride/aurservd/internal/ent/assetcheck"
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
+	"github.com/auroraride/aurservd/internal/ent/assetexport"
 	"github.com/auroraride/aurservd/internal/ent/assetmaintenance"
 	"github.com/auroraride/aurservd/internal/ent/assetmaintenancedetails"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
@@ -142,6 +143,8 @@ type Client struct {
 	AssetCheck *AssetCheckClient
 	// AssetCheckDetails is the client for interacting with the AssetCheckDetails builders.
 	AssetCheckDetails *AssetCheckDetailsClient
+	// AssetExport is the client for interacting with the AssetExport builders.
+	AssetExport *AssetExportClient
 	// AssetMaintenance is the client for interacting with the AssetMaintenance builders.
 	AssetMaintenance *AssetMaintenanceClient
 	// AssetMaintenanceDetails is the client for interacting with the AssetMaintenanceDetails builders.
@@ -344,6 +347,7 @@ func (c *Client) init() {
 	c.AssetAttributes = NewAssetAttributesClient(c.config)
 	c.AssetCheck = NewAssetCheckClient(c.config)
 	c.AssetCheckDetails = NewAssetCheckDetailsClient(c.config)
+	c.AssetExport = NewAssetExportClient(c.config)
 	c.AssetMaintenance = NewAssetMaintenanceClient(c.config)
 	c.AssetMaintenanceDetails = NewAssetMaintenanceDetailsClient(c.config)
 	c.AssetManager = NewAssetManagerClient(c.config)
@@ -536,6 +540,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		AssetAttributes:            NewAssetAttributesClient(cfg),
 		AssetCheck:                 NewAssetCheckClient(cfg),
 		AssetCheckDetails:          NewAssetCheckDetailsClient(cfg),
+		AssetExport:                NewAssetExportClient(cfg),
 		AssetMaintenance:           NewAssetMaintenanceClient(cfg),
 		AssetMaintenanceDetails:    NewAssetMaintenanceDetailsClient(cfg),
 		AssetManager:               NewAssetManagerClient(cfg),
@@ -655,6 +660,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		AssetAttributes:            NewAssetAttributesClient(cfg),
 		AssetCheck:                 NewAssetCheckClient(cfg),
 		AssetCheckDetails:          NewAssetCheckDetailsClient(cfg),
+		AssetExport:                NewAssetExportClient(cfg),
 		AssetMaintenance:           NewAssetMaintenanceClient(cfg),
 		AssetMaintenanceDetails:    NewAssetMaintenanceDetailsClient(cfg),
 		AssetManager:               NewAssetManagerClient(cfg),
@@ -776,10 +782,10 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.Activity, c.Agent, c.Agreement, c.Allocate, c.Asset, c.AssetAttributeValues,
-		c.AssetAttributes, c.AssetCheck, c.AssetCheckDetails, c.AssetMaintenance,
-		c.AssetMaintenanceDetails, c.AssetManager, c.AssetRole, c.AssetScrap,
-		c.AssetScrapDetails, c.AssetTransfer, c.AssetTransferDetails, c.Assistance,
-		c.Attendance, c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch,
+		c.AssetAttributes, c.AssetCheck, c.AssetCheckDetails, c.AssetExport,
+		c.AssetMaintenance, c.AssetMaintenanceDetails, c.AssetManager, c.AssetRole,
+		c.AssetScrap, c.AssetScrapDetails, c.AssetTransfer, c.AssetTransferDetails,
+		c.Assistance, c.Attendance, c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch,
 		c.BranchContract, c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault, c.City,
 		c.Commission, c.Contract, c.ContractTemplate, c.Coupon, c.CouponAssembly,
 		c.CouponTemplate, c.Ebike, c.EbikeBrand, c.EbikeBrandAttribute, c.Employee,
@@ -808,10 +814,10 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.Activity, c.Agent, c.Agreement, c.Allocate, c.Asset, c.AssetAttributeValues,
-		c.AssetAttributes, c.AssetCheck, c.AssetCheckDetails, c.AssetMaintenance,
-		c.AssetMaintenanceDetails, c.AssetManager, c.AssetRole, c.AssetScrap,
-		c.AssetScrapDetails, c.AssetTransfer, c.AssetTransferDetails, c.Assistance,
-		c.Attendance, c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch,
+		c.AssetAttributes, c.AssetCheck, c.AssetCheckDetails, c.AssetExport,
+		c.AssetMaintenance, c.AssetMaintenanceDetails, c.AssetManager, c.AssetRole,
+		c.AssetScrap, c.AssetScrapDetails, c.AssetTransfer, c.AssetTransferDetails,
+		c.Assistance, c.Attendance, c.Battery, c.BatteryFlow, c.BatteryModel, c.Branch,
 		c.BranchContract, c.Business, c.Cabinet, c.CabinetEc, c.CabinetFault, c.City,
 		c.Commission, c.Contract, c.ContractTemplate, c.Coupon, c.CouponAssembly,
 		c.CouponTemplate, c.Ebike, c.EbikeBrand, c.EbikeBrandAttribute, c.Employee,
@@ -856,6 +862,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.AssetCheck.mutate(ctx, m)
 	case *AssetCheckDetailsMutation:
 		return c.AssetCheckDetails.mutate(ctx, m)
+	case *AssetExportMutation:
+		return c.AssetExport.mutate(ctx, m)
 	case *AssetMaintenanceMutation:
 		return c.AssetMaintenance.mutate(ctx, m)
 	case *AssetMaintenanceDetailsMutation:
@@ -3171,6 +3179,155 @@ func (c *AssetCheckDetailsClient) mutate(ctx context.Context, m *AssetCheckDetai
 		return (&AssetCheckDetailsDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown AssetCheckDetails mutation op: %q", m.Op())
+	}
+}
+
+// AssetExportClient is a client for the AssetExport schema.
+type AssetExportClient struct {
+	config
+}
+
+// NewAssetExportClient returns a client for the AssetExport from the given config.
+func NewAssetExportClient(c config) *AssetExportClient {
+	return &AssetExportClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `assetexport.Hooks(f(g(h())))`.
+func (c *AssetExportClient) Use(hooks ...Hook) {
+	c.hooks.AssetExport = append(c.hooks.AssetExport, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `assetexport.Intercept(f(g(h())))`.
+func (c *AssetExportClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AssetExport = append(c.inters.AssetExport, interceptors...)
+}
+
+// Create returns a builder for creating a AssetExport entity.
+func (c *AssetExportClient) Create() *AssetExportCreate {
+	mutation := newAssetExportMutation(c.config, OpCreate)
+	return &AssetExportCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AssetExport entities.
+func (c *AssetExportClient) CreateBulk(builders ...*AssetExportCreate) *AssetExportCreateBulk {
+	return &AssetExportCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AssetExportClient) MapCreateBulk(slice any, setFunc func(*AssetExportCreate, int)) *AssetExportCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AssetExportCreateBulk{err: fmt.Errorf("calling to AssetExportClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AssetExportCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AssetExportCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AssetExport.
+func (c *AssetExportClient) Update() *AssetExportUpdate {
+	mutation := newAssetExportMutation(c.config, OpUpdate)
+	return &AssetExportUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AssetExportClient) UpdateOne(ae *AssetExport) *AssetExportUpdateOne {
+	mutation := newAssetExportMutation(c.config, OpUpdateOne, withAssetExport(ae))
+	return &AssetExportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AssetExportClient) UpdateOneID(id uint64) *AssetExportUpdateOne {
+	mutation := newAssetExportMutation(c.config, OpUpdateOne, withAssetExportID(id))
+	return &AssetExportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AssetExport.
+func (c *AssetExportClient) Delete() *AssetExportDelete {
+	mutation := newAssetExportMutation(c.config, OpDelete)
+	return &AssetExportDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AssetExportClient) DeleteOne(ae *AssetExport) *AssetExportDeleteOne {
+	return c.DeleteOneID(ae.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AssetExportClient) DeleteOneID(id uint64) *AssetExportDeleteOne {
+	builder := c.Delete().Where(assetexport.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AssetExportDeleteOne{builder}
+}
+
+// Query returns a query builder for AssetExport.
+func (c *AssetExportClient) Query() *AssetExportQuery {
+	return &AssetExportQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAssetExport},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AssetExport entity by its id.
+func (c *AssetExportClient) Get(ctx context.Context, id uint64) (*AssetExport, error) {
+	return c.Query().Where(assetexport.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AssetExportClient) GetX(ctx context.Context, id uint64) *AssetExport {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryAssetManager queries the asset_manager edge of a AssetExport.
+func (c *AssetExportClient) QueryAssetManager(ae *AssetExport) *AssetManagerQuery {
+	query := (&AssetManagerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ae.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assetexport.Table, assetexport.FieldID, id),
+			sqlgraph.To(assetmanager.Table, assetmanager.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assetexport.AssetManagerTable, assetexport.AssetManagerColumn),
+		)
+		fromV = sqlgraph.Neighbors(ae.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AssetExportClient) Hooks() []Hook {
+	return c.hooks.AssetExport
+}
+
+// Interceptors returns the client interceptors.
+func (c *AssetExportClient) Interceptors() []Interceptor {
+	return c.inters.AssetExport
+}
+
+func (c *AssetExportClient) mutate(ctx context.Context, m *AssetExportMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AssetExportCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AssetExportUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AssetExportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AssetExportDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AssetExport mutation op: %q", m.Op())
 	}
 }
 
@@ -21113,7 +21270,7 @@ func (c *WarehouseClient) mutate(ctx context.Context, m *WarehouseMutation) (Val
 type (
 	hooks struct {
 		Activity, Agent, Agreement, Allocate, Asset, AssetAttributeValues,
-		AssetAttributes, AssetCheck, AssetCheckDetails, AssetMaintenance,
+		AssetAttributes, AssetCheck, AssetCheckDetails, AssetExport, AssetMaintenance,
 		AssetMaintenanceDetails, AssetManager, AssetRole, AssetScrap,
 		AssetScrapDetails, AssetTransfer, AssetTransferDetails, Assistance, Attendance,
 		Battery, BatteryFlow, BatteryModel, Branch, BranchContract, Business, Cabinet,
@@ -21135,7 +21292,7 @@ type (
 	}
 	inters struct {
 		Activity, Agent, Agreement, Allocate, Asset, AssetAttributeValues,
-		AssetAttributes, AssetCheck, AssetCheckDetails, AssetMaintenance,
+		AssetAttributes, AssetCheck, AssetCheckDetails, AssetExport, AssetMaintenance,
 		AssetMaintenanceDetails, AssetManager, AssetRole, AssetScrap,
 		AssetScrapDetails, AssetTransfer, AssetTransferDetails, Assistance, Attendance,
 		Battery, BatteryFlow, BatteryModel, Branch, BranchContract, Business, Cabinet,

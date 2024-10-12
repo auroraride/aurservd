@@ -236,6 +236,10 @@ type AssetTransferFlowDetail struct {
 // AssetTransferDetailListReq 资产出入库明细请求
 type AssetTransferDetailListReq struct {
 	PaginationReq
+	AssetTransferDetailListFilter
+}
+
+type AssetTransferDetailListFilter struct {
 	CityID            *uint64             `json:"cityId" query:"cityId"`                                           // 城市ID
 	AssetTransferType *AssetTransferType  `json:"assetTransferType" query:"assetTransferType" enums:"1,2,3,4,5,6"` // 调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租
 	Start             *string             `json:"start" query:"start"`                                             // 开始时间

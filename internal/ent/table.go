@@ -112,6 +112,16 @@ func (acd *AssetCheckDetails) GetID() uint64 {
 	return acd.ID
 }
 
+// GetTableName returns table name for AssetExport.
+func (ae *AssetExport) GetTableName() string {
+	return "asset_export"
+}
+
+// GetID returns id for AssetExport.
+func (ae *AssetExport) GetID() uint64 {
+	return ae.ID
+}
+
 // GetTableName returns table name for AssetMaintenance.
 func (am *AssetMaintenance) GetTableName() string {
 	return "asset_maintenance"

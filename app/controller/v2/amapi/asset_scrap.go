@@ -70,3 +70,18 @@ func (*assetScrap) ScrapReasonSelect(c echo.Context) (err error) {
 	ctx := app.GetAssetManagerContext(c)
 	return ctx.SendResponse(service.NewAssetScrap().ScrapReasonSelect(ctx.Request().Context()))
 }
+
+// ScrapExport
+// @ID		AssetScrapExport
+// @Router	/manager/v2/asset/scrap/export [POST]
+// @Summary	资产报废列表导出
+// @Tags	AssetScrap - 报废
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string					true	"管理员校验token"
+// @Param	body					body		model.AssetScrapListReq	true	"查询参数"
+// @Success	200						{object}	model.ExportRes			"成功"
+func (*assetScrap) ScrapExport(c echo.Context) (err error) {
+	ctx, req := app.AssetManagerContextAndBinding[model.AssetScrapListReq](c)
+	return ctx.SendResponse(service.NewAssetScrap().ScrapExport(ctx.Request().Context(), req, ctx.Modifier))
+}
