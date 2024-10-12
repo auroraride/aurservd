@@ -318,7 +318,7 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
 	return nil
 }
 
-// BusinessCensorX 校验用户是否可以使用智能柜办理业务
+// BusinessCensorX 校验用户是否可以办理电柜业务
 func (s *intelligentCabinetService) BusinessCensorX(bus adapter.Business, sub *ent.Subscribe, cab *ent.Cabinet) (bat *ent.Asset) {
 	// if !cab.Intelligent {
 	// 	return
