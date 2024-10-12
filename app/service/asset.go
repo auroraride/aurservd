@@ -599,7 +599,8 @@ func (s *assetService) Export(ctx context.Context, req *model.AssetListReq, m *m
 		WithStore().
 		WithWarehouse().
 		WithBrand().
-		WithValues()
+		WithValues().
+		WithRider()
 	s.filter(q, &req.AssetFilter)
 	q.Order(ent.Desc(asset.FieldCreatedAt))
 

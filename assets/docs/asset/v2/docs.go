@@ -3335,9 +3335,10 @@ const docTemplate = `{
                             "ScrapTypeSmartBattery",
                             "ScrapTypeOther"
                         ],
-                        "description": "报废列表类型 1:电车 2:智能电池 3:其它",
+                        "description": "报废列表类型, 报废列表类型 1:电车 2:智能电池 3:其它",
                         "name": "scrapType",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "string",
@@ -8184,6 +8185,9 @@ const docTemplate = `{
         },
         "model.AssetScrapListReq": {
             "type": "object",
+            "required": [
+                "scrapType"
+            ],
             "properties": {
                 "assetName": {
                     "description": "资产名称",
@@ -8247,7 +8251,7 @@ const docTemplate = `{
                     ]
                 },
                 "scrapType": {
-                    "description": "报废列表类型 1:电车 2:智能电池 3:其它",
+                    "description": "报废列表类型, 报废列表类型 1:电车 2:智能电池 3:其它",
                     "enum": [
                         1,
                         2,

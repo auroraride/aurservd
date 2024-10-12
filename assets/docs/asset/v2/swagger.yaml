@@ -1573,7 +1573,7 @@ definitions:
       scrapType:
         allOf:
         - $ref: '#/definitions/model.ScrapType'
-        description: 报废列表类型 1:电车 2:智能电池 3:其它
+        description: 报废列表类型, 报废列表类型 1:电车 2:智能电池 3:其它
         enum:
         - 1
         - 2
@@ -1584,6 +1584,8 @@ definitions:
       start:
         description: 开始时间
         type: string
+    required:
+    - scrapType
     type: object
   model.AssetScrapListRes:
     properties:
@@ -5299,13 +5301,14 @@ paths:
         - ScrapReasonLost
         - ScrapReasonDamage
         - ScrapReasonOther
-      - description: 报废列表类型 1:电车 2:智能电池 3:其它
+      - description: 报废列表类型, 报废列表类型 1:电车 2:智能电池 3:其它
         enum:
         - 1
         - 2
         - 3
         in: query
         name: scrapType
+        required: true
         type: integer
         x-enum-comments:
           ScrapTypeEbike: 报废电车
