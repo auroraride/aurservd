@@ -20,7 +20,7 @@ type GoodsMixin struct {
 }
 
 func (m GoodsMixin) Fields() []ent.Field {
-	f := field.Uint64("goods_id").Comment("骑手ID")
+	f := field.Uint64("goods_id").Comment("商品ID")
 	if m.Optional {
 		f.Optional().Nillable()
 	}
