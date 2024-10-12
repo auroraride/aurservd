@@ -108,6 +108,20 @@ func (amdc *AssetMaintenanceDetailsCreate) SetNillableMaterialID(u *uint64) *Ass
 	return amdc
 }
 
+// SetSn sets the "sn" field.
+func (amdc *AssetMaintenanceDetailsCreate) SetSn(s string) *AssetMaintenanceDetailsCreate {
+	amdc.mutation.SetSn(s)
+	return amdc
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (amdc *AssetMaintenanceDetailsCreate) SetNillableSn(s *string) *AssetMaintenanceDetailsCreate {
+	if s != nil {
+		amdc.SetSn(*s)
+	}
+	return amdc
+}
+
 // SetAssetID sets the "asset_id" field.
 func (amdc *AssetMaintenanceDetailsCreate) SetAssetID(u uint64) *AssetMaintenanceDetailsCreate {
 	amdc.mutation.SetAssetID(u)
@@ -263,6 +277,10 @@ func (amdc *AssetMaintenanceDetailsCreate) createSpec() (*AssetMaintenanceDetail
 	if value, ok := amdc.mutation.Remark(); ok {
 		_spec.SetField(assetmaintenancedetails.FieldRemark, field.TypeString, value)
 		_node.Remark = value
+	}
+	if value, ok := amdc.mutation.Sn(); ok {
+		_spec.SetField(assetmaintenancedetails.FieldSn, field.TypeString, value)
+		_node.Sn = value
 	}
 	if nodes := amdc.mutation.MaterialIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -451,6 +469,24 @@ func (u *AssetMaintenanceDetailsUpsert) ClearMaterialID() *AssetMaintenanceDetai
 	return u
 }
 
+// SetSn sets the "sn" field.
+func (u *AssetMaintenanceDetailsUpsert) SetSn(v string) *AssetMaintenanceDetailsUpsert {
+	u.Set(assetmaintenancedetails.FieldSn, v)
+	return u
+}
+
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *AssetMaintenanceDetailsUpsert) UpdateSn() *AssetMaintenanceDetailsUpsert {
+	u.SetExcluded(assetmaintenancedetails.FieldSn)
+	return u
+}
+
+// ClearSn clears the value of the "sn" field.
+func (u *AssetMaintenanceDetailsUpsert) ClearSn() *AssetMaintenanceDetailsUpsert {
+	u.SetNull(assetmaintenancedetails.FieldSn)
+	return u
+}
+
 // SetAssetID sets the "asset_id" field.
 func (u *AssetMaintenanceDetailsUpsert) SetAssetID(v uint64) *AssetMaintenanceDetailsUpsert {
 	u.Set(assetmaintenancedetails.FieldAssetID, v)
@@ -630,6 +666,27 @@ func (u *AssetMaintenanceDetailsUpsertOne) UpdateMaterialID() *AssetMaintenanceD
 func (u *AssetMaintenanceDetailsUpsertOne) ClearMaterialID() *AssetMaintenanceDetailsUpsertOne {
 	return u.Update(func(s *AssetMaintenanceDetailsUpsert) {
 		s.ClearMaterialID()
+	})
+}
+
+// SetSn sets the "sn" field.
+func (u *AssetMaintenanceDetailsUpsertOne) SetSn(v string) *AssetMaintenanceDetailsUpsertOne {
+	return u.Update(func(s *AssetMaintenanceDetailsUpsert) {
+		s.SetSn(v)
+	})
+}
+
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *AssetMaintenanceDetailsUpsertOne) UpdateSn() *AssetMaintenanceDetailsUpsertOne {
+	return u.Update(func(s *AssetMaintenanceDetailsUpsert) {
+		s.UpdateSn()
+	})
+}
+
+// ClearSn clears the value of the "sn" field.
+func (u *AssetMaintenanceDetailsUpsertOne) ClearSn() *AssetMaintenanceDetailsUpsertOne {
+	return u.Update(func(s *AssetMaintenanceDetailsUpsert) {
+		s.ClearSn()
 	})
 }
 
@@ -984,6 +1041,27 @@ func (u *AssetMaintenanceDetailsUpsertBulk) UpdateMaterialID() *AssetMaintenance
 func (u *AssetMaintenanceDetailsUpsertBulk) ClearMaterialID() *AssetMaintenanceDetailsUpsertBulk {
 	return u.Update(func(s *AssetMaintenanceDetailsUpsert) {
 		s.ClearMaterialID()
+	})
+}
+
+// SetSn sets the "sn" field.
+func (u *AssetMaintenanceDetailsUpsertBulk) SetSn(v string) *AssetMaintenanceDetailsUpsertBulk {
+	return u.Update(func(s *AssetMaintenanceDetailsUpsert) {
+		s.SetSn(v)
+	})
+}
+
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *AssetMaintenanceDetailsUpsertBulk) UpdateSn() *AssetMaintenanceDetailsUpsertBulk {
+	return u.Update(func(s *AssetMaintenanceDetailsUpsert) {
+		s.UpdateSn()
+	})
+}
+
+// ClearSn clears the value of the "sn" field.
+func (u *AssetMaintenanceDetailsUpsertBulk) ClearSn() *AssetMaintenanceDetailsUpsertBulk {
+	return u.Update(func(s *AssetMaintenanceDetailsUpsert) {
+		s.ClearSn()
 	})
 }
 

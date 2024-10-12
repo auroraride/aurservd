@@ -59,6 +59,7 @@ func (AssetTransferDetails) Annotations() []schema.Annotation {
 // Fields of the AssetTransferDetails.
 func (AssetTransferDetails) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("sn").Optional().Comment("资产SN"),
 		field.Uint64("transfer_id").Optional().Comment("调拨ID"),
 		field.Bool("is_in").Default(false).Comment("是否入库"),
 		field.Uint64("in_operate_id").Optional().Comment("入库人id"),

@@ -97,6 +97,26 @@ func (atdu *AssetTransferDetailsUpdate) ClearRemark() *AssetTransferDetailsUpdat
 	return atdu
 }
 
+// SetSn sets the "sn" field.
+func (atdu *AssetTransferDetailsUpdate) SetSn(s string) *AssetTransferDetailsUpdate {
+	atdu.mutation.SetSn(s)
+	return atdu
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (atdu *AssetTransferDetailsUpdate) SetNillableSn(s *string) *AssetTransferDetailsUpdate {
+	if s != nil {
+		atdu.SetSn(*s)
+	}
+	return atdu
+}
+
+// ClearSn clears the value of the "sn" field.
+func (atdu *AssetTransferDetailsUpdate) ClearSn() *AssetTransferDetailsUpdate {
+	atdu.mutation.ClearSn()
+	return atdu
+}
+
 // SetTransferID sets the "transfer_id" field.
 func (atdu *AssetTransferDetailsUpdate) SetTransferID(u uint64) *AssetTransferDetailsUpdate {
 	atdu.mutation.SetTransferID(u)
@@ -501,6 +521,12 @@ func (atdu *AssetTransferDetailsUpdate) sqlSave(ctx context.Context) (n int, err
 	if atdu.mutation.RemarkCleared() {
 		_spec.ClearField(assettransferdetails.FieldRemark, field.TypeString)
 	}
+	if value, ok := atdu.mutation.Sn(); ok {
+		_spec.SetField(assettransferdetails.FieldSn, field.TypeString, value)
+	}
+	if atdu.mutation.SnCleared() {
+		_spec.ClearField(assettransferdetails.FieldSn, field.TypeString)
+	}
 	if value, ok := atdu.mutation.IsIn(); ok {
 		_spec.SetField(assettransferdetails.FieldIsIn, field.TypeBool, value)
 	}
@@ -857,6 +883,26 @@ func (atduo *AssetTransferDetailsUpdateOne) SetNillableRemark(s *string) *AssetT
 // ClearRemark clears the value of the "remark" field.
 func (atduo *AssetTransferDetailsUpdateOne) ClearRemark() *AssetTransferDetailsUpdateOne {
 	atduo.mutation.ClearRemark()
+	return atduo
+}
+
+// SetSn sets the "sn" field.
+func (atduo *AssetTransferDetailsUpdateOne) SetSn(s string) *AssetTransferDetailsUpdateOne {
+	atduo.mutation.SetSn(s)
+	return atduo
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (atduo *AssetTransferDetailsUpdateOne) SetNillableSn(s *string) *AssetTransferDetailsUpdateOne {
+	if s != nil {
+		atduo.SetSn(*s)
+	}
+	return atduo
+}
+
+// ClearSn clears the value of the "sn" field.
+func (atduo *AssetTransferDetailsUpdateOne) ClearSn() *AssetTransferDetailsUpdateOne {
+	atduo.mutation.ClearSn()
 	return atduo
 }
 
@@ -1293,6 +1339,12 @@ func (atduo *AssetTransferDetailsUpdateOne) sqlSave(ctx context.Context) (_node 
 	}
 	if atduo.mutation.RemarkCleared() {
 		_spec.ClearField(assettransferdetails.FieldRemark, field.TypeString)
+	}
+	if value, ok := atduo.mutation.Sn(); ok {
+		_spec.SetField(assettransferdetails.FieldSn, field.TypeString, value)
+	}
+	if atduo.mutation.SnCleared() {
+		_spec.ClearField(assettransferdetails.FieldSn, field.TypeString)
 	}
 	if value, ok := atduo.mutation.IsIn(); ok {
 		_spec.SetField(assettransferdetails.FieldIsIn, field.TypeBool, value)

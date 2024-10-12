@@ -68,11 +68,16 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 			SetOutNum(uint(len(assetIDs))).
 			SetType(req.AssetTransferType.Value())
 		for _, id := range assetIDs {
+			as, _ := ent.Database.Asset.QueryNotDeleted().Where(asset.ID(id)).First(ctx)
+			if as == nil {
+				return "", nil, errors.New("资产不存在")
+			}
 			d := ent.Database.AssetTransferDetails.Create().
-				SetAssetID(id).
+				SetAssetID(as.ID).
 				SetCreator(modifier).
 				SetLastModifier(modifier).
-				SetRemark(req.OperatorType.String() + "调拨")
+				SetRemark(req.OperatorType.String() + "调拨").
+				SetSn(as.Sn)
 			bulk = append(bulk, d)
 		}
 
@@ -96,10 +101,12 @@ func (s *assetTransferService) Transfer(ctx context.Context, req *model.AssetTra
 			SetType(model.AssetTransferTypeInitial.Value()).
 			SetRemark("后台初始调拨")
 		for _, id := range assetIDs {
+			as, _ := ent.Database.Asset.QueryNotDeleted().Where(asset.ID(id)).First(ctx)
 			d := ent.Database.AssetTransferDetails.Create().
-				SetAssetID(id).
+				SetAssetID(as.ID).
 				SetCreator(modifier).
-				SetLastModifier(modifier)
+				SetLastModifier(modifier).
+				SetSn(as.Sn)
 			if req.FromLocationType == nil {
 				d.SetInTimeAt(newTime).
 					SetInOperateID(req.OperatorID).

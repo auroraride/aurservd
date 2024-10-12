@@ -29,6 +29,8 @@ const (
 	FieldRemark = "remark"
 	// FieldMaintainerID holds the string denoting the maintainer_id field in the database.
 	FieldMaintainerID = "maintainer_id"
+	// FieldSn holds the string denoting the sn field in the database.
+	FieldSn = "sn"
 	// FieldAssetID holds the string denoting the asset_id field in the database.
 	FieldAssetID = "asset_id"
 	// FieldCheckID holds the string denoting the check_id field in the database.
@@ -198,6 +200,7 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldMaintainerID,
+	FieldSn,
 	FieldAssetID,
 	FieldCheckID,
 	FieldRealLocationsID,
@@ -270,6 +273,11 @@ func ByRemark(opts ...sql.OrderTermOption) OrderOption {
 // ByMaintainerID orders the results by the maintainer_id field.
 func ByMaintainerID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldMaintainerID, opts...).ToFunc()
+}
+
+// BySn orders the results by the sn field.
+func BySn(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSn, opts...).ToFunc()
 }
 
 // ByAssetID orders the results by the asset_id field.

@@ -113,6 +113,20 @@ func (acdc *AssetCheckDetailsCreate) SetNillableMaintainerID(u *uint64) *AssetCh
 	return acdc
 }
 
+// SetSn sets the "sn" field.
+func (acdc *AssetCheckDetailsCreate) SetSn(s string) *AssetCheckDetailsCreate {
+	acdc.mutation.SetSn(s)
+	return acdc
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (acdc *AssetCheckDetailsCreate) SetNillableSn(s *string) *AssetCheckDetailsCreate {
+	if s != nil {
+		acdc.SetSn(*s)
+	}
+	return acdc
+}
+
 // SetAssetID sets the "asset_id" field.
 func (acdc *AssetCheckDetailsCreate) SetAssetID(u uint64) *AssetCheckDetailsCreate {
 	acdc.mutation.SetAssetID(u)
@@ -617,6 +631,10 @@ func (acdc *AssetCheckDetailsCreate) createSpec() (*AssetCheckDetails, *sqlgraph
 		_spec.SetField(assetcheckdetails.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
+	if value, ok := acdc.mutation.Sn(); ok {
+		_spec.SetField(assetcheckdetails.FieldSn, field.TypeString, value)
+		_node.Sn = value
+	}
 	if value, ok := acdc.mutation.RealLocationsType(); ok {
 		_spec.SetField(assetcheckdetails.FieldRealLocationsType, field.TypeUint8, value)
 		_node.RealLocationsType = value
@@ -1032,6 +1050,24 @@ func (u *AssetCheckDetailsUpsert) ClearMaintainerID() *AssetCheckDetailsUpsert {
 	return u
 }
 
+// SetSn sets the "sn" field.
+func (u *AssetCheckDetailsUpsert) SetSn(v string) *AssetCheckDetailsUpsert {
+	u.Set(assetcheckdetails.FieldSn, v)
+	return u
+}
+
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsert) UpdateSn() *AssetCheckDetailsUpsert {
+	u.SetExcluded(assetcheckdetails.FieldSn)
+	return u
+}
+
+// ClearSn clears the value of the "sn" field.
+func (u *AssetCheckDetailsUpsert) ClearSn() *AssetCheckDetailsUpsert {
+	u.SetNull(assetcheckdetails.FieldSn)
+	return u
+}
+
 // SetAssetID sets the "asset_id" field.
 func (u *AssetCheckDetailsUpsert) SetAssetID(v uint64) *AssetCheckDetailsUpsert {
 	u.Set(assetcheckdetails.FieldAssetID, v)
@@ -1385,6 +1421,27 @@ func (u *AssetCheckDetailsUpsertOne) UpdateMaintainerID() *AssetCheckDetailsUpse
 func (u *AssetCheckDetailsUpsertOne) ClearMaintainerID() *AssetCheckDetailsUpsertOne {
 	return u.Update(func(s *AssetCheckDetailsUpsert) {
 		s.ClearMaintainerID()
+	})
+}
+
+// SetSn sets the "sn" field.
+func (u *AssetCheckDetailsUpsertOne) SetSn(v string) *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetSn(v)
+	})
+}
+
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertOne) UpdateSn() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateSn()
+	})
+}
+
+// ClearSn clears the value of the "sn" field.
+func (u *AssetCheckDetailsUpsertOne) ClearSn() *AssetCheckDetailsUpsertOne {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearSn()
 	})
 }
 
@@ -1942,6 +1999,27 @@ func (u *AssetCheckDetailsUpsertBulk) UpdateMaintainerID() *AssetCheckDetailsUps
 func (u *AssetCheckDetailsUpsertBulk) ClearMaintainerID() *AssetCheckDetailsUpsertBulk {
 	return u.Update(func(s *AssetCheckDetailsUpsert) {
 		s.ClearMaintainerID()
+	})
+}
+
+// SetSn sets the "sn" field.
+func (u *AssetCheckDetailsUpsertBulk) SetSn(v string) *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.SetSn(v)
+	})
+}
+
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *AssetCheckDetailsUpsertBulk) UpdateSn() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.UpdateSn()
+	})
+}
+
+// ClearSn clears the value of the "sn" field.
+func (u *AssetCheckDetailsUpsertBulk) ClearSn() *AssetCheckDetailsUpsertBulk {
+	return u.Update(func(s *AssetCheckDetailsUpsert) {
+		s.ClearSn()
 	})
 }
 

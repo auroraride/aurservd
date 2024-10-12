@@ -18,6 +18,8 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldSn holds the string denoting the sn field in the database.
+	FieldSn = "sn"
 	// FieldAssetID holds the string denoting the asset_id field in the database.
 	FieldAssetID = "asset_id"
 	// FieldScrapID holds the string denoting the scrap_id field in the database.
@@ -49,6 +51,7 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldSn,
 	FieldAssetID,
 	FieldScrapID,
 }
@@ -88,6 +91,11 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByUpdatedAt orders the results by the updated_at field.
 func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// BySn orders the results by the sn field.
+func BySn(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSn, opts...).ToFunc()
 }
 
 // ByAssetID orders the results by the asset_id field.

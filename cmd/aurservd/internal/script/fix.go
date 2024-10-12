@@ -24,6 +24,7 @@ func fixCommand() *cobra.Command {
 		fix.Contract(),
 		fix.Sql(),
 		fix.Asset(),
+		fix.AssetSN(),
 	)
 
 	return cmd

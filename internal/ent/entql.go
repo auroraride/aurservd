@@ -340,6 +340,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			assetcheckdetails.FieldLastModifier:      {Type: field.TypeJSON, Column: assetcheckdetails.FieldLastModifier},
 			assetcheckdetails.FieldRemark:            {Type: field.TypeString, Column: assetcheckdetails.FieldRemark},
 			assetcheckdetails.FieldMaintainerID:      {Type: field.TypeUint64, Column: assetcheckdetails.FieldMaintainerID},
+			assetcheckdetails.FieldSn:                {Type: field.TypeString, Column: assetcheckdetails.FieldSn},
 			assetcheckdetails.FieldAssetID:           {Type: field.TypeUint64, Column: assetcheckdetails.FieldAssetID},
 			assetcheckdetails.FieldCheckID:           {Type: field.TypeUint64, Column: assetcheckdetails.FieldCheckID},
 			assetcheckdetails.FieldRealLocationsID:   {Type: field.TypeUint64, Column: assetcheckdetails.FieldRealLocationsID},
@@ -421,6 +422,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			assetmaintenancedetails.FieldLastModifier:  {Type: field.TypeJSON, Column: assetmaintenancedetails.FieldLastModifier},
 			assetmaintenancedetails.FieldRemark:        {Type: field.TypeString, Column: assetmaintenancedetails.FieldRemark},
 			assetmaintenancedetails.FieldMaterialID:    {Type: field.TypeUint64, Column: assetmaintenancedetails.FieldMaterialID},
+			assetmaintenancedetails.FieldSn:            {Type: field.TypeString, Column: assetmaintenancedetails.FieldSn},
 			assetmaintenancedetails.FieldAssetID:       {Type: field.TypeUint64, Column: assetmaintenancedetails.FieldAssetID},
 			assetmaintenancedetails.FieldMaintenanceID: {Type: field.TypeUint64, Column: assetmaintenancedetails.FieldMaintenanceID},
 		},
@@ -507,6 +509,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			assetscrapdetails.FieldCreatedAt: {Type: field.TypeTime, Column: assetscrapdetails.FieldCreatedAt},
 			assetscrapdetails.FieldUpdatedAt: {Type: field.TypeTime, Column: assetscrapdetails.FieldUpdatedAt},
+			assetscrapdetails.FieldSn:        {Type: field.TypeString, Column: assetscrapdetails.FieldSn},
 			assetscrapdetails.FieldAssetID:   {Type: field.TypeUint64, Column: assetscrapdetails.FieldAssetID},
 			assetscrapdetails.FieldScrapID:   {Type: field.TypeUint64, Column: assetscrapdetails.FieldScrapID},
 		},
@@ -560,6 +563,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			assettransferdetails.FieldCreator:       {Type: field.TypeJSON, Column: assettransferdetails.FieldCreator},
 			assettransferdetails.FieldLastModifier:  {Type: field.TypeJSON, Column: assettransferdetails.FieldLastModifier},
 			assettransferdetails.FieldRemark:        {Type: field.TypeString, Column: assettransferdetails.FieldRemark},
+			assettransferdetails.FieldSn:            {Type: field.TypeString, Column: assettransferdetails.FieldSn},
 			assettransferdetails.FieldTransferID:    {Type: field.TypeUint64, Column: assettransferdetails.FieldTransferID},
 			assettransferdetails.FieldIsIn:          {Type: field.TypeBool, Column: assettransferdetails.FieldIsIn},
 			assettransferdetails.FieldInOperateID:   {Type: field.TypeUint64, Column: assettransferdetails.FieldInOperateID},
@@ -9376,6 +9380,11 @@ func (f *AssetCheckDetailsFilter) WhereMaintainerID(p entql.Uint64P) {
 	f.Where(p.Field(assetcheckdetails.FieldMaintainerID))
 }
 
+// WhereSn applies the entql string predicate on the sn field.
+func (f *AssetCheckDetailsFilter) WhereSn(p entql.StringP) {
+	f.Where(p.Field(assetcheckdetails.FieldSn))
+}
+
 // WhereAssetID applies the entql uint64 predicate on the asset_id field.
 func (f *AssetCheckDetailsFilter) WhereAssetID(p entql.Uint64P) {
 	f.Where(p.Field(assetcheckdetails.FieldAssetID))
@@ -9972,6 +9981,11 @@ func (f *AssetMaintenanceDetailsFilter) WhereMaterialID(p entql.Uint64P) {
 	f.Where(p.Field(assetmaintenancedetails.FieldMaterialID))
 }
 
+// WhereSn applies the entql string predicate on the sn field.
+func (f *AssetMaintenanceDetailsFilter) WhereSn(p entql.StringP) {
+	f.Where(p.Field(assetmaintenancedetails.FieldSn))
+}
+
 // WhereAssetID applies the entql uint64 predicate on the asset_id field.
 func (f *AssetMaintenanceDetailsFilter) WhereAssetID(p entql.Uint64P) {
 	f.Where(p.Field(assetmaintenancedetails.FieldAssetID))
@@ -10468,6 +10482,11 @@ func (f *AssetScrapDetailsFilter) WhereCreatedAt(p entql.TimeP) {
 // WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
 func (f *AssetScrapDetailsFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(assetscrapdetails.FieldUpdatedAt))
+}
+
+// WhereSn applies the entql string predicate on the sn field.
+func (f *AssetScrapDetailsFilter) WhereSn(p entql.StringP) {
+	f.Where(p.Field(assetscrapdetails.FieldSn))
 }
 
 // WhereAssetID applies the entql uint64 predicate on the asset_id field.
@@ -10991,6 +11010,11 @@ func (f *AssetTransferDetailsFilter) WhereLastModifier(p entql.BytesP) {
 // WhereRemark applies the entql string predicate on the remark field.
 func (f *AssetTransferDetailsFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(assettransferdetails.FieldRemark))
+}
+
+// WhereSn applies the entql string predicate on the sn field.
+func (f *AssetTransferDetailsFilter) WhereSn(p entql.StringP) {
+	f.Where(p.Field(assettransferdetails.FieldSn))
 }
 
 // WhereTransferID applies the entql uint64 predicate on the transfer_id field.

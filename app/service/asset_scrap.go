@@ -229,12 +229,16 @@ func (s *assetScrapService) createScrap(ctx context.Context, req *model.AssetScr
 			return fmt.Errorf("资产已经报废")
 		}
 		// 更新资产状态
-		err := ent.Database.Asset.Update().Where(asset.ID(v)).SetStatus(model.AssetStatusScrap.Value()).Exec(ctx)
+		as, _ := ent.Database.Asset.QueryNotDeleted().Where(asset.ID(v)).First(ctx)
+		if as == nil {
+			return fmt.Errorf("资产不存在")
+		}
+		err := as.Update().SetStatus(model.AssetStatusScrap.Value()).Exec(ctx)
 		if err != nil {
 			return err
 		}
 		// 创建报废记录
-		scrapBluk = append(scrapBluk, ent.Database.AssetScrapDetails.Create().SetAssetID(v))
+		scrapBluk = append(scrapBluk, ent.Database.AssetScrapDetails.Create().SetAssetID(as.ID).SetSn(as.Sn))
 	}
 	c, err := ent.Database.AssetScrapDetails.CreateBulk(scrapBluk...).Save(ctx)
 	if err != nil {

@@ -75,6 +75,11 @@ func Remark(v string) predicate.AssetTransferDetails {
 	return predicate.AssetTransferDetails(sql.FieldEQ(FieldRemark, v))
 }
 
+// Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
+func Sn(v string) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldEQ(FieldSn, v))
+}
+
 // TransferID applies equality check predicate on the "transfer_id" field. It's identical to TransferIDEQ.
 func TransferID(v uint64) predicate.AssetTransferDetails {
 	return predicate.AssetTransferDetails(sql.FieldEQ(FieldTransferID, v))
@@ -328,6 +333,81 @@ func RemarkEqualFold(v string) predicate.AssetTransferDetails {
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.AssetTransferDetails {
 	return predicate.AssetTransferDetails(sql.FieldContainsFold(FieldRemark, v))
+}
+
+// SnEQ applies the EQ predicate on the "sn" field.
+func SnEQ(v string) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldEQ(FieldSn, v))
+}
+
+// SnNEQ applies the NEQ predicate on the "sn" field.
+func SnNEQ(v string) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldNEQ(FieldSn, v))
+}
+
+// SnIn applies the In predicate on the "sn" field.
+func SnIn(vs ...string) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldIn(FieldSn, vs...))
+}
+
+// SnNotIn applies the NotIn predicate on the "sn" field.
+func SnNotIn(vs ...string) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldNotIn(FieldSn, vs...))
+}
+
+// SnGT applies the GT predicate on the "sn" field.
+func SnGT(v string) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldGT(FieldSn, v))
+}
+
+// SnGTE applies the GTE predicate on the "sn" field.
+func SnGTE(v string) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldGTE(FieldSn, v))
+}
+
+// SnLT applies the LT predicate on the "sn" field.
+func SnLT(v string) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldLT(FieldSn, v))
+}
+
+// SnLTE applies the LTE predicate on the "sn" field.
+func SnLTE(v string) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldLTE(FieldSn, v))
+}
+
+// SnContains applies the Contains predicate on the "sn" field.
+func SnContains(v string) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldContains(FieldSn, v))
+}
+
+// SnHasPrefix applies the HasPrefix predicate on the "sn" field.
+func SnHasPrefix(v string) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldHasPrefix(FieldSn, v))
+}
+
+// SnHasSuffix applies the HasSuffix predicate on the "sn" field.
+func SnHasSuffix(v string) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldHasSuffix(FieldSn, v))
+}
+
+// SnIsNil applies the IsNil predicate on the "sn" field.
+func SnIsNil() predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldIsNull(FieldSn))
+}
+
+// SnNotNil applies the NotNil predicate on the "sn" field.
+func SnNotNil() predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldNotNull(FieldSn))
+}
+
+// SnEqualFold applies the EqualFold predicate on the "sn" field.
+func SnEqualFold(v string) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldEqualFold(FieldSn, v))
+}
+
+// SnContainsFold applies the ContainsFold predicate on the "sn" field.
+func SnContainsFold(v string) predicate.AssetTransferDetails {
+	return predicate.AssetTransferDetails(sql.FieldContainsFold(FieldSn, v))
 }
 
 // TransferIDEQ applies the EQ predicate on the "transfer_id" field.

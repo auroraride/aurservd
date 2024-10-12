@@ -27,6 +27,8 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
+	// FieldSn holds the string denoting the sn field in the database.
+	FieldSn = "sn"
 	// FieldTransferID holds the string denoting the transfer_id field in the database.
 	FieldTransferID = "transfer_id"
 	// FieldIsIn holds the string denoting the is_in field in the database.
@@ -133,6 +135,7 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
+	FieldSn,
 	FieldTransferID,
 	FieldIsIn,
 	FieldInOperateID,
@@ -194,6 +197,11 @@ func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByRemark orders the results by the remark field.
 func ByRemark(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRemark, opts...).ToFunc()
+}
+
+// BySn orders the results by the sn field.
+func BySn(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSn, opts...).ToFunc()
 }
 
 // ByTransferID orders the results by the transfer_id field.
