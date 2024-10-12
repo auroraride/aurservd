@@ -2338,7 +2338,6 @@ const docTemplate = `{
         },
         "/manager/v1/cabinet/openbind": {
             "post": {
-                "description": "\u003c仅智能电柜可用, 普通电柜无法请求, 判定标准: ` + "`" + `intelligent = true` + "`" + `\u003e",
                 "consumes": [
                     "application/json"
                 ],
@@ -14604,10 +14603,6 @@ const docTemplate = `{
                     "description": "型号",
                     "type": "string"
                 },
-                "modelId": {
-                    "description": "型号ID",
-                    "type": "integer"
-                },
                 "sn": {
                     "description": "编号",
                     "type": "string"
@@ -16575,7 +16570,6 @@ const docTemplate = `{
         "model.CabinetOpenBindReq": {
             "type": "object",
             "required": [
-                "batterySn",
                 "id",
                 "index",
                 "phone",

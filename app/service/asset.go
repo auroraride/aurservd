@@ -586,13 +586,13 @@ func (s *assetService) downloadBatteryTemplate(ctx context.Context) (path string
 }
 
 // Export 导出资产
-func (s *assetService) Export(ctx context.Context, req *model.AssetListReq, m *model.Modifier) (model.ExportRes, error) {
+func (s *assetService) Export(ctx context.Context, req *model.AssetListReq, m *model.Modifier) (model.AssetExportRes, error) {
 	q := s.orm.QueryNotDeleted().WithCabinet().WithCity().WithStation().WithModel().WithOperator().WithValues().WithStore().WithWarehouse().WithBrand().WithValues()
 	s.filter(q, &req.AssetFilter)
 	q.Order(ent.Desc(asset.FieldCreatedAt))
 
 	if req.AssetType == nil {
-		return model.ExportRes{}, errors.New("类型不能为空")
+		return model.AssetExportRes{}, errors.New("类型不能为空")
 	}
 	switch *req.AssetType {
 	case model.AssetTypeSmartBattery:
@@ -602,13 +602,13 @@ func (s *assetService) Export(ctx context.Context, req *model.AssetListReq, m *m
 		s.ebikeFilter(q, &req.AssetFilter)
 		return s.exportEbike(ctx, req, q, m), nil
 	default:
-		return model.ExportRes{}, errors.New("未知类型")
+		return model.AssetExportRes{}, errors.New("未知类型")
 	}
 }
 
 // 导出电池
-func (s *assetService) exportBattery(ctx context.Context, req *model.AssetListReq, q *ent.AssetQuery, m *model.Modifier) model.ExportRes {
-	return NewExportWithModifier(m).Start("电池列表", req.AssetFilter, nil, "", func(path string) {
+func (s *assetService) exportBattery(ctx context.Context, req *model.AssetListReq, q *ent.AssetQuery, m *model.Modifier) model.AssetExportRes {
+	return NewAssetExportWithModifier(m).Start("电池列表", req.AssetFilter, nil, "", func(path string) {
 		items, _ := q.All(context.Background())
 		var rows tools.ExcelItems
 		title := []any{
@@ -675,6 +675,11 @@ func (s *assetService) exportBattery(ctx context.Context, req *model.AssetListRe
 				brandName = item.BrandName
 			}
 
+			enable := "否"
+			if item.Enable {
+				enable = "是"
+			}
+
 			row := []any{
 				cityName,
 				belong,
@@ -683,7 +688,7 @@ func (s *assetService) exportBattery(ctx context.Context, req *model.AssetListRe
 				modelStr,
 				item.Sn,
 				model.AssetStatus(item.Status).String(),
-				item.Enable,
+				enable,
 				item.Remark,
 			}
 			rows = append(rows, row)
@@ -693,9 +698,9 @@ func (s *assetService) exportBattery(ctx context.Context, req *model.AssetListRe
 }
 
 // 导出电车
-func (s *assetService) exportEbike(ctx context.Context, req *model.AssetListReq, q *ent.AssetQuery, m *model.Modifier) model.ExportRes {
+func (s *assetService) exportEbike(ctx context.Context, req *model.AssetListReq, q *ent.AssetQuery, m *model.Modifier) model.AssetExportRes {
 	t, _ := ent.Database.AssetAttributes.Query().Where(assetattributes.AssetType((model.AssetTypeEbike).Value())).WithValues().All(ctx)
-	return NewExportWithModifier(m).Start("电车列表", req.AssetFilter, nil, "", func(path string) {
+	return NewAssetExportWithModifier(m).Start("电车列表", req.AssetFilter, nil, "", func(path string) {
 		items, _ := q.All(context.Background())
 		var rows tools.ExcelItems
 		title := []any{

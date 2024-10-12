@@ -46,3 +46,18 @@ func (*maintainer) AssetDetail(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(biz.NewMaintainerAsset().AssetDetail(req.ID))
 }
+
+// AssetsExport
+// @ID		MaintainerAssetsExport
+// @Router	/manager/v2/asset/maintainer_assets/export [POST]
+// @Summary	运维物资导出
+// @Tags	Maintainer - 运维
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string								true	"管理员校验token"
+// @Param	body					body		definition.MaintainerAssetListReq	true	"查询参数"
+// @Success	200						{object}	model.ExportRes						"成功"
+func (*maintainer) AssetsExport(c echo.Context) (err error) {
+	ctx, req := app.AssetManagerContextAndBinding[definition.MaintainerAssetListReq](c)
+	return ctx.SendResponse(biz.NewMaintainerAssetWithModifier(ctx.Modifier).AssetsExport(req))
+}

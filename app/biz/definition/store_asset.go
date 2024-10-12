@@ -9,6 +9,10 @@ import "github.com/auroraride/aurservd/app/model"
 // StoreAssetListReq 门店资产列表请求
 type StoreAssetListReq struct {
 	model.PaginationReq
+	StoreAssetListFilter
+}
+
+type StoreAssetListFilter struct {
 	CityID    *uint64 `json:"cityId" query:"cityId"`       // 城市ID
 	GroupID   *uint64 `json:"groupId" query:"groupId"`     // 门店集合ID
 	StoreID   *uint64 `json:"storeId" query:"storeId"`     // 门店ID

@@ -34,6 +34,10 @@ func (a AssetMaintenanceStatus) Value() uint8 {
 // AssetMaintenanceListReq 维修记录列表请求
 type AssetMaintenanceListReq struct {
 	PaginationReq
+	AssetMaintenanceListFilter
+}
+
+type AssetMaintenanceListFilter struct {
 	Keyword        *string `json:"keyword"  query:"keyword"`
 	Status         *uint8  `json:"status" query:"status"`                 // 状态 2:已维修 3:维修失败
 	IsUseAccessory *bool   `json:"isUseAccessory" query:"isUseAccessory"` // 是否使用配件 true:已使用  false:未使用

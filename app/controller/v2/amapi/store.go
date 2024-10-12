@@ -46,3 +46,18 @@ func (*store) AssetDetail(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(biz.NewStoreAsset().AssetDetail(req.ID))
 }
+
+// AssetsExport
+// @ID		StoreAssetsExport
+// @Router	/manager/v2/asset/store_assets/export [POST]
+// @Summary	门店物资导出
+// @Tags	Store - 门店
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
+// @Param	body					body		definition.StoreAssetListReq	true	"查询参数"
+// @Success	200						{object}	model.ExportRes					"成功"
+func (*store) AssetsExport(c echo.Context) (err error) {
+	ctx, req := app.AssetManagerContextAndBinding[definition.StoreAssetListReq](c)
+	return ctx.SendResponse(biz.NewStoreAssetWithModifier(ctx.Modifier).AssetsExport(req))
+}

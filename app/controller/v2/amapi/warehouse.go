@@ -121,3 +121,18 @@ func (*warehouse) AssetDetail(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(biz.NewWarehouse().AssetsDetail(req.ID))
 }
+
+// AssetsExport
+// @ID		WarehouseAssetExport
+// @Router	/manager/v2/asset/warehouse_assets/export [POST]
+// @Summary	仓库物资导出
+// @Tags	Warehouse - 仓库
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string								true	"管理员校验token"
+// @Param	body					body		definition.WareHouseAssetListReq	true	"desc"
+// @Success	200						{object}	model.ExportRes						"成功"
+func (*warehouse) AssetsExport(c echo.Context) (err error) {
+	ctx, req := app.AssetManagerContextAndBinding[definition.WareHouseAssetListReq](c)
+	return ctx.SendResponse(biz.NewWarehouseWithModifier(ctx.Modifier).AssetsExport(req))
+}

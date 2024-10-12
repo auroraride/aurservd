@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assetattributevalues"
 	"github.com/auroraride/aurservd/internal/ent/assetcheck"
 	"github.com/auroraride/aurservd/internal/ent/assetcheckdetails"
+	"github.com/auroraride/aurservd/internal/ent/assetexport"
 	"github.com/auroraride/aurservd/internal/ent/assetmaintenance"
 	"github.com/auroraride/aurservd/internal/ent/assetmaintenancedetails"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
@@ -308,6 +309,25 @@ func init() {
 	assetcheckdetailsDescResult := assetcheckdetailsFields[7].Descriptor()
 	// assetcheckdetails.DefaultResult holds the default value on creation for the result field.
 	assetcheckdetails.DefaultResult = assetcheckdetailsDescResult.Default.(uint8)
+	assetexportMixin := schema.AssetExport{}.Mixin()
+	assetexportMixinFields0 := assetexportMixin[0].Fields()
+	_ = assetexportMixinFields0
+	assetexportFields := schema.AssetExport{}.Fields()
+	_ = assetexportFields
+	// assetexportDescCreatedAt is the schema descriptor for created_at field.
+	assetexportDescCreatedAt := assetexportMixinFields0[0].Descriptor()
+	// assetexport.DefaultCreatedAt holds the default value on creation for the created_at field.
+	assetexport.DefaultCreatedAt = assetexportDescCreatedAt.Default.(func() time.Time)
+	// assetexportDescUpdatedAt is the schema descriptor for updated_at field.
+	assetexportDescUpdatedAt := assetexportMixinFields0[1].Descriptor()
+	// assetexport.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	assetexport.DefaultUpdatedAt = assetexportDescUpdatedAt.Default.(func() time.Time)
+	// assetexport.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	assetexport.UpdateDefaultUpdatedAt = assetexportDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// assetexportDescStatus is the schema descriptor for status field.
+	assetexportDescStatus := assetexportFields[2].Descriptor()
+	// assetexport.DefaultStatus holds the default value on creation for the status field.
+	assetexport.DefaultStatus = assetexportDescStatus.Default.(uint8)
 	assetmaintenanceMixin := schema.AssetMaintenance{}.Mixin()
 	assetmaintenanceMixinHooks2 := assetmaintenanceMixin[2].Hooks()
 	assetmaintenance.Hooks[0] = assetmaintenanceMixinHooks2[0]

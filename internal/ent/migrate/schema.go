@@ -725,6 +725,65 @@ var (
 			},
 		},
 	}
+	// AssetExportColumns holds the columns for the "asset_export" table.
+	AssetExportColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "taxonomy", Type: field.TypeString, Comment: "分类"},
+		{Name: "sn", Type: field.TypeString, Comment: "编号"},
+		{Name: "status", Type: field.TypeUint8, Comment: "状态", Default: 0},
+		{Name: "path", Type: field.TypeString, Nullable: true, Comment: "文件路径"},
+		{Name: "message", Type: field.TypeString, Nullable: true, Comment: "失败原因"},
+		{Name: "finish_at", Type: field.TypeTime, Nullable: true, Comment: "生成时间"},
+		{Name: "duration", Type: field.TypeInt64, Nullable: true, Comment: "耗时"},
+		{Name: "condition", Type: field.TypeString, Size: 2147483647, Comment: "筛选条件"},
+		{Name: "info", Type: field.TypeJSON, Nullable: true, Comment: "详细信息"},
+		{Name: "remark", Type: field.TypeString, Comment: "备注信息"},
+		{Name: "asset_manager_id", Type: field.TypeUint64, Comment: "仓库管理人ID"},
+	}
+	// AssetExportTable holds the schema information for the "asset_export" table.
+	AssetExportTable = &schema.Table{
+		Name:       "asset_export",
+		Columns:    AssetExportColumns,
+		PrimaryKey: []*schema.Column{AssetExportColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "asset_export_asset_manager_asset_manager",
+				Columns:    []*schema.Column{AssetExportColumns[14]},
+				RefColumns: []*schema.Column{AssetManagerColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "assetexport_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{AssetExportColumns[1]},
+			},
+			{
+				Name:    "assetexport_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{AssetExportColumns[3]},
+			},
+			{
+				Name:    "assetexport_asset_manager_id",
+				Unique:  false,
+				Columns: []*schema.Column{AssetExportColumns[14]},
+			},
+			{
+				Name:    "assetexport_sn",
+				Unique:  false,
+				Columns: []*schema.Column{AssetExportColumns[5]},
+			},
+			{
+				Name:    "assetexport_status",
+				Unique:  false,
+				Columns: []*schema.Column{AssetExportColumns[6]},
+			},
+		},
+	}
 	// AssetMaintenanceColumns holds the columns for the "asset_maintenance" table.
 	AssetMaintenanceColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -7485,6 +7544,7 @@ var (
 		AssetAttributesTable,
 		AssetCheckTable,
 		AssetCheckDetailsTable,
+		AssetExportTable,
 		AssetMaintenanceTable,
 		AssetMaintenanceDetailsTable,
 		AssetManagerTable,
@@ -7661,6 +7721,10 @@ func init() {
 	AssetCheckDetailsTable.ForeignKeys[14].RefTable = MaintainerTable
 	AssetCheckDetailsTable.Annotation = &entsql.Annotation{
 		Table: "asset_check_details",
+	}
+	AssetExportTable.ForeignKeys[0].RefTable = AssetManagerTable
+	AssetExportTable.Annotation = &entsql.Annotation{
+		Table: "asset_export",
 	}
 	AssetMaintenanceTable.ForeignKeys[0].RefTable = CabinetTable
 	AssetMaintenanceTable.ForeignKeys[1].RefTable = MaintainerTable

@@ -49,108 +49,7 @@ func (s *assetScrapService) ScrapList(ctx context.Context, req *model.AssetScrap
 	s.filter(ctx, q, req)
 	q.Order(ent.Desc(assetscrap.FieldCreatedAt))
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.AssetScrap) (res *model.AssetScrapListRes) {
-		operateName := ""
-		if item.OperateID != nil && item.OperateRoleType != nil {
-			switch *item.OperateRoleType {
-			case model.OperatorTypeAssetManager.Value():
-				if item.Edges.Manager != nil {
-					// 查询角色
-					var roleName string
-					if role, _ := item.Edges.Manager.QueryRole().First(ctx); role != nil {
-						roleName = role.Name
-					}
-					operateName = "[" + roleName + "]-" + item.Edges.Manager.Name
-				}
-			case model.OperatorTypeEmployee.Value():
-				if item.Edges.Employee != nil {
-					operateName = "[门店]-" + item.Edges.Employee.Name
-				}
-			case model.OperatorTypeMaintainer.Value():
-				if item.Edges.Maintainer != nil {
-					operateName = "[运维]-" + item.Edges.Maintainer.Name
-				}
-			case model.OperatorTypeAgent.Value():
-				if item.Edges.Agent != nil {
-					operateName = "[代理]-" + item.Edges.Agent.Name
-				}
-			default:
-				operateName = "未知"
-			}
-		}
-		res = &model.AssetScrapListRes{
-			ID:          item.ID,
-			ScrapReason: model.ScrapReasonType(item.ReasonType).String(),
-			OperateName: operateName,
-			Remark:      item.Remark,
-			ScrapAt:     item.ScrapAt.Format(carbon.DateTimeLayout),
-		}
-
-		if len(item.Edges.ScrapDetails) != 0 {
-			if item.Edges.ScrapDetails[0].Edges.Asset != nil {
-				v := item.Edges.ScrapDetails[0]
-				switch model.AssetType(item.Edges.ScrapDetails[0].Edges.Asset.Type) {
-				case model.AssetTypeEbike, model.AssetTypeSmartBattery:
-					res.Num = 1
-				case model.AssetTypeNonSmartBattery, model.AssetTypeEbikeAccessory, model.AssetTypeCabinetAccessory, model.AssetTypeOtherAccessory:
-					res.Num = uint(len(item.Edges.ScrapDetails))
-				}
-				attributeValue, _ := v.Edges.Asset.QueryValues().WithAttribute().All(ctx)
-				assetAttributeMap := make(map[uint64]model.AssetAttribute)
-
-				for _, vl := range attributeValue {
-					var attributeName, attributeKey string
-					if vl.Edges.Attribute != nil {
-						attributeName = vl.Edges.Attribute.Name
-						attributeKey = vl.Edges.Attribute.Key
-					}
-					assetAttributeMap[vl.AttributeID] = model.AssetAttribute{
-						AttributeID:      vl.AttributeID,
-						AttributeValue:   vl.Value,
-						AttributeName:    attributeName,
-						AttributeKey:     attributeKey,
-						AttributeValueID: vl.ID,
-					}
-				}
-				var modelStr string
-				if v.Edges.Asset != nil && v.Edges.Asset.Edges.Model != nil {
-					modelStr = v.Edges.Asset.Edges.Model.Model
-				}
-				var brandName, sn string
-				if v.Edges.Asset != nil {
-					if v.Edges.Asset.Edges.Brand != nil {
-						brandName = v.Edges.Asset.Edges.Brand.Name
-					}
-					if v.Edges.Asset.Type == model.AssetTypeNonSmartBattery.Value() || v.Edges.Asset.Type == model.AssetTypeSmartBattery.Value() {
-						brandName = v.Edges.Asset.BrandName
-					}
-					sn = v.Edges.Asset.Sn
-				}
-
-				inTimeAt := ""
-				if v.Edges.Asset != nil {
-					inTimeAt = v.Edges.Asset.CreatedAt.Format(carbon.DateTimeLayout)
-				}
-
-				// 物资名称
-				var name string
-				if v.Edges.Asset.Type == model.AssetTypeEbike.Value() || v.Edges.Asset.Type == model.AssetTypeSmartBattery.Value() {
-					name = v.Edges.Asset.Name
-				} else {
-					if v.Edges.Asset.Edges.Material != nil {
-						name = v.Edges.Asset.Edges.Material.Name
-					}
-				}
-				res.AssetID = v.AssetID
-				res.SN = sn
-				res.Model = modelStr
-				res.Brand = brandName
-				res.InTimeAt = inTimeAt
-				res.Attribute = assetAttributeMap
-				res.Name = name
-				res.AssetType = model.AssetType(v.Edges.Asset.Type).String()
-			}
-		}
-		return res
+		return s.detail(item)
 	})
 }
 
@@ -476,4 +375,243 @@ func (s *assetScrapService) ScrapReasonSelect(ctx context.Context) (res []*model
 		})
 	}
 	return res
+}
+
+// ScrapExport 报废列表导出
+func (s *assetScrapService) ScrapExport(ctx context.Context, req *model.AssetScrapListReq, md *model.Modifier) model.AssetExportRes {
+	q := s.orm.Query().WithScrapDetails(func(query *ent.AssetScrapDetailsQuery) {
+		query.WithAsset(func(query *ent.AssetQuery) {
+			query.WithBrand().WithModel().WithMaterial()
+		})
+	}).WithAgent().WithEmployee().WithMaintainer().WithManager()
+	// 公共筛选条件
+	s.filter(ctx, q, req)
+	q.Order(ent.Desc(assetscrap.FieldCreatedAt))
+
+	switch *req.ScrapType {
+	case model.ScrapTypeSmartBattery:
+		return s.exportSmartBattery(req, q, md)
+	case model.ScrapTypeEbike:
+		return s.exportEbike(req, q, md)
+	case model.ScrapTypeOther:
+		return s.exportOther(req, q, md)
+	}
+	return model.AssetExportRes{}
+}
+
+func (s *assetScrapService) detail(item *ent.AssetScrap) (res *model.AssetScrapListRes) {
+	operateName := ""
+	if item.OperateID != nil && item.OperateRoleType != nil {
+		switch *item.OperateRoleType {
+		case model.OperatorTypeAssetManager.Value():
+			if item.Edges.Manager != nil {
+				// 查询角色
+				var roleName string
+				if role, _ := item.Edges.Manager.QueryRole().First(context.Background()); role != nil {
+					roleName = role.Name
+				}
+				operateName = "[" + roleName + "]-" + item.Edges.Manager.Name
+			}
+		case model.OperatorTypeEmployee.Value():
+			if item.Edges.Employee != nil {
+				operateName = "[门店]-" + item.Edges.Employee.Name
+			}
+		case model.OperatorTypeMaintainer.Value():
+			if item.Edges.Maintainer != nil {
+				operateName = "[运维]-" + item.Edges.Maintainer.Name
+			}
+		case model.OperatorTypeAgent.Value():
+			if item.Edges.Agent != nil {
+				operateName = "[代理]-" + item.Edges.Agent.Name
+			}
+		default:
+			operateName = "未知"
+		}
+	}
+	res = &model.AssetScrapListRes{
+		ID:          item.ID,
+		ScrapReason: model.ScrapReasonType(item.ReasonType).String(),
+		OperateName: operateName,
+		Remark:      item.Remark,
+		ScrapAt:     item.ScrapAt.Format(carbon.DateTimeLayout),
+	}
+
+	if len(item.Edges.ScrapDetails) != 0 {
+		if item.Edges.ScrapDetails[0].Edges.Asset != nil {
+			v := item.Edges.ScrapDetails[0]
+			switch model.AssetType(item.Edges.ScrapDetails[0].Edges.Asset.Type) {
+			case model.AssetTypeEbike, model.AssetTypeSmartBattery:
+				res.Num = 1
+			case model.AssetTypeNonSmartBattery, model.AssetTypeEbikeAccessory, model.AssetTypeCabinetAccessory, model.AssetTypeOtherAccessory:
+				res.Num = uint(len(item.Edges.ScrapDetails))
+			}
+			attributeValue, _ := v.Edges.Asset.QueryValues().WithAttribute().All(context.Background())
+			assetAttributeMap := make(map[uint64]model.AssetAttribute)
+
+			for _, vl := range attributeValue {
+				var attributeName, attributeKey string
+				if vl.Edges.Attribute != nil {
+					attributeName = vl.Edges.Attribute.Name
+					attributeKey = vl.Edges.Attribute.Key
+				}
+				assetAttributeMap[vl.AttributeID] = model.AssetAttribute{
+					AttributeID:      vl.AttributeID,
+					AttributeValue:   vl.Value,
+					AttributeName:    attributeName,
+					AttributeKey:     attributeKey,
+					AttributeValueID: vl.ID,
+				}
+			}
+			var modelStr string
+			if v.Edges.Asset != nil && v.Edges.Asset.Edges.Model != nil {
+				modelStr = v.Edges.Asset.Edges.Model.Model
+			}
+			var brandName, sn string
+			if v.Edges.Asset != nil {
+				if v.Edges.Asset.Edges.Brand != nil {
+					brandName = v.Edges.Asset.Edges.Brand.Name
+				}
+				if v.Edges.Asset.Type == model.AssetTypeNonSmartBattery.Value() || v.Edges.Asset.Type == model.AssetTypeSmartBattery.Value() {
+					brandName = v.Edges.Asset.BrandName
+				}
+				sn = v.Edges.Asset.Sn
+			}
+
+			inTimeAt := ""
+			if v.Edges.Asset != nil {
+				inTimeAt = v.Edges.Asset.CreatedAt.Format(carbon.DateTimeLayout)
+			}
+
+			// 物资名称
+			var name string
+			switch v.Edges.Asset.Type {
+			case model.AssetTypeEbike.Value():
+				name = v.Edges.Asset.Name
+			case model.AssetTypeSmartBattery.Value(), model.AssetTypeNonSmartBattery.Value():
+				name = modelStr
+			default:
+				if v.Edges.Asset.Edges.Material != nil {
+					name = v.Edges.Asset.Edges.Material.Name
+				}
+			}
+
+			res.AssetID = v.AssetID
+			res.SN = sn
+			res.Model = modelStr
+			res.Brand = brandName
+			res.InTimeAt = inTimeAt
+			res.Attribute = assetAttributeMap
+			res.Name = name
+			res.AssetType = model.AssetType(v.Edges.Asset.Type).String()
+		}
+	}
+	return res
+}
+
+// 报废电池导出
+func (s *assetScrapService) exportSmartBattery(req *model.AssetScrapListReq, q *ent.AssetScrapQuery, m *model.Modifier) model.AssetExportRes {
+	return NewAssetExportWithModifier(m).Start("报废电池", req.ScrapFilter, nil, "", func(path string) {
+		items, _ := q.All(context.Background())
+		var rows tools.ExcelItems
+		title := []any{
+			"电池编号",
+			"电池型号",
+			"电池品牌",
+			"报废原因",
+			"入库时间",
+			"报废时间",
+			"操作人",
+			"备注",
+		}
+		rows = append(rows, title)
+		for _, item := range items {
+			d := s.detail(item)
+
+			row := []any{
+				d.SN,
+				d.Model,
+				d.Brand,
+				d.ScrapReason,
+				d.InTimeAt,
+				d.ScrapAt,
+				d.OperateName,
+				d.Remark,
+			}
+			rows = append(rows, row)
+		}
+		tools.NewExcel(path).AddValues(rows).Done()
+	})
+}
+
+// 报废电车导出
+func (s *assetScrapService) exportEbike(req *model.AssetScrapListReq, q *ent.AssetScrapQuery, m *model.Modifier) model.AssetExportRes {
+	return NewAssetExportWithModifier(m).Start("报废电车", req.ScrapFilter, nil, "", func(path string) {
+		items, _ := q.All(context.Background())
+		var rows tools.ExcelItems
+		title := []any{
+			"型号",
+			"车架号",
+			"生产批次",
+			"颜色",
+			"报废原因",
+			"入库时间",
+			"报废时间",
+			"操作人",
+			"备注",
+		}
+		rows = append(rows, title)
+		for _, item := range items {
+			d := s.detail(item)
+			atKeyMap := make(map[string]model.AssetAttribute)
+			for _, v := range d.Attribute {
+				atKeyMap[v.AttributeKey] = v
+			}
+
+			row := []any{
+				d.Brand,
+				d.SN,
+				atKeyMap["exFactory"].AttributeValue,
+				atKeyMap["color"].AttributeValue,
+				d.ScrapReason,
+				d.InTimeAt,
+				d.ScrapAt,
+				d.OperateName,
+				d.Remark,
+			}
+			rows = append(rows, row)
+		}
+		tools.NewExcel(path).AddValues(rows).Done()
+	})
+}
+
+// 报废其他物资导出
+func (s *assetScrapService) exportOther(req *model.AssetScrapListReq, q *ent.AssetScrapQuery, m *model.Modifier) model.AssetExportRes {
+	return NewAssetExportWithModifier(m).Start("报废其他", req.ScrapFilter, nil, "", func(path string) {
+		items, _ := q.All(context.Background())
+		var rows tools.ExcelItems
+		title := []any{
+			"物资名称",
+			"物资类型",
+			"报废数量",
+			"报废原因",
+			"报废时间",
+			"操作人",
+			"备注",
+		}
+		rows = append(rows, title)
+		for _, item := range items {
+			d := s.detail(item)
+			row := []any{
+				d.Name,
+				d.AssetType,
+				d.Num,
+				d.ScrapReason,
+				d.ScrapAt,
+				d.OperateName,
+				d.Remark,
+			}
+			rows = append(rows, row)
+		}
+		tools.NewExcel(path).AddValues(rows).Done()
+	})
 }

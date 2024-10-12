@@ -9,6 +9,10 @@ import "github.com/auroraride/aurservd/app/model"
 // EnterpriseAssetListReq 团签资产列表请求
 type EnterpriseAssetListReq struct {
 	model.PaginationReq
+	EnterpriseAssetListFilter
+}
+
+type EnterpriseAssetListFilter struct {
 	CityID       *uint64 `json:"cityId" query:"cityId"`             // 城市ID
 	StationID    *uint64 `json:"stationId" query:"stationId"`       // 站点ID
 	ModelID      *uint64 `json:"modelID" query:"modelID"`           // 电池型号ID

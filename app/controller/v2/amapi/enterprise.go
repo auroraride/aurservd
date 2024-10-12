@@ -46,3 +46,18 @@ func (*enterprise) AssetDetail(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(biz.NewEnterpriseAsset().AssetDetail(req.ID))
 }
+
+// AssetsExport
+// @ID		EnterpriseAssetsExport
+// @Router	/manager/v2/asset/enterprise_assets/export [POST]
+// @Summary	团签物资导出
+// @Tags	Enterprise - 团签
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string								true	"管理员校验token"
+// @Param	body					body		definition.EnterpriseAssetListReq	true	"查询参数"
+// @Success	200						{object}	model.ExportRes						"成功"
+func (*enterprise) AssetsExport(c echo.Context) (err error) {
+	ctx, req := app.AssetManagerContextAndBinding[definition.EnterpriseAssetListReq](c)
+	return ctx.SendResponse(biz.NewEnterpriseAssetWithModifier(ctx.Modifier).AssetsExport(req))
+}

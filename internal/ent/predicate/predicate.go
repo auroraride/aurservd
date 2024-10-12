@@ -33,6 +33,9 @@ type AssetCheck func(*sql.Selector)
 // AssetCheckDetails is the predicate function for assetcheckdetails builders.
 type AssetCheckDetails func(*sql.Selector)
 
+// AssetExport is the predicate function for assetexport builders.
+type AssetExport func(*sql.Selector)
+
 // AssetMaintenance is the predicate function for assetmaintenance builders.
 type AssetMaintenance func(*sql.Selector)
 

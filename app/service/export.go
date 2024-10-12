@@ -105,9 +105,13 @@ func (s *exportService) List(m *ent.Manager, req *model.ExportListReq) *model.Pa
 		q.Where(export.ManagerID(m.ID))
 	}
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Export) model.ExportListRes {
+		opName := ""
+		if item.Edges.Manager != nil {
+			opName = item.Edges.Manager.Name
+		}
 		res := model.ExportListRes{
 			CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
-			Operator:  item.Edges.Manager.Name,
+			Operator:  opName,
 			Remark:    item.Remark,
 			Taxonomy:  item.Taxonomy,
 			SN:        item.Sn,

@@ -14,6 +14,7 @@ import (
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ent"
 	entasset "github.com/auroraride/aurservd/internal/ent/asset"
 	"github.com/auroraride/aurservd/internal/ent/assetmanager"
@@ -426,4 +427,49 @@ func (b *warehouseBiz) QuerySn(sn string) *ent.Warehouse {
 		snag.Panic("未找到有效仓库")
 	}
 	return item
+}
+
+// AssetsExport 仓库资产列表导出
+func (b *warehouseBiz) AssetsExport(req *definition.WareHouseAssetListReq) model.AssetExportRes {
+	// 查询分页的仓库数据
+	q := b.orm.QueryNotDeleted().
+		WithCity().
+		Order(ent.Desc(warehouse.FieldCreatedAt))
+	b.assetsFilter(q, req)
+	return service.NewAssetExportWithModifier(b.modifier).Start("仓库物资", req.WareHouseAssetListFilter, nil, "", func(path string) {
+		items, _ := q.All(b.ctx)
+		var rows tools.ExcelItems
+		title := []any{
+			"仓库名称",
+			"城市",
+			"智能电池",
+			"非智能电池",
+			"电车",
+			"电车配件",
+			"电柜配件",
+			"其他物资",
+		}
+		rows = append(rows, title)
+		for _, item := range items {
+			assetTotal := b.AssetTotal(req, item.ID)
+
+			var cityName string
+			if item.Edges.City != nil {
+				cityName = item.Edges.City.Name
+			}
+
+			row := []any{
+				item.Name,
+				cityName,
+				assetTotal.SmartBatteryTotal,
+				assetTotal.NonSmartBatteryTotal,
+				assetTotal.EbikeTotal,
+				assetTotal.EbikeAccessoryTotal,
+				assetTotal.CabinetAccessoryTotal,
+				assetTotal.OtherAssetTotal,
+			}
+			rows = append(rows, row)
+		}
+		tools.NewExcel(path).AddValues(rows).Done()
+	})
 }

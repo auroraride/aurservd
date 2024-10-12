@@ -186,10 +186,12 @@ func (b *assetCheckBiz) Create(assetSignInfo definition.AssetSignInfo, req *defi
 func (b *assetCheckBiz) List(assetSignInfo definition.AssetSignInfo, req *definition.AssetCheckListReq) (res *model.PaginationRes, err error) {
 	newReq := model.AssetCheckListReq{
 		PaginationReq: req.PaginationReq,
-		Keyword:       req.Keyword,
-		StartAt:       req.StartAt,
-		EndAt:         req.EndAt,
-		CheckResult:   req.CheckResult,
+		AssetCheckListFilter: model.AssetCheckListFilter{
+			Keyword:     req.Keyword,
+			StartAt:     req.StartAt,
+			EndAt:       req.EndAt,
+			CheckResult: req.CheckResult,
+		},
 	}
 
 	if assetSignInfo.AssetManager != nil {
