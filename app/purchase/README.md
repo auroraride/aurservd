@@ -13,3 +13,6 @@
 
 - `goods` 商品表
   - 增加字段 `installment` 分期方案配置，`[][]float64` 格式，保存记录时会通过 [Schema Hooks](https://entgo.io/docs/hooks/#schema-hooks) 校验和排序
+
+- `goods` 商品表
+    - 增加字段 `installment` 分期方案配置，`[][]float64` 格式，保存记录时会通过 [Schema Hooks](https://entgo.io/docs/hooks/#schema-hooks) 校验和排序

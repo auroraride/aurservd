@@ -695,6 +695,16 @@ func StartDateLTE(v time.Time) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldLTE(FieldStartDate, v))
 }
 
+// StartDateIsNil applies the IsNil predicate on the "start_date" field.
+func StartDateIsNil() predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldIsNull(FieldStartDate))
+}
+
+// StartDateNotNil applies the NotNil predicate on the "start_date" field.
+func StartDateNotNil() predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNotNull(FieldStartDate))
+}
+
 // NextDateEQ applies the EQ predicate on the "next_date" field.
 func NextDateEQ(v time.Time) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldEQ(FieldNextDate, v))

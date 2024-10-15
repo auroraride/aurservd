@@ -177,7 +177,7 @@ func (*assetTransfer) TransferCbw(c echo.Context) (err error) {
 					AssetType:  model.AssetType(vl.Edges.Asset.Type),
 					SN:         silk.String(vl.Edges.Asset.Sn),
 					ModelID:    vl.Edges.Asset.ModelID,
-					Num:        silk.UInt(v.OutNum),
+					Num:        silk.UInt(1),
 					MaterialID: vl.Edges.Asset.MaterialID,
 				})
 			}

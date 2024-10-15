@@ -257,6 +257,12 @@ func (pou *PurchaseOrderUpdate) SetNillableStartDate(t *time.Time) *PurchaseOrde
 	return pou
 }
 
+// ClearStartDate clears the value of the "start_date" field.
+func (pou *PurchaseOrderUpdate) ClearStartDate() *PurchaseOrderUpdate {
+	pou.mutation.ClearStartDate()
+	return pou
+}
+
 // SetNextDate sets the "next_date" field.
 func (pou *PurchaseOrderUpdate) SetNextDate(t time.Time) *PurchaseOrderUpdate {
 	pou.mutation.SetNextDate(t)
@@ -503,6 +509,9 @@ func (pou *PurchaseOrderUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if value, ok := pou.mutation.StartDate(); ok {
 		_spec.SetField(purchaseorder.FieldStartDate, field.TypeTime, value)
+	}
+	if pou.mutation.StartDateCleared() {
+		_spec.ClearField(purchaseorder.FieldStartDate, field.TypeTime)
 	}
 	if value, ok := pou.mutation.NextDate(); ok {
 		_spec.SetField(purchaseorder.FieldNextDate, field.TypeTime, value)
@@ -897,6 +906,12 @@ func (pouo *PurchaseOrderUpdateOne) SetNillableStartDate(t *time.Time) *Purchase
 	return pouo
 }
 
+// ClearStartDate clears the value of the "start_date" field.
+func (pouo *PurchaseOrderUpdateOne) ClearStartDate() *PurchaseOrderUpdateOne {
+	pouo.mutation.ClearStartDate()
+	return pouo
+}
+
 // SetNextDate sets the "next_date" field.
 func (pouo *PurchaseOrderUpdateOne) SetNextDate(t time.Time) *PurchaseOrderUpdateOne {
 	pouo.mutation.SetNextDate(t)
@@ -1173,6 +1188,9 @@ func (pouo *PurchaseOrderUpdateOne) sqlSave(ctx context.Context) (_node *Purchas
 	}
 	if value, ok := pouo.mutation.StartDate(); ok {
 		_spec.SetField(purchaseorder.FieldStartDate, field.TypeTime, value)
+	}
+	if pouo.mutation.StartDateCleared() {
+		_spec.ClearField(purchaseorder.FieldStartDate, field.TypeTime)
 	}
 	if value, ok := pouo.mutation.NextDate(); ok {
 		_spec.SetField(purchaseorder.FieldNextDate, field.TypeTime, value)
