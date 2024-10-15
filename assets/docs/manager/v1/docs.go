@@ -2338,7 +2338,6 @@ const docTemplate = `{
         },
         "/manager/v1/cabinet/openbind": {
             "post": {
-                "description": "\u003c仅智能电柜可用, 普通电柜无法请求, 判定标准: ` + "`" + `intelligent = true` + "`" + `\u003e",
                 "consumes": [
                     "application/json"
                 ],
@@ -13503,6 +13502,16 @@ const docTemplate = `{
                     "description": "商品名称, 商品名称",
                     "type": "string"
                 },
+                "paymentPlans": {
+                    "description": "付款方案",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    }
+                },
                 "photos": {
                     "description": "商品图片, 商品图片",
                     "type": "array",
@@ -13571,6 +13580,16 @@ const docTemplate = `{
                 "name": {
                     "description": "商品名称",
                     "type": "string"
+                },
+                "paymentPlans": {
+                    "description": "付款方案",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    }
                 },
                 "photos": {
                     "description": "商品图片",
@@ -13693,6 +13712,16 @@ const docTemplate = `{
                 "name": {
                     "description": "商品名称, 商品名称",
                     "type": "string"
+                },
+                "paymentPlans": {
+                    "description": "付款方案",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    }
                 },
                 "photos": {
                     "description": "商品图片, 商品图片",
@@ -14603,10 +14632,6 @@ const docTemplate = `{
                 "model": {
                     "description": "型号",
                     "type": "string"
-                },
-                "modelId": {
-                    "description": "型号ID",
-                    "type": "integer"
                 },
                 "sn": {
                     "description": "编号",
@@ -16575,7 +16600,6 @@ const docTemplate = `{
         "model.CabinetOpenBindReq": {
             "type": "object",
             "required": [
-                "batterySn",
                 "id",
                 "index",
                 "phone",
