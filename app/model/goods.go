@@ -135,3 +135,22 @@ func (plans GoodsPaymentPlans) BillingDates(index int, t time.Time) (dates []tim
 	}
 	return plans[index].BillingDates(t)
 }
+
+// Plan 获取商品付款方案表的某个方案
+func (plans GoodsPaymentPlans) Plan(index int) GoodsPaymentPlan {
+	if index >= len(plans) {
+		return nil
+	}
+	return plans[index]
+}
+
+// PlanStage 获取商品付款方案表的某个阶段
+func (plans GoodsPaymentPlans) PlanStage(index, stage int) (o GoodsPaymentPlanOption) {
+	if index >= len(plans) {
+		return
+	}
+	if stage >= len(plans[index]) {
+		return
+	}
+	return plans[index][stage]
+}
