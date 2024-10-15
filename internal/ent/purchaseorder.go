@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/purchasecommodity"
+	"github.com/auroraride/aurservd/internal/ent/goods"
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
@@ -35,8 +35,8 @@ type PurchaseOrder struct {
 	Remark string `json:"remark,omitempty"`
 	// 骑手ID
 	RiderID uint64 `json:"rider_id,omitempty"`
-	// CommodityID holds the value of the "commodity_id" field.
-	CommodityID uint64 `json:"commodity_id,omitempty"`
+	// 商品ID
+	GoodsID uint64 `json:"goods_id,omitempty"`
 	// 车架号
 	Sn string `json:"sn,omitempty"`
 	// 状态, pending: 待支付, staging: 分期执行中, ended: 已完成, cancelled: 已取消, refunded: 已退款
@@ -67,8 +67,8 @@ type PurchaseOrder struct {
 type PurchaseOrderEdges struct {
 	// 骑手
 	Rider *Rider `json:"rider,omitempty"`
-	// Commodity holds the value of the commodity edge.
-	Commodity *PurchaseCommodity `json:"commodity,omitempty"`
+	// 商品ID
+	Goods *Goods `json:"goods,omitempty"`
 	// Payments holds the value of the payments edge.
 	Payments []*PurchasePayment `json:"payments,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -87,15 +87,15 @@ func (e PurchaseOrderEdges) RiderOrErr() (*Rider, error) {
 	return nil, &NotLoadedError{edge: "rider"}
 }
 
-// CommodityOrErr returns the Commodity value or an error if the edge
+// GoodsOrErr returns the Goods value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e PurchaseOrderEdges) CommodityOrErr() (*PurchaseCommodity, error) {
-	if e.Commodity != nil {
-		return e.Commodity, nil
+func (e PurchaseOrderEdges) GoodsOrErr() (*Goods, error) {
+	if e.Goods != nil {
+		return e.Goods, nil
 	} else if e.loadedTypes[1] {
-		return nil, &NotFoundError{label: purchasecommodity.Label}
+		return nil, &NotFoundError{label: goods.Label}
 	}
-	return nil, &NotLoadedError{edge: "commodity"}
+	return nil, &NotLoadedError{edge: "goods"}
 }
 
 // PaymentsOrErr returns the Payments value or an error if the edge
@@ -114,7 +114,7 @@ func (*PurchaseOrder) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case purchaseorder.FieldCreator, purchaseorder.FieldLastModifier, purchaseorder.FieldInstallments, purchaseorder.FieldImages:
 			values[i] = new([]byte)
-		case purchaseorder.FieldID, purchaseorder.FieldRiderID, purchaseorder.FieldCommodityID, purchaseorder.FieldInstallmentIndex, purchaseorder.FieldInstallmentTotal:
+		case purchaseorder.FieldID, purchaseorder.FieldRiderID, purchaseorder.FieldGoodsID, purchaseorder.FieldInstallmentIndex, purchaseorder.FieldInstallmentTotal:
 			values[i] = new(sql.NullInt64)
 		case purchaseorder.FieldRemark, purchaseorder.FieldSn, purchaseorder.FieldStatus, purchaseorder.FieldContractURL, purchaseorder.FieldStore:
 			values[i] = new(sql.NullString)
@@ -188,11 +188,11 @@ func (po *PurchaseOrder) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				po.RiderID = uint64(value.Int64)
 			}
-		case purchaseorder.FieldCommodityID:
+		case purchaseorder.FieldGoodsID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field commodity_id", values[i])
+				return fmt.Errorf("unexpected type %T for field goods_id", values[i])
 			} else if value.Valid {
-				po.CommodityID = uint64(value.Int64)
+				po.GoodsID = uint64(value.Int64)
 			}
 		case purchaseorder.FieldSn:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -277,9 +277,9 @@ func (po *PurchaseOrder) QueryRider() *RiderQuery {
 	return NewPurchaseOrderClient(po.config).QueryRider(po)
 }
 
-// QueryCommodity queries the "commodity" edge of the PurchaseOrder entity.
-func (po *PurchaseOrder) QueryCommodity() *PurchaseCommodityQuery {
-	return NewPurchaseOrderClient(po.config).QueryCommodity(po)
+// QueryGoods queries the "goods" edge of the PurchaseOrder entity.
+func (po *PurchaseOrder) QueryGoods() *GoodsQuery {
+	return NewPurchaseOrderClient(po.config).QueryGoods(po)
 }
 
 // QueryPayments queries the "payments" edge of the PurchaseOrder entity.
@@ -333,8 +333,8 @@ func (po *PurchaseOrder) String() string {
 	builder.WriteString("rider_id=")
 	builder.WriteString(fmt.Sprintf("%v", po.RiderID))
 	builder.WriteString(", ")
-	builder.WriteString("commodity_id=")
-	builder.WriteString(fmt.Sprintf("%v", po.CommodityID))
+	builder.WriteString("goods_id=")
+	builder.WriteString(fmt.Sprintf("%v", po.GoodsID))
 	builder.WriteString(", ")
 	builder.WriteString("sn=")
 	builder.WriteString(po.Sn)

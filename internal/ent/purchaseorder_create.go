@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/purchasecommodity"
+	"github.com/auroraride/aurservd/internal/ent/goods"
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -100,9 +100,9 @@ func (poc *PurchaseOrderCreate) SetRiderID(u uint64) *PurchaseOrderCreate {
 	return poc
 }
 
-// SetCommodityID sets the "commodity_id" field.
-func (poc *PurchaseOrderCreate) SetCommodityID(u uint64) *PurchaseOrderCreate {
-	poc.mutation.SetCommodityID(u)
+// SetGoodsID sets the "goods_id" field.
+func (poc *PurchaseOrderCreate) SetGoodsID(u uint64) *PurchaseOrderCreate {
+	poc.mutation.SetGoodsID(u)
 	return poc
 }
 
@@ -211,9 +211,9 @@ func (poc *PurchaseOrderCreate) SetRider(r *Rider) *PurchaseOrderCreate {
 	return poc.SetRiderID(r.ID)
 }
 
-// SetCommodity sets the "commodity" edge to the PurchaseCommodity entity.
-func (poc *PurchaseOrderCreate) SetCommodity(p *PurchaseCommodity) *PurchaseOrderCreate {
-	return poc.SetCommodityID(p.ID)
+// SetGoods sets the "goods" edge to the Goods entity.
+func (poc *PurchaseOrderCreate) SetGoods(g *Goods) *PurchaseOrderCreate {
+	return poc.SetGoodsID(g.ID)
 }
 
 // AddPaymentIDs adds the "payments" edge to the PurchasePayment entity by IDs.
@@ -304,8 +304,8 @@ func (poc *PurchaseOrderCreate) check() error {
 	if _, ok := poc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "PurchaseOrder.rider_id"`)}
 	}
-	if _, ok := poc.mutation.CommodityID(); !ok {
-		return &ValidationError{Name: "commodity_id", err: errors.New(`ent: missing required field "PurchaseOrder.commodity_id"`)}
+	if _, ok := poc.mutation.GoodsID(); !ok {
+		return &ValidationError{Name: "goods_id", err: errors.New(`ent: missing required field "PurchaseOrder.goods_id"`)}
 	}
 	if _, ok := poc.mutation.Sn(); !ok {
 		return &ValidationError{Name: "sn", err: errors.New(`ent: missing required field "PurchaseOrder.sn"`)}
@@ -333,8 +333,8 @@ func (poc *PurchaseOrderCreate) check() error {
 	if len(poc.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "PurchaseOrder.rider"`)}
 	}
-	if len(poc.mutation.CommodityIDs()) == 0 {
-		return &ValidationError{Name: "commodity", err: errors.New(`ent: missing required edge "PurchaseOrder.commodity"`)}
+	if len(poc.mutation.GoodsIDs()) == 0 {
+		return &ValidationError{Name: "goods", err: errors.New(`ent: missing required edge "PurchaseOrder.goods"`)}
 	}
 	return nil
 }
@@ -444,21 +444,21 @@ func (poc *PurchaseOrderCreate) createSpec() (*PurchaseOrder, *sqlgraph.CreateSp
 		_node.RiderID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := poc.mutation.CommodityIDs(); len(nodes) > 0 {
+	if nodes := poc.mutation.GoodsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   purchaseorder.CommodityTable,
-			Columns: []string{purchaseorder.CommodityColumn},
+			Table:   purchaseorder.GoodsTable,
+			Columns: []string{purchaseorder.GoodsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(purchasecommodity.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(goods.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.CommodityID = nodes[0]
+		_node.GoodsID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := poc.mutation.PaymentsIDs(); len(nodes) > 0 {
@@ -607,15 +607,15 @@ func (u *PurchaseOrderUpsert) UpdateRiderID() *PurchaseOrderUpsert {
 	return u
 }
 
-// SetCommodityID sets the "commodity_id" field.
-func (u *PurchaseOrderUpsert) SetCommodityID(v uint64) *PurchaseOrderUpsert {
-	u.Set(purchaseorder.FieldCommodityID, v)
+// SetGoodsID sets the "goods_id" field.
+func (u *PurchaseOrderUpsert) SetGoodsID(v uint64) *PurchaseOrderUpsert {
+	u.Set(purchaseorder.FieldGoodsID, v)
 	return u
 }
 
-// UpdateCommodityID sets the "commodity_id" field to the value that was provided on create.
-func (u *PurchaseOrderUpsert) UpdateCommodityID() *PurchaseOrderUpsert {
-	u.SetExcluded(purchaseorder.FieldCommodityID)
+// UpdateGoodsID sets the "goods_id" field to the value that was provided on create.
+func (u *PurchaseOrderUpsert) UpdateGoodsID() *PurchaseOrderUpsert {
+	u.SetExcluded(purchaseorder.FieldGoodsID)
 	return u
 }
 
@@ -914,17 +914,17 @@ func (u *PurchaseOrderUpsertOne) UpdateRiderID() *PurchaseOrderUpsertOne {
 	})
 }
 
-// SetCommodityID sets the "commodity_id" field.
-func (u *PurchaseOrderUpsertOne) SetCommodityID(v uint64) *PurchaseOrderUpsertOne {
+// SetGoodsID sets the "goods_id" field.
+func (u *PurchaseOrderUpsertOne) SetGoodsID(v uint64) *PurchaseOrderUpsertOne {
 	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.SetCommodityID(v)
+		s.SetGoodsID(v)
 	})
 }
 
-// UpdateCommodityID sets the "commodity_id" field to the value that was provided on create.
-func (u *PurchaseOrderUpsertOne) UpdateCommodityID() *PurchaseOrderUpsertOne {
+// UpdateGoodsID sets the "goods_id" field to the value that was provided on create.
+func (u *PurchaseOrderUpsertOne) UpdateGoodsID() *PurchaseOrderUpsertOne {
 	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.UpdateCommodityID()
+		s.UpdateGoodsID()
 	})
 }
 
@@ -1415,17 +1415,17 @@ func (u *PurchaseOrderUpsertBulk) UpdateRiderID() *PurchaseOrderUpsertBulk {
 	})
 }
 
-// SetCommodityID sets the "commodity_id" field.
-func (u *PurchaseOrderUpsertBulk) SetCommodityID(v uint64) *PurchaseOrderUpsertBulk {
+// SetGoodsID sets the "goods_id" field.
+func (u *PurchaseOrderUpsertBulk) SetGoodsID(v uint64) *PurchaseOrderUpsertBulk {
 	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.SetCommodityID(v)
+		s.SetGoodsID(v)
 	})
 }
 
-// UpdateCommodityID sets the "commodity_id" field to the value that was provided on create.
-func (u *PurchaseOrderUpsertBulk) UpdateCommodityID() *PurchaseOrderUpsertBulk {
+// UpdateGoodsID sets the "goods_id" field to the value that was provided on create.
+func (u *PurchaseOrderUpsertBulk) UpdateGoodsID() *PurchaseOrderUpsertBulk {
 	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.UpdateCommodityID()
+		s.UpdateGoodsID()
 	})
 }
 

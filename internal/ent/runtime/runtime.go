@@ -86,7 +86,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionreferralsprogress"
 	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
-	"github.com/auroraride/aurservd/internal/ent/purchasecommodity"
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/internal/ent/question"
@@ -1981,23 +1980,6 @@ func init() {
 	promotionwithdrawalDescTex := promotionwithdrawalFields[4].Descriptor()
 	// promotionwithdrawal.DefaultTex holds the default value on creation for the tex field.
 	promotionwithdrawal.DefaultTex = promotionwithdrawalDescTex.Default.(float64)
-	purchasecommodityMixin := schema.PurchaseCommodity{}.Mixin()
-	purchasecommodityMixinHooks2 := purchasecommodityMixin[2].Hooks()
-	purchasecommodity.Hooks[0] = purchasecommodityMixinHooks2[0]
-	purchasecommodityMixinFields0 := purchasecommodityMixin[0].Fields()
-	_ = purchasecommodityMixinFields0
-	purchasecommodityFields := schema.PurchaseCommodity{}.Fields()
-	_ = purchasecommodityFields
-	// purchasecommodityDescCreatedAt is the schema descriptor for created_at field.
-	purchasecommodityDescCreatedAt := purchasecommodityMixinFields0[0].Descriptor()
-	// purchasecommodity.DefaultCreatedAt holds the default value on creation for the created_at field.
-	purchasecommodity.DefaultCreatedAt = purchasecommodityDescCreatedAt.Default.(func() time.Time)
-	// purchasecommodityDescUpdatedAt is the schema descriptor for updated_at field.
-	purchasecommodityDescUpdatedAt := purchasecommodityMixinFields0[1].Descriptor()
-	// purchasecommodity.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	purchasecommodity.DefaultUpdatedAt = purchasecommodityDescUpdatedAt.Default.(func() time.Time)
-	// purchasecommodity.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	purchasecommodity.UpdateDefaultUpdatedAt = purchasecommodityDescUpdatedAt.UpdateDefault.(func() time.Time)
 	purchaseorderMixin := schema.PurchaseOrder{}.Mixin()
 	purchaseorderMixinHooks2 := purchaseorderMixin[2].Hooks()
 	purchaseorder.Hooks[0] = purchaseorderMixinHooks2[0]
@@ -2037,7 +2019,7 @@ func init() {
 	// purchasepayment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	purchasepayment.UpdateDefaultUpdatedAt = purchasepaymentDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// purchasepaymentDescForfeit is the schema descriptor for forfeit field.
-	purchasepaymentDescForfeit := purchasepaymentFields[5].Descriptor()
+	purchasepaymentDescForfeit := purchasepaymentFields[6].Descriptor()
 	// purchasepayment.DefaultForfeit holds the default value on creation for the forfeit field.
 	purchasepayment.DefaultForfeit = purchasepaymentDescForfeit.Default.(float64)
 	questionMixin := schema.Question{}.Mixin()

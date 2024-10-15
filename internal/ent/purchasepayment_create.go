@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/purchasecommodity"
+	"github.com/auroraride/aurservd/internal/ent/goods"
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -100,9 +100,9 @@ func (ppc *PurchasePaymentCreate) SetRiderID(u uint64) *PurchasePaymentCreate {
 	return ppc
 }
 
-// SetCommodityID sets the "commodity_id" field.
-func (ppc *PurchasePaymentCreate) SetCommodityID(u uint64) *PurchasePaymentCreate {
-	ppc.mutation.SetCommodityID(u)
+// SetGoodsID sets the "goods_id" field.
+func (ppc *PurchasePaymentCreate) SetGoodsID(u uint64) *PurchasePaymentCreate {
+	ppc.mutation.SetGoodsID(u)
 	return ppc
 }
 
@@ -118,15 +118,37 @@ func (ppc *PurchasePaymentCreate) SetOutTradeNo(s string) *PurchasePaymentCreate
 	return ppc
 }
 
+// SetIndex sets the "index" field.
+func (ppc *PurchasePaymentCreate) SetIndex(i int) *PurchasePaymentCreate {
+	ppc.mutation.SetIndex(i)
+	return ppc
+}
+
+// SetStatus sets the "status" field.
+func (ppc *PurchasePaymentCreate) SetStatus(pu purchasepayment.Status) *PurchasePaymentCreate {
+	ppc.mutation.SetStatus(pu)
+	return ppc
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (ppc *PurchasePaymentCreate) SetNillableStatus(pu *purchasepayment.Status) *PurchasePaymentCreate {
+	if pu != nil {
+		ppc.SetStatus(*pu)
+	}
+	return ppc
+}
+
 // SetPayway sets the "payway" field.
 func (ppc *PurchasePaymentCreate) SetPayway(pu purchasepayment.Payway) *PurchasePaymentCreate {
 	ppc.mutation.SetPayway(pu)
 	return ppc
 }
 
-// SetIndex sets the "index" field.
-func (ppc *PurchasePaymentCreate) SetIndex(i int) *PurchasePaymentCreate {
-	ppc.mutation.SetIndex(i)
+// SetNillablePayway sets the "payway" field if the given value is not nil.
+func (ppc *PurchasePaymentCreate) SetNillablePayway(pu *purchasepayment.Payway) *PurchasePaymentCreate {
+	if pu != nil {
+		ppc.SetPayway(*pu)
+	}
 	return ppc
 }
 
@@ -156,9 +178,15 @@ func (ppc *PurchasePaymentCreate) SetNillableForfeit(f *float64) *PurchasePaymen
 	return ppc
 }
 
-// SetPaidDate sets the "paid_date" field.
-func (ppc *PurchasePaymentCreate) SetPaidDate(t time.Time) *PurchasePaymentCreate {
-	ppc.mutation.SetPaidDate(t)
+// SetBillingDate sets the "billing_date" field.
+func (ppc *PurchasePaymentCreate) SetBillingDate(t time.Time) *PurchasePaymentCreate {
+	ppc.mutation.SetBillingDate(t)
+	return ppc
+}
+
+// SetPaymentDate sets the "payment_date" field.
+func (ppc *PurchasePaymentCreate) SetPaymentDate(t time.Time) *PurchasePaymentCreate {
+	ppc.mutation.SetPaymentDate(t)
 	return ppc
 }
 
@@ -181,9 +209,9 @@ func (ppc *PurchasePaymentCreate) SetRider(r *Rider) *PurchasePaymentCreate {
 	return ppc.SetRiderID(r.ID)
 }
 
-// SetCommodity sets the "commodity" edge to the PurchaseCommodity entity.
-func (ppc *PurchasePaymentCreate) SetCommodity(p *PurchaseCommodity) *PurchasePaymentCreate {
-	return ppc.SetCommodityID(p.ID)
+// SetGoods sets the "goods" edge to the Goods entity.
+func (ppc *PurchasePaymentCreate) SetGoods(g *Goods) *PurchasePaymentCreate {
+	return ppc.SetGoodsID(g.ID)
 }
 
 // SetOrder sets the "order" edge to the PurchaseOrder entity.
@@ -242,6 +270,10 @@ func (ppc *PurchasePaymentCreate) defaults() error {
 		v := purchasepayment.DefaultUpdatedAt()
 		ppc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := ppc.mutation.Status(); !ok {
+		v := purchasepayment.DefaultStatus
+		ppc.mutation.SetStatus(v)
+	}
 	if _, ok := ppc.mutation.Forfeit(); !ok {
 		v := purchasepayment.DefaultForfeit
 		ppc.mutation.SetForfeit(v)
@@ -260,8 +292,8 @@ func (ppc *PurchasePaymentCreate) check() error {
 	if _, ok := ppc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "PurchasePayment.rider_id"`)}
 	}
-	if _, ok := ppc.mutation.CommodityID(); !ok {
-		return &ValidationError{Name: "commodity_id", err: errors.New(`ent: missing required field "PurchasePayment.commodity_id"`)}
+	if _, ok := ppc.mutation.GoodsID(); !ok {
+		return &ValidationError{Name: "goods_id", err: errors.New(`ent: missing required field "PurchasePayment.goods_id"`)}
 	}
 	if _, ok := ppc.mutation.OrderID(); !ok {
 		return &ValidationError{Name: "order_id", err: errors.New(`ent: missing required field "PurchasePayment.order_id"`)}
@@ -269,16 +301,21 @@ func (ppc *PurchasePaymentCreate) check() error {
 	if _, ok := ppc.mutation.OutTradeNo(); !ok {
 		return &ValidationError{Name: "out_trade_no", err: errors.New(`ent: missing required field "PurchasePayment.out_trade_no"`)}
 	}
-	if _, ok := ppc.mutation.Payway(); !ok {
-		return &ValidationError{Name: "payway", err: errors.New(`ent: missing required field "PurchasePayment.payway"`)}
+	if _, ok := ppc.mutation.Index(); !ok {
+		return &ValidationError{Name: "index", err: errors.New(`ent: missing required field "PurchasePayment.index"`)}
+	}
+	if _, ok := ppc.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "PurchasePayment.status"`)}
+	}
+	if v, ok := ppc.mutation.Status(); ok {
+		if err := purchasepayment.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "PurchasePayment.status": %w`, err)}
+		}
 	}
 	if v, ok := ppc.mutation.Payway(); ok {
 		if err := purchasepayment.PaywayValidator(v); err != nil {
 			return &ValidationError{Name: "payway", err: fmt.Errorf(`ent: validator failed for field "PurchasePayment.payway": %w`, err)}
 		}
-	}
-	if _, ok := ppc.mutation.Index(); !ok {
-		return &ValidationError{Name: "index", err: errors.New(`ent: missing required field "PurchasePayment.index"`)}
 	}
 	if _, ok := ppc.mutation.Total(); !ok {
 		return &ValidationError{Name: "total", err: errors.New(`ent: missing required field "PurchasePayment.total"`)}
@@ -289,14 +326,17 @@ func (ppc *PurchasePaymentCreate) check() error {
 	if _, ok := ppc.mutation.Forfeit(); !ok {
 		return &ValidationError{Name: "forfeit", err: errors.New(`ent: missing required field "PurchasePayment.forfeit"`)}
 	}
-	if _, ok := ppc.mutation.PaidDate(); !ok {
-		return &ValidationError{Name: "paid_date", err: errors.New(`ent: missing required field "PurchasePayment.paid_date"`)}
+	if _, ok := ppc.mutation.BillingDate(); !ok {
+		return &ValidationError{Name: "billing_date", err: errors.New(`ent: missing required field "PurchasePayment.billing_date"`)}
+	}
+	if _, ok := ppc.mutation.PaymentDate(); !ok {
+		return &ValidationError{Name: "payment_date", err: errors.New(`ent: missing required field "PurchasePayment.payment_date"`)}
 	}
 	if len(ppc.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "PurchasePayment.rider"`)}
 	}
-	if len(ppc.mutation.CommodityIDs()) == 0 {
-		return &ValidationError{Name: "commodity", err: errors.New(`ent: missing required edge "PurchasePayment.commodity"`)}
+	if len(ppc.mutation.GoodsIDs()) == 0 {
+		return &ValidationError{Name: "goods", err: errors.New(`ent: missing required edge "PurchasePayment.goods"`)}
 	}
 	if len(ppc.mutation.OrderIDs()) == 0 {
 		return &ValidationError{Name: "order", err: errors.New(`ent: missing required edge "PurchasePayment.order"`)}
@@ -356,13 +396,17 @@ func (ppc *PurchasePaymentCreate) createSpec() (*PurchasePayment, *sqlgraph.Crea
 		_spec.SetField(purchasepayment.FieldOutTradeNo, field.TypeString, value)
 		_node.OutTradeNo = value
 	}
-	if value, ok := ppc.mutation.Payway(); ok {
-		_spec.SetField(purchasepayment.FieldPayway, field.TypeEnum, value)
-		_node.Payway = value
-	}
 	if value, ok := ppc.mutation.Index(); ok {
 		_spec.SetField(purchasepayment.FieldIndex, field.TypeInt, value)
 		_node.Index = value
+	}
+	if value, ok := ppc.mutation.Status(); ok {
+		_spec.SetField(purchasepayment.FieldStatus, field.TypeEnum, value)
+		_node.Status = value
+	}
+	if value, ok := ppc.mutation.Payway(); ok {
+		_spec.SetField(purchasepayment.FieldPayway, field.TypeEnum, value)
+		_node.Payway = value
 	}
 	if value, ok := ppc.mutation.Total(); ok {
 		_spec.SetField(purchasepayment.FieldTotal, field.TypeFloat64, value)
@@ -376,9 +420,13 @@ func (ppc *PurchasePaymentCreate) createSpec() (*PurchasePayment, *sqlgraph.Crea
 		_spec.SetField(purchasepayment.FieldForfeit, field.TypeFloat64, value)
 		_node.Forfeit = value
 	}
-	if value, ok := ppc.mutation.PaidDate(); ok {
-		_spec.SetField(purchasepayment.FieldPaidDate, field.TypeTime, value)
-		_node.PaidDate = value
+	if value, ok := ppc.mutation.BillingDate(); ok {
+		_spec.SetField(purchasepayment.FieldBillingDate, field.TypeTime, value)
+		_node.BillingDate = value
+	}
+	if value, ok := ppc.mutation.PaymentDate(); ok {
+		_spec.SetField(purchasepayment.FieldPaymentDate, field.TypeTime, value)
+		_node.PaymentDate = value
 	}
 	if value, ok := ppc.mutation.TradeNo(); ok {
 		_spec.SetField(purchasepayment.FieldTradeNo, field.TypeString, value)
@@ -401,21 +449,21 @@ func (ppc *PurchasePaymentCreate) createSpec() (*PurchasePayment, *sqlgraph.Crea
 		_node.RiderID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ppc.mutation.CommodityIDs(); len(nodes) > 0 {
+	if nodes := ppc.mutation.GoodsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   purchasepayment.CommodityTable,
-			Columns: []string{purchasepayment.CommodityColumn},
+			Table:   purchasepayment.GoodsTable,
+			Columns: []string{purchasepayment.GoodsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(purchasecommodity.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(goods.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.CommodityID = nodes[0]
+		_node.GoodsID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ppc.mutation.OrderIDs(); len(nodes) > 0 {
@@ -565,15 +613,15 @@ func (u *PurchasePaymentUpsert) UpdateRiderID() *PurchasePaymentUpsert {
 	return u
 }
 
-// SetCommodityID sets the "commodity_id" field.
-func (u *PurchasePaymentUpsert) SetCommodityID(v uint64) *PurchasePaymentUpsert {
-	u.Set(purchasepayment.FieldCommodityID, v)
+// SetGoodsID sets the "goods_id" field.
+func (u *PurchasePaymentUpsert) SetGoodsID(v uint64) *PurchasePaymentUpsert {
+	u.Set(purchasepayment.FieldGoodsID, v)
 	return u
 }
 
-// UpdateCommodityID sets the "commodity_id" field to the value that was provided on create.
-func (u *PurchasePaymentUpsert) UpdateCommodityID() *PurchasePaymentUpsert {
-	u.SetExcluded(purchasepayment.FieldCommodityID)
+// UpdateGoodsID sets the "goods_id" field to the value that was provided on create.
+func (u *PurchasePaymentUpsert) UpdateGoodsID() *PurchasePaymentUpsert {
+	u.SetExcluded(purchasepayment.FieldGoodsID)
 	return u
 }
 
@@ -601,18 +649,6 @@ func (u *PurchasePaymentUpsert) UpdateOutTradeNo() *PurchasePaymentUpsert {
 	return u
 }
 
-// SetPayway sets the "payway" field.
-func (u *PurchasePaymentUpsert) SetPayway(v purchasepayment.Payway) *PurchasePaymentUpsert {
-	u.Set(purchasepayment.FieldPayway, v)
-	return u
-}
-
-// UpdatePayway sets the "payway" field to the value that was provided on create.
-func (u *PurchasePaymentUpsert) UpdatePayway() *PurchasePaymentUpsert {
-	u.SetExcluded(purchasepayment.FieldPayway)
-	return u
-}
-
 // SetIndex sets the "index" field.
 func (u *PurchasePaymentUpsert) SetIndex(v int) *PurchasePaymentUpsert {
 	u.Set(purchasepayment.FieldIndex, v)
@@ -628,6 +664,36 @@ func (u *PurchasePaymentUpsert) UpdateIndex() *PurchasePaymentUpsert {
 // AddIndex adds v to the "index" field.
 func (u *PurchasePaymentUpsert) AddIndex(v int) *PurchasePaymentUpsert {
 	u.Add(purchasepayment.FieldIndex, v)
+	return u
+}
+
+// SetStatus sets the "status" field.
+func (u *PurchasePaymentUpsert) SetStatus(v purchasepayment.Status) *PurchasePaymentUpsert {
+	u.Set(purchasepayment.FieldStatus, v)
+	return u
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *PurchasePaymentUpsert) UpdateStatus() *PurchasePaymentUpsert {
+	u.SetExcluded(purchasepayment.FieldStatus)
+	return u
+}
+
+// SetPayway sets the "payway" field.
+func (u *PurchasePaymentUpsert) SetPayway(v purchasepayment.Payway) *PurchasePaymentUpsert {
+	u.Set(purchasepayment.FieldPayway, v)
+	return u
+}
+
+// UpdatePayway sets the "payway" field to the value that was provided on create.
+func (u *PurchasePaymentUpsert) UpdatePayway() *PurchasePaymentUpsert {
+	u.SetExcluded(purchasepayment.FieldPayway)
+	return u
+}
+
+// ClearPayway clears the value of the "payway" field.
+func (u *PurchasePaymentUpsert) ClearPayway() *PurchasePaymentUpsert {
+	u.SetNull(purchasepayment.FieldPayway)
 	return u
 }
 
@@ -685,15 +751,27 @@ func (u *PurchasePaymentUpsert) AddForfeit(v float64) *PurchasePaymentUpsert {
 	return u
 }
 
-// SetPaidDate sets the "paid_date" field.
-func (u *PurchasePaymentUpsert) SetPaidDate(v time.Time) *PurchasePaymentUpsert {
-	u.Set(purchasepayment.FieldPaidDate, v)
+// SetBillingDate sets the "billing_date" field.
+func (u *PurchasePaymentUpsert) SetBillingDate(v time.Time) *PurchasePaymentUpsert {
+	u.Set(purchasepayment.FieldBillingDate, v)
 	return u
 }
 
-// UpdatePaidDate sets the "paid_date" field to the value that was provided on create.
-func (u *PurchasePaymentUpsert) UpdatePaidDate() *PurchasePaymentUpsert {
-	u.SetExcluded(purchasepayment.FieldPaidDate)
+// UpdateBillingDate sets the "billing_date" field to the value that was provided on create.
+func (u *PurchasePaymentUpsert) UpdateBillingDate() *PurchasePaymentUpsert {
+	u.SetExcluded(purchasepayment.FieldBillingDate)
+	return u
+}
+
+// SetPaymentDate sets the "payment_date" field.
+func (u *PurchasePaymentUpsert) SetPaymentDate(v time.Time) *PurchasePaymentUpsert {
+	u.Set(purchasepayment.FieldPaymentDate, v)
+	return u
+}
+
+// UpdatePaymentDate sets the "payment_date" field to the value that was provided on create.
+func (u *PurchasePaymentUpsert) UpdatePaymentDate() *PurchasePaymentUpsert {
+	u.SetExcluded(purchasepayment.FieldPaymentDate)
 	return u
 }
 
@@ -854,17 +932,17 @@ func (u *PurchasePaymentUpsertOne) UpdateRiderID() *PurchasePaymentUpsertOne {
 	})
 }
 
-// SetCommodityID sets the "commodity_id" field.
-func (u *PurchasePaymentUpsertOne) SetCommodityID(v uint64) *PurchasePaymentUpsertOne {
+// SetGoodsID sets the "goods_id" field.
+func (u *PurchasePaymentUpsertOne) SetGoodsID(v uint64) *PurchasePaymentUpsertOne {
 	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.SetCommodityID(v)
+		s.SetGoodsID(v)
 	})
 }
 
-// UpdateCommodityID sets the "commodity_id" field to the value that was provided on create.
-func (u *PurchasePaymentUpsertOne) UpdateCommodityID() *PurchasePaymentUpsertOne {
+// UpdateGoodsID sets the "goods_id" field to the value that was provided on create.
+func (u *PurchasePaymentUpsertOne) UpdateGoodsID() *PurchasePaymentUpsertOne {
 	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.UpdateCommodityID()
+		s.UpdateGoodsID()
 	})
 }
 
@@ -896,20 +974,6 @@ func (u *PurchasePaymentUpsertOne) UpdateOutTradeNo() *PurchasePaymentUpsertOne 
 	})
 }
 
-// SetPayway sets the "payway" field.
-func (u *PurchasePaymentUpsertOne) SetPayway(v purchasepayment.Payway) *PurchasePaymentUpsertOne {
-	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.SetPayway(v)
-	})
-}
-
-// UpdatePayway sets the "payway" field to the value that was provided on create.
-func (u *PurchasePaymentUpsertOne) UpdatePayway() *PurchasePaymentUpsertOne {
-	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.UpdatePayway()
-	})
-}
-
 // SetIndex sets the "index" field.
 func (u *PurchasePaymentUpsertOne) SetIndex(v int) *PurchasePaymentUpsertOne {
 	return u.Update(func(s *PurchasePaymentUpsert) {
@@ -928,6 +992,41 @@ func (u *PurchasePaymentUpsertOne) AddIndex(v int) *PurchasePaymentUpsertOne {
 func (u *PurchasePaymentUpsertOne) UpdateIndex() *PurchasePaymentUpsertOne {
 	return u.Update(func(s *PurchasePaymentUpsert) {
 		s.UpdateIndex()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *PurchasePaymentUpsertOne) SetStatus(v purchasepayment.Status) *PurchasePaymentUpsertOne {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *PurchasePaymentUpsertOne) UpdateStatus() *PurchasePaymentUpsertOne {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// SetPayway sets the "payway" field.
+func (u *PurchasePaymentUpsertOne) SetPayway(v purchasepayment.Payway) *PurchasePaymentUpsertOne {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.SetPayway(v)
+	})
+}
+
+// UpdatePayway sets the "payway" field to the value that was provided on create.
+func (u *PurchasePaymentUpsertOne) UpdatePayway() *PurchasePaymentUpsertOne {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.UpdatePayway()
+	})
+}
+
+// ClearPayway clears the value of the "payway" field.
+func (u *PurchasePaymentUpsertOne) ClearPayway() *PurchasePaymentUpsertOne {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.ClearPayway()
 	})
 }
 
@@ -994,17 +1093,31 @@ func (u *PurchasePaymentUpsertOne) UpdateForfeit() *PurchasePaymentUpsertOne {
 	})
 }
 
-// SetPaidDate sets the "paid_date" field.
-func (u *PurchasePaymentUpsertOne) SetPaidDate(v time.Time) *PurchasePaymentUpsertOne {
+// SetBillingDate sets the "billing_date" field.
+func (u *PurchasePaymentUpsertOne) SetBillingDate(v time.Time) *PurchasePaymentUpsertOne {
 	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.SetPaidDate(v)
+		s.SetBillingDate(v)
 	})
 }
 
-// UpdatePaidDate sets the "paid_date" field to the value that was provided on create.
-func (u *PurchasePaymentUpsertOne) UpdatePaidDate() *PurchasePaymentUpsertOne {
+// UpdateBillingDate sets the "billing_date" field to the value that was provided on create.
+func (u *PurchasePaymentUpsertOne) UpdateBillingDate() *PurchasePaymentUpsertOne {
 	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.UpdatePaidDate()
+		s.UpdateBillingDate()
+	})
+}
+
+// SetPaymentDate sets the "payment_date" field.
+func (u *PurchasePaymentUpsertOne) SetPaymentDate(v time.Time) *PurchasePaymentUpsertOne {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.SetPaymentDate(v)
+	})
+}
+
+// UpdatePaymentDate sets the "payment_date" field to the value that was provided on create.
+func (u *PurchasePaymentUpsertOne) UpdatePaymentDate() *PurchasePaymentUpsertOne {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.UpdatePaymentDate()
 	})
 }
 
@@ -1334,17 +1447,17 @@ func (u *PurchasePaymentUpsertBulk) UpdateRiderID() *PurchasePaymentUpsertBulk {
 	})
 }
 
-// SetCommodityID sets the "commodity_id" field.
-func (u *PurchasePaymentUpsertBulk) SetCommodityID(v uint64) *PurchasePaymentUpsertBulk {
+// SetGoodsID sets the "goods_id" field.
+func (u *PurchasePaymentUpsertBulk) SetGoodsID(v uint64) *PurchasePaymentUpsertBulk {
 	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.SetCommodityID(v)
+		s.SetGoodsID(v)
 	})
 }
 
-// UpdateCommodityID sets the "commodity_id" field to the value that was provided on create.
-func (u *PurchasePaymentUpsertBulk) UpdateCommodityID() *PurchasePaymentUpsertBulk {
+// UpdateGoodsID sets the "goods_id" field to the value that was provided on create.
+func (u *PurchasePaymentUpsertBulk) UpdateGoodsID() *PurchasePaymentUpsertBulk {
 	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.UpdateCommodityID()
+		s.UpdateGoodsID()
 	})
 }
 
@@ -1376,20 +1489,6 @@ func (u *PurchasePaymentUpsertBulk) UpdateOutTradeNo() *PurchasePaymentUpsertBul
 	})
 }
 
-// SetPayway sets the "payway" field.
-func (u *PurchasePaymentUpsertBulk) SetPayway(v purchasepayment.Payway) *PurchasePaymentUpsertBulk {
-	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.SetPayway(v)
-	})
-}
-
-// UpdatePayway sets the "payway" field to the value that was provided on create.
-func (u *PurchasePaymentUpsertBulk) UpdatePayway() *PurchasePaymentUpsertBulk {
-	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.UpdatePayway()
-	})
-}
-
 // SetIndex sets the "index" field.
 func (u *PurchasePaymentUpsertBulk) SetIndex(v int) *PurchasePaymentUpsertBulk {
 	return u.Update(func(s *PurchasePaymentUpsert) {
@@ -1408,6 +1507,41 @@ func (u *PurchasePaymentUpsertBulk) AddIndex(v int) *PurchasePaymentUpsertBulk {
 func (u *PurchasePaymentUpsertBulk) UpdateIndex() *PurchasePaymentUpsertBulk {
 	return u.Update(func(s *PurchasePaymentUpsert) {
 		s.UpdateIndex()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *PurchasePaymentUpsertBulk) SetStatus(v purchasepayment.Status) *PurchasePaymentUpsertBulk {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *PurchasePaymentUpsertBulk) UpdateStatus() *PurchasePaymentUpsertBulk {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// SetPayway sets the "payway" field.
+func (u *PurchasePaymentUpsertBulk) SetPayway(v purchasepayment.Payway) *PurchasePaymentUpsertBulk {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.SetPayway(v)
+	})
+}
+
+// UpdatePayway sets the "payway" field to the value that was provided on create.
+func (u *PurchasePaymentUpsertBulk) UpdatePayway() *PurchasePaymentUpsertBulk {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.UpdatePayway()
+	})
+}
+
+// ClearPayway clears the value of the "payway" field.
+func (u *PurchasePaymentUpsertBulk) ClearPayway() *PurchasePaymentUpsertBulk {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.ClearPayway()
 	})
 }
 
@@ -1474,17 +1608,31 @@ func (u *PurchasePaymentUpsertBulk) UpdateForfeit() *PurchasePaymentUpsertBulk {
 	})
 }
 
-// SetPaidDate sets the "paid_date" field.
-func (u *PurchasePaymentUpsertBulk) SetPaidDate(v time.Time) *PurchasePaymentUpsertBulk {
+// SetBillingDate sets the "billing_date" field.
+func (u *PurchasePaymentUpsertBulk) SetBillingDate(v time.Time) *PurchasePaymentUpsertBulk {
 	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.SetPaidDate(v)
+		s.SetBillingDate(v)
 	})
 }
 
-// UpdatePaidDate sets the "paid_date" field to the value that was provided on create.
-func (u *PurchasePaymentUpsertBulk) UpdatePaidDate() *PurchasePaymentUpsertBulk {
+// UpdateBillingDate sets the "billing_date" field to the value that was provided on create.
+func (u *PurchasePaymentUpsertBulk) UpdateBillingDate() *PurchasePaymentUpsertBulk {
 	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.UpdatePaidDate()
+		s.UpdateBillingDate()
+	})
+}
+
+// SetPaymentDate sets the "payment_date" field.
+func (u *PurchasePaymentUpsertBulk) SetPaymentDate(v time.Time) *PurchasePaymentUpsertBulk {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.SetPaymentDate(v)
+	})
+}
+
+// UpdatePaymentDate sets the "payment_date" field to the value that was provided on create.
+func (u *PurchasePaymentUpsertBulk) UpdatePaymentDate() *PurchasePaymentUpsertBulk {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.UpdatePaymentDate()
 	})
 }
 

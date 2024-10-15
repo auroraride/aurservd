@@ -124,6 +124,7 @@ func (b *goodsBiz) Create(req *definition.GoodsCreateReq) (err error) {
 		SetPhotos(req.Photos).
 		SetIntro(req.Intro).
 		SetRemark(req.Remark).
+		SetPaymentPlans(req.ParsePaymentPlans()).
 		SetStatus(definition.GoodsStatusOnline.Value()).
 		Save(b.ctx)
 	if err != nil {
@@ -173,6 +174,7 @@ func (b *goodsBiz) Modify(req *definition.GoodsModifyReq) (err error) {
 		SetPhotos(req.Photos).
 		SetIntro(req.Intro).
 		SetRemark(req.Remark).
+		SetPaymentPlans(req.ParsePaymentPlans()).
 		SetStatus(definition.GoodsStatusOnline.Value()).
 		Save(b.ctx)
 	if err != nil {

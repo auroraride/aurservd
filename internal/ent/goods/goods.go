@@ -47,8 +47,8 @@ const (
 	FieldIntro = "intro"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
-	// FieldInstallment holds the string denoting the installment field in the database.
-	FieldInstallment = "installment"
+	// FieldPaymentPlans holds the string denoting the payment_plans field in the database.
+	FieldPaymentPlans = "payment_plans"
 	// EdgeStores holds the string denoting the stores edge name in mutations.
 	EdgeStores = "stores"
 	// Table holds the table name of the goods in the database.
@@ -81,7 +81,7 @@ var Columns = []string{
 	FieldPhotos,
 	FieldIntro,
 	FieldStatus,
-	FieldInstallment,
+	FieldPaymentPlans,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

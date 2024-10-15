@@ -90,7 +90,7 @@ func (PurchaseOrder) Mixin() []ent.Mixin {
 		internal.Modifier{},
 
 		RiderMixin{},
-		PurchaseCommodityMixin{},
+		GoodsMixin{},
 	}
 }
 

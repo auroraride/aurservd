@@ -12,8 +12,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/goods"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
-	"github.com/auroraride/aurservd/internal/ent/purchasecommodity"
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -105,16 +105,16 @@ func (ppu *PurchasePaymentUpdate) SetNillableRiderID(u *uint64) *PurchasePayment
 	return ppu
 }
 
-// SetCommodityID sets the "commodity_id" field.
-func (ppu *PurchasePaymentUpdate) SetCommodityID(u uint64) *PurchasePaymentUpdate {
-	ppu.mutation.SetCommodityID(u)
+// SetGoodsID sets the "goods_id" field.
+func (ppu *PurchasePaymentUpdate) SetGoodsID(u uint64) *PurchasePaymentUpdate {
+	ppu.mutation.SetGoodsID(u)
 	return ppu
 }
 
-// SetNillableCommodityID sets the "commodity_id" field if the given value is not nil.
-func (ppu *PurchasePaymentUpdate) SetNillableCommodityID(u *uint64) *PurchasePaymentUpdate {
+// SetNillableGoodsID sets the "goods_id" field if the given value is not nil.
+func (ppu *PurchasePaymentUpdate) SetNillableGoodsID(u *uint64) *PurchasePaymentUpdate {
 	if u != nil {
-		ppu.SetCommodityID(*u)
+		ppu.SetGoodsID(*u)
 	}
 	return ppu
 }
@@ -147,20 +147,6 @@ func (ppu *PurchasePaymentUpdate) SetNillableOutTradeNo(s *string) *PurchasePaym
 	return ppu
 }
 
-// SetPayway sets the "payway" field.
-func (ppu *PurchasePaymentUpdate) SetPayway(pu purchasepayment.Payway) *PurchasePaymentUpdate {
-	ppu.mutation.SetPayway(pu)
-	return ppu
-}
-
-// SetNillablePayway sets the "payway" field if the given value is not nil.
-func (ppu *PurchasePaymentUpdate) SetNillablePayway(pu *purchasepayment.Payway) *PurchasePaymentUpdate {
-	if pu != nil {
-		ppu.SetPayway(*pu)
-	}
-	return ppu
-}
-
 // SetIndex sets the "index" field.
 func (ppu *PurchasePaymentUpdate) SetIndex(i int) *PurchasePaymentUpdate {
 	ppu.mutation.ResetIndex()
@@ -179,6 +165,40 @@ func (ppu *PurchasePaymentUpdate) SetNillableIndex(i *int) *PurchasePaymentUpdat
 // AddIndex adds i to the "index" field.
 func (ppu *PurchasePaymentUpdate) AddIndex(i int) *PurchasePaymentUpdate {
 	ppu.mutation.AddIndex(i)
+	return ppu
+}
+
+// SetStatus sets the "status" field.
+func (ppu *PurchasePaymentUpdate) SetStatus(pu purchasepayment.Status) *PurchasePaymentUpdate {
+	ppu.mutation.SetStatus(pu)
+	return ppu
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (ppu *PurchasePaymentUpdate) SetNillableStatus(pu *purchasepayment.Status) *PurchasePaymentUpdate {
+	if pu != nil {
+		ppu.SetStatus(*pu)
+	}
+	return ppu
+}
+
+// SetPayway sets the "payway" field.
+func (ppu *PurchasePaymentUpdate) SetPayway(pu purchasepayment.Payway) *PurchasePaymentUpdate {
+	ppu.mutation.SetPayway(pu)
+	return ppu
+}
+
+// SetNillablePayway sets the "payway" field if the given value is not nil.
+func (ppu *PurchasePaymentUpdate) SetNillablePayway(pu *purchasepayment.Payway) *PurchasePaymentUpdate {
+	if pu != nil {
+		ppu.SetPayway(*pu)
+	}
+	return ppu
+}
+
+// ClearPayway clears the value of the "payway" field.
+func (ppu *PurchasePaymentUpdate) ClearPayway() *PurchasePaymentUpdate {
+	ppu.mutation.ClearPayway()
 	return ppu
 }
 
@@ -245,16 +265,30 @@ func (ppu *PurchasePaymentUpdate) AddForfeit(f float64) *PurchasePaymentUpdate {
 	return ppu
 }
 
-// SetPaidDate sets the "paid_date" field.
-func (ppu *PurchasePaymentUpdate) SetPaidDate(t time.Time) *PurchasePaymentUpdate {
-	ppu.mutation.SetPaidDate(t)
+// SetBillingDate sets the "billing_date" field.
+func (ppu *PurchasePaymentUpdate) SetBillingDate(t time.Time) *PurchasePaymentUpdate {
+	ppu.mutation.SetBillingDate(t)
 	return ppu
 }
 
-// SetNillablePaidDate sets the "paid_date" field if the given value is not nil.
-func (ppu *PurchasePaymentUpdate) SetNillablePaidDate(t *time.Time) *PurchasePaymentUpdate {
+// SetNillableBillingDate sets the "billing_date" field if the given value is not nil.
+func (ppu *PurchasePaymentUpdate) SetNillableBillingDate(t *time.Time) *PurchasePaymentUpdate {
 	if t != nil {
-		ppu.SetPaidDate(*t)
+		ppu.SetBillingDate(*t)
+	}
+	return ppu
+}
+
+// SetPaymentDate sets the "payment_date" field.
+func (ppu *PurchasePaymentUpdate) SetPaymentDate(t time.Time) *PurchasePaymentUpdate {
+	ppu.mutation.SetPaymentDate(t)
+	return ppu
+}
+
+// SetNillablePaymentDate sets the "payment_date" field if the given value is not nil.
+func (ppu *PurchasePaymentUpdate) SetNillablePaymentDate(t *time.Time) *PurchasePaymentUpdate {
+	if t != nil {
+		ppu.SetPaymentDate(*t)
 	}
 	return ppu
 }
@@ -284,9 +318,9 @@ func (ppu *PurchasePaymentUpdate) SetRider(r *Rider) *PurchasePaymentUpdate {
 	return ppu.SetRiderID(r.ID)
 }
 
-// SetCommodity sets the "commodity" edge to the PurchaseCommodity entity.
-func (ppu *PurchasePaymentUpdate) SetCommodity(p *PurchaseCommodity) *PurchasePaymentUpdate {
-	return ppu.SetCommodityID(p.ID)
+// SetGoods sets the "goods" edge to the Goods entity.
+func (ppu *PurchasePaymentUpdate) SetGoods(g *Goods) *PurchasePaymentUpdate {
+	return ppu.SetGoodsID(g.ID)
 }
 
 // SetOrder sets the "order" edge to the PurchaseOrder entity.
@@ -305,9 +339,9 @@ func (ppu *PurchasePaymentUpdate) ClearRider() *PurchasePaymentUpdate {
 	return ppu
 }
 
-// ClearCommodity clears the "commodity" edge to the PurchaseCommodity entity.
-func (ppu *PurchasePaymentUpdate) ClearCommodity() *PurchasePaymentUpdate {
-	ppu.mutation.ClearCommodity()
+// ClearGoods clears the "goods" edge to the Goods entity.
+func (ppu *PurchasePaymentUpdate) ClearGoods() *PurchasePaymentUpdate {
+	ppu.mutation.ClearGoods()
 	return ppu
 }
 
@@ -361,6 +395,11 @@ func (ppu *PurchasePaymentUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (ppu *PurchasePaymentUpdate) check() error {
+	if v, ok := ppu.mutation.Status(); ok {
+		if err := purchasepayment.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "PurchasePayment.status": %w`, err)}
+		}
+	}
 	if v, ok := ppu.mutation.Payway(); ok {
 		if err := purchasepayment.PaywayValidator(v); err != nil {
 			return &ValidationError{Name: "payway", err: fmt.Errorf(`ent: validator failed for field "PurchasePayment.payway": %w`, err)}
@@ -369,8 +408,8 @@ func (ppu *PurchasePaymentUpdate) check() error {
 	if ppu.mutation.RiderCleared() && len(ppu.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PurchasePayment.rider"`)
 	}
-	if ppu.mutation.CommodityCleared() && len(ppu.mutation.CommodityIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "PurchasePayment.commodity"`)
+	if ppu.mutation.GoodsCleared() && len(ppu.mutation.GoodsIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "PurchasePayment.goods"`)
 	}
 	if ppu.mutation.OrderCleared() && len(ppu.mutation.OrderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PurchasePayment.order"`)
@@ -423,14 +462,20 @@ func (ppu *PurchasePaymentUpdate) sqlSave(ctx context.Context) (n int, err error
 	if value, ok := ppu.mutation.OutTradeNo(); ok {
 		_spec.SetField(purchasepayment.FieldOutTradeNo, field.TypeString, value)
 	}
-	if value, ok := ppu.mutation.Payway(); ok {
-		_spec.SetField(purchasepayment.FieldPayway, field.TypeEnum, value)
-	}
 	if value, ok := ppu.mutation.Index(); ok {
 		_spec.SetField(purchasepayment.FieldIndex, field.TypeInt, value)
 	}
 	if value, ok := ppu.mutation.AddedIndex(); ok {
 		_spec.AddField(purchasepayment.FieldIndex, field.TypeInt, value)
+	}
+	if value, ok := ppu.mutation.Status(); ok {
+		_spec.SetField(purchasepayment.FieldStatus, field.TypeEnum, value)
+	}
+	if value, ok := ppu.mutation.Payway(); ok {
+		_spec.SetField(purchasepayment.FieldPayway, field.TypeEnum, value)
+	}
+	if ppu.mutation.PaywayCleared() {
+		_spec.ClearField(purchasepayment.FieldPayway, field.TypeEnum)
 	}
 	if value, ok := ppu.mutation.Total(); ok {
 		_spec.SetField(purchasepayment.FieldTotal, field.TypeFloat64, value)
@@ -450,8 +495,11 @@ func (ppu *PurchasePaymentUpdate) sqlSave(ctx context.Context) (n int, err error
 	if value, ok := ppu.mutation.AddedForfeit(); ok {
 		_spec.AddField(purchasepayment.FieldForfeit, field.TypeFloat64, value)
 	}
-	if value, ok := ppu.mutation.PaidDate(); ok {
-		_spec.SetField(purchasepayment.FieldPaidDate, field.TypeTime, value)
+	if value, ok := ppu.mutation.BillingDate(); ok {
+		_spec.SetField(purchasepayment.FieldBillingDate, field.TypeTime, value)
+	}
+	if value, ok := ppu.mutation.PaymentDate(); ok {
+		_spec.SetField(purchasepayment.FieldPaymentDate, field.TypeTime, value)
 	}
 	if value, ok := ppu.mutation.TradeNo(); ok {
 		_spec.SetField(purchasepayment.FieldTradeNo, field.TypeString, value)
@@ -488,28 +536,28 @@ func (ppu *PurchasePaymentUpdate) sqlSave(ctx context.Context) (n int, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ppu.mutation.CommodityCleared() {
+	if ppu.mutation.GoodsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   purchasepayment.CommodityTable,
-			Columns: []string{purchasepayment.CommodityColumn},
+			Table:   purchasepayment.GoodsTable,
+			Columns: []string{purchasepayment.GoodsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(purchasecommodity.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(goods.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ppu.mutation.CommodityIDs(); len(nodes) > 0 {
+	if nodes := ppu.mutation.GoodsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   purchasepayment.CommodityTable,
-			Columns: []string{purchasepayment.CommodityColumn},
+			Table:   purchasepayment.GoodsTable,
+			Columns: []string{purchasepayment.GoodsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(purchasecommodity.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(goods.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -640,16 +688,16 @@ func (ppuo *PurchasePaymentUpdateOne) SetNillableRiderID(u *uint64) *PurchasePay
 	return ppuo
 }
 
-// SetCommodityID sets the "commodity_id" field.
-func (ppuo *PurchasePaymentUpdateOne) SetCommodityID(u uint64) *PurchasePaymentUpdateOne {
-	ppuo.mutation.SetCommodityID(u)
+// SetGoodsID sets the "goods_id" field.
+func (ppuo *PurchasePaymentUpdateOne) SetGoodsID(u uint64) *PurchasePaymentUpdateOne {
+	ppuo.mutation.SetGoodsID(u)
 	return ppuo
 }
 
-// SetNillableCommodityID sets the "commodity_id" field if the given value is not nil.
-func (ppuo *PurchasePaymentUpdateOne) SetNillableCommodityID(u *uint64) *PurchasePaymentUpdateOne {
+// SetNillableGoodsID sets the "goods_id" field if the given value is not nil.
+func (ppuo *PurchasePaymentUpdateOne) SetNillableGoodsID(u *uint64) *PurchasePaymentUpdateOne {
 	if u != nil {
-		ppuo.SetCommodityID(*u)
+		ppuo.SetGoodsID(*u)
 	}
 	return ppuo
 }
@@ -682,20 +730,6 @@ func (ppuo *PurchasePaymentUpdateOne) SetNillableOutTradeNo(s *string) *Purchase
 	return ppuo
 }
 
-// SetPayway sets the "payway" field.
-func (ppuo *PurchasePaymentUpdateOne) SetPayway(pu purchasepayment.Payway) *PurchasePaymentUpdateOne {
-	ppuo.mutation.SetPayway(pu)
-	return ppuo
-}
-
-// SetNillablePayway sets the "payway" field if the given value is not nil.
-func (ppuo *PurchasePaymentUpdateOne) SetNillablePayway(pu *purchasepayment.Payway) *PurchasePaymentUpdateOne {
-	if pu != nil {
-		ppuo.SetPayway(*pu)
-	}
-	return ppuo
-}
-
 // SetIndex sets the "index" field.
 func (ppuo *PurchasePaymentUpdateOne) SetIndex(i int) *PurchasePaymentUpdateOne {
 	ppuo.mutation.ResetIndex()
@@ -714,6 +748,40 @@ func (ppuo *PurchasePaymentUpdateOne) SetNillableIndex(i *int) *PurchasePaymentU
 // AddIndex adds i to the "index" field.
 func (ppuo *PurchasePaymentUpdateOne) AddIndex(i int) *PurchasePaymentUpdateOne {
 	ppuo.mutation.AddIndex(i)
+	return ppuo
+}
+
+// SetStatus sets the "status" field.
+func (ppuo *PurchasePaymentUpdateOne) SetStatus(pu purchasepayment.Status) *PurchasePaymentUpdateOne {
+	ppuo.mutation.SetStatus(pu)
+	return ppuo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (ppuo *PurchasePaymentUpdateOne) SetNillableStatus(pu *purchasepayment.Status) *PurchasePaymentUpdateOne {
+	if pu != nil {
+		ppuo.SetStatus(*pu)
+	}
+	return ppuo
+}
+
+// SetPayway sets the "payway" field.
+func (ppuo *PurchasePaymentUpdateOne) SetPayway(pu purchasepayment.Payway) *PurchasePaymentUpdateOne {
+	ppuo.mutation.SetPayway(pu)
+	return ppuo
+}
+
+// SetNillablePayway sets the "payway" field if the given value is not nil.
+func (ppuo *PurchasePaymentUpdateOne) SetNillablePayway(pu *purchasepayment.Payway) *PurchasePaymentUpdateOne {
+	if pu != nil {
+		ppuo.SetPayway(*pu)
+	}
+	return ppuo
+}
+
+// ClearPayway clears the value of the "payway" field.
+func (ppuo *PurchasePaymentUpdateOne) ClearPayway() *PurchasePaymentUpdateOne {
+	ppuo.mutation.ClearPayway()
 	return ppuo
 }
 
@@ -780,16 +848,30 @@ func (ppuo *PurchasePaymentUpdateOne) AddForfeit(f float64) *PurchasePaymentUpda
 	return ppuo
 }
 
-// SetPaidDate sets the "paid_date" field.
-func (ppuo *PurchasePaymentUpdateOne) SetPaidDate(t time.Time) *PurchasePaymentUpdateOne {
-	ppuo.mutation.SetPaidDate(t)
+// SetBillingDate sets the "billing_date" field.
+func (ppuo *PurchasePaymentUpdateOne) SetBillingDate(t time.Time) *PurchasePaymentUpdateOne {
+	ppuo.mutation.SetBillingDate(t)
 	return ppuo
 }
 
-// SetNillablePaidDate sets the "paid_date" field if the given value is not nil.
-func (ppuo *PurchasePaymentUpdateOne) SetNillablePaidDate(t *time.Time) *PurchasePaymentUpdateOne {
+// SetNillableBillingDate sets the "billing_date" field if the given value is not nil.
+func (ppuo *PurchasePaymentUpdateOne) SetNillableBillingDate(t *time.Time) *PurchasePaymentUpdateOne {
 	if t != nil {
-		ppuo.SetPaidDate(*t)
+		ppuo.SetBillingDate(*t)
+	}
+	return ppuo
+}
+
+// SetPaymentDate sets the "payment_date" field.
+func (ppuo *PurchasePaymentUpdateOne) SetPaymentDate(t time.Time) *PurchasePaymentUpdateOne {
+	ppuo.mutation.SetPaymentDate(t)
+	return ppuo
+}
+
+// SetNillablePaymentDate sets the "payment_date" field if the given value is not nil.
+func (ppuo *PurchasePaymentUpdateOne) SetNillablePaymentDate(t *time.Time) *PurchasePaymentUpdateOne {
+	if t != nil {
+		ppuo.SetPaymentDate(*t)
 	}
 	return ppuo
 }
@@ -819,9 +901,9 @@ func (ppuo *PurchasePaymentUpdateOne) SetRider(r *Rider) *PurchasePaymentUpdateO
 	return ppuo.SetRiderID(r.ID)
 }
 
-// SetCommodity sets the "commodity" edge to the PurchaseCommodity entity.
-func (ppuo *PurchasePaymentUpdateOne) SetCommodity(p *PurchaseCommodity) *PurchasePaymentUpdateOne {
-	return ppuo.SetCommodityID(p.ID)
+// SetGoods sets the "goods" edge to the Goods entity.
+func (ppuo *PurchasePaymentUpdateOne) SetGoods(g *Goods) *PurchasePaymentUpdateOne {
+	return ppuo.SetGoodsID(g.ID)
 }
 
 // SetOrder sets the "order" edge to the PurchaseOrder entity.
@@ -840,9 +922,9 @@ func (ppuo *PurchasePaymentUpdateOne) ClearRider() *PurchasePaymentUpdateOne {
 	return ppuo
 }
 
-// ClearCommodity clears the "commodity" edge to the PurchaseCommodity entity.
-func (ppuo *PurchasePaymentUpdateOne) ClearCommodity() *PurchasePaymentUpdateOne {
-	ppuo.mutation.ClearCommodity()
+// ClearGoods clears the "goods" edge to the Goods entity.
+func (ppuo *PurchasePaymentUpdateOne) ClearGoods() *PurchasePaymentUpdateOne {
+	ppuo.mutation.ClearGoods()
 	return ppuo
 }
 
@@ -909,6 +991,11 @@ func (ppuo *PurchasePaymentUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (ppuo *PurchasePaymentUpdateOne) check() error {
+	if v, ok := ppuo.mutation.Status(); ok {
+		if err := purchasepayment.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "PurchasePayment.status": %w`, err)}
+		}
+	}
 	if v, ok := ppuo.mutation.Payway(); ok {
 		if err := purchasepayment.PaywayValidator(v); err != nil {
 			return &ValidationError{Name: "payway", err: fmt.Errorf(`ent: validator failed for field "PurchasePayment.payway": %w`, err)}
@@ -917,8 +1004,8 @@ func (ppuo *PurchasePaymentUpdateOne) check() error {
 	if ppuo.mutation.RiderCleared() && len(ppuo.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PurchasePayment.rider"`)
 	}
-	if ppuo.mutation.CommodityCleared() && len(ppuo.mutation.CommodityIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "PurchasePayment.commodity"`)
+	if ppuo.mutation.GoodsCleared() && len(ppuo.mutation.GoodsIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "PurchasePayment.goods"`)
 	}
 	if ppuo.mutation.OrderCleared() && len(ppuo.mutation.OrderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PurchasePayment.order"`)
@@ -988,14 +1075,20 @@ func (ppuo *PurchasePaymentUpdateOne) sqlSave(ctx context.Context) (_node *Purch
 	if value, ok := ppuo.mutation.OutTradeNo(); ok {
 		_spec.SetField(purchasepayment.FieldOutTradeNo, field.TypeString, value)
 	}
-	if value, ok := ppuo.mutation.Payway(); ok {
-		_spec.SetField(purchasepayment.FieldPayway, field.TypeEnum, value)
-	}
 	if value, ok := ppuo.mutation.Index(); ok {
 		_spec.SetField(purchasepayment.FieldIndex, field.TypeInt, value)
 	}
 	if value, ok := ppuo.mutation.AddedIndex(); ok {
 		_spec.AddField(purchasepayment.FieldIndex, field.TypeInt, value)
+	}
+	if value, ok := ppuo.mutation.Status(); ok {
+		_spec.SetField(purchasepayment.FieldStatus, field.TypeEnum, value)
+	}
+	if value, ok := ppuo.mutation.Payway(); ok {
+		_spec.SetField(purchasepayment.FieldPayway, field.TypeEnum, value)
+	}
+	if ppuo.mutation.PaywayCleared() {
+		_spec.ClearField(purchasepayment.FieldPayway, field.TypeEnum)
 	}
 	if value, ok := ppuo.mutation.Total(); ok {
 		_spec.SetField(purchasepayment.FieldTotal, field.TypeFloat64, value)
@@ -1015,8 +1108,11 @@ func (ppuo *PurchasePaymentUpdateOne) sqlSave(ctx context.Context) (_node *Purch
 	if value, ok := ppuo.mutation.AddedForfeit(); ok {
 		_spec.AddField(purchasepayment.FieldForfeit, field.TypeFloat64, value)
 	}
-	if value, ok := ppuo.mutation.PaidDate(); ok {
-		_spec.SetField(purchasepayment.FieldPaidDate, field.TypeTime, value)
+	if value, ok := ppuo.mutation.BillingDate(); ok {
+		_spec.SetField(purchasepayment.FieldBillingDate, field.TypeTime, value)
+	}
+	if value, ok := ppuo.mutation.PaymentDate(); ok {
+		_spec.SetField(purchasepayment.FieldPaymentDate, field.TypeTime, value)
 	}
 	if value, ok := ppuo.mutation.TradeNo(); ok {
 		_spec.SetField(purchasepayment.FieldTradeNo, field.TypeString, value)
@@ -1053,28 +1149,28 @@ func (ppuo *PurchasePaymentUpdateOne) sqlSave(ctx context.Context) (_node *Purch
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ppuo.mutation.CommodityCleared() {
+	if ppuo.mutation.GoodsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   purchasepayment.CommodityTable,
-			Columns: []string{purchasepayment.CommodityColumn},
+			Table:   purchasepayment.GoodsTable,
+			Columns: []string{purchasepayment.GoodsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(purchasecommodity.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(goods.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ppuo.mutation.CommodityIDs(); len(nodes) > 0 {
+	if nodes := ppuo.mutation.GoodsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   purchasepayment.CommodityTable,
-			Columns: []string{purchasepayment.CommodityColumn},
+			Table:   purchasepayment.GoodsTable,
+			Columns: []string{purchasepayment.GoodsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(purchasecommodity.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(goods.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

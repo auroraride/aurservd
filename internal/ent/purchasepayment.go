@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/purchasecommodity"
+	"github.com/auroraride/aurservd/internal/ent/goods"
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -36,24 +36,28 @@ type PurchasePayment struct {
 	Remark string `json:"remark,omitempty"`
 	// 骑手ID
 	RiderID uint64 `json:"rider_id,omitempty"`
-	// CommodityID holds the value of the "commodity_id" field.
-	CommodityID uint64 `json:"commodity_id,omitempty"`
+	// 商品ID
+	GoodsID uint64 `json:"goods_id,omitempty"`
 	// OrderID holds the value of the "order_id" field.
 	OrderID uint64 `json:"order_id,omitempty"`
 	// 交易订单号（自行生成）
 	OutTradeNo string `json:"out_trade_no,omitempty"`
+	// 分期序号
+	Index int `json:"index,omitempty"`
+	// 支付状态，obligation: 待付款, paid: 已支付, canceled: 已取消
+	Status purchasepayment.Status `json:"status,omitempty"`
 	// 支付方式，alipay: 支付宝, wechat: 微信, cash: 现金
 	Payway purchasepayment.Payway `json:"payway,omitempty"`
-	// 支付序号
-	Index int `json:"index,omitempty"`
 	// 支付金额
 	Total float64 `json:"total,omitempty"`
-	// 分期金额
+	// 账单金额
 	Amount float64 `json:"amount,omitempty"`
 	// 滞纳金
 	Forfeit float64 `json:"forfeit,omitempty"`
+	// 账单日期
+	BillingDate time.Time `json:"billing_date,omitempty"`
 	// 支付日期
-	PaidDate time.Time `json:"paid_date,omitempty"`
+	PaymentDate time.Time `json:"payment_date,omitempty"`
 	// 平台订单号（微信或支付宝）
 	TradeNo string `json:"trade_no,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -67,8 +71,8 @@ type PurchasePayment struct {
 type PurchasePaymentEdges struct {
 	// 骑手
 	Rider *Rider `json:"rider,omitempty"`
-	// Commodity holds the value of the commodity edge.
-	Commodity *PurchaseCommodity `json:"commodity,omitempty"`
+	// 商品ID
+	Goods *Goods `json:"goods,omitempty"`
 	// Order holds the value of the order edge.
 	Order *PurchaseOrder `json:"order,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -87,15 +91,15 @@ func (e PurchasePaymentEdges) RiderOrErr() (*Rider, error) {
 	return nil, &NotLoadedError{edge: "rider"}
 }
 
-// CommodityOrErr returns the Commodity value or an error if the edge
+// GoodsOrErr returns the Goods value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e PurchasePaymentEdges) CommodityOrErr() (*PurchaseCommodity, error) {
-	if e.Commodity != nil {
-		return e.Commodity, nil
+func (e PurchasePaymentEdges) GoodsOrErr() (*Goods, error) {
+	if e.Goods != nil {
+		return e.Goods, nil
 	} else if e.loadedTypes[1] {
-		return nil, &NotFoundError{label: purchasecommodity.Label}
+		return nil, &NotFoundError{label: goods.Label}
 	}
-	return nil, &NotLoadedError{edge: "commodity"}
+	return nil, &NotLoadedError{edge: "goods"}
 }
 
 // OrderOrErr returns the Order value or an error if the edge
@@ -118,11 +122,11 @@ func (*PurchasePayment) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case purchasepayment.FieldTotal, purchasepayment.FieldAmount, purchasepayment.FieldForfeit:
 			values[i] = new(sql.NullFloat64)
-		case purchasepayment.FieldID, purchasepayment.FieldRiderID, purchasepayment.FieldCommodityID, purchasepayment.FieldOrderID, purchasepayment.FieldIndex:
+		case purchasepayment.FieldID, purchasepayment.FieldRiderID, purchasepayment.FieldGoodsID, purchasepayment.FieldOrderID, purchasepayment.FieldIndex:
 			values[i] = new(sql.NullInt64)
-		case purchasepayment.FieldRemark, purchasepayment.FieldOutTradeNo, purchasepayment.FieldPayway, purchasepayment.FieldTradeNo:
+		case purchasepayment.FieldRemark, purchasepayment.FieldOutTradeNo, purchasepayment.FieldStatus, purchasepayment.FieldPayway, purchasepayment.FieldTradeNo:
 			values[i] = new(sql.NullString)
-		case purchasepayment.FieldCreatedAt, purchasepayment.FieldUpdatedAt, purchasepayment.FieldDeletedAt, purchasepayment.FieldPaidDate:
+		case purchasepayment.FieldCreatedAt, purchasepayment.FieldUpdatedAt, purchasepayment.FieldDeletedAt, purchasepayment.FieldBillingDate, purchasepayment.FieldPaymentDate:
 			values[i] = new(sql.NullTime)
 		case purchasepayment.ForeignKeys[0]: // purchase_order_payments
 			values[i] = new(sql.NullInt64)
@@ -194,11 +198,11 @@ func (pp *PurchasePayment) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pp.RiderID = uint64(value.Int64)
 			}
-		case purchasepayment.FieldCommodityID:
+		case purchasepayment.FieldGoodsID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field commodity_id", values[i])
+				return fmt.Errorf("unexpected type %T for field goods_id", values[i])
 			} else if value.Valid {
-				pp.CommodityID = uint64(value.Int64)
+				pp.GoodsID = uint64(value.Int64)
 			}
 		case purchasepayment.FieldOrderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -212,17 +216,23 @@ func (pp *PurchasePayment) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pp.OutTradeNo = value.String
 			}
-		case purchasepayment.FieldPayway:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field payway", values[i])
-			} else if value.Valid {
-				pp.Payway = purchasepayment.Payway(value.String)
-			}
 		case purchasepayment.FieldIndex:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field index", values[i])
 			} else if value.Valid {
 				pp.Index = int(value.Int64)
+			}
+		case purchasepayment.FieldStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				pp.Status = purchasepayment.Status(value.String)
+			}
+		case purchasepayment.FieldPayway:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field payway", values[i])
+			} else if value.Valid {
+				pp.Payway = purchasepayment.Payway(value.String)
 			}
 		case purchasepayment.FieldTotal:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
@@ -242,11 +252,17 @@ func (pp *PurchasePayment) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pp.Forfeit = value.Float64
 			}
-		case purchasepayment.FieldPaidDate:
+		case purchasepayment.FieldBillingDate:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field paid_date", values[i])
+				return fmt.Errorf("unexpected type %T for field billing_date", values[i])
 			} else if value.Valid {
-				pp.PaidDate = value.Time
+				pp.BillingDate = value.Time
+			}
+		case purchasepayment.FieldPaymentDate:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field payment_date", values[i])
+			} else if value.Valid {
+				pp.PaymentDate = value.Time
 			}
 		case purchasepayment.FieldTradeNo:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -279,9 +295,9 @@ func (pp *PurchasePayment) QueryRider() *RiderQuery {
 	return NewPurchasePaymentClient(pp.config).QueryRider(pp)
 }
 
-// QueryCommodity queries the "commodity" edge of the PurchasePayment entity.
-func (pp *PurchasePayment) QueryCommodity() *PurchaseCommodityQuery {
-	return NewPurchasePaymentClient(pp.config).QueryCommodity(pp)
+// QueryGoods queries the "goods" edge of the PurchasePayment entity.
+func (pp *PurchasePayment) QueryGoods() *GoodsQuery {
+	return NewPurchasePaymentClient(pp.config).QueryGoods(pp)
 }
 
 // QueryOrder queries the "order" edge of the PurchasePayment entity.
@@ -335,8 +351,8 @@ func (pp *PurchasePayment) String() string {
 	builder.WriteString("rider_id=")
 	builder.WriteString(fmt.Sprintf("%v", pp.RiderID))
 	builder.WriteString(", ")
-	builder.WriteString("commodity_id=")
-	builder.WriteString(fmt.Sprintf("%v", pp.CommodityID))
+	builder.WriteString("goods_id=")
+	builder.WriteString(fmt.Sprintf("%v", pp.GoodsID))
 	builder.WriteString(", ")
 	builder.WriteString("order_id=")
 	builder.WriteString(fmt.Sprintf("%v", pp.OrderID))
@@ -344,11 +360,14 @@ func (pp *PurchasePayment) String() string {
 	builder.WriteString("out_trade_no=")
 	builder.WriteString(pp.OutTradeNo)
 	builder.WriteString(", ")
-	builder.WriteString("payway=")
-	builder.WriteString(fmt.Sprintf("%v", pp.Payway))
-	builder.WriteString(", ")
 	builder.WriteString("index=")
 	builder.WriteString(fmt.Sprintf("%v", pp.Index))
+	builder.WriteString(", ")
+	builder.WriteString("status=")
+	builder.WriteString(fmt.Sprintf("%v", pp.Status))
+	builder.WriteString(", ")
+	builder.WriteString("payway=")
+	builder.WriteString(fmt.Sprintf("%v", pp.Payway))
 	builder.WriteString(", ")
 	builder.WriteString("total=")
 	builder.WriteString(fmt.Sprintf("%v", pp.Total))
@@ -359,8 +378,11 @@ func (pp *PurchasePayment) String() string {
 	builder.WriteString("forfeit=")
 	builder.WriteString(fmt.Sprintf("%v", pp.Forfeit))
 	builder.WriteString(", ")
-	builder.WriteString("paid_date=")
-	builder.WriteString(pp.PaidDate.Format(time.ANSIC))
+	builder.WriteString("billing_date=")
+	builder.WriteString(pp.BillingDate.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("payment_date=")
+	builder.WriteString(pp.PaymentDate.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("trade_no=")
 	builder.WriteString(pp.TradeNo)

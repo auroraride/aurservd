@@ -942,16 +942,6 @@ func (pw *PromotionWithdrawal) GetID() uint64 {
 	return pw.ID
 }
 
-// GetTableName returns table name for PurchaseCommodity.
-func (pc *PurchaseCommodity) GetTableName() string {
-	return "purchase_commodity"
-}
-
-// GetID returns id for PurchaseCommodity.
-func (pc *PurchaseCommodity) GetID() uint64 {
-	return pc.ID
-}
-
 // GetTableName returns table name for PurchaseOrder.
 func (po *PurchaseOrder) GetTableName() string {
 	return "purchase_order"

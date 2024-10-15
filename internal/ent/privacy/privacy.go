@@ -2031,30 +2031,6 @@ func (f PromotionWithdrawalMutationRuleFunc) EvalMutation(ctx context.Context, m
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionWithdrawalMutation", m)
 }
 
-// The PurchaseCommodityQueryRuleFunc type is an adapter to allow the use of ordinary
-// functions as a query rule.
-type PurchaseCommodityQueryRuleFunc func(context.Context, *ent.PurchaseCommodityQuery) error
-
-// EvalQuery return f(ctx, q).
-func (f PurchaseCommodityQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.PurchaseCommodityQuery); ok {
-		return f(ctx, q)
-	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PurchaseCommodityQuery", q)
-}
-
-// The PurchaseCommodityMutationRuleFunc type is an adapter to allow the use of ordinary
-// functions as a mutation rule.
-type PurchaseCommodityMutationRuleFunc func(context.Context, *ent.PurchaseCommodityMutation) error
-
-// EvalMutation calls f(ctx, m).
-func (f PurchaseCommodityMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.PurchaseCommodityMutation); ok {
-		return f(ctx, m)
-	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PurchaseCommodityMutation", m)
-}
-
 // The PurchaseOrderQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type PurchaseOrderQueryRuleFunc func(context.Context, *ent.PurchaseOrderQuery) error
@@ -2778,8 +2754,6 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.PromotionWithdrawalQuery:
 		return q.Filter(), nil
-	case *ent.PurchaseCommodityQuery:
-		return q.Filter(), nil
 	case *ent.PurchaseOrderQuery:
 		return q.Filter(), nil
 	case *ent.PurchasePaymentQuery:
@@ -2990,8 +2964,6 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.PromotionSettingMutation:
 		return m.Filter(), nil
 	case *ent.PromotionWithdrawalMutation:
-		return m.Filter(), nil
-	case *ent.PurchaseCommodityMutation:
 		return m.Filter(), nil
 	case *ent.PurchaseOrderMutation:
 		return m.Filter(), nil
