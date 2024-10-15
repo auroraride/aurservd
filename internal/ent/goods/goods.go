@@ -47,6 +47,8 @@ const (
 	FieldIntro = "intro"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// FieldInstallment holds the string denoting the installment field in the database.
+	FieldInstallment = "installment"
 	// EdgeStores holds the string denoting the stores edge name in mutations.
 	EdgeStores = "stores"
 	// Table holds the table name of the goods in the database.
@@ -79,6 +81,7 @@ var Columns = []string{
 	FieldPhotos,
 	FieldIntro,
 	FieldStatus,
+	FieldInstallment,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -97,7 +100,7 @@ func ValidColumn(column string) bool {
 //
 //	import _ "github.com/auroraride/aurservd/internal/ent/runtime"
 var (
-	Hooks [1]ent.Hook
+	Hooks [2]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

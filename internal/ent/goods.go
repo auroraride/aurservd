@@ -51,6 +51,8 @@ type Goods struct {
 	Intro []string `json:"intro,omitempty"`
 	// 商品状态 0下架 1上架
 	Status uint8 `json:"status,omitempty"`
+	// 分期方案
+	Installment [][]float64 `json:"installment,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the GoodsQuery when eager-loading is set.
 	Edges        GoodsEdges `json:"edges"`
@@ -80,7 +82,7 @@ func (*Goods) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case goods.FieldCreator, goods.FieldLastModifier, goods.FieldLables, goods.FieldPhotos, goods.FieldIntro:
+		case goods.FieldCreator, goods.FieldLastModifier, goods.FieldLables, goods.FieldPhotos, goods.FieldIntro, goods.FieldInstallment:
 			values[i] = new([]byte)
 		case goods.FieldPrice:
 			values[i] = new(sql.NullFloat64)
@@ -218,6 +220,14 @@ func (_go *Goods) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_go.Status = uint8(value.Int64)
 			}
+		case goods.FieldInstallment:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field installment", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_go.Installment); err != nil {
+					return fmt.Errorf("unmarshal field installment: %w", err)
+				}
+			}
 		default:
 			_go.selectValues.Set(columns[i], values[i])
 		}
@@ -308,6 +318,9 @@ func (_go *Goods) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", _go.Status))
+	builder.WriteString(", ")
+	builder.WriteString("installment=")
+	builder.WriteString(fmt.Sprintf("%v", _go.Installment))
 	builder.WriteByte(')')
 	return builder.String()
 }
