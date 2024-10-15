@@ -70,7 +70,7 @@ func (PurchaseOrder) Fields() []ent.Field {
 		field.Int("installment_stage").Default(0).Comment("当前分期阶段，从0开始"),
 		field.Int("installment_total").Comment("分期总数"),
 		field.JSON("installment_plan", model.GoodsPaymentPlan{}).Comment("分期方案"),
-		field.Time("start_date").SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("开始日期"),
+		field.Time("start_date").Optional().SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("开始日期"),
 		field.Time("next_date").Nillable().Optional().SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("下次支付日期"),
 		field.Strings("images").Optional().Comment("图片"),
 	}

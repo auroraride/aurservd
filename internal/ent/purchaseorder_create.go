@@ -187,6 +187,14 @@ func (poc *PurchaseOrderCreate) SetStartDate(t time.Time) *PurchaseOrderCreate {
 	return poc
 }
 
+// SetNillableStartDate sets the "start_date" field if the given value is not nil.
+func (poc *PurchaseOrderCreate) SetNillableStartDate(t *time.Time) *PurchaseOrderCreate {
+	if t != nil {
+		poc.SetStartDate(*t)
+	}
+	return poc
+}
+
 // SetNextDate sets the "next_date" field.
 func (poc *PurchaseOrderCreate) SetNextDate(t time.Time) *PurchaseOrderCreate {
 	poc.mutation.SetNextDate(t)
@@ -332,9 +340,6 @@ func (poc *PurchaseOrderCreate) check() error {
 	}
 	if _, ok := poc.mutation.InstallmentPlan(); !ok {
 		return &ValidationError{Name: "installment_plan", err: errors.New(`ent: missing required field "PurchaseOrder.installment_plan"`)}
-	}
-	if _, ok := poc.mutation.StartDate(); !ok {
-		return &ValidationError{Name: "start_date", err: errors.New(`ent: missing required field "PurchaseOrder.start_date"`)}
 	}
 	if len(poc.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "PurchaseOrder.rider"`)}
@@ -758,6 +763,12 @@ func (u *PurchaseOrderUpsert) UpdateStartDate() *PurchaseOrderUpsert {
 	return u
 }
 
+// ClearStartDate clears the value of the "start_date" field.
+func (u *PurchaseOrderUpsert) ClearStartDate() *PurchaseOrderUpsert {
+	u.SetNull(purchaseorder.FieldStartDate)
+	return u
+}
+
 // SetNextDate sets the "next_date" field.
 func (u *PurchaseOrderUpsert) SetNextDate(v time.Time) *PurchaseOrderUpsert {
 	u.Set(purchaseorder.FieldNextDate, v)
@@ -1084,6 +1095,13 @@ func (u *PurchaseOrderUpsertOne) SetStartDate(v time.Time) *PurchaseOrderUpsertO
 func (u *PurchaseOrderUpsertOne) UpdateStartDate() *PurchaseOrderUpsertOne {
 	return u.Update(func(s *PurchaseOrderUpsert) {
 		s.UpdateStartDate()
+	})
+}
+
+// ClearStartDate clears the value of the "start_date" field.
+func (u *PurchaseOrderUpsertOne) ClearStartDate() *PurchaseOrderUpsertOne {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.ClearStartDate()
 	})
 }
 
@@ -1585,6 +1603,13 @@ func (u *PurchaseOrderUpsertBulk) SetStartDate(v time.Time) *PurchaseOrderUpsert
 func (u *PurchaseOrderUpsertBulk) UpdateStartDate() *PurchaseOrderUpsertBulk {
 	return u.Update(func(s *PurchaseOrderUpsert) {
 		s.UpdateStartDate()
+	})
+}
+
+// ClearStartDate clears the value of the "start_date" field.
+func (u *PurchaseOrderUpsertBulk) ClearStartDate() *PurchaseOrderUpsertBulk {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.ClearStartDate()
 	})
 }
 

@@ -15,6 +15,8 @@ import (
 	inapp "github.com/auroraride/aurservd/app"
 	v1 "github.com/auroraride/aurservd/app/controller/v1/rapi"
 	"github.com/auroraride/aurservd/app/controller/v2/rapi"
+	pr "github.com/auroraride/aurservd/app/purchase/controller/rapi"
+
 	"github.com/auroraride/aurservd/app/middleware"
 	"github.com/auroraride/aurservd/internal/ent"
 )
@@ -233,4 +235,9 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 车电品牌
 	g.GET("/ebike/brand/:id", rapi.Ebike.EbikeBrandDetail) // 车电品牌详情
+
+	// 买车
+	g.Group("/purchase", person())
+	g.POST("/purchase/order", pr.Order.Create) // 创建订单
+
 }
