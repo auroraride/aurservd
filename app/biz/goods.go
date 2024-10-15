@@ -43,14 +43,25 @@ func NewGoodsWithModifierBiz(m *model.Modifier) *goodsBiz {
 
 // List 获取商品列表
 func (b *goodsBiz) List(req *definition.GoodsListReq) *model.PaginationRes {
-	query := b.orm.QueryNotDeleted().Order(ent.Desc(goods.FieldWeight)).
+	q := b.orm.QueryNotDeleted().
 		WithStores(
-			func(q *ent.StoreGoodsQuery) {
-				q.Where(storegoods.DeletedAtIsNil()).WithStore()
+			func(query *ent.StoreGoodsQuery) {
+				query.Where(storegoods.DeletedAtIsNil()).WithStore()
 			},
-		)
+		).
+		Order(ent.Desc(goods.FieldWeight))
+
+	b.listFilter(req, q)
+
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Goods) *definition.GoodsDetail {
+		return detail(item)
+	})
+}
+
+// listFilter 条件筛选
+func (b *goodsBiz) listFilter(req *definition.GoodsListReq, q *ent.GoodsQuery) {
 	if req.Keyword != nil {
-		query.Where(
+		q.Where(
 			goods.Or(
 				goods.SnContains(*req.Keyword),
 				goods.NameContains(*req.Keyword),
@@ -58,26 +69,23 @@ func (b *goodsBiz) List(req *definition.GoodsListReq) *model.PaginationRes {
 		)
 	}
 	if req.Status != nil {
-		query.Where(goods.Status(req.Status.Value()))
+		q.Where(goods.Status(req.Status.Value()))
 	}
 	if req.Start != nil && req.End != nil {
 		start := tools.NewTime().ParseDateStringX(*req.Start)
 		end := tools.NewTime().ParseNextDateStringX(*req.End)
-		query.Where(
+		q.Where(
 			goods.CreatedAtGTE(start),
 			goods.CreatedAtLTE(end),
 		)
 	}
-	return model.ParsePaginationResponse(query, req.PaginationReq, func(item *ent.Goods) *definition.GoodsDetail {
-		return toGoodsDetail(item)
-	})
 }
 
-// toGoodsDetail 商品详情数据拼接
-func toGoodsDetail(item *ent.Goods) *definition.GoodsDetail {
+// detail 商品详情数据拼接
+func detail(item *ent.Goods) *definition.GoodsDetail {
 	// 查询配置的门店信息
-	var storeIds []uint64
-	var stores []model.Store
+	storeIds := make([]uint64, 0)
+	stores := make([]model.Store, 0)
 	for _, es := range item.Edges.Stores {
 		if es.Edges.Store != nil {
 			storeIds = append(storeIds, es.Edges.Store.ID)
@@ -86,25 +94,36 @@ func toGoodsDetail(item *ent.Goods) *definition.GoodsDetail {
 				Name: es.Edges.Store.Name,
 			})
 		}
-
 	}
+
+	// 解析付款方案数据
+	payPlans := make([][]float64, 0)
+	for _, p := range item.PaymentPlans {
+		payPlan := make([]float64, 0)
+		for _, o := range p {
+			payPlan = append(payPlan, o.Amount)
+		}
+		payPlans = append(payPlans, payPlan)
+	}
+
 	return &definition.GoodsDetail{
 		ID: item.ID,
 		Goods: definition.Goods{
-			Sn:        item.Sn,
-			Name:      item.Name,
-			Type:      definition.GoodsType(item.Type),
-			Lables:    item.Lables,
-			Price:     item.Price,
-			Weight:    item.Weight,
-			HeadPic:   item.HeadPic,
-			Photos:    item.Photos,
-			Intro:     item.Intro,
-			Stores:    stores,
-			CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
-			Status:    definition.GoodsStatus(item.Status),
-			Remark:    item.Remark,
-			StoreIds:  storeIds,
+			Sn:           item.Sn,
+			Name:         item.Name,
+			Type:         definition.GoodsType(item.Type),
+			Lables:       item.Lables,
+			Price:        item.Price,
+			Weight:       item.Weight,
+			HeadPic:      item.HeadPic,
+			Photos:       item.Photos,
+			Intro:        item.Intro,
+			Stores:       stores,
+			CreatedAt:    item.CreatedAt.Format(carbon.DateTimeLayout),
+			Status:       definition.GoodsStatus(item.Status),
+			Remark:       item.Remark,
+			StoreIds:     storeIds,
+			PaymentPlans: payPlans,
 		},
 	}
 }
@@ -131,6 +150,7 @@ func (b *goodsBiz) Create(req *definition.GoodsCreateReq) (err error) {
 		return err
 	}
 
+	// 创建商品配置门店的对应数据
 	bulk := make([]*ent.StoreGoodsCreate, len(req.StoreIds))
 	for i, storeId := range req.StoreIds {
 		bulk[i] = ent.Database.StoreGoods.Create().SetGoodsID(item.ID).SetStoreID(storeId)
@@ -183,7 +203,7 @@ func (b *goodsBiz) Modify(req *definition.GoodsModifyReq) (err error) {
 
 	// 直接先删除已配置的门店
 	_, _ = ent.Database.StoreGoods.Delete().Where(storegoods.GoodsID(g.ID)).Exec(b.ctx)
-
+	// 创建商品配置门店的对应数据
 	for _, storeId := range req.StoreIds {
 		_, _ = ent.Database.StoreGoods.Create().SetGoodsID(g.ID).SetStoreID(storeId).Save(b.ctx)
 	}
@@ -197,7 +217,7 @@ func (b *goodsBiz) Detail(id uint64) (*definition.GoodsDetail, error) {
 	if err != nil {
 		return nil, err
 	}
-	return toGoodsDetail(item), nil
+	return detail(item), nil
 }
 
 // UpdateStatus 更新商品上下架状态
@@ -229,7 +249,7 @@ func (b *goodsBiz) ListByStoreId(storeId uint64) (res []*definition.GoodsDetail)
 		).All(b.ctx)
 
 	for _, item := range items {
-		res = append(res, toGoodsDetail(item))
+		res = append(res, detail(item))
 	}
 	return
 }
@@ -250,7 +270,7 @@ func (b *goodsBiz) ListForRider(req *definition.GoodsListForRiderReq) []*definit
 		).All(b.ctx)
 	res := make([]*definition.GoodsDetail, 0, len(items))
 	for _, v := range items {
-		res = append(res, toGoodsDetail(v))
+		res = append(res, detail(v))
 	}
 	return res
 }

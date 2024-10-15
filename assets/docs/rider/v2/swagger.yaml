@@ -324,6 +324,13 @@ definitions:
       name:
         description: 商品名称
         type: string
+      paymentPlans:
+        description: 付款方案
+        items:
+          items:
+            type: number
+          type: array
+        type: array
       photos:
         description: 商品图片
         items:

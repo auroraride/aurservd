@@ -13502,6 +13502,16 @@ const docTemplate = `{
                     "description": "商品名称, 商品名称",
                     "type": "string"
                 },
+                "paymentPlans": {
+                    "description": "付款方案",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    }
+                },
                 "photos": {
                     "description": "商品图片, 商品图片",
                     "type": "array",
@@ -13570,6 +13580,16 @@ const docTemplate = `{
                 "name": {
                     "description": "商品名称",
                     "type": "string"
+                },
+                "paymentPlans": {
+                    "description": "付款方案",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    }
                 },
                 "photos": {
                     "description": "商品图片",
@@ -13692,6 +13712,16 @@ const docTemplate = `{
                 "name": {
                     "description": "商品名称, 商品名称",
                     "type": "string"
+                },
+                "paymentPlans": {
+                    "description": "付款方案",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    }
                 },
                 "photos": {
                     "description": "商品图片, 商品图片",
