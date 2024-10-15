@@ -176,8 +176,6 @@ type Tx struct {
 	PromotionSetting *PromotionSettingClient
 	// PromotionWithdrawal is the client for interacting with the PromotionWithdrawal builders.
 	PromotionWithdrawal *PromotionWithdrawalClient
-	// PurchaseCommodity is the client for interacting with the PurchaseCommodity builders.
-	PurchaseCommodity *PurchaseCommodityClient
 	// PurchaseOrder is the client for interacting with the PurchaseOrder builders.
 	PurchaseOrder *PurchaseOrderClient
 	// PurchasePayment is the client for interacting with the PurchasePayment builders.
@@ -434,7 +432,6 @@ func (tx *Tx) init() {
 	tx.PromotionReferralsProgress = NewPromotionReferralsProgressClient(tx.config)
 	tx.PromotionSetting = NewPromotionSettingClient(tx.config)
 	tx.PromotionWithdrawal = NewPromotionWithdrawalClient(tx.config)
-	tx.PurchaseCommodity = NewPurchaseCommodityClient(tx.config)
 	tx.PurchaseOrder = NewPurchaseOrderClient(tx.config)
 	tx.PurchasePayment = NewPurchasePaymentClient(tx.config)
 	tx.Question = NewQuestionClient(tx.config)

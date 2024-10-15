@@ -65,16 +65,32 @@ type GoodsDetail struct {
 
 // GoodsCreateReq 创建
 type GoodsCreateReq struct {
-	Name     string    `json:"name" validate:"required" trans:"商品名称"`      // 商品名称
-	Type     GoodsType `json:"type" validate:"required" trans:"商品类别"`      // 商品类别 1电车
-	Lables   []string  `json:"lables"`                                     // 商品标签
-	Price    float64   `json:"price" validate:"required" trans:"商品价格"`     // 商品价格
-	Weight   int       `json:"weight" validate:"required" trans:"商品权重"`    // 商品权重
-	HeadPic  string    `json:"headPic" validate:"required" trans:"商品头图"`   // 商品头图
-	Photos   []string  `json:"photos" validate:"max=5" trans:"商品图片"`       // 商品图片
-	Intro    []string  `json:"intro" validate:"max=5" trans:"商品介绍"`        // 商品介绍
-	StoreIds []uint64  `json:"storeIds" validate:"required" trans:"门店IDS"` // 门店IDS
-	Remark   string    `json:"remark"`                                     // 备注
+	Name         string      `json:"name" validate:"required" trans:"商品名称"`      // 商品名称
+	Type         GoodsType   `json:"type" validate:"required" trans:"商品类别"`      // 商品类别 1电车
+	Lables       []string    `json:"lables"`                                     // 商品标签
+	Price        float64     `json:"price" validate:"required" trans:"商品价格"`     // 商品价格
+	Weight       int         `json:"weight" validate:"required" trans:"商品权重"`    // 商品权重
+	HeadPic      string      `json:"headPic" validate:"required" trans:"商品头图"`   // 商品头图
+	Photos       []string    `json:"photos" validate:"max=5" trans:"商品图片"`       // 商品图片
+	Intro        []string    `json:"intro" validate:"max=5" trans:"商品介绍"`        // 商品介绍
+	StoreIds     []uint64    `json:"storeIds" validate:"required" trans:"门店IDS"` // 门店IDS
+	Remark       string      `json:"remark"`                                     // 备注
+	PaymentPlans [][]float64 `json:"paymentPlans"`                               // 付款方案
+}
+
+func (req *GoodsCreateReq) ParsePaymentPlans() (p model.GoodsPaymentPlans) {
+	for _, plan := range req.PaymentPlans {
+		var options model.GoodsPaymentPlan
+		for _, option := range plan {
+			options = append(options, model.GoodsPaymentPlanOption{
+				Period: model.GoodsPaymentPeriodMonthly,
+				Unit:   1,
+				Amount: option,
+			})
+		}
+		p = append(p, options)
+	}
+	return
 }
 
 // GoodsModifyReq 商品修改请求

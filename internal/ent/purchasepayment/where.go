@@ -80,9 +80,9 @@ func RiderID(v uint64) predicate.PurchasePayment {
 	return predicate.PurchasePayment(sql.FieldEQ(FieldRiderID, v))
 }
 
-// CommodityID applies equality check predicate on the "commodity_id" field. It's identical to CommodityIDEQ.
-func CommodityID(v uint64) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldEQ(FieldCommodityID, v))
+// GoodsID applies equality check predicate on the "goods_id" field. It's identical to GoodsIDEQ.
+func GoodsID(v uint64) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldEQ(FieldGoodsID, v))
 }
 
 // OrderID applies equality check predicate on the "order_id" field. It's identical to OrderIDEQ.
@@ -115,9 +115,14 @@ func Forfeit(v float64) predicate.PurchasePayment {
 	return predicate.PurchasePayment(sql.FieldEQ(FieldForfeit, v))
 }
 
-// PaidDate applies equality check predicate on the "paid_date" field. It's identical to PaidDateEQ.
-func PaidDate(v time.Time) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldEQ(FieldPaidDate, v))
+// BillingDate applies equality check predicate on the "billing_date" field. It's identical to BillingDateEQ.
+func BillingDate(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldEQ(FieldBillingDate, v))
+}
+
+// PaymentDate applies equality check predicate on the "payment_date" field. It's identical to PaymentDateEQ.
+func PaymentDate(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldEQ(FieldPaymentDate, v))
 }
 
 // TradeNo applies equality check predicate on the "trade_no" field. It's identical to TradeNoEQ.
@@ -370,24 +375,24 @@ func RiderIDNotIn(vs ...uint64) predicate.PurchasePayment {
 	return predicate.PurchasePayment(sql.FieldNotIn(FieldRiderID, vs...))
 }
 
-// CommodityIDEQ applies the EQ predicate on the "commodity_id" field.
-func CommodityIDEQ(v uint64) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldEQ(FieldCommodityID, v))
+// GoodsIDEQ applies the EQ predicate on the "goods_id" field.
+func GoodsIDEQ(v uint64) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldEQ(FieldGoodsID, v))
 }
 
-// CommodityIDNEQ applies the NEQ predicate on the "commodity_id" field.
-func CommodityIDNEQ(v uint64) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldNEQ(FieldCommodityID, v))
+// GoodsIDNEQ applies the NEQ predicate on the "goods_id" field.
+func GoodsIDNEQ(v uint64) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldNEQ(FieldGoodsID, v))
 }
 
-// CommodityIDIn applies the In predicate on the "commodity_id" field.
-func CommodityIDIn(vs ...uint64) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldIn(FieldCommodityID, vs...))
+// GoodsIDIn applies the In predicate on the "goods_id" field.
+func GoodsIDIn(vs ...uint64) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldIn(FieldGoodsID, vs...))
 }
 
-// CommodityIDNotIn applies the NotIn predicate on the "commodity_id" field.
-func CommodityIDNotIn(vs ...uint64) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldNotIn(FieldCommodityID, vs...))
+// GoodsIDNotIn applies the NotIn predicate on the "goods_id" field.
+func GoodsIDNotIn(vs ...uint64) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldNotIn(FieldGoodsID, vs...))
 }
 
 // OrderIDEQ applies the EQ predicate on the "order_id" field.
@@ -475,26 +480,6 @@ func OutTradeNoContainsFold(v string) predicate.PurchasePayment {
 	return predicate.PurchasePayment(sql.FieldContainsFold(FieldOutTradeNo, v))
 }
 
-// PaywayEQ applies the EQ predicate on the "payway" field.
-func PaywayEQ(v Payway) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldEQ(FieldPayway, v))
-}
-
-// PaywayNEQ applies the NEQ predicate on the "payway" field.
-func PaywayNEQ(v Payway) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldNEQ(FieldPayway, v))
-}
-
-// PaywayIn applies the In predicate on the "payway" field.
-func PaywayIn(vs ...Payway) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldIn(FieldPayway, vs...))
-}
-
-// PaywayNotIn applies the NotIn predicate on the "payway" field.
-func PaywayNotIn(vs ...Payway) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldNotIn(FieldPayway, vs...))
-}
-
 // IndexEQ applies the EQ predicate on the "index" field.
 func IndexEQ(v int) predicate.PurchasePayment {
 	return predicate.PurchasePayment(sql.FieldEQ(FieldIndex, v))
@@ -533,6 +518,56 @@ func IndexLT(v int) predicate.PurchasePayment {
 // IndexLTE applies the LTE predicate on the "index" field.
 func IndexLTE(v int) predicate.PurchasePayment {
 	return predicate.PurchasePayment(sql.FieldLTE(FieldIndex, v))
+}
+
+// StatusEQ applies the EQ predicate on the "status" field.
+func StatusEQ(v Status) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldEQ(FieldStatus, v))
+}
+
+// StatusNEQ applies the NEQ predicate on the "status" field.
+func StatusNEQ(v Status) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldNEQ(FieldStatus, v))
+}
+
+// StatusIn applies the In predicate on the "status" field.
+func StatusIn(vs ...Status) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldIn(FieldStatus, vs...))
+}
+
+// StatusNotIn applies the NotIn predicate on the "status" field.
+func StatusNotIn(vs ...Status) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldNotIn(FieldStatus, vs...))
+}
+
+// PaywayEQ applies the EQ predicate on the "payway" field.
+func PaywayEQ(v Payway) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldEQ(FieldPayway, v))
+}
+
+// PaywayNEQ applies the NEQ predicate on the "payway" field.
+func PaywayNEQ(v Payway) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldNEQ(FieldPayway, v))
+}
+
+// PaywayIn applies the In predicate on the "payway" field.
+func PaywayIn(vs ...Payway) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldIn(FieldPayway, vs...))
+}
+
+// PaywayNotIn applies the NotIn predicate on the "payway" field.
+func PaywayNotIn(vs ...Payway) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldNotIn(FieldPayway, vs...))
+}
+
+// PaywayIsNil applies the IsNil predicate on the "payway" field.
+func PaywayIsNil() predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldIsNull(FieldPayway))
+}
+
+// PaywayNotNil applies the NotNil predicate on the "payway" field.
+func PaywayNotNil() predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldNotNull(FieldPayway))
 }
 
 // TotalEQ applies the EQ predicate on the "total" field.
@@ -655,44 +690,84 @@ func ForfeitLTE(v float64) predicate.PurchasePayment {
 	return predicate.PurchasePayment(sql.FieldLTE(FieldForfeit, v))
 }
 
-// PaidDateEQ applies the EQ predicate on the "paid_date" field.
-func PaidDateEQ(v time.Time) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldEQ(FieldPaidDate, v))
+// BillingDateEQ applies the EQ predicate on the "billing_date" field.
+func BillingDateEQ(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldEQ(FieldBillingDate, v))
 }
 
-// PaidDateNEQ applies the NEQ predicate on the "paid_date" field.
-func PaidDateNEQ(v time.Time) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldNEQ(FieldPaidDate, v))
+// BillingDateNEQ applies the NEQ predicate on the "billing_date" field.
+func BillingDateNEQ(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldNEQ(FieldBillingDate, v))
 }
 
-// PaidDateIn applies the In predicate on the "paid_date" field.
-func PaidDateIn(vs ...time.Time) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldIn(FieldPaidDate, vs...))
+// BillingDateIn applies the In predicate on the "billing_date" field.
+func BillingDateIn(vs ...time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldIn(FieldBillingDate, vs...))
 }
 
-// PaidDateNotIn applies the NotIn predicate on the "paid_date" field.
-func PaidDateNotIn(vs ...time.Time) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldNotIn(FieldPaidDate, vs...))
+// BillingDateNotIn applies the NotIn predicate on the "billing_date" field.
+func BillingDateNotIn(vs ...time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldNotIn(FieldBillingDate, vs...))
 }
 
-// PaidDateGT applies the GT predicate on the "paid_date" field.
-func PaidDateGT(v time.Time) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldGT(FieldPaidDate, v))
+// BillingDateGT applies the GT predicate on the "billing_date" field.
+func BillingDateGT(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldGT(FieldBillingDate, v))
 }
 
-// PaidDateGTE applies the GTE predicate on the "paid_date" field.
-func PaidDateGTE(v time.Time) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldGTE(FieldPaidDate, v))
+// BillingDateGTE applies the GTE predicate on the "billing_date" field.
+func BillingDateGTE(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldGTE(FieldBillingDate, v))
 }
 
-// PaidDateLT applies the LT predicate on the "paid_date" field.
-func PaidDateLT(v time.Time) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldLT(FieldPaidDate, v))
+// BillingDateLT applies the LT predicate on the "billing_date" field.
+func BillingDateLT(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldLT(FieldBillingDate, v))
 }
 
-// PaidDateLTE applies the LTE predicate on the "paid_date" field.
-func PaidDateLTE(v time.Time) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldLTE(FieldPaidDate, v))
+// BillingDateLTE applies the LTE predicate on the "billing_date" field.
+func BillingDateLTE(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldLTE(FieldBillingDate, v))
+}
+
+// PaymentDateEQ applies the EQ predicate on the "payment_date" field.
+func PaymentDateEQ(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldEQ(FieldPaymentDate, v))
+}
+
+// PaymentDateNEQ applies the NEQ predicate on the "payment_date" field.
+func PaymentDateNEQ(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldNEQ(FieldPaymentDate, v))
+}
+
+// PaymentDateIn applies the In predicate on the "payment_date" field.
+func PaymentDateIn(vs ...time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldIn(FieldPaymentDate, vs...))
+}
+
+// PaymentDateNotIn applies the NotIn predicate on the "payment_date" field.
+func PaymentDateNotIn(vs ...time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldNotIn(FieldPaymentDate, vs...))
+}
+
+// PaymentDateGT applies the GT predicate on the "payment_date" field.
+func PaymentDateGT(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldGT(FieldPaymentDate, v))
+}
+
+// PaymentDateGTE applies the GTE predicate on the "payment_date" field.
+func PaymentDateGTE(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldGTE(FieldPaymentDate, v))
+}
+
+// PaymentDateLT applies the LT predicate on the "payment_date" field.
+func PaymentDateLT(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldLT(FieldPaymentDate, v))
+}
+
+// PaymentDateLTE applies the LTE predicate on the "payment_date" field.
+func PaymentDateLTE(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldLTE(FieldPaymentDate, v))
 }
 
 // TradeNoEQ applies the EQ predicate on the "trade_no" field.
@@ -793,21 +868,21 @@ func HasRiderWith(preds ...predicate.Rider) predicate.PurchasePayment {
 	})
 }
 
-// HasCommodity applies the HasEdge predicate on the "commodity" edge.
-func HasCommodity() predicate.PurchasePayment {
+// HasGoods applies the HasEdge predicate on the "goods" edge.
+func HasGoods() predicate.PurchasePayment {
 	return predicate.PurchasePayment(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, CommodityTable, CommodityColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, GoodsTable, GoodsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasCommodityWith applies the HasEdge predicate on the "commodity" edge with a given conditions (other predicates).
-func HasCommodityWith(preds ...predicate.PurchaseCommodity) predicate.PurchasePayment {
+// HasGoodsWith applies the HasEdge predicate on the "goods" edge with a given conditions (other predicates).
+func HasGoodsWith(preds ...predicate.Goods) predicate.PurchasePayment {
 	return predicate.PurchasePayment(func(s *sql.Selector) {
-		step := newCommodityStep()
+		step := newGoodsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

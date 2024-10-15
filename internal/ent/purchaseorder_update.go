@@ -13,8 +13,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/goods"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
-	"github.com/auroraride/aurservd/internal/ent/purchasecommodity"
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -106,16 +106,16 @@ func (pou *PurchaseOrderUpdate) SetNillableRiderID(u *uint64) *PurchaseOrderUpda
 	return pou
 }
 
-// SetCommodityID sets the "commodity_id" field.
-func (pou *PurchaseOrderUpdate) SetCommodityID(u uint64) *PurchaseOrderUpdate {
-	pou.mutation.SetCommodityID(u)
+// SetGoodsID sets the "goods_id" field.
+func (pou *PurchaseOrderUpdate) SetGoodsID(u uint64) *PurchaseOrderUpdate {
+	pou.mutation.SetGoodsID(u)
 	return pou
 }
 
-// SetNillableCommodityID sets the "commodity_id" field if the given value is not nil.
-func (pou *PurchaseOrderUpdate) SetNillableCommodityID(u *uint64) *PurchaseOrderUpdate {
+// SetNillableGoodsID sets the "goods_id" field if the given value is not nil.
+func (pou *PurchaseOrderUpdate) SetNillableGoodsID(u *uint64) *PurchaseOrderUpdate {
 	if u != nil {
-		pou.SetCommodityID(*u)
+		pou.SetGoodsID(*u)
 	}
 	return pou
 }
@@ -299,9 +299,9 @@ func (pou *PurchaseOrderUpdate) SetRider(r *Rider) *PurchaseOrderUpdate {
 	return pou.SetRiderID(r.ID)
 }
 
-// SetCommodity sets the "commodity" edge to the PurchaseCommodity entity.
-func (pou *PurchaseOrderUpdate) SetCommodity(p *PurchaseCommodity) *PurchaseOrderUpdate {
-	return pou.SetCommodityID(p.ID)
+// SetGoods sets the "goods" edge to the Goods entity.
+func (pou *PurchaseOrderUpdate) SetGoods(g *Goods) *PurchaseOrderUpdate {
+	return pou.SetGoodsID(g.ID)
 }
 
 // AddPaymentIDs adds the "payments" edge to the PurchasePayment entity by IDs.
@@ -330,9 +330,9 @@ func (pou *PurchaseOrderUpdate) ClearRider() *PurchaseOrderUpdate {
 	return pou
 }
 
-// ClearCommodity clears the "commodity" edge to the PurchaseCommodity entity.
-func (pou *PurchaseOrderUpdate) ClearCommodity() *PurchaseOrderUpdate {
-	pou.mutation.ClearCommodity()
+// ClearGoods clears the "goods" edge to the Goods entity.
+func (pou *PurchaseOrderUpdate) ClearGoods() *PurchaseOrderUpdate {
+	pou.mutation.ClearGoods()
 	return pou
 }
 
@@ -409,8 +409,8 @@ func (pou *PurchaseOrderUpdate) check() error {
 	if pou.mutation.RiderCleared() && len(pou.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PurchaseOrder.rider"`)
 	}
-	if pou.mutation.CommodityCleared() && len(pou.mutation.CommodityIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "PurchaseOrder.commodity"`)
+	if pou.mutation.GoodsCleared() && len(pou.mutation.GoodsIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "PurchaseOrder.goods"`)
 	}
 	return nil
 }
@@ -544,28 +544,28 @@ func (pou *PurchaseOrderUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if pou.mutation.CommodityCleared() {
+	if pou.mutation.GoodsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   purchaseorder.CommodityTable,
-			Columns: []string{purchaseorder.CommodityColumn},
+			Table:   purchaseorder.GoodsTable,
+			Columns: []string{purchaseorder.GoodsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(purchasecommodity.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(goods.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pou.mutation.CommodityIDs(); len(nodes) > 0 {
+	if nodes := pou.mutation.GoodsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   purchaseorder.CommodityTable,
-			Columns: []string{purchaseorder.CommodityColumn},
+			Table:   purchaseorder.GoodsTable,
+			Columns: []string{purchaseorder.GoodsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(purchasecommodity.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(goods.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -712,16 +712,16 @@ func (pouo *PurchaseOrderUpdateOne) SetNillableRiderID(u *uint64) *PurchaseOrder
 	return pouo
 }
 
-// SetCommodityID sets the "commodity_id" field.
-func (pouo *PurchaseOrderUpdateOne) SetCommodityID(u uint64) *PurchaseOrderUpdateOne {
-	pouo.mutation.SetCommodityID(u)
+// SetGoodsID sets the "goods_id" field.
+func (pouo *PurchaseOrderUpdateOne) SetGoodsID(u uint64) *PurchaseOrderUpdateOne {
+	pouo.mutation.SetGoodsID(u)
 	return pouo
 }
 
-// SetNillableCommodityID sets the "commodity_id" field if the given value is not nil.
-func (pouo *PurchaseOrderUpdateOne) SetNillableCommodityID(u *uint64) *PurchaseOrderUpdateOne {
+// SetNillableGoodsID sets the "goods_id" field if the given value is not nil.
+func (pouo *PurchaseOrderUpdateOne) SetNillableGoodsID(u *uint64) *PurchaseOrderUpdateOne {
 	if u != nil {
-		pouo.SetCommodityID(*u)
+		pouo.SetGoodsID(*u)
 	}
 	return pouo
 }
@@ -905,9 +905,9 @@ func (pouo *PurchaseOrderUpdateOne) SetRider(r *Rider) *PurchaseOrderUpdateOne {
 	return pouo.SetRiderID(r.ID)
 }
 
-// SetCommodity sets the "commodity" edge to the PurchaseCommodity entity.
-func (pouo *PurchaseOrderUpdateOne) SetCommodity(p *PurchaseCommodity) *PurchaseOrderUpdateOne {
-	return pouo.SetCommodityID(p.ID)
+// SetGoods sets the "goods" edge to the Goods entity.
+func (pouo *PurchaseOrderUpdateOne) SetGoods(g *Goods) *PurchaseOrderUpdateOne {
+	return pouo.SetGoodsID(g.ID)
 }
 
 // AddPaymentIDs adds the "payments" edge to the PurchasePayment entity by IDs.
@@ -936,9 +936,9 @@ func (pouo *PurchaseOrderUpdateOne) ClearRider() *PurchaseOrderUpdateOne {
 	return pouo
 }
 
-// ClearCommodity clears the "commodity" edge to the PurchaseCommodity entity.
-func (pouo *PurchaseOrderUpdateOne) ClearCommodity() *PurchaseOrderUpdateOne {
-	pouo.mutation.ClearCommodity()
+// ClearGoods clears the "goods" edge to the Goods entity.
+func (pouo *PurchaseOrderUpdateOne) ClearGoods() *PurchaseOrderUpdateOne {
+	pouo.mutation.ClearGoods()
 	return pouo
 }
 
@@ -1028,8 +1028,8 @@ func (pouo *PurchaseOrderUpdateOne) check() error {
 	if pouo.mutation.RiderCleared() && len(pouo.mutation.RiderIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PurchaseOrder.rider"`)
 	}
-	if pouo.mutation.CommodityCleared() && len(pouo.mutation.CommodityIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "PurchaseOrder.commodity"`)
+	if pouo.mutation.GoodsCleared() && len(pouo.mutation.GoodsIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "PurchaseOrder.goods"`)
 	}
 	return nil
 }
@@ -1180,28 +1180,28 @@ func (pouo *PurchaseOrderUpdateOne) sqlSave(ctx context.Context) (_node *Purchas
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if pouo.mutation.CommodityCleared() {
+	if pouo.mutation.GoodsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   purchaseorder.CommodityTable,
-			Columns: []string{purchaseorder.CommodityColumn},
+			Table:   purchaseorder.GoodsTable,
+			Columns: []string{purchaseorder.GoodsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(purchasecommodity.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(goods.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pouo.mutation.CommodityIDs(); len(nodes) > 0 {
+	if nodes := pouo.mutation.GoodsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   purchaseorder.CommodityTable,
-			Columns: []string{purchaseorder.CommodityColumn},
+			Table:   purchaseorder.GoodsTable,
+			Columns: []string{purchaseorder.GoodsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(purchasecommodity.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(goods.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

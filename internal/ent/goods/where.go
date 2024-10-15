@@ -700,14 +700,14 @@ func StatusLTE(v uint8) predicate.Goods {
 	return predicate.Goods(sql.FieldLTE(FieldStatus, v))
 }
 
-// InstallmentIsNil applies the IsNil predicate on the "installment" field.
-func InstallmentIsNil() predicate.Goods {
-	return predicate.Goods(sql.FieldIsNull(FieldInstallment))
+// PaymentPlansIsNil applies the IsNil predicate on the "payment_plans" field.
+func PaymentPlansIsNil() predicate.Goods {
+	return predicate.Goods(sql.FieldIsNull(FieldPaymentPlans))
 }
 
-// InstallmentNotNil applies the NotNil predicate on the "installment" field.
-func InstallmentNotNil() predicate.Goods {
-	return predicate.Goods(sql.FieldNotNull(FieldInstallment))
+// PaymentPlansNotNil applies the NotNil predicate on the "payment_plans" field.
+func PaymentPlansNotNil() predicate.Goods {
+	return predicate.Goods(sql.FieldNotNull(FieldPaymentPlans))
 }
 
 // HasStores applies the HasEdge predicate on the "stores" edge.

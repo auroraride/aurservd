@@ -981,18 +981,6 @@ func (f PromotionWithdrawalFunc) Mutate(ctx context.Context, m ent.Mutation) (en
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionWithdrawalMutation", m)
 }
 
-// The PurchaseCommodityFunc type is an adapter to allow the use of ordinary
-// function as PurchaseCommodity mutator.
-type PurchaseCommodityFunc func(context.Context, *ent.PurchaseCommodityMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f PurchaseCommodityFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.PurchaseCommodityMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PurchaseCommodityMutation", m)
-}
-
 // The PurchaseOrderFunc type is an adapter to allow the use of ordinary
 // function as PurchaseOrder mutator.
 type PurchaseOrderFunc func(context.Context, *ent.PurchaseOrderMutation) (ent.Value, error)

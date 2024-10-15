@@ -61,12 +61,14 @@ func (PurchasePayment) Annotations() []schema.Annotation {
 func (PurchasePayment) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("out_trade_no").Comment("交易订单号（自行生成）"),
-		field.Enum("payway").Values("alipay", "wechat", "cash").Comment("支付方式，alipay: 支付宝, wechat: 微信, cash: 现金"),
-		field.Int("index").Comment("支付序号"),
+		field.Int("index").Comment("分期序号"),
+		field.Enum("status").Values("obligation", "paid", "canceled").Default("obligation").Comment("支付状态，obligation: 待付款, paid: 已支付, canceled: 已取消"),
+		field.Enum("payway").Optional().Values("alipay", "wechat", "cash").Comment("支付方式，alipay: 支付宝, wechat: 微信, cash: 现金"),
 		field.Float("total").Comment("支付金额"),
-		field.Float("amount").Comment("分期金额"),
+		field.Float("amount").Comment("账单金额"),
 		field.Float("forfeit").Default(0).Comment("滞纳金"),
-		field.Time("paid_date").SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("支付日期"),
+		field.Time("billing_date").SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("账单日期"),
+		field.Time("payment_date").SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("支付日期"),
 		field.String("trade_no").Optional().Comment("平台订单号（微信或支付宝）"),
 	}
 }
@@ -83,13 +85,14 @@ func (PurchasePayment) Mixin() []ent.Mixin {
 		internal.Modifier{},
 
 		RiderMixin{},
-		PurchaseCommodityMixin{},
+		GoodsMixin{},
 		PurchaseOrderMixin{},
 	}
 }
 
 func (PurchasePayment) Indexes() []ent.Index {
 	return []ent.Index{
+		index.Fields("status"),
 		index.Fields("payway"),
 		index.Fields("index"),
 		index.Fields("trade_no"),

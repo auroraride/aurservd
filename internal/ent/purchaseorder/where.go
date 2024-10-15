@@ -80,9 +80,9 @@ func RiderID(v uint64) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldEQ(FieldRiderID, v))
 }
 
-// CommodityID applies equality check predicate on the "commodity_id" field. It's identical to CommodityIDEQ.
-func CommodityID(v uint64) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldEQ(FieldCommodityID, v))
+// GoodsID applies equality check predicate on the "goods_id" field. It's identical to GoodsIDEQ.
+func GoodsID(v uint64) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEQ(FieldGoodsID, v))
 }
 
 // Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
@@ -365,24 +365,24 @@ func RiderIDNotIn(vs ...uint64) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldNotIn(FieldRiderID, vs...))
 }
 
-// CommodityIDEQ applies the EQ predicate on the "commodity_id" field.
-func CommodityIDEQ(v uint64) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldEQ(FieldCommodityID, v))
+// GoodsIDEQ applies the EQ predicate on the "goods_id" field.
+func GoodsIDEQ(v uint64) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEQ(FieldGoodsID, v))
 }
 
-// CommodityIDNEQ applies the NEQ predicate on the "commodity_id" field.
-func CommodityIDNEQ(v uint64) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldNEQ(FieldCommodityID, v))
+// GoodsIDNEQ applies the NEQ predicate on the "goods_id" field.
+func GoodsIDNEQ(v uint64) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNEQ(FieldGoodsID, v))
 }
 
-// CommodityIDIn applies the In predicate on the "commodity_id" field.
-func CommodityIDIn(vs ...uint64) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldIn(FieldCommodityID, vs...))
+// GoodsIDIn applies the In predicate on the "goods_id" field.
+func GoodsIDIn(vs ...uint64) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldIn(FieldGoodsID, vs...))
 }
 
-// CommodityIDNotIn applies the NotIn predicate on the "commodity_id" field.
-func CommodityIDNotIn(vs ...uint64) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldNotIn(FieldCommodityID, vs...))
+// GoodsIDNotIn applies the NotIn predicate on the "goods_id" field.
+func GoodsIDNotIn(vs ...uint64) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNotIn(FieldGoodsID, vs...))
 }
 
 // SnEQ applies the EQ predicate on the "sn" field.
@@ -823,21 +823,21 @@ func HasRiderWith(preds ...predicate.Rider) predicate.PurchaseOrder {
 	})
 }
 
-// HasCommodity applies the HasEdge predicate on the "commodity" edge.
-func HasCommodity() predicate.PurchaseOrder {
+// HasGoods applies the HasEdge predicate on the "goods" edge.
+func HasGoods() predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, CommodityTable, CommodityColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, GoodsTable, GoodsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasCommodityWith applies the HasEdge predicate on the "commodity" edge with a given conditions (other predicates).
-func HasCommodityWith(preds ...predicate.PurchaseCommodity) predicate.PurchaseOrder {
+// HasGoodsWith applies the HasEdge predicate on the "goods" edge with a given conditions (other predicates).
+func HasGoodsWith(preds ...predicate.Goods) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(func(s *sql.Selector) {
-		step := newCommodityStep()
+		step := newGoodsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/goods"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
-	"github.com/auroraride/aurservd/internal/ent/purchasecommodity"
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -21,15 +21,15 @@ import (
 // PurchasePaymentQuery is the builder for querying PurchasePayment entities.
 type PurchasePaymentQuery struct {
 	config
-	ctx           *QueryContext
-	order         []purchasepayment.OrderOption
-	inters        []Interceptor
-	predicates    []predicate.PurchasePayment
-	withRider     *RiderQuery
-	withCommodity *PurchaseCommodityQuery
-	withOrder     *PurchaseOrderQuery
-	withFKs       bool
-	modifiers     []func(*sql.Selector)
+	ctx        *QueryContext
+	order      []purchasepayment.OrderOption
+	inters     []Interceptor
+	predicates []predicate.PurchasePayment
+	withRider  *RiderQuery
+	withGoods  *GoodsQuery
+	withOrder  *PurchaseOrderQuery
+	withFKs    bool
+	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -88,9 +88,9 @@ func (ppq *PurchasePaymentQuery) QueryRider() *RiderQuery {
 	return query
 }
 
-// QueryCommodity chains the current query on the "commodity" edge.
-func (ppq *PurchasePaymentQuery) QueryCommodity() *PurchaseCommodityQuery {
-	query := (&PurchaseCommodityClient{config: ppq.config}).Query()
+// QueryGoods chains the current query on the "goods" edge.
+func (ppq *PurchasePaymentQuery) QueryGoods() *GoodsQuery {
+	query := (&GoodsClient{config: ppq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ppq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -101,8 +101,8 @@ func (ppq *PurchasePaymentQuery) QueryCommodity() *PurchaseCommodityQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(purchasepayment.Table, purchasepayment.FieldID, selector),
-			sqlgraph.To(purchasecommodity.Table, purchasecommodity.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, purchasepayment.CommodityTable, purchasepayment.CommodityColumn),
+			sqlgraph.To(goods.Table, goods.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, purchasepayment.GoodsTable, purchasepayment.GoodsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ppq.driver.Dialect(), step)
 		return fromU, nil
@@ -319,14 +319,14 @@ func (ppq *PurchasePaymentQuery) Clone() *PurchasePaymentQuery {
 		return nil
 	}
 	return &PurchasePaymentQuery{
-		config:        ppq.config,
-		ctx:           ppq.ctx.Clone(),
-		order:         append([]purchasepayment.OrderOption{}, ppq.order...),
-		inters:        append([]Interceptor{}, ppq.inters...),
-		predicates:    append([]predicate.PurchasePayment{}, ppq.predicates...),
-		withRider:     ppq.withRider.Clone(),
-		withCommodity: ppq.withCommodity.Clone(),
-		withOrder:     ppq.withOrder.Clone(),
+		config:     ppq.config,
+		ctx:        ppq.ctx.Clone(),
+		order:      append([]purchasepayment.OrderOption{}, ppq.order...),
+		inters:     append([]Interceptor{}, ppq.inters...),
+		predicates: append([]predicate.PurchasePayment{}, ppq.predicates...),
+		withRider:  ppq.withRider.Clone(),
+		withGoods:  ppq.withGoods.Clone(),
+		withOrder:  ppq.withOrder.Clone(),
 		// clone intermediate query.
 		sql:       ppq.sql.Clone(),
 		path:      ppq.path,
@@ -345,14 +345,14 @@ func (ppq *PurchasePaymentQuery) WithRider(opts ...func(*RiderQuery)) *PurchaseP
 	return ppq
 }
 
-// WithCommodity tells the query-builder to eager-load the nodes that are connected to
-// the "commodity" edge. The optional arguments are used to configure the query builder of the edge.
-func (ppq *PurchasePaymentQuery) WithCommodity(opts ...func(*PurchaseCommodityQuery)) *PurchasePaymentQuery {
-	query := (&PurchaseCommodityClient{config: ppq.config}).Query()
+// WithGoods tells the query-builder to eager-load the nodes that are connected to
+// the "goods" edge. The optional arguments are used to configure the query builder of the edge.
+func (ppq *PurchasePaymentQuery) WithGoods(opts ...func(*GoodsQuery)) *PurchasePaymentQuery {
+	query := (&GoodsClient{config: ppq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	ppq.withCommodity = query
+	ppq.withGoods = query
 	return ppq
 }
 
@@ -448,7 +448,7 @@ func (ppq *PurchasePaymentQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 		_spec       = ppq.querySpec()
 		loadedTypes = [3]bool{
 			ppq.withRider != nil,
-			ppq.withCommodity != nil,
+			ppq.withGoods != nil,
 			ppq.withOrder != nil,
 		}
 	)
@@ -482,9 +482,9 @@ func (ppq *PurchasePaymentQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 			return nil, err
 		}
 	}
-	if query := ppq.withCommodity; query != nil {
-		if err := ppq.loadCommodity(ctx, query, nodes, nil,
-			func(n *PurchasePayment, e *PurchaseCommodity) { n.Edges.Commodity = e }); err != nil {
+	if query := ppq.withGoods; query != nil {
+		if err := ppq.loadGoods(ctx, query, nodes, nil,
+			func(n *PurchasePayment, e *Goods) { n.Edges.Goods = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -526,11 +526,11 @@ func (ppq *PurchasePaymentQuery) loadRider(ctx context.Context, query *RiderQuer
 	}
 	return nil
 }
-func (ppq *PurchasePaymentQuery) loadCommodity(ctx context.Context, query *PurchaseCommodityQuery, nodes []*PurchasePayment, init func(*PurchasePayment), assign func(*PurchasePayment, *PurchaseCommodity)) error {
+func (ppq *PurchasePaymentQuery) loadGoods(ctx context.Context, query *GoodsQuery, nodes []*PurchasePayment, init func(*PurchasePayment), assign func(*PurchasePayment, *Goods)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*PurchasePayment)
 	for i := range nodes {
-		fk := nodes[i].CommodityID
+		fk := nodes[i].GoodsID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -539,7 +539,7 @@ func (ppq *PurchasePaymentQuery) loadCommodity(ctx context.Context, query *Purch
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(purchasecommodity.IDIn(ids...))
+	query.Where(goods.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
@@ -547,7 +547,7 @@ func (ppq *PurchasePaymentQuery) loadCommodity(ctx context.Context, query *Purch
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "commodity_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "goods_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -616,8 +616,8 @@ func (ppq *PurchasePaymentQuery) querySpec() *sqlgraph.QuerySpec {
 		if ppq.withRider != nil {
 			_spec.Node.AddColumnOnce(purchasepayment.FieldRiderID)
 		}
-		if ppq.withCommodity != nil {
-			_spec.Node.AddColumnOnce(purchasepayment.FieldCommodityID)
+		if ppq.withGoods != nil {
+			_spec.Node.AddColumnOnce(purchasepayment.FieldGoodsID)
 		}
 		if ppq.withOrder != nil {
 			_spec.Node.AddColumnOnce(purchasepayment.FieldOrderID)
@@ -690,9 +690,9 @@ func (ppq *PurchasePaymentQuery) Modify(modifiers ...func(s *sql.Selector)) *Pur
 type PurchasePaymentQueryWith string
 
 var (
-	PurchasePaymentQueryWithRider     PurchasePaymentQueryWith = "Rider"
-	PurchasePaymentQueryWithCommodity PurchasePaymentQueryWith = "Commodity"
-	PurchasePaymentQueryWithOrder     PurchasePaymentQueryWith = "Order"
+	PurchasePaymentQueryWithRider PurchasePaymentQueryWith = "Rider"
+	PurchasePaymentQueryWithGoods PurchasePaymentQueryWith = "Goods"
+	PurchasePaymentQueryWithOrder PurchasePaymentQueryWith = "Order"
 )
 
 func (ppq *PurchasePaymentQuery) With(withEdges ...PurchasePaymentQueryWith) *PurchasePaymentQuery {
@@ -700,8 +700,8 @@ func (ppq *PurchasePaymentQuery) With(withEdges ...PurchasePaymentQueryWith) *Pu
 		switch v {
 		case PurchasePaymentQueryWithRider:
 			ppq.WithRider()
-		case PurchasePaymentQueryWithCommodity:
-			ppq.WithCommodity()
+		case PurchasePaymentQueryWithGoods:
+			ppq.WithGoods()
 		case PurchasePaymentQueryWithOrder:
 			ppq.WithOrder()
 		}

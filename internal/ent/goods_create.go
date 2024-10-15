@@ -168,9 +168,9 @@ func (gc *GoodsCreate) SetNillableStatus(u *uint8) *GoodsCreate {
 	return gc
 }
 
-// SetInstallment sets the "installment" field.
-func (gc *GoodsCreate) SetInstallment(f [][]float64) *GoodsCreate {
-	gc.mutation.SetInstallment(f)
+// SetPaymentPlans sets the "payment_plans" field.
+func (gc *GoodsCreate) SetPaymentPlans(mpp model.GoodsPaymentPlans) *GoodsCreate {
+	gc.mutation.SetPaymentPlans(mpp)
 	return gc
 }
 
@@ -377,9 +377,9 @@ func (gc *GoodsCreate) createSpec() (*Goods, *sqlgraph.CreateSpec) {
 		_spec.SetField(goods.FieldStatus, field.TypeUint8, value)
 		_node.Status = value
 	}
-	if value, ok := gc.mutation.Installment(); ok {
-		_spec.SetField(goods.FieldInstallment, field.TypeJSON, value)
-		_node.Installment = value
+	if value, ok := gc.mutation.PaymentPlans(); ok {
+		_spec.SetField(goods.FieldPaymentPlans, field.TypeJSON, value)
+		_node.PaymentPlans = value
 	}
 	if nodes := gc.mutation.StoresIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -665,21 +665,21 @@ func (u *GoodsUpsert) AddStatus(v uint8) *GoodsUpsert {
 	return u
 }
 
-// SetInstallment sets the "installment" field.
-func (u *GoodsUpsert) SetInstallment(v [][]float64) *GoodsUpsert {
-	u.Set(goods.FieldInstallment, v)
+// SetPaymentPlans sets the "payment_plans" field.
+func (u *GoodsUpsert) SetPaymentPlans(v model.GoodsPaymentPlans) *GoodsUpsert {
+	u.Set(goods.FieldPaymentPlans, v)
 	return u
 }
 
-// UpdateInstallment sets the "installment" field to the value that was provided on create.
-func (u *GoodsUpsert) UpdateInstallment() *GoodsUpsert {
-	u.SetExcluded(goods.FieldInstallment)
+// UpdatePaymentPlans sets the "payment_plans" field to the value that was provided on create.
+func (u *GoodsUpsert) UpdatePaymentPlans() *GoodsUpsert {
+	u.SetExcluded(goods.FieldPaymentPlans)
 	return u
 }
 
-// ClearInstallment clears the value of the "installment" field.
-func (u *GoodsUpsert) ClearInstallment() *GoodsUpsert {
-	u.SetNull(goods.FieldInstallment)
+// ClearPaymentPlans clears the value of the "payment_plans" field.
+func (u *GoodsUpsert) ClearPaymentPlans() *GoodsUpsert {
+	u.SetNull(goods.FieldPaymentPlans)
 	return u
 }
 
@@ -983,24 +983,24 @@ func (u *GoodsUpsertOne) UpdateStatus() *GoodsUpsertOne {
 	})
 }
 
-// SetInstallment sets the "installment" field.
-func (u *GoodsUpsertOne) SetInstallment(v [][]float64) *GoodsUpsertOne {
+// SetPaymentPlans sets the "payment_plans" field.
+func (u *GoodsUpsertOne) SetPaymentPlans(v model.GoodsPaymentPlans) *GoodsUpsertOne {
 	return u.Update(func(s *GoodsUpsert) {
-		s.SetInstallment(v)
+		s.SetPaymentPlans(v)
 	})
 }
 
-// UpdateInstallment sets the "installment" field to the value that was provided on create.
-func (u *GoodsUpsertOne) UpdateInstallment() *GoodsUpsertOne {
+// UpdatePaymentPlans sets the "payment_plans" field to the value that was provided on create.
+func (u *GoodsUpsertOne) UpdatePaymentPlans() *GoodsUpsertOne {
 	return u.Update(func(s *GoodsUpsert) {
-		s.UpdateInstallment()
+		s.UpdatePaymentPlans()
 	})
 }
 
-// ClearInstallment clears the value of the "installment" field.
-func (u *GoodsUpsertOne) ClearInstallment() *GoodsUpsertOne {
+// ClearPaymentPlans clears the value of the "payment_plans" field.
+func (u *GoodsUpsertOne) ClearPaymentPlans() *GoodsUpsertOne {
 	return u.Update(func(s *GoodsUpsert) {
-		s.ClearInstallment()
+		s.ClearPaymentPlans()
 	})
 }
 
@@ -1470,24 +1470,24 @@ func (u *GoodsUpsertBulk) UpdateStatus() *GoodsUpsertBulk {
 	})
 }
 
-// SetInstallment sets the "installment" field.
-func (u *GoodsUpsertBulk) SetInstallment(v [][]float64) *GoodsUpsertBulk {
+// SetPaymentPlans sets the "payment_plans" field.
+func (u *GoodsUpsertBulk) SetPaymentPlans(v model.GoodsPaymentPlans) *GoodsUpsertBulk {
 	return u.Update(func(s *GoodsUpsert) {
-		s.SetInstallment(v)
+		s.SetPaymentPlans(v)
 	})
 }
 
-// UpdateInstallment sets the "installment" field to the value that was provided on create.
-func (u *GoodsUpsertBulk) UpdateInstallment() *GoodsUpsertBulk {
+// UpdatePaymentPlans sets the "payment_plans" field to the value that was provided on create.
+func (u *GoodsUpsertBulk) UpdatePaymentPlans() *GoodsUpsertBulk {
 	return u.Update(func(s *GoodsUpsert) {
-		s.UpdateInstallment()
+		s.UpdatePaymentPlans()
 	})
 }
 
-// ClearInstallment clears the value of the "installment" field.
-func (u *GoodsUpsertBulk) ClearInstallment() *GoodsUpsertBulk {
+// ClearPaymentPlans clears the value of the "payment_plans" field.
+func (u *GoodsUpsertBulk) ClearPaymentPlans() *GoodsUpsertBulk {
 	return u.Update(func(s *GoodsUpsert) {
-		s.ClearInstallment()
+		s.ClearPaymentPlans()
 	})
 }
 

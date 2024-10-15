@@ -30,30 +30,34 @@ const (
 	FieldRemark = "remark"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
 	FieldRiderID = "rider_id"
-	// FieldCommodityID holds the string denoting the commodity_id field in the database.
-	FieldCommodityID = "commodity_id"
+	// FieldGoodsID holds the string denoting the goods_id field in the database.
+	FieldGoodsID = "goods_id"
 	// FieldOrderID holds the string denoting the order_id field in the database.
 	FieldOrderID = "order_id"
 	// FieldOutTradeNo holds the string denoting the out_trade_no field in the database.
 	FieldOutTradeNo = "out_trade_no"
-	// FieldPayway holds the string denoting the payway field in the database.
-	FieldPayway = "payway"
 	// FieldIndex holds the string denoting the index field in the database.
 	FieldIndex = "index"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
+	// FieldPayway holds the string denoting the payway field in the database.
+	FieldPayway = "payway"
 	// FieldTotal holds the string denoting the total field in the database.
 	FieldTotal = "total"
 	// FieldAmount holds the string denoting the amount field in the database.
 	FieldAmount = "amount"
 	// FieldForfeit holds the string denoting the forfeit field in the database.
 	FieldForfeit = "forfeit"
-	// FieldPaidDate holds the string denoting the paid_date field in the database.
-	FieldPaidDate = "paid_date"
+	// FieldBillingDate holds the string denoting the billing_date field in the database.
+	FieldBillingDate = "billing_date"
+	// FieldPaymentDate holds the string denoting the payment_date field in the database.
+	FieldPaymentDate = "payment_date"
 	// FieldTradeNo holds the string denoting the trade_no field in the database.
 	FieldTradeNo = "trade_no"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
-	// EdgeCommodity holds the string denoting the commodity edge name in mutations.
-	EdgeCommodity = "commodity"
+	// EdgeGoods holds the string denoting the goods edge name in mutations.
+	EdgeGoods = "goods"
 	// EdgeOrder holds the string denoting the order edge name in mutations.
 	EdgeOrder = "order"
 	// Table holds the table name of the purchasepayment in the database.
@@ -65,13 +69,13 @@ const (
 	RiderInverseTable = "rider"
 	// RiderColumn is the table column denoting the rider relation/edge.
 	RiderColumn = "rider_id"
-	// CommodityTable is the table that holds the commodity relation/edge.
-	CommodityTable = "purchase_payment"
-	// CommodityInverseTable is the table name for the PurchaseCommodity entity.
-	// It exists in this package in order to avoid circular dependency with the "purchasecommodity" package.
-	CommodityInverseTable = "purchase_commodity"
-	// CommodityColumn is the table column denoting the commodity relation/edge.
-	CommodityColumn = "commodity_id"
+	// GoodsTable is the table that holds the goods relation/edge.
+	GoodsTable = "purchase_payment"
+	// GoodsInverseTable is the table name for the Goods entity.
+	// It exists in this package in order to avoid circular dependency with the "goods" package.
+	GoodsInverseTable = "goods"
+	// GoodsColumn is the table column denoting the goods relation/edge.
+	GoodsColumn = "goods_id"
 	// OrderTable is the table that holds the order relation/edge.
 	OrderTable = "purchase_payment"
 	// OrderInverseTable is the table name for the PurchaseOrder entity.
@@ -91,15 +95,17 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldRiderID,
-	FieldCommodityID,
+	FieldGoodsID,
 	FieldOrderID,
 	FieldOutTradeNo,
-	FieldPayway,
 	FieldIndex,
+	FieldStatus,
+	FieldPayway,
 	FieldTotal,
 	FieldAmount,
 	FieldForfeit,
-	FieldPaidDate,
+	FieldBillingDate,
+	FieldPaymentDate,
 	FieldTradeNo,
 }
 
@@ -140,6 +146,33 @@ var (
 	// DefaultForfeit holds the default value on creation for the "forfeit" field.
 	DefaultForfeit float64
 )
+
+// Status defines the type for the "status" enum field.
+type Status string
+
+// StatusObligation is the default value of the Status enum.
+const DefaultStatus = StatusObligation
+
+// Status values.
+const (
+	StatusObligation Status = "obligation"
+	StatusPaid       Status = "paid"
+	StatusCanceled   Status = "canceled"
+)
+
+func (s Status) String() string {
+	return string(s)
+}
+
+// StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
+func StatusValidator(s Status) error {
+	switch s {
+	case StatusObligation, StatusPaid, StatusCanceled:
+		return nil
+	default:
+		return fmt.Errorf("purchasepayment: invalid enum value for status field: %q", s)
+	}
+}
 
 // Payway defines the type for the "payway" enum field.
 type Payway string
@@ -198,9 +231,9 @@ func ByRiderID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRiderID, opts...).ToFunc()
 }
 
-// ByCommodityID orders the results by the commodity_id field.
-func ByCommodityID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCommodityID, opts...).ToFunc()
+// ByGoodsID orders the results by the goods_id field.
+func ByGoodsID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldGoodsID, opts...).ToFunc()
 }
 
 // ByOrderID orders the results by the order_id field.
@@ -213,14 +246,19 @@ func ByOutTradeNo(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldOutTradeNo, opts...).ToFunc()
 }
 
-// ByPayway orders the results by the payway field.
-func ByPayway(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPayway, opts...).ToFunc()
-}
-
 // ByIndex orders the results by the index field.
 func ByIndex(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIndex, opts...).ToFunc()
+}
+
+// ByStatus orders the results by the status field.
+func ByStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByPayway orders the results by the payway field.
+func ByPayway(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPayway, opts...).ToFunc()
 }
 
 // ByTotal orders the results by the total field.
@@ -238,9 +276,14 @@ func ByForfeit(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldForfeit, opts...).ToFunc()
 }
 
-// ByPaidDate orders the results by the paid_date field.
-func ByPaidDate(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPaidDate, opts...).ToFunc()
+// ByBillingDate orders the results by the billing_date field.
+func ByBillingDate(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBillingDate, opts...).ToFunc()
+}
+
+// ByPaymentDate orders the results by the payment_date field.
+func ByPaymentDate(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPaymentDate, opts...).ToFunc()
 }
 
 // ByTradeNo orders the results by the trade_no field.
@@ -255,10 +298,10 @@ func ByRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByCommodityField orders the results by commodity field.
-func ByCommodityField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByGoodsField orders the results by goods field.
+func ByGoodsField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newCommodityStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newGoodsStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -275,11 +318,11 @@ func newRiderStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
 	)
 }
-func newCommodityStep() *sqlgraph.Step {
+func newGoodsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(CommodityInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, CommodityTable, CommodityColumn),
+		sqlgraph.To(GoodsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, GoodsTable, GoodsColumn),
 	)
 }
 func newOrderStep() *sqlgraph.Step {

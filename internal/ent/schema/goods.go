@@ -2,8 +2,6 @@ package schema
 
 import (
 	"context"
-	"errors"
-	"slices"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
@@ -14,6 +12,7 @@ import (
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
 
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -72,7 +71,7 @@ func (Goods) Fields() []ent.Field {
 		field.Strings("photos").Comment("商品图片"),
 		field.Strings("intro").Comment("商品介绍"),
 		field.Uint8("status").Default(0).Comment("商品状态 0下架 1上架"),
-		field.JSON("installment", [][]float64{}).Optional().Comment("分期方案"),
+		field.JSON("payment_plans", model.GoodsPaymentPlans{}).Optional().Comment("付款方案"),
 	}
 }
 
@@ -109,28 +108,9 @@ func (Goods) Indexes() []ent.Index {
 	}
 }
 
-// SortInstallment 对分期方案进行排序
-func SortInstallment(items [][]float64) error {
-	slices.SortFunc(items, func(i, j []float64) int {
-		if len(i) < len(j) {
-			return -1
-		}
-		return 1
-	})
-	n := 0
-	for _, s := range items {
-		l := len(s)
-		if n == l {
-			return errors.New("分期方案重复")
-		}
-		n = l
-	}
-	return nil
-}
-
 type GoodsMutation interface {
-	Installment() ([][]float64, bool)
-	SetInstallment(f [][]float64)
+	PaymentPlans() (model.GoodsPaymentPlans, bool)
+	SetPaymentPlans(p model.GoodsPaymentPlans)
 }
 
 func (Goods) Hooks() []ent.Hook {
@@ -140,12 +120,12 @@ func (Goods) Hooks() []ent.Hook {
 				if m.Op().Is(ent.OpCreate | ent.OpUpdateOne | ent.OpUpdate) {
 					switch r := m.(type) {
 					case GoodsMutation:
-						installment, ok := r.Installment()
+						p, ok := r.PaymentPlans()
 						if ok {
-							if err := SortInstallment(installment); err != nil {
+							if err := p.Valid(); err != nil {
 								return nil, err
 							}
-							r.SetInstallment(installment)
+							r.SetPaymentPlans(p)
 						}
 					}
 				}

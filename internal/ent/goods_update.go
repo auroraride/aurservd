@@ -258,21 +258,21 @@ func (gu *GoodsUpdate) AddStatus(u int8) *GoodsUpdate {
 	return gu
 }
 
-// SetInstallment sets the "installment" field.
-func (gu *GoodsUpdate) SetInstallment(f [][]float64) *GoodsUpdate {
-	gu.mutation.SetInstallment(f)
+// SetPaymentPlans sets the "payment_plans" field.
+func (gu *GoodsUpdate) SetPaymentPlans(mpp model.GoodsPaymentPlans) *GoodsUpdate {
+	gu.mutation.SetPaymentPlans(mpp)
 	return gu
 }
 
-// AppendInstallment appends f to the "installment" field.
-func (gu *GoodsUpdate) AppendInstallment(f [][]float64) *GoodsUpdate {
-	gu.mutation.AppendInstallment(f)
+// AppendPaymentPlans appends mpp to the "payment_plans" field.
+func (gu *GoodsUpdate) AppendPaymentPlans(mpp model.GoodsPaymentPlans) *GoodsUpdate {
+	gu.mutation.AppendPaymentPlans(mpp)
 	return gu
 }
 
-// ClearInstallment clears the value of the "installment" field.
-func (gu *GoodsUpdate) ClearInstallment() *GoodsUpdate {
-	gu.mutation.ClearInstallment()
+// ClearPaymentPlans clears the value of the "payment_plans" field.
+func (gu *GoodsUpdate) ClearPaymentPlans() *GoodsUpdate {
+	gu.mutation.ClearPaymentPlans()
 	return gu
 }
 
@@ -458,16 +458,16 @@ func (gu *GoodsUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := gu.mutation.AddedStatus(); ok {
 		_spec.AddField(goods.FieldStatus, field.TypeUint8, value)
 	}
-	if value, ok := gu.mutation.Installment(); ok {
-		_spec.SetField(goods.FieldInstallment, field.TypeJSON, value)
+	if value, ok := gu.mutation.PaymentPlans(); ok {
+		_spec.SetField(goods.FieldPaymentPlans, field.TypeJSON, value)
 	}
-	if value, ok := gu.mutation.AppendedInstallment(); ok {
+	if value, ok := gu.mutation.AppendedPaymentPlans(); ok {
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, goods.FieldInstallment, value)
+			sqljson.Append(u, goods.FieldPaymentPlans, value)
 		})
 	}
-	if gu.mutation.InstallmentCleared() {
-		_spec.ClearField(goods.FieldInstallment, field.TypeJSON)
+	if gu.mutation.PaymentPlansCleared() {
+		_spec.ClearField(goods.FieldPaymentPlans, field.TypeJSON)
 	}
 	if gu.mutation.StoresCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -762,21 +762,21 @@ func (guo *GoodsUpdateOne) AddStatus(u int8) *GoodsUpdateOne {
 	return guo
 }
 
-// SetInstallment sets the "installment" field.
-func (guo *GoodsUpdateOne) SetInstallment(f [][]float64) *GoodsUpdateOne {
-	guo.mutation.SetInstallment(f)
+// SetPaymentPlans sets the "payment_plans" field.
+func (guo *GoodsUpdateOne) SetPaymentPlans(mpp model.GoodsPaymentPlans) *GoodsUpdateOne {
+	guo.mutation.SetPaymentPlans(mpp)
 	return guo
 }
 
-// AppendInstallment appends f to the "installment" field.
-func (guo *GoodsUpdateOne) AppendInstallment(f [][]float64) *GoodsUpdateOne {
-	guo.mutation.AppendInstallment(f)
+// AppendPaymentPlans appends mpp to the "payment_plans" field.
+func (guo *GoodsUpdateOne) AppendPaymentPlans(mpp model.GoodsPaymentPlans) *GoodsUpdateOne {
+	guo.mutation.AppendPaymentPlans(mpp)
 	return guo
 }
 
-// ClearInstallment clears the value of the "installment" field.
-func (guo *GoodsUpdateOne) ClearInstallment() *GoodsUpdateOne {
-	guo.mutation.ClearInstallment()
+// ClearPaymentPlans clears the value of the "payment_plans" field.
+func (guo *GoodsUpdateOne) ClearPaymentPlans() *GoodsUpdateOne {
+	guo.mutation.ClearPaymentPlans()
 	return guo
 }
 
@@ -992,16 +992,16 @@ func (guo *GoodsUpdateOne) sqlSave(ctx context.Context) (_node *Goods, err error
 	if value, ok := guo.mutation.AddedStatus(); ok {
 		_spec.AddField(goods.FieldStatus, field.TypeUint8, value)
 	}
-	if value, ok := guo.mutation.Installment(); ok {
-		_spec.SetField(goods.FieldInstallment, field.TypeJSON, value)
+	if value, ok := guo.mutation.PaymentPlans(); ok {
+		_spec.SetField(goods.FieldPaymentPlans, field.TypeJSON, value)
 	}
-	if value, ok := guo.mutation.AppendedInstallment(); ok {
+	if value, ok := guo.mutation.AppendedPaymentPlans(); ok {
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, goods.FieldInstallment, value)
+			sqljson.Append(u, goods.FieldPaymentPlans, value)
 		})
 	}
-	if guo.mutation.InstallmentCleared() {
-		_spec.ClearField(goods.FieldInstallment, field.TypeJSON)
+	if guo.mutation.PaymentPlansCleared() {
+		_spec.ClearField(goods.FieldPaymentPlans, field.TypeJSON)
 	}
 	if guo.mutation.StoresCleared() {
 		edge := &sqlgraph.EdgeSpec{

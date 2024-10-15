@@ -30,8 +30,8 @@ const (
 	FieldRemark = "remark"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
 	FieldRiderID = "rider_id"
-	// FieldCommodityID holds the string denoting the commodity_id field in the database.
-	FieldCommodityID = "commodity_id"
+	// FieldGoodsID holds the string denoting the goods_id field in the database.
+	FieldGoodsID = "goods_id"
 	// FieldSn holds the string denoting the sn field in the database.
 	FieldSn = "sn"
 	// FieldStatus holds the string denoting the status field in the database.
@@ -54,8 +54,8 @@ const (
 	FieldImages = "images"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
-	// EdgeCommodity holds the string denoting the commodity edge name in mutations.
-	EdgeCommodity = "commodity"
+	// EdgeGoods holds the string denoting the goods edge name in mutations.
+	EdgeGoods = "goods"
 	// EdgePayments holds the string denoting the payments edge name in mutations.
 	EdgePayments = "payments"
 	// Table holds the table name of the purchaseorder in the database.
@@ -67,13 +67,13 @@ const (
 	RiderInverseTable = "rider"
 	// RiderColumn is the table column denoting the rider relation/edge.
 	RiderColumn = "rider_id"
-	// CommodityTable is the table that holds the commodity relation/edge.
-	CommodityTable = "purchase_order"
-	// CommodityInverseTable is the table name for the PurchaseCommodity entity.
-	// It exists in this package in order to avoid circular dependency with the "purchasecommodity" package.
-	CommodityInverseTable = "purchase_commodity"
-	// CommodityColumn is the table column denoting the commodity relation/edge.
-	CommodityColumn = "commodity_id"
+	// GoodsTable is the table that holds the goods relation/edge.
+	GoodsTable = "purchase_order"
+	// GoodsInverseTable is the table name for the Goods entity.
+	// It exists in this package in order to avoid circular dependency with the "goods" package.
+	GoodsInverseTable = "goods"
+	// GoodsColumn is the table column denoting the goods relation/edge.
+	GoodsColumn = "goods_id"
 	// PaymentsTable is the table that holds the payments relation/edge.
 	PaymentsTable = "purchase_payment"
 	// PaymentsInverseTable is the table name for the PurchasePayment entity.
@@ -93,7 +93,7 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldRiderID,
-	FieldCommodityID,
+	FieldGoodsID,
 	FieldSn,
 	FieldStatus,
 	FieldContractURL,
@@ -195,9 +195,9 @@ func ByRiderID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRiderID, opts...).ToFunc()
 }
 
-// ByCommodityID orders the results by the commodity_id field.
-func ByCommodityID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCommodityID, opts...).ToFunc()
+// ByGoodsID orders the results by the goods_id field.
+func ByGoodsID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldGoodsID, opts...).ToFunc()
 }
 
 // BySn orders the results by the sn field.
@@ -247,10 +247,10 @@ func ByRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByCommodityField orders the results by commodity field.
-func ByCommodityField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByGoodsField orders the results by goods field.
+func ByGoodsField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newCommodityStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newGoodsStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -274,11 +274,11 @@ func newRiderStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
 	)
 }
-func newCommodityStep() *sqlgraph.Step {
+func newGoodsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(CommodityInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, CommodityTable, CommodityColumn),
+		sqlgraph.To(GoodsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, GoodsTable, GoodsColumn),
 	)
 }
 func newPaymentsStep() *sqlgraph.Step {

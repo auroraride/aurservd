@@ -64,7 +64,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionmembercommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionprivilege"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
-	"github.com/auroraride/aurservd/internal/ent/purchasecommodity"
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/internal/ent/question"
@@ -2395,46 +2394,6 @@ func (c *PromotionWithdrawalClient) GetNotDeleted(ctx context.Context, id uint64
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *PromotionWithdrawalClient) GetNotDeletedX(ctx context.Context, id uint64) *PromotionWithdrawal {
-	obj, err := c.GetNotDeleted(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// SoftDelete returns an soft delete builder for PurchaseCommodity.
-func (c *PurchaseCommodityClient) SoftDelete() *PurchaseCommodityUpdate {
-	mutation := newPurchaseCommodityMutation(c.config, OpUpdate)
-	mutation.SetDeletedAt(time.Now())
-	return &PurchaseCommodityUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOne returns an soft delete builder for the given entity.
-func (c *PurchaseCommodityClient) SoftDeleteOne(pc *PurchaseCommodity) *PurchaseCommodityUpdateOne {
-	mutation := newPurchaseCommodityMutation(c.config, OpUpdateOne, withPurchaseCommodity(pc))
-	mutation.SetDeletedAt(time.Now())
-	return &PurchaseCommodityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOneID returns an soft delete builder for the given id.
-func (c *PurchaseCommodityClient) SoftDeleteOneID(id uint64) *PurchaseCommodityUpdateOne {
-	mutation := newPurchaseCommodityMutation(c.config, OpUpdateOne, withPurchaseCommodityID(id))
-	mutation.SetDeletedAt(time.Now())
-	return &PurchaseCommodityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// QueryNotDeleted returns a query not deleted builder for PurchaseCommodity.
-func (c *PurchaseCommodityClient) QueryNotDeleted() *PurchaseCommodityQuery {
-	return c.Query().Where(purchasecommodity.DeletedAtIsNil())
-}
-
-// GetNotDeleted returns a PurchaseCommodity not deleted entity by its id.
-func (c *PurchaseCommodityClient) GetNotDeleted(ctx context.Context, id uint64) (*PurchaseCommodity, error) {
-	return c.Query().Where(purchasecommodity.ID(id), purchasecommodity.DeletedAtIsNil()).Only(ctx)
-}
-
-// GetNotDeletedX is like Get, but panics if an error occurs.
-func (c *PurchaseCommodityClient) GetNotDeletedX(ctx context.Context, id uint64) *PurchaseCommodity {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)
