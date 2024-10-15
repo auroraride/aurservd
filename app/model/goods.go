@@ -117,6 +117,7 @@ func (plans GoodsPaymentPlans) Valid() error {
 				return ErrorGoodsPaymentInvalid
 			}
 
+			// 判定付款金额是否有效
 			if option.Amount <= 0 {
 				return ErrorGoodsPaymentAmount
 			}
