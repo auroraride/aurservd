@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
 
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -66,12 +67,11 @@ func (PurchaseOrder) Fields() []ent.Field {
 			Default("pending").
 			Comment("状态, pending: 待支付, staging: 分期执行中, ended: 已完成, cancelled: 已取消, refunded: 已退款"),
 		field.String("contract_url").Optional().Comment("合同URL"),
-		field.Int("installment_index").Default(1).Comment("当前分期索引"),
+		field.Int("installment_stage").Default(0).Comment("当前分期阶段，从0开始"),
 		field.Int("installment_total").Comment("分期总数"),
-		field.JSON("installments", []float64{}).Comment("分期表"),
+		field.JSON("installment_plan", model.GoodsPaymentPlan{}).Comment("分期方案"),
 		field.Time("start_date").SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("开始日期"),
 		field.Time("next_date").Nillable().Optional().SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("下次支付日期"),
-		field.String("store").Optional().Comment("门店"),
 		field.Strings("images").Optional().Comment("图片"),
 	}
 }
@@ -91,6 +91,7 @@ func (PurchaseOrder) Mixin() []ent.Mixin {
 
 		RiderMixin{},
 		GoodsMixin{},
+		StoreMixin{Optional: true},
 	}
 }
 
@@ -99,6 +100,5 @@ func (PurchaseOrder) Indexes() []ent.Index {
 		index.Fields("sn"),
 		index.Fields("status"),
 		index.Fields("next_date"),
-		index.Fields("store"),
 	}
 }

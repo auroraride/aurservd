@@ -82,7 +82,7 @@ func (req *GoodsCreateReq) ParsePaymentPlans() (p model.GoodsPaymentPlans) {
 	for _, plan := range req.PaymentPlans {
 		var options model.GoodsPaymentPlan
 		for _, option := range plan {
-			options = append(options, model.GoodsPaymentPlanOption{
+			options = append(options, model.GoodsPaymentPlanStage{
 				Period: model.GoodsPaymentPeriodMonthly,
 				Unit:   1,
 				Amount: option,

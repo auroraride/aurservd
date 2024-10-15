@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 // PurchaseOrderQuery is the builder for querying PurchaseOrder entities.
@@ -28,6 +29,7 @@ type PurchaseOrderQuery struct {
 	predicates   []predicate.PurchaseOrder
 	withRider    *RiderQuery
 	withGoods    *GoodsQuery
+	withStore    *StoreQuery
 	withPayments *PurchasePaymentQuery
 	modifiers    []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -103,6 +105,28 @@ func (poq *PurchaseOrderQuery) QueryGoods() *GoodsQuery {
 			sqlgraph.From(purchaseorder.Table, purchaseorder.FieldID, selector),
 			sqlgraph.To(goods.Table, goods.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, purchaseorder.GoodsTable, purchaseorder.GoodsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(poq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStore chains the current query on the "store" edge.
+func (poq *PurchaseOrderQuery) QueryStore() *StoreQuery {
+	query := (&StoreClient{config: poq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := poq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := poq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(purchaseorder.Table, purchaseorder.FieldID, selector),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, purchaseorder.StoreTable, purchaseorder.StoreColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(poq.driver.Dialect(), step)
 		return fromU, nil
@@ -326,6 +350,7 @@ func (poq *PurchaseOrderQuery) Clone() *PurchaseOrderQuery {
 		predicates:   append([]predicate.PurchaseOrder{}, poq.predicates...),
 		withRider:    poq.withRider.Clone(),
 		withGoods:    poq.withGoods.Clone(),
+		withStore:    poq.withStore.Clone(),
 		withPayments: poq.withPayments.Clone(),
 		// clone intermediate query.
 		sql:       poq.sql.Clone(),
@@ -353,6 +378,17 @@ func (poq *PurchaseOrderQuery) WithGoods(opts ...func(*GoodsQuery)) *PurchaseOrd
 		opt(query)
 	}
 	poq.withGoods = query
+	return poq
+}
+
+// WithStore tells the query-builder to eager-load the nodes that are connected to
+// the "store" edge. The optional arguments are used to configure the query builder of the edge.
+func (poq *PurchaseOrderQuery) WithStore(opts ...func(*StoreQuery)) *PurchaseOrderQuery {
+	query := (&StoreClient{config: poq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	poq.withStore = query
 	return poq
 }
 
@@ -445,9 +481,10 @@ func (poq *PurchaseOrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 	var (
 		nodes       = []*PurchaseOrder{}
 		_spec       = poq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			poq.withRider != nil,
 			poq.withGoods != nil,
+			poq.withStore != nil,
 			poq.withPayments != nil,
 		}
 	)
@@ -481,6 +518,12 @@ func (poq *PurchaseOrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 	if query := poq.withGoods; query != nil {
 		if err := poq.loadGoods(ctx, query, nodes, nil,
 			func(n *PurchaseOrder, e *Goods) { n.Edges.Goods = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := poq.withStore; query != nil {
+		if err := poq.loadStore(ctx, query, nodes, nil,
+			func(n *PurchaseOrder, e *Store) { n.Edges.Store = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -545,6 +588,38 @@ func (poq *PurchaseOrderQuery) loadGoods(ctx context.Context, query *GoodsQuery,
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "goods_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (poq *PurchaseOrderQuery) loadStore(ctx context.Context, query *StoreQuery, nodes []*PurchaseOrder, init func(*PurchaseOrder), assign func(*PurchaseOrder, *Store)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*PurchaseOrder)
+	for i := range nodes {
+		if nodes[i].StoreID == nil {
+			continue
+		}
+		fk := *nodes[i].StoreID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(store.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "store_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -618,6 +693,9 @@ func (poq *PurchaseOrderQuery) querySpec() *sqlgraph.QuerySpec {
 		if poq.withGoods != nil {
 			_spec.Node.AddColumnOnce(purchaseorder.FieldGoodsID)
 		}
+		if poq.withStore != nil {
+			_spec.Node.AddColumnOnce(purchaseorder.FieldStoreID)
+		}
 	}
 	if ps := poq.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -688,6 +766,7 @@ type PurchaseOrderQueryWith string
 var (
 	PurchaseOrderQueryWithRider    PurchaseOrderQueryWith = "Rider"
 	PurchaseOrderQueryWithGoods    PurchaseOrderQueryWith = "Goods"
+	PurchaseOrderQueryWithStore    PurchaseOrderQueryWith = "Store"
 	PurchaseOrderQueryWithPayments PurchaseOrderQueryWith = "Payments"
 )
 
@@ -698,6 +777,8 @@ func (poq *PurchaseOrderQuery) With(withEdges ...PurchaseOrderQueryWith) *Purcha
 			poq.WithRider()
 		case PurchaseOrderQueryWithGoods:
 			poq.WithGoods()
+		case PurchaseOrderQueryWithStore:
+			poq.WithStore()
 		case PurchaseOrderQueryWithPayments:
 			poq.WithPayments()
 		}

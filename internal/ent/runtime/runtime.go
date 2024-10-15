@@ -1997,10 +1997,10 @@ func init() {
 	purchaseorder.DefaultUpdatedAt = purchaseorderDescUpdatedAt.Default.(func() time.Time)
 	// purchaseorder.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	purchaseorder.UpdateDefaultUpdatedAt = purchaseorderDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// purchaseorderDescInstallmentIndex is the schema descriptor for installment_index field.
-	purchaseorderDescInstallmentIndex := purchaseorderFields[3].Descriptor()
-	// purchaseorder.DefaultInstallmentIndex holds the default value on creation for the installment_index field.
-	purchaseorder.DefaultInstallmentIndex = purchaseorderDescInstallmentIndex.Default.(int)
+	// purchaseorderDescInstallmentStage is the schema descriptor for installment_stage field.
+	purchaseorderDescInstallmentStage := purchaseorderFields[3].Descriptor()
+	// purchaseorder.DefaultInstallmentStage holds the default value on creation for the installment_stage field.
+	purchaseorder.DefaultInstallmentStage = purchaseorderDescInstallmentStage.Default.(int)
 	purchasepaymentMixin := schema.PurchasePayment{}.Mixin()
 	purchasepaymentMixinHooks2 := purchasepaymentMixin[2].Hooks()
 	purchasepayment.Hooks[0] = purchasepaymentMixinHooks2[0]

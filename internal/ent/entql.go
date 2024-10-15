@@ -2275,15 +2275,15 @@ var schemaGraph = func() *sqlgraph.Schema {
 			purchaseorder.FieldRemark:           {Type: field.TypeString, Column: purchaseorder.FieldRemark},
 			purchaseorder.FieldRiderID:          {Type: field.TypeUint64, Column: purchaseorder.FieldRiderID},
 			purchaseorder.FieldGoodsID:          {Type: field.TypeUint64, Column: purchaseorder.FieldGoodsID},
+			purchaseorder.FieldStoreID:          {Type: field.TypeUint64, Column: purchaseorder.FieldStoreID},
 			purchaseorder.FieldSn:               {Type: field.TypeString, Column: purchaseorder.FieldSn},
 			purchaseorder.FieldStatus:           {Type: field.TypeEnum, Column: purchaseorder.FieldStatus},
 			purchaseorder.FieldContractURL:      {Type: field.TypeString, Column: purchaseorder.FieldContractURL},
-			purchaseorder.FieldInstallmentIndex: {Type: field.TypeInt, Column: purchaseorder.FieldInstallmentIndex},
+			purchaseorder.FieldInstallmentStage: {Type: field.TypeInt, Column: purchaseorder.FieldInstallmentStage},
 			purchaseorder.FieldInstallmentTotal: {Type: field.TypeInt, Column: purchaseorder.FieldInstallmentTotal},
-			purchaseorder.FieldInstallments:     {Type: field.TypeJSON, Column: purchaseorder.FieldInstallments},
+			purchaseorder.FieldInstallmentPlan:  {Type: field.TypeJSON, Column: purchaseorder.FieldInstallmentPlan},
 			purchaseorder.FieldStartDate:        {Type: field.TypeTime, Column: purchaseorder.FieldStartDate},
 			purchaseorder.FieldNextDate:         {Type: field.TypeTime, Column: purchaseorder.FieldNextDate},
-			purchaseorder.FieldStore:            {Type: field.TypeString, Column: purchaseorder.FieldStore},
 			purchaseorder.FieldImages:           {Type: field.TypeJSON, Column: purchaseorder.FieldImages},
 		},
 	}
@@ -6716,6 +6716,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"PurchaseOrder",
 		"Goods",
+	)
+	graph.MustAddE(
+		"store",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   purchaseorder.StoreTable,
+			Columns: []string{purchaseorder.StoreColumn},
+			Bidi:    false,
+		},
+		"PurchaseOrder",
+		"Store",
 	)
 	graph.MustAddE(
 		"payments",
@@ -21208,6 +21220,11 @@ func (f *PurchaseOrderFilter) WhereGoodsID(p entql.Uint64P) {
 	f.Where(p.Field(purchaseorder.FieldGoodsID))
 }
 
+// WhereStoreID applies the entql uint64 predicate on the store_id field.
+func (f *PurchaseOrderFilter) WhereStoreID(p entql.Uint64P) {
+	f.Where(p.Field(purchaseorder.FieldStoreID))
+}
+
 // WhereSn applies the entql string predicate on the sn field.
 func (f *PurchaseOrderFilter) WhereSn(p entql.StringP) {
 	f.Where(p.Field(purchaseorder.FieldSn))
@@ -21223,9 +21240,9 @@ func (f *PurchaseOrderFilter) WhereContractURL(p entql.StringP) {
 	f.Where(p.Field(purchaseorder.FieldContractURL))
 }
 
-// WhereInstallmentIndex applies the entql int predicate on the installment_index field.
-func (f *PurchaseOrderFilter) WhereInstallmentIndex(p entql.IntP) {
-	f.Where(p.Field(purchaseorder.FieldInstallmentIndex))
+// WhereInstallmentStage applies the entql int predicate on the installment_stage field.
+func (f *PurchaseOrderFilter) WhereInstallmentStage(p entql.IntP) {
+	f.Where(p.Field(purchaseorder.FieldInstallmentStage))
 }
 
 // WhereInstallmentTotal applies the entql int predicate on the installment_total field.
@@ -21233,9 +21250,9 @@ func (f *PurchaseOrderFilter) WhereInstallmentTotal(p entql.IntP) {
 	f.Where(p.Field(purchaseorder.FieldInstallmentTotal))
 }
 
-// WhereInstallments applies the entql json.RawMessage predicate on the installments field.
-func (f *PurchaseOrderFilter) WhereInstallments(p entql.BytesP) {
-	f.Where(p.Field(purchaseorder.FieldInstallments))
+// WhereInstallmentPlan applies the entql json.RawMessage predicate on the installment_plan field.
+func (f *PurchaseOrderFilter) WhereInstallmentPlan(p entql.BytesP) {
+	f.Where(p.Field(purchaseorder.FieldInstallmentPlan))
 }
 
 // WhereStartDate applies the entql time.Time predicate on the start_date field.
@@ -21246,11 +21263,6 @@ func (f *PurchaseOrderFilter) WhereStartDate(p entql.TimeP) {
 // WhereNextDate applies the entql time.Time predicate on the next_date field.
 func (f *PurchaseOrderFilter) WhereNextDate(p entql.TimeP) {
 	f.Where(p.Field(purchaseorder.FieldNextDate))
-}
-
-// WhereStore applies the entql string predicate on the store field.
-func (f *PurchaseOrderFilter) WhereStore(p entql.StringP) {
-	f.Where(p.Field(purchaseorder.FieldStore))
 }
 
 // WhereImages applies the entql json.RawMessage predicate on the images field.
@@ -21280,6 +21292,20 @@ func (f *PurchaseOrderFilter) WhereHasGoods() {
 // WhereHasGoodsWith applies a predicate to check if query has an edge goods with a given conditions (other predicates).
 func (f *PurchaseOrderFilter) WhereHasGoodsWith(preds ...predicate.Goods) {
 	f.Where(entql.HasEdgeWith("goods", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasStore applies a predicate to check if query has an edge store.
+func (f *PurchaseOrderFilter) WhereHasStore() {
+	f.Where(entql.HasEdge("store"))
+}
+
+// WhereHasStoreWith applies a predicate to check if query has an edge store with a given conditions (other predicates).
+func (f *PurchaseOrderFilter) WhereHasStoreWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("store", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
