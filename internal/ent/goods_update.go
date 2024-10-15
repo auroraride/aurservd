@@ -258,6 +258,24 @@ func (gu *GoodsUpdate) AddStatus(u int8) *GoodsUpdate {
 	return gu
 }
 
+// SetInstallment sets the "installment" field.
+func (gu *GoodsUpdate) SetInstallment(f [][]float64) *GoodsUpdate {
+	gu.mutation.SetInstallment(f)
+	return gu
+}
+
+// AppendInstallment appends f to the "installment" field.
+func (gu *GoodsUpdate) AppendInstallment(f [][]float64) *GoodsUpdate {
+	gu.mutation.AppendInstallment(f)
+	return gu
+}
+
+// ClearInstallment clears the value of the "installment" field.
+func (gu *GoodsUpdate) ClearInstallment() *GoodsUpdate {
+	gu.mutation.ClearInstallment()
+	return gu
+}
+
 // AddStoreIDs adds the "stores" edge to the StoreGoods entity by IDs.
 func (gu *GoodsUpdate) AddStoreIDs(ids ...uint64) *GoodsUpdate {
 	gu.mutation.AddStoreIDs(ids...)
@@ -439,6 +457,17 @@ func (gu *GoodsUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := gu.mutation.AddedStatus(); ok {
 		_spec.AddField(goods.FieldStatus, field.TypeUint8, value)
+	}
+	if value, ok := gu.mutation.Installment(); ok {
+		_spec.SetField(goods.FieldInstallment, field.TypeJSON, value)
+	}
+	if value, ok := gu.mutation.AppendedInstallment(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, goods.FieldInstallment, value)
+		})
+	}
+	if gu.mutation.InstallmentCleared() {
+		_spec.ClearField(goods.FieldInstallment, field.TypeJSON)
 	}
 	if gu.mutation.StoresCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -733,6 +762,24 @@ func (guo *GoodsUpdateOne) AddStatus(u int8) *GoodsUpdateOne {
 	return guo
 }
 
+// SetInstallment sets the "installment" field.
+func (guo *GoodsUpdateOne) SetInstallment(f [][]float64) *GoodsUpdateOne {
+	guo.mutation.SetInstallment(f)
+	return guo
+}
+
+// AppendInstallment appends f to the "installment" field.
+func (guo *GoodsUpdateOne) AppendInstallment(f [][]float64) *GoodsUpdateOne {
+	guo.mutation.AppendInstallment(f)
+	return guo
+}
+
+// ClearInstallment clears the value of the "installment" field.
+func (guo *GoodsUpdateOne) ClearInstallment() *GoodsUpdateOne {
+	guo.mutation.ClearInstallment()
+	return guo
+}
+
 // AddStoreIDs adds the "stores" edge to the StoreGoods entity by IDs.
 func (guo *GoodsUpdateOne) AddStoreIDs(ids ...uint64) *GoodsUpdateOne {
 	guo.mutation.AddStoreIDs(ids...)
@@ -944,6 +991,17 @@ func (guo *GoodsUpdateOne) sqlSave(ctx context.Context) (_node *Goods, err error
 	}
 	if value, ok := guo.mutation.AddedStatus(); ok {
 		_spec.AddField(goods.FieldStatus, field.TypeUint8, value)
+	}
+	if value, ok := guo.mutation.Installment(); ok {
+		_spec.SetField(goods.FieldInstallment, field.TypeJSON, value)
+	}
+	if value, ok := guo.mutation.AppendedInstallment(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, goods.FieldInstallment, value)
+		})
+	}
+	if guo.mutation.InstallmentCleared() {
+		_spec.ClearField(goods.FieldInstallment, field.TypeJSON)
 	}
 	if guo.mutation.StoresCleared() {
 		edge := &sqlgraph.EdgeSpec{

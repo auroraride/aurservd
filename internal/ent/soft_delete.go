@@ -63,6 +63,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionmembercommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionprivilege"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
+	"github.com/auroraride/aurservd/internal/ent/purchasecommodity"
+	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
+	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/internal/ent/question"
 	"github.com/auroraride/aurservd/internal/ent/questioncategory"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
@@ -2351,6 +2354,126 @@ func (c *PromotionWithdrawalClient) GetNotDeleted(ctx context.Context, id uint64
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *PromotionWithdrawalClient) GetNotDeletedX(ctx context.Context, id uint64) *PromotionWithdrawal {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for PurchaseCommodity.
+func (c *PurchaseCommodityClient) SoftDelete() *PurchaseCommodityUpdate {
+	mutation := newPurchaseCommodityMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &PurchaseCommodityUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *PurchaseCommodityClient) SoftDeleteOne(pc *PurchaseCommodity) *PurchaseCommodityUpdateOne {
+	mutation := newPurchaseCommodityMutation(c.config, OpUpdateOne, withPurchaseCommodity(pc))
+	mutation.SetDeletedAt(time.Now())
+	return &PurchaseCommodityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *PurchaseCommodityClient) SoftDeleteOneID(id uint64) *PurchaseCommodityUpdateOne {
+	mutation := newPurchaseCommodityMutation(c.config, OpUpdateOne, withPurchaseCommodityID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &PurchaseCommodityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for PurchaseCommodity.
+func (c *PurchaseCommodityClient) QueryNotDeleted() *PurchaseCommodityQuery {
+	return c.Query().Where(purchasecommodity.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a PurchaseCommodity not deleted entity by its id.
+func (c *PurchaseCommodityClient) GetNotDeleted(ctx context.Context, id uint64) (*PurchaseCommodity, error) {
+	return c.Query().Where(purchasecommodity.ID(id), purchasecommodity.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *PurchaseCommodityClient) GetNotDeletedX(ctx context.Context, id uint64) *PurchaseCommodity {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for PurchaseOrder.
+func (c *PurchaseOrderClient) SoftDelete() *PurchaseOrderUpdate {
+	mutation := newPurchaseOrderMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &PurchaseOrderUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *PurchaseOrderClient) SoftDeleteOne(po *PurchaseOrder) *PurchaseOrderUpdateOne {
+	mutation := newPurchaseOrderMutation(c.config, OpUpdateOne, withPurchaseOrder(po))
+	mutation.SetDeletedAt(time.Now())
+	return &PurchaseOrderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *PurchaseOrderClient) SoftDeleteOneID(id uint64) *PurchaseOrderUpdateOne {
+	mutation := newPurchaseOrderMutation(c.config, OpUpdateOne, withPurchaseOrderID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &PurchaseOrderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for PurchaseOrder.
+func (c *PurchaseOrderClient) QueryNotDeleted() *PurchaseOrderQuery {
+	return c.Query().Where(purchaseorder.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a PurchaseOrder not deleted entity by its id.
+func (c *PurchaseOrderClient) GetNotDeleted(ctx context.Context, id uint64) (*PurchaseOrder, error) {
+	return c.Query().Where(purchaseorder.ID(id), purchaseorder.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *PurchaseOrderClient) GetNotDeletedX(ctx context.Context, id uint64) *PurchaseOrder {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for PurchasePayment.
+func (c *PurchasePaymentClient) SoftDelete() *PurchasePaymentUpdate {
+	mutation := newPurchasePaymentMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &PurchasePaymentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *PurchasePaymentClient) SoftDeleteOne(pp *PurchasePayment) *PurchasePaymentUpdateOne {
+	mutation := newPurchasePaymentMutation(c.config, OpUpdateOne, withPurchasePayment(pp))
+	mutation.SetDeletedAt(time.Now())
+	return &PurchasePaymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *PurchasePaymentClient) SoftDeleteOneID(id uint64) *PurchasePaymentUpdateOne {
+	mutation := newPurchasePaymentMutation(c.config, OpUpdateOne, withPurchasePaymentID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &PurchasePaymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for PurchasePayment.
+func (c *PurchasePaymentClient) QueryNotDeleted() *PurchasePaymentQuery {
+	return c.Query().Where(purchasepayment.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a PurchasePayment not deleted entity by its id.
+func (c *PurchasePaymentClient) GetNotDeleted(ctx context.Context, id uint64) (*PurchasePayment, error) {
+	return c.Query().Where(purchasepayment.ID(id), purchasepayment.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *PurchasePaymentClient) GetNotDeletedX(ctx context.Context, id uint64) *PurchasePayment {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

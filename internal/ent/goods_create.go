@@ -168,6 +168,12 @@ func (gc *GoodsCreate) SetNillableStatus(u *uint8) *GoodsCreate {
 	return gc
 }
 
+// SetInstallment sets the "installment" field.
+func (gc *GoodsCreate) SetInstallment(f [][]float64) *GoodsCreate {
+	gc.mutation.SetInstallment(f)
+	return gc
+}
+
 // AddStoreIDs adds the "stores" edge to the StoreGoods entity by IDs.
 func (gc *GoodsCreate) AddStoreIDs(ids ...uint64) *GoodsCreate {
 	gc.mutation.AddStoreIDs(ids...)
@@ -370,6 +376,10 @@ func (gc *GoodsCreate) createSpec() (*Goods, *sqlgraph.CreateSpec) {
 	if value, ok := gc.mutation.Status(); ok {
 		_spec.SetField(goods.FieldStatus, field.TypeUint8, value)
 		_node.Status = value
+	}
+	if value, ok := gc.mutation.Installment(); ok {
+		_spec.SetField(goods.FieldInstallment, field.TypeJSON, value)
+		_node.Installment = value
 	}
 	if nodes := gc.mutation.StoresIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -652,6 +662,24 @@ func (u *GoodsUpsert) UpdateStatus() *GoodsUpsert {
 // AddStatus adds v to the "status" field.
 func (u *GoodsUpsert) AddStatus(v uint8) *GoodsUpsert {
 	u.Add(goods.FieldStatus, v)
+	return u
+}
+
+// SetInstallment sets the "installment" field.
+func (u *GoodsUpsert) SetInstallment(v [][]float64) *GoodsUpsert {
+	u.Set(goods.FieldInstallment, v)
+	return u
+}
+
+// UpdateInstallment sets the "installment" field to the value that was provided on create.
+func (u *GoodsUpsert) UpdateInstallment() *GoodsUpsert {
+	u.SetExcluded(goods.FieldInstallment)
+	return u
+}
+
+// ClearInstallment clears the value of the "installment" field.
+func (u *GoodsUpsert) ClearInstallment() *GoodsUpsert {
+	u.SetNull(goods.FieldInstallment)
 	return u
 }
 
@@ -952,6 +980,27 @@ func (u *GoodsUpsertOne) AddStatus(v uint8) *GoodsUpsertOne {
 func (u *GoodsUpsertOne) UpdateStatus() *GoodsUpsertOne {
 	return u.Update(func(s *GoodsUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// SetInstallment sets the "installment" field.
+func (u *GoodsUpsertOne) SetInstallment(v [][]float64) *GoodsUpsertOne {
+	return u.Update(func(s *GoodsUpsert) {
+		s.SetInstallment(v)
+	})
+}
+
+// UpdateInstallment sets the "installment" field to the value that was provided on create.
+func (u *GoodsUpsertOne) UpdateInstallment() *GoodsUpsertOne {
+	return u.Update(func(s *GoodsUpsert) {
+		s.UpdateInstallment()
+	})
+}
+
+// ClearInstallment clears the value of the "installment" field.
+func (u *GoodsUpsertOne) ClearInstallment() *GoodsUpsertOne {
+	return u.Update(func(s *GoodsUpsert) {
+		s.ClearInstallment()
 	})
 }
 
@@ -1418,6 +1467,27 @@ func (u *GoodsUpsertBulk) AddStatus(v uint8) *GoodsUpsertBulk {
 func (u *GoodsUpsertBulk) UpdateStatus() *GoodsUpsertBulk {
 	return u.Update(func(s *GoodsUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// SetInstallment sets the "installment" field.
+func (u *GoodsUpsertBulk) SetInstallment(v [][]float64) *GoodsUpsertBulk {
+	return u.Update(func(s *GoodsUpsert) {
+		s.SetInstallment(v)
+	})
+}
+
+// UpdateInstallment sets the "installment" field to the value that was provided on create.
+func (u *GoodsUpsertBulk) UpdateInstallment() *GoodsUpsertBulk {
+	return u.Update(func(s *GoodsUpsert) {
+		s.UpdateInstallment()
+	})
+}
+
+// ClearInstallment clears the value of the "installment" field.
+func (u *GoodsUpsertBulk) ClearInstallment() *GoodsUpsertBulk {
+	return u.Update(func(s *GoodsUpsert) {
+		s.ClearInstallment()
 	})
 }
 
