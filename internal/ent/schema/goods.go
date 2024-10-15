@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
 
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -68,6 +69,9 @@ func (Goods) Fields() []ent.Field {
 		field.Strings("photos").Comment("商品图片"),
 		field.Strings("intro").Comment("商品介绍"),
 		field.Uint8("status").Default(0).Comment("商品状态 0下架 1上架"),
+		field.Bool("full").Default(false).Comment("全款支付"),
+		field.Bool("divide").Default(false).Comment("分期支付"),
+		field.JSON("installment", []model.InstallmentDetail{}).Optional().Comment("分期方案"),
 	}
 }
 
