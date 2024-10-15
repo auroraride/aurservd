@@ -13,9 +13,9 @@ import (
 )
 
 var (
-	ErrorGoodsPaymentDuplicate = errors.New("商品付款选项重复")
-	ErrorGoodsPaymentInvalid   = errors.New("商品付款选项无效")
-	ErrorGoodsPaymentEmpty     = errors.New("商品付款选项为空")
+	ErrorGoodsPaymentDuplicate = errors.New("商品付款阶段重复")
+	ErrorGoodsPaymentInvalid   = errors.New("商品付款阶段无效")
+	ErrorGoodsPaymentEmpty     = errors.New("商品付款阶段为空")
 	ErrorGoodsPaymentAmount    = errors.New("商品付款金额无效")
 )
 
@@ -29,23 +29,23 @@ const (
 	GoodsPaymentPeriodYearly                              // 按年
 )
 
-// GoodsPaymentPlanOption 商品付款选项
-type GoodsPaymentPlanOption struct {
+// GoodsPaymentPlanStage 商品付款阶段
+type GoodsPaymentPlanStage struct {
 	Period GoodsPaymentPeriod `json:"period"` // 付款周期
 	Unit   int                `json:"unit"`   // 周期单位
 	Amount float64            `json:"amount"` // 付款金额
 }
 
-// Equal 判断两个商品付款选项是否相等
-// 两个商品付款选项相等，当且仅当周期和单位相等
-func (option GoodsPaymentPlanOption) Equal(other GoodsPaymentPlanOption) bool {
-	return option.Period == other.Period && option.Unit == other.Unit
+// Equal 判断两个商品付款阶段是否相等
+// 两个商品付款阶段相等，当且仅当周期和单位相等
+func (stage GoodsPaymentPlanStage) Equal(other GoodsPaymentPlanStage) bool {
+	return stage.Period == other.Period && stage.Unit == other.Unit
 }
 
-// GoodsPaymentPlan 商品付款选项列表
-type GoodsPaymentPlan []GoodsPaymentPlanOption
+// GoodsPaymentPlan 商品付款阶段列表
+type GoodsPaymentPlan []GoodsPaymentPlanStage
 
-// Equal 判断两个商品付款选项列表是否相等
+// Equal 判断两个商品付款阶段列表是否相等
 func (plan GoodsPaymentPlan) Equal(other GoodsPaymentPlan) bool {
 	if len(plan) != len(other) {
 		return false
@@ -60,7 +60,7 @@ func (plan GoodsPaymentPlan) Equal(other GoodsPaymentPlan) bool {
 	return true
 }
 
-// BillingDates 获取商品付款选项的账单日期
+// BillingDates 获取商品付款阶段的账单日期
 func (plan GoodsPaymentPlan) BillingDates(t time.Time) (dates []time.Time) {
 	c := carbon.CreateFromStdTime(t).StartOfDay()
 	dates = make([]time.Time, len(plan))
@@ -86,7 +86,15 @@ func (plan GoodsPaymentPlan) BillingDates(t time.Time) (dates []time.Time) {
 	return
 }
 
-// GoodsPaymentPlans 商品付款方案表
+// Stage 获取商品付款阶段的某个阶段
+func (plan GoodsPaymentPlan) Stage(stage int) GoodsPaymentPlanStage {
+	if stage >= len(plan) {
+		return GoodsPaymentPlanStage{}
+	}
+	return plan[stage]
+}
+
+// GoodsPaymentPlans 商品付款方案列表
 type GoodsPaymentPlans []GoodsPaymentPlan
 
 // Valid 对商品付款方案表进行校验和排序
@@ -145,7 +153,8 @@ func (plans GoodsPaymentPlans) Plan(index int) GoodsPaymentPlan {
 }
 
 // PlanStage 获取商品付款方案表的某个阶段
-func (plans GoodsPaymentPlans) PlanStage(index, stage int) (o GoodsPaymentPlanOption) {
+// stage从1开始
+func (plans GoodsPaymentPlans) PlanStage(index, stage int) (o GoodsPaymentPlanStage) {
 	if index >= len(plans) {
 		return
 	}

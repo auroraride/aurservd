@@ -85,6 +85,11 @@ func GoodsID(v uint64) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldEQ(FieldGoodsID, v))
 }
 
+// StoreID applies equality check predicate on the "store_id" field. It's identical to StoreIDEQ.
+func StoreID(v uint64) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEQ(FieldStoreID, v))
+}
+
 // Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
 func Sn(v string) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldEQ(FieldSn, v))
@@ -95,9 +100,9 @@ func ContractURL(v string) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldEQ(FieldContractURL, v))
 }
 
-// InstallmentIndex applies equality check predicate on the "installment_index" field. It's identical to InstallmentIndexEQ.
-func InstallmentIndex(v int) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldEQ(FieldInstallmentIndex, v))
+// InstallmentStage applies equality check predicate on the "installment_stage" field. It's identical to InstallmentStageEQ.
+func InstallmentStage(v int) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEQ(FieldInstallmentStage, v))
 }
 
 // InstallmentTotal applies equality check predicate on the "installment_total" field. It's identical to InstallmentTotalEQ.
@@ -113,11 +118,6 @@ func StartDate(v time.Time) predicate.PurchaseOrder {
 // NextDate applies equality check predicate on the "next_date" field. It's identical to NextDateEQ.
 func NextDate(v time.Time) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldEQ(FieldNextDate, v))
-}
-
-// Store applies equality check predicate on the "store" field. It's identical to StoreEQ.
-func Store(v string) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldEQ(FieldStore, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -385,6 +385,36 @@ func GoodsIDNotIn(vs ...uint64) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldNotIn(FieldGoodsID, vs...))
 }
 
+// StoreIDEQ applies the EQ predicate on the "store_id" field.
+func StoreIDEQ(v uint64) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEQ(FieldStoreID, v))
+}
+
+// StoreIDNEQ applies the NEQ predicate on the "store_id" field.
+func StoreIDNEQ(v uint64) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNEQ(FieldStoreID, v))
+}
+
+// StoreIDIn applies the In predicate on the "store_id" field.
+func StoreIDIn(vs ...uint64) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldIn(FieldStoreID, vs...))
+}
+
+// StoreIDNotIn applies the NotIn predicate on the "store_id" field.
+func StoreIDNotIn(vs ...uint64) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNotIn(FieldStoreID, vs...))
+}
+
+// StoreIDIsNil applies the IsNil predicate on the "store_id" field.
+func StoreIDIsNil() predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldIsNull(FieldStoreID))
+}
+
+// StoreIDNotNil applies the NotNil predicate on the "store_id" field.
+func StoreIDNotNil() predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNotNull(FieldStoreID))
+}
+
 // SnEQ applies the EQ predicate on the "sn" field.
 func SnEQ(v string) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldEQ(FieldSn, v))
@@ -545,44 +575,44 @@ func ContractURLContainsFold(v string) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldContainsFold(FieldContractURL, v))
 }
 
-// InstallmentIndexEQ applies the EQ predicate on the "installment_index" field.
-func InstallmentIndexEQ(v int) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldEQ(FieldInstallmentIndex, v))
+// InstallmentStageEQ applies the EQ predicate on the "installment_stage" field.
+func InstallmentStageEQ(v int) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEQ(FieldInstallmentStage, v))
 }
 
-// InstallmentIndexNEQ applies the NEQ predicate on the "installment_index" field.
-func InstallmentIndexNEQ(v int) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldNEQ(FieldInstallmentIndex, v))
+// InstallmentStageNEQ applies the NEQ predicate on the "installment_stage" field.
+func InstallmentStageNEQ(v int) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNEQ(FieldInstallmentStage, v))
 }
 
-// InstallmentIndexIn applies the In predicate on the "installment_index" field.
-func InstallmentIndexIn(vs ...int) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldIn(FieldInstallmentIndex, vs...))
+// InstallmentStageIn applies the In predicate on the "installment_stage" field.
+func InstallmentStageIn(vs ...int) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldIn(FieldInstallmentStage, vs...))
 }
 
-// InstallmentIndexNotIn applies the NotIn predicate on the "installment_index" field.
-func InstallmentIndexNotIn(vs ...int) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldNotIn(FieldInstallmentIndex, vs...))
+// InstallmentStageNotIn applies the NotIn predicate on the "installment_stage" field.
+func InstallmentStageNotIn(vs ...int) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNotIn(FieldInstallmentStage, vs...))
 }
 
-// InstallmentIndexGT applies the GT predicate on the "installment_index" field.
-func InstallmentIndexGT(v int) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldGT(FieldInstallmentIndex, v))
+// InstallmentStageGT applies the GT predicate on the "installment_stage" field.
+func InstallmentStageGT(v int) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldGT(FieldInstallmentStage, v))
 }
 
-// InstallmentIndexGTE applies the GTE predicate on the "installment_index" field.
-func InstallmentIndexGTE(v int) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldGTE(FieldInstallmentIndex, v))
+// InstallmentStageGTE applies the GTE predicate on the "installment_stage" field.
+func InstallmentStageGTE(v int) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldGTE(FieldInstallmentStage, v))
 }
 
-// InstallmentIndexLT applies the LT predicate on the "installment_index" field.
-func InstallmentIndexLT(v int) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldLT(FieldInstallmentIndex, v))
+// InstallmentStageLT applies the LT predicate on the "installment_stage" field.
+func InstallmentStageLT(v int) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldLT(FieldInstallmentStage, v))
 }
 
-// InstallmentIndexLTE applies the LTE predicate on the "installment_index" field.
-func InstallmentIndexLTE(v int) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldLTE(FieldInstallmentIndex, v))
+// InstallmentStageLTE applies the LTE predicate on the "installment_stage" field.
+func InstallmentStageLTE(v int) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldLTE(FieldInstallmentStage, v))
 }
 
 // InstallmentTotalEQ applies the EQ predicate on the "installment_total" field.
@@ -715,81 +745,6 @@ func NextDateNotNil() predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldNotNull(FieldNextDate))
 }
 
-// StoreEQ applies the EQ predicate on the "store" field.
-func StoreEQ(v string) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldEQ(FieldStore, v))
-}
-
-// StoreNEQ applies the NEQ predicate on the "store" field.
-func StoreNEQ(v string) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldNEQ(FieldStore, v))
-}
-
-// StoreIn applies the In predicate on the "store" field.
-func StoreIn(vs ...string) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldIn(FieldStore, vs...))
-}
-
-// StoreNotIn applies the NotIn predicate on the "store" field.
-func StoreNotIn(vs ...string) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldNotIn(FieldStore, vs...))
-}
-
-// StoreGT applies the GT predicate on the "store" field.
-func StoreGT(v string) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldGT(FieldStore, v))
-}
-
-// StoreGTE applies the GTE predicate on the "store" field.
-func StoreGTE(v string) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldGTE(FieldStore, v))
-}
-
-// StoreLT applies the LT predicate on the "store" field.
-func StoreLT(v string) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldLT(FieldStore, v))
-}
-
-// StoreLTE applies the LTE predicate on the "store" field.
-func StoreLTE(v string) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldLTE(FieldStore, v))
-}
-
-// StoreContains applies the Contains predicate on the "store" field.
-func StoreContains(v string) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldContains(FieldStore, v))
-}
-
-// StoreHasPrefix applies the HasPrefix predicate on the "store" field.
-func StoreHasPrefix(v string) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldHasPrefix(FieldStore, v))
-}
-
-// StoreHasSuffix applies the HasSuffix predicate on the "store" field.
-func StoreHasSuffix(v string) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldHasSuffix(FieldStore, v))
-}
-
-// StoreIsNil applies the IsNil predicate on the "store" field.
-func StoreIsNil() predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldIsNull(FieldStore))
-}
-
-// StoreNotNil applies the NotNil predicate on the "store" field.
-func StoreNotNil() predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldNotNull(FieldStore))
-}
-
-// StoreEqualFold applies the EqualFold predicate on the "store" field.
-func StoreEqualFold(v string) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldEqualFold(FieldStore, v))
-}
-
-// StoreContainsFold applies the ContainsFold predicate on the "store" field.
-func StoreContainsFold(v string) predicate.PurchaseOrder {
-	return predicate.PurchaseOrder(sql.FieldContainsFold(FieldStore, v))
-}
-
 // ImagesIsNil applies the IsNil predicate on the "images" field.
 func ImagesIsNil() predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldIsNull(FieldImages))
@@ -838,6 +793,29 @@ func HasGoods() predicate.PurchaseOrder {
 func HasGoodsWith(preds ...predicate.Goods) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(func(s *sql.Selector) {
 		step := newGoodsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasStore applies the HasEdge predicate on the "store" edge.
+func HasStore() predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStoreWith applies the HasEdge predicate on the "store" edge with a given conditions (other predicates).
+func HasStoreWith(preds ...predicate.Store) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(func(s *sql.Selector) {
+		step := newStoreStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

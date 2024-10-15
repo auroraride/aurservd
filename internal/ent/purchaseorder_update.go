@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 // PurchaseOrderUpdate is the builder for updating PurchaseOrder entities.
@@ -120,6 +121,26 @@ func (pou *PurchaseOrderUpdate) SetNillableGoodsID(u *uint64) *PurchaseOrderUpda
 	return pou
 }
 
+// SetStoreID sets the "store_id" field.
+func (pou *PurchaseOrderUpdate) SetStoreID(u uint64) *PurchaseOrderUpdate {
+	pou.mutation.SetStoreID(u)
+	return pou
+}
+
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (pou *PurchaseOrderUpdate) SetNillableStoreID(u *uint64) *PurchaseOrderUpdate {
+	if u != nil {
+		pou.SetStoreID(*u)
+	}
+	return pou
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (pou *PurchaseOrderUpdate) ClearStoreID() *PurchaseOrderUpdate {
+	pou.mutation.ClearStoreID()
+	return pou
+}
+
 // SetSn sets the "sn" field.
 func (pou *PurchaseOrderUpdate) SetSn(s string) *PurchaseOrderUpdate {
 	pou.mutation.SetSn(s)
@@ -168,24 +189,24 @@ func (pou *PurchaseOrderUpdate) ClearContractURL() *PurchaseOrderUpdate {
 	return pou
 }
 
-// SetInstallmentIndex sets the "installment_index" field.
-func (pou *PurchaseOrderUpdate) SetInstallmentIndex(i int) *PurchaseOrderUpdate {
-	pou.mutation.ResetInstallmentIndex()
-	pou.mutation.SetInstallmentIndex(i)
+// SetInstallmentStage sets the "installment_stage" field.
+func (pou *PurchaseOrderUpdate) SetInstallmentStage(i int) *PurchaseOrderUpdate {
+	pou.mutation.ResetInstallmentStage()
+	pou.mutation.SetInstallmentStage(i)
 	return pou
 }
 
-// SetNillableInstallmentIndex sets the "installment_index" field if the given value is not nil.
-func (pou *PurchaseOrderUpdate) SetNillableInstallmentIndex(i *int) *PurchaseOrderUpdate {
+// SetNillableInstallmentStage sets the "installment_stage" field if the given value is not nil.
+func (pou *PurchaseOrderUpdate) SetNillableInstallmentStage(i *int) *PurchaseOrderUpdate {
 	if i != nil {
-		pou.SetInstallmentIndex(*i)
+		pou.SetInstallmentStage(*i)
 	}
 	return pou
 }
 
-// AddInstallmentIndex adds i to the "installment_index" field.
-func (pou *PurchaseOrderUpdate) AddInstallmentIndex(i int) *PurchaseOrderUpdate {
-	pou.mutation.AddInstallmentIndex(i)
+// AddInstallmentStage adds i to the "installment_stage" field.
+func (pou *PurchaseOrderUpdate) AddInstallmentStage(i int) *PurchaseOrderUpdate {
+	pou.mutation.AddInstallmentStage(i)
 	return pou
 }
 
@@ -210,15 +231,15 @@ func (pou *PurchaseOrderUpdate) AddInstallmentTotal(i int) *PurchaseOrderUpdate 
 	return pou
 }
 
-// SetInstallments sets the "installments" field.
-func (pou *PurchaseOrderUpdate) SetInstallments(f []float64) *PurchaseOrderUpdate {
-	pou.mutation.SetInstallments(f)
+// SetInstallmentPlan sets the "installment_plan" field.
+func (pou *PurchaseOrderUpdate) SetInstallmentPlan(mpp model.GoodsPaymentPlan) *PurchaseOrderUpdate {
+	pou.mutation.SetInstallmentPlan(mpp)
 	return pou
 }
 
-// AppendInstallments appends f to the "installments" field.
-func (pou *PurchaseOrderUpdate) AppendInstallments(f []float64) *PurchaseOrderUpdate {
-	pou.mutation.AppendInstallments(f)
+// AppendInstallmentPlan appends mpp to the "installment_plan" field.
+func (pou *PurchaseOrderUpdate) AppendInstallmentPlan(mpp model.GoodsPaymentPlan) *PurchaseOrderUpdate {
+	pou.mutation.AppendInstallmentPlan(mpp)
 	return pou
 }
 
@@ -256,26 +277,6 @@ func (pou *PurchaseOrderUpdate) ClearNextDate() *PurchaseOrderUpdate {
 	return pou
 }
 
-// SetStore sets the "store" field.
-func (pou *PurchaseOrderUpdate) SetStore(s string) *PurchaseOrderUpdate {
-	pou.mutation.SetStore(s)
-	return pou
-}
-
-// SetNillableStore sets the "store" field if the given value is not nil.
-func (pou *PurchaseOrderUpdate) SetNillableStore(s *string) *PurchaseOrderUpdate {
-	if s != nil {
-		pou.SetStore(*s)
-	}
-	return pou
-}
-
-// ClearStore clears the value of the "store" field.
-func (pou *PurchaseOrderUpdate) ClearStore() *PurchaseOrderUpdate {
-	pou.mutation.ClearStore()
-	return pou
-}
-
 // SetImages sets the "images" field.
 func (pou *PurchaseOrderUpdate) SetImages(s []string) *PurchaseOrderUpdate {
 	pou.mutation.SetImages(s)
@@ -302,6 +303,11 @@ func (pou *PurchaseOrderUpdate) SetRider(r *Rider) *PurchaseOrderUpdate {
 // SetGoods sets the "goods" edge to the Goods entity.
 func (pou *PurchaseOrderUpdate) SetGoods(g *Goods) *PurchaseOrderUpdate {
 	return pou.SetGoodsID(g.ID)
+}
+
+// SetStore sets the "store" edge to the Store entity.
+func (pou *PurchaseOrderUpdate) SetStore(s *Store) *PurchaseOrderUpdate {
+	return pou.SetStoreID(s.ID)
 }
 
 // AddPaymentIDs adds the "payments" edge to the PurchasePayment entity by IDs.
@@ -333,6 +339,12 @@ func (pou *PurchaseOrderUpdate) ClearRider() *PurchaseOrderUpdate {
 // ClearGoods clears the "goods" edge to the Goods entity.
 func (pou *PurchaseOrderUpdate) ClearGoods() *PurchaseOrderUpdate {
 	pou.mutation.ClearGoods()
+	return pou
+}
+
+// ClearStore clears the "store" edge to the Store entity.
+func (pou *PurchaseOrderUpdate) ClearStore() *PurchaseOrderUpdate {
+	pou.mutation.ClearStore()
 	return pou
 }
 
@@ -469,11 +481,11 @@ func (pou *PurchaseOrderUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	if pou.mutation.ContractURLCleared() {
 		_spec.ClearField(purchaseorder.FieldContractURL, field.TypeString)
 	}
-	if value, ok := pou.mutation.InstallmentIndex(); ok {
-		_spec.SetField(purchaseorder.FieldInstallmentIndex, field.TypeInt, value)
+	if value, ok := pou.mutation.InstallmentStage(); ok {
+		_spec.SetField(purchaseorder.FieldInstallmentStage, field.TypeInt, value)
 	}
-	if value, ok := pou.mutation.AddedInstallmentIndex(); ok {
-		_spec.AddField(purchaseorder.FieldInstallmentIndex, field.TypeInt, value)
+	if value, ok := pou.mutation.AddedInstallmentStage(); ok {
+		_spec.AddField(purchaseorder.FieldInstallmentStage, field.TypeInt, value)
 	}
 	if value, ok := pou.mutation.InstallmentTotal(); ok {
 		_spec.SetField(purchaseorder.FieldInstallmentTotal, field.TypeInt, value)
@@ -481,12 +493,12 @@ func (pou *PurchaseOrderUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	if value, ok := pou.mutation.AddedInstallmentTotal(); ok {
 		_spec.AddField(purchaseorder.FieldInstallmentTotal, field.TypeInt, value)
 	}
-	if value, ok := pou.mutation.Installments(); ok {
-		_spec.SetField(purchaseorder.FieldInstallments, field.TypeJSON, value)
+	if value, ok := pou.mutation.InstallmentPlan(); ok {
+		_spec.SetField(purchaseorder.FieldInstallmentPlan, field.TypeJSON, value)
 	}
-	if value, ok := pou.mutation.AppendedInstallments(); ok {
+	if value, ok := pou.mutation.AppendedInstallmentPlan(); ok {
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, purchaseorder.FieldInstallments, value)
+			sqljson.Append(u, purchaseorder.FieldInstallmentPlan, value)
 		})
 	}
 	if value, ok := pou.mutation.StartDate(); ok {
@@ -497,12 +509,6 @@ func (pou *PurchaseOrderUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if pou.mutation.NextDateCleared() {
 		_spec.ClearField(purchaseorder.FieldNextDate, field.TypeTime)
-	}
-	if value, ok := pou.mutation.Store(); ok {
-		_spec.SetField(purchaseorder.FieldStore, field.TypeString, value)
-	}
-	if pou.mutation.StoreCleared() {
-		_spec.ClearField(purchaseorder.FieldStore, field.TypeString)
 	}
 	if value, ok := pou.mutation.Images(); ok {
 		_spec.SetField(purchaseorder.FieldImages, field.TypeJSON, value)
@@ -566,6 +572,35 @@ func (pou *PurchaseOrderUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(goods.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pou.mutation.StoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   purchaseorder.StoreTable,
+			Columns: []string{purchaseorder.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pou.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   purchaseorder.StoreTable,
+			Columns: []string{purchaseorder.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -726,6 +761,26 @@ func (pouo *PurchaseOrderUpdateOne) SetNillableGoodsID(u *uint64) *PurchaseOrder
 	return pouo
 }
 
+// SetStoreID sets the "store_id" field.
+func (pouo *PurchaseOrderUpdateOne) SetStoreID(u uint64) *PurchaseOrderUpdateOne {
+	pouo.mutation.SetStoreID(u)
+	return pouo
+}
+
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (pouo *PurchaseOrderUpdateOne) SetNillableStoreID(u *uint64) *PurchaseOrderUpdateOne {
+	if u != nil {
+		pouo.SetStoreID(*u)
+	}
+	return pouo
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (pouo *PurchaseOrderUpdateOne) ClearStoreID() *PurchaseOrderUpdateOne {
+	pouo.mutation.ClearStoreID()
+	return pouo
+}
+
 // SetSn sets the "sn" field.
 func (pouo *PurchaseOrderUpdateOne) SetSn(s string) *PurchaseOrderUpdateOne {
 	pouo.mutation.SetSn(s)
@@ -774,24 +829,24 @@ func (pouo *PurchaseOrderUpdateOne) ClearContractURL() *PurchaseOrderUpdateOne {
 	return pouo
 }
 
-// SetInstallmentIndex sets the "installment_index" field.
-func (pouo *PurchaseOrderUpdateOne) SetInstallmentIndex(i int) *PurchaseOrderUpdateOne {
-	pouo.mutation.ResetInstallmentIndex()
-	pouo.mutation.SetInstallmentIndex(i)
+// SetInstallmentStage sets the "installment_stage" field.
+func (pouo *PurchaseOrderUpdateOne) SetInstallmentStage(i int) *PurchaseOrderUpdateOne {
+	pouo.mutation.ResetInstallmentStage()
+	pouo.mutation.SetInstallmentStage(i)
 	return pouo
 }
 
-// SetNillableInstallmentIndex sets the "installment_index" field if the given value is not nil.
-func (pouo *PurchaseOrderUpdateOne) SetNillableInstallmentIndex(i *int) *PurchaseOrderUpdateOne {
+// SetNillableInstallmentStage sets the "installment_stage" field if the given value is not nil.
+func (pouo *PurchaseOrderUpdateOne) SetNillableInstallmentStage(i *int) *PurchaseOrderUpdateOne {
 	if i != nil {
-		pouo.SetInstallmentIndex(*i)
+		pouo.SetInstallmentStage(*i)
 	}
 	return pouo
 }
 
-// AddInstallmentIndex adds i to the "installment_index" field.
-func (pouo *PurchaseOrderUpdateOne) AddInstallmentIndex(i int) *PurchaseOrderUpdateOne {
-	pouo.mutation.AddInstallmentIndex(i)
+// AddInstallmentStage adds i to the "installment_stage" field.
+func (pouo *PurchaseOrderUpdateOne) AddInstallmentStage(i int) *PurchaseOrderUpdateOne {
+	pouo.mutation.AddInstallmentStage(i)
 	return pouo
 }
 
@@ -816,15 +871,15 @@ func (pouo *PurchaseOrderUpdateOne) AddInstallmentTotal(i int) *PurchaseOrderUpd
 	return pouo
 }
 
-// SetInstallments sets the "installments" field.
-func (pouo *PurchaseOrderUpdateOne) SetInstallments(f []float64) *PurchaseOrderUpdateOne {
-	pouo.mutation.SetInstallments(f)
+// SetInstallmentPlan sets the "installment_plan" field.
+func (pouo *PurchaseOrderUpdateOne) SetInstallmentPlan(mpp model.GoodsPaymentPlan) *PurchaseOrderUpdateOne {
+	pouo.mutation.SetInstallmentPlan(mpp)
 	return pouo
 }
 
-// AppendInstallments appends f to the "installments" field.
-func (pouo *PurchaseOrderUpdateOne) AppendInstallments(f []float64) *PurchaseOrderUpdateOne {
-	pouo.mutation.AppendInstallments(f)
+// AppendInstallmentPlan appends mpp to the "installment_plan" field.
+func (pouo *PurchaseOrderUpdateOne) AppendInstallmentPlan(mpp model.GoodsPaymentPlan) *PurchaseOrderUpdateOne {
+	pouo.mutation.AppendInstallmentPlan(mpp)
 	return pouo
 }
 
@@ -862,26 +917,6 @@ func (pouo *PurchaseOrderUpdateOne) ClearNextDate() *PurchaseOrderUpdateOne {
 	return pouo
 }
 
-// SetStore sets the "store" field.
-func (pouo *PurchaseOrderUpdateOne) SetStore(s string) *PurchaseOrderUpdateOne {
-	pouo.mutation.SetStore(s)
-	return pouo
-}
-
-// SetNillableStore sets the "store" field if the given value is not nil.
-func (pouo *PurchaseOrderUpdateOne) SetNillableStore(s *string) *PurchaseOrderUpdateOne {
-	if s != nil {
-		pouo.SetStore(*s)
-	}
-	return pouo
-}
-
-// ClearStore clears the value of the "store" field.
-func (pouo *PurchaseOrderUpdateOne) ClearStore() *PurchaseOrderUpdateOne {
-	pouo.mutation.ClearStore()
-	return pouo
-}
-
 // SetImages sets the "images" field.
 func (pouo *PurchaseOrderUpdateOne) SetImages(s []string) *PurchaseOrderUpdateOne {
 	pouo.mutation.SetImages(s)
@@ -908,6 +943,11 @@ func (pouo *PurchaseOrderUpdateOne) SetRider(r *Rider) *PurchaseOrderUpdateOne {
 // SetGoods sets the "goods" edge to the Goods entity.
 func (pouo *PurchaseOrderUpdateOne) SetGoods(g *Goods) *PurchaseOrderUpdateOne {
 	return pouo.SetGoodsID(g.ID)
+}
+
+// SetStore sets the "store" edge to the Store entity.
+func (pouo *PurchaseOrderUpdateOne) SetStore(s *Store) *PurchaseOrderUpdateOne {
+	return pouo.SetStoreID(s.ID)
 }
 
 // AddPaymentIDs adds the "payments" edge to the PurchasePayment entity by IDs.
@@ -939,6 +979,12 @@ func (pouo *PurchaseOrderUpdateOne) ClearRider() *PurchaseOrderUpdateOne {
 // ClearGoods clears the "goods" edge to the Goods entity.
 func (pouo *PurchaseOrderUpdateOne) ClearGoods() *PurchaseOrderUpdateOne {
 	pouo.mutation.ClearGoods()
+	return pouo
+}
+
+// ClearStore clears the "store" edge to the Store entity.
+func (pouo *PurchaseOrderUpdateOne) ClearStore() *PurchaseOrderUpdateOne {
+	pouo.mutation.ClearStore()
 	return pouo
 }
 
@@ -1105,11 +1151,11 @@ func (pouo *PurchaseOrderUpdateOne) sqlSave(ctx context.Context) (_node *Purchas
 	if pouo.mutation.ContractURLCleared() {
 		_spec.ClearField(purchaseorder.FieldContractURL, field.TypeString)
 	}
-	if value, ok := pouo.mutation.InstallmentIndex(); ok {
-		_spec.SetField(purchaseorder.FieldInstallmentIndex, field.TypeInt, value)
+	if value, ok := pouo.mutation.InstallmentStage(); ok {
+		_spec.SetField(purchaseorder.FieldInstallmentStage, field.TypeInt, value)
 	}
-	if value, ok := pouo.mutation.AddedInstallmentIndex(); ok {
-		_spec.AddField(purchaseorder.FieldInstallmentIndex, field.TypeInt, value)
+	if value, ok := pouo.mutation.AddedInstallmentStage(); ok {
+		_spec.AddField(purchaseorder.FieldInstallmentStage, field.TypeInt, value)
 	}
 	if value, ok := pouo.mutation.InstallmentTotal(); ok {
 		_spec.SetField(purchaseorder.FieldInstallmentTotal, field.TypeInt, value)
@@ -1117,12 +1163,12 @@ func (pouo *PurchaseOrderUpdateOne) sqlSave(ctx context.Context) (_node *Purchas
 	if value, ok := pouo.mutation.AddedInstallmentTotal(); ok {
 		_spec.AddField(purchaseorder.FieldInstallmentTotal, field.TypeInt, value)
 	}
-	if value, ok := pouo.mutation.Installments(); ok {
-		_spec.SetField(purchaseorder.FieldInstallments, field.TypeJSON, value)
+	if value, ok := pouo.mutation.InstallmentPlan(); ok {
+		_spec.SetField(purchaseorder.FieldInstallmentPlan, field.TypeJSON, value)
 	}
-	if value, ok := pouo.mutation.AppendedInstallments(); ok {
+	if value, ok := pouo.mutation.AppendedInstallmentPlan(); ok {
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, purchaseorder.FieldInstallments, value)
+			sqljson.Append(u, purchaseorder.FieldInstallmentPlan, value)
 		})
 	}
 	if value, ok := pouo.mutation.StartDate(); ok {
@@ -1133,12 +1179,6 @@ func (pouo *PurchaseOrderUpdateOne) sqlSave(ctx context.Context) (_node *Purchas
 	}
 	if pouo.mutation.NextDateCleared() {
 		_spec.ClearField(purchaseorder.FieldNextDate, field.TypeTime)
-	}
-	if value, ok := pouo.mutation.Store(); ok {
-		_spec.SetField(purchaseorder.FieldStore, field.TypeString, value)
-	}
-	if pouo.mutation.StoreCleared() {
-		_spec.ClearField(purchaseorder.FieldStore, field.TypeString)
 	}
 	if value, ok := pouo.mutation.Images(); ok {
 		_spec.SetField(purchaseorder.FieldImages, field.TypeJSON, value)
@@ -1202,6 +1242,35 @@ func (pouo *PurchaseOrderUpdateOne) sqlSave(ctx context.Context) (_node *Purchas
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(goods.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pouo.mutation.StoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   purchaseorder.StoreTable,
+			Columns: []string{purchaseorder.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pouo.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   purchaseorder.StoreTable,
+			Columns: []string{purchaseorder.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

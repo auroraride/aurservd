@@ -32,30 +32,32 @@ const (
 	FieldRiderID = "rider_id"
 	// FieldGoodsID holds the string denoting the goods_id field in the database.
 	FieldGoodsID = "goods_id"
+	// FieldStoreID holds the string denoting the store_id field in the database.
+	FieldStoreID = "store_id"
 	// FieldSn holds the string denoting the sn field in the database.
 	FieldSn = "sn"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldContractURL holds the string denoting the contract_url field in the database.
 	FieldContractURL = "contract_url"
-	// FieldInstallmentIndex holds the string denoting the installment_index field in the database.
-	FieldInstallmentIndex = "installment_index"
+	// FieldInstallmentStage holds the string denoting the installment_stage field in the database.
+	FieldInstallmentStage = "installment_stage"
 	// FieldInstallmentTotal holds the string denoting the installment_total field in the database.
 	FieldInstallmentTotal = "installment_total"
-	// FieldInstallments holds the string denoting the installments field in the database.
-	FieldInstallments = "installments"
+	// FieldInstallmentPlan holds the string denoting the installment_plan field in the database.
+	FieldInstallmentPlan = "installment_plan"
 	// FieldStartDate holds the string denoting the start_date field in the database.
 	FieldStartDate = "start_date"
 	// FieldNextDate holds the string denoting the next_date field in the database.
 	FieldNextDate = "next_date"
-	// FieldStore holds the string denoting the store field in the database.
-	FieldStore = "store"
 	// FieldImages holds the string denoting the images field in the database.
 	FieldImages = "images"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeGoods holds the string denoting the goods edge name in mutations.
 	EdgeGoods = "goods"
+	// EdgeStore holds the string denoting the store edge name in mutations.
+	EdgeStore = "store"
 	// EdgePayments holds the string denoting the payments edge name in mutations.
 	EdgePayments = "payments"
 	// Table holds the table name of the purchaseorder in the database.
@@ -74,6 +76,13 @@ const (
 	GoodsInverseTable = "goods"
 	// GoodsColumn is the table column denoting the goods relation/edge.
 	GoodsColumn = "goods_id"
+	// StoreTable is the table that holds the store relation/edge.
+	StoreTable = "purchase_order"
+	// StoreInverseTable is the table name for the Store entity.
+	// It exists in this package in order to avoid circular dependency with the "store" package.
+	StoreInverseTable = "store"
+	// StoreColumn is the table column denoting the store relation/edge.
+	StoreColumn = "store_id"
 	// PaymentsTable is the table that holds the payments relation/edge.
 	PaymentsTable = "purchase_payment"
 	// PaymentsInverseTable is the table name for the PurchasePayment entity.
@@ -94,15 +103,15 @@ var Columns = []string{
 	FieldRemark,
 	FieldRiderID,
 	FieldGoodsID,
+	FieldStoreID,
 	FieldSn,
 	FieldStatus,
 	FieldContractURL,
-	FieldInstallmentIndex,
+	FieldInstallmentStage,
 	FieldInstallmentTotal,
-	FieldInstallments,
+	FieldInstallmentPlan,
 	FieldStartDate,
 	FieldNextDate,
-	FieldStore,
 	FieldImages,
 }
 
@@ -129,8 +138,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultInstallmentIndex holds the default value on creation for the "installment_index" field.
-	DefaultInstallmentIndex int
+	// DefaultInstallmentStage holds the default value on creation for the "installment_stage" field.
+	DefaultInstallmentStage int
 )
 
 // Status defines the type for the "status" enum field.
@@ -200,6 +209,11 @@ func ByGoodsID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldGoodsID, opts...).ToFunc()
 }
 
+// ByStoreID orders the results by the store_id field.
+func ByStoreID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStoreID, opts...).ToFunc()
+}
+
 // BySn orders the results by the sn field.
 func BySn(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSn, opts...).ToFunc()
@@ -215,9 +229,9 @@ func ByContractURL(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldContractURL, opts...).ToFunc()
 }
 
-// ByInstallmentIndex orders the results by the installment_index field.
-func ByInstallmentIndex(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldInstallmentIndex, opts...).ToFunc()
+// ByInstallmentStage orders the results by the installment_stage field.
+func ByInstallmentStage(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldInstallmentStage, opts...).ToFunc()
 }
 
 // ByInstallmentTotal orders the results by the installment_total field.
@@ -235,11 +249,6 @@ func ByNextDate(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldNextDate, opts...).ToFunc()
 }
 
-// ByStore orders the results by the store field.
-func ByStore(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldStore, opts...).ToFunc()
-}
-
 // ByRiderField orders the results by rider field.
 func ByRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -251,6 +260,13 @@ func ByRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
 func ByGoodsField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newGoodsStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByStoreField orders the results by store field.
+func ByStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStoreStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -279,6 +295,13 @@ func newGoodsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(GoodsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, GoodsTable, GoodsColumn),
+	)
+}
+func newStoreStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StoreInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
 	)
 }
 func newPaymentsStep() *sqlgraph.Step {

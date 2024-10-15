@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 // PurchaseOrderCreate is the builder for creating a PurchaseOrder entity.
@@ -106,6 +107,20 @@ func (poc *PurchaseOrderCreate) SetGoodsID(u uint64) *PurchaseOrderCreate {
 	return poc
 }
 
+// SetStoreID sets the "store_id" field.
+func (poc *PurchaseOrderCreate) SetStoreID(u uint64) *PurchaseOrderCreate {
+	poc.mutation.SetStoreID(u)
+	return poc
+}
+
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (poc *PurchaseOrderCreate) SetNillableStoreID(u *uint64) *PurchaseOrderCreate {
+	if u != nil {
+		poc.SetStoreID(*u)
+	}
+	return poc
+}
+
 // SetSn sets the "sn" field.
 func (poc *PurchaseOrderCreate) SetSn(s string) *PurchaseOrderCreate {
 	poc.mutation.SetSn(s)
@@ -140,16 +155,16 @@ func (poc *PurchaseOrderCreate) SetNillableContractURL(s *string) *PurchaseOrder
 	return poc
 }
 
-// SetInstallmentIndex sets the "installment_index" field.
-func (poc *PurchaseOrderCreate) SetInstallmentIndex(i int) *PurchaseOrderCreate {
-	poc.mutation.SetInstallmentIndex(i)
+// SetInstallmentStage sets the "installment_stage" field.
+func (poc *PurchaseOrderCreate) SetInstallmentStage(i int) *PurchaseOrderCreate {
+	poc.mutation.SetInstallmentStage(i)
 	return poc
 }
 
-// SetNillableInstallmentIndex sets the "installment_index" field if the given value is not nil.
-func (poc *PurchaseOrderCreate) SetNillableInstallmentIndex(i *int) *PurchaseOrderCreate {
+// SetNillableInstallmentStage sets the "installment_stage" field if the given value is not nil.
+func (poc *PurchaseOrderCreate) SetNillableInstallmentStage(i *int) *PurchaseOrderCreate {
 	if i != nil {
-		poc.SetInstallmentIndex(*i)
+		poc.SetInstallmentStage(*i)
 	}
 	return poc
 }
@@ -160,9 +175,9 @@ func (poc *PurchaseOrderCreate) SetInstallmentTotal(i int) *PurchaseOrderCreate 
 	return poc
 }
 
-// SetInstallments sets the "installments" field.
-func (poc *PurchaseOrderCreate) SetInstallments(f []float64) *PurchaseOrderCreate {
-	poc.mutation.SetInstallments(f)
+// SetInstallmentPlan sets the "installment_plan" field.
+func (poc *PurchaseOrderCreate) SetInstallmentPlan(mpp model.GoodsPaymentPlan) *PurchaseOrderCreate {
+	poc.mutation.SetInstallmentPlan(mpp)
 	return poc
 }
 
@@ -186,20 +201,6 @@ func (poc *PurchaseOrderCreate) SetNillableNextDate(t *time.Time) *PurchaseOrder
 	return poc
 }
 
-// SetStore sets the "store" field.
-func (poc *PurchaseOrderCreate) SetStore(s string) *PurchaseOrderCreate {
-	poc.mutation.SetStore(s)
-	return poc
-}
-
-// SetNillableStore sets the "store" field if the given value is not nil.
-func (poc *PurchaseOrderCreate) SetNillableStore(s *string) *PurchaseOrderCreate {
-	if s != nil {
-		poc.SetStore(*s)
-	}
-	return poc
-}
-
 // SetImages sets the "images" field.
 func (poc *PurchaseOrderCreate) SetImages(s []string) *PurchaseOrderCreate {
 	poc.mutation.SetImages(s)
@@ -214,6 +215,11 @@ func (poc *PurchaseOrderCreate) SetRider(r *Rider) *PurchaseOrderCreate {
 // SetGoods sets the "goods" edge to the Goods entity.
 func (poc *PurchaseOrderCreate) SetGoods(g *Goods) *PurchaseOrderCreate {
 	return poc.SetGoodsID(g.ID)
+}
+
+// SetStore sets the "store" edge to the Store entity.
+func (poc *PurchaseOrderCreate) SetStore(s *Store) *PurchaseOrderCreate {
+	return poc.SetStoreID(s.ID)
 }
 
 // AddPaymentIDs adds the "payments" edge to the PurchasePayment entity by IDs.
@@ -286,9 +292,9 @@ func (poc *PurchaseOrderCreate) defaults() error {
 		v := purchaseorder.DefaultStatus
 		poc.mutation.SetStatus(v)
 	}
-	if _, ok := poc.mutation.InstallmentIndex(); !ok {
-		v := purchaseorder.DefaultInstallmentIndex
-		poc.mutation.SetInstallmentIndex(v)
+	if _, ok := poc.mutation.InstallmentStage(); !ok {
+		v := purchaseorder.DefaultInstallmentStage
+		poc.mutation.SetInstallmentStage(v)
 	}
 	return nil
 }
@@ -318,14 +324,14 @@ func (poc *PurchaseOrderCreate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "PurchaseOrder.status": %w`, err)}
 		}
 	}
-	if _, ok := poc.mutation.InstallmentIndex(); !ok {
-		return &ValidationError{Name: "installment_index", err: errors.New(`ent: missing required field "PurchaseOrder.installment_index"`)}
+	if _, ok := poc.mutation.InstallmentStage(); !ok {
+		return &ValidationError{Name: "installment_stage", err: errors.New(`ent: missing required field "PurchaseOrder.installment_stage"`)}
 	}
 	if _, ok := poc.mutation.InstallmentTotal(); !ok {
 		return &ValidationError{Name: "installment_total", err: errors.New(`ent: missing required field "PurchaseOrder.installment_total"`)}
 	}
-	if _, ok := poc.mutation.Installments(); !ok {
-		return &ValidationError{Name: "installments", err: errors.New(`ent: missing required field "PurchaseOrder.installments"`)}
+	if _, ok := poc.mutation.InstallmentPlan(); !ok {
+		return &ValidationError{Name: "installment_plan", err: errors.New(`ent: missing required field "PurchaseOrder.installment_plan"`)}
 	}
 	if _, ok := poc.mutation.StartDate(); !ok {
 		return &ValidationError{Name: "start_date", err: errors.New(`ent: missing required field "PurchaseOrder.start_date"`)}
@@ -399,17 +405,17 @@ func (poc *PurchaseOrderCreate) createSpec() (*PurchaseOrder, *sqlgraph.CreateSp
 		_spec.SetField(purchaseorder.FieldContractURL, field.TypeString, value)
 		_node.ContractURL = value
 	}
-	if value, ok := poc.mutation.InstallmentIndex(); ok {
-		_spec.SetField(purchaseorder.FieldInstallmentIndex, field.TypeInt, value)
-		_node.InstallmentIndex = value
+	if value, ok := poc.mutation.InstallmentStage(); ok {
+		_spec.SetField(purchaseorder.FieldInstallmentStage, field.TypeInt, value)
+		_node.InstallmentStage = value
 	}
 	if value, ok := poc.mutation.InstallmentTotal(); ok {
 		_spec.SetField(purchaseorder.FieldInstallmentTotal, field.TypeInt, value)
 		_node.InstallmentTotal = value
 	}
-	if value, ok := poc.mutation.Installments(); ok {
-		_spec.SetField(purchaseorder.FieldInstallments, field.TypeJSON, value)
-		_node.Installments = value
+	if value, ok := poc.mutation.InstallmentPlan(); ok {
+		_spec.SetField(purchaseorder.FieldInstallmentPlan, field.TypeJSON, value)
+		_node.InstallmentPlan = value
 	}
 	if value, ok := poc.mutation.StartDate(); ok {
 		_spec.SetField(purchaseorder.FieldStartDate, field.TypeTime, value)
@@ -418,10 +424,6 @@ func (poc *PurchaseOrderCreate) createSpec() (*PurchaseOrder, *sqlgraph.CreateSp
 	if value, ok := poc.mutation.NextDate(); ok {
 		_spec.SetField(purchaseorder.FieldNextDate, field.TypeTime, value)
 		_node.NextDate = &value
-	}
-	if value, ok := poc.mutation.Store(); ok {
-		_spec.SetField(purchaseorder.FieldStore, field.TypeString, value)
-		_node.Store = value
 	}
 	if value, ok := poc.mutation.Images(); ok {
 		_spec.SetField(purchaseorder.FieldImages, field.TypeJSON, value)
@@ -459,6 +461,23 @@ func (poc *PurchaseOrderCreate) createSpec() (*PurchaseOrder, *sqlgraph.CreateSp
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.GoodsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := poc.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   purchaseorder.StoreTable,
+			Columns: []string{purchaseorder.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.StoreID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := poc.mutation.PaymentsIDs(); len(nodes) > 0 {
@@ -619,6 +638,24 @@ func (u *PurchaseOrderUpsert) UpdateGoodsID() *PurchaseOrderUpsert {
 	return u
 }
 
+// SetStoreID sets the "store_id" field.
+func (u *PurchaseOrderUpsert) SetStoreID(v uint64) *PurchaseOrderUpsert {
+	u.Set(purchaseorder.FieldStoreID, v)
+	return u
+}
+
+// UpdateStoreID sets the "store_id" field to the value that was provided on create.
+func (u *PurchaseOrderUpsert) UpdateStoreID() *PurchaseOrderUpsert {
+	u.SetExcluded(purchaseorder.FieldStoreID)
+	return u
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (u *PurchaseOrderUpsert) ClearStoreID() *PurchaseOrderUpsert {
+	u.SetNull(purchaseorder.FieldStoreID)
+	return u
+}
+
 // SetSn sets the "sn" field.
 func (u *PurchaseOrderUpsert) SetSn(v string) *PurchaseOrderUpsert {
 	u.Set(purchaseorder.FieldSn, v)
@@ -661,21 +698,21 @@ func (u *PurchaseOrderUpsert) ClearContractURL() *PurchaseOrderUpsert {
 	return u
 }
 
-// SetInstallmentIndex sets the "installment_index" field.
-func (u *PurchaseOrderUpsert) SetInstallmentIndex(v int) *PurchaseOrderUpsert {
-	u.Set(purchaseorder.FieldInstallmentIndex, v)
+// SetInstallmentStage sets the "installment_stage" field.
+func (u *PurchaseOrderUpsert) SetInstallmentStage(v int) *PurchaseOrderUpsert {
+	u.Set(purchaseorder.FieldInstallmentStage, v)
 	return u
 }
 
-// UpdateInstallmentIndex sets the "installment_index" field to the value that was provided on create.
-func (u *PurchaseOrderUpsert) UpdateInstallmentIndex() *PurchaseOrderUpsert {
-	u.SetExcluded(purchaseorder.FieldInstallmentIndex)
+// UpdateInstallmentStage sets the "installment_stage" field to the value that was provided on create.
+func (u *PurchaseOrderUpsert) UpdateInstallmentStage() *PurchaseOrderUpsert {
+	u.SetExcluded(purchaseorder.FieldInstallmentStage)
 	return u
 }
 
-// AddInstallmentIndex adds v to the "installment_index" field.
-func (u *PurchaseOrderUpsert) AddInstallmentIndex(v int) *PurchaseOrderUpsert {
-	u.Add(purchaseorder.FieldInstallmentIndex, v)
+// AddInstallmentStage adds v to the "installment_stage" field.
+func (u *PurchaseOrderUpsert) AddInstallmentStage(v int) *PurchaseOrderUpsert {
+	u.Add(purchaseorder.FieldInstallmentStage, v)
 	return u
 }
 
@@ -697,15 +734,15 @@ func (u *PurchaseOrderUpsert) AddInstallmentTotal(v int) *PurchaseOrderUpsert {
 	return u
 }
 
-// SetInstallments sets the "installments" field.
-func (u *PurchaseOrderUpsert) SetInstallments(v []float64) *PurchaseOrderUpsert {
-	u.Set(purchaseorder.FieldInstallments, v)
+// SetInstallmentPlan sets the "installment_plan" field.
+func (u *PurchaseOrderUpsert) SetInstallmentPlan(v model.GoodsPaymentPlan) *PurchaseOrderUpsert {
+	u.Set(purchaseorder.FieldInstallmentPlan, v)
 	return u
 }
 
-// UpdateInstallments sets the "installments" field to the value that was provided on create.
-func (u *PurchaseOrderUpsert) UpdateInstallments() *PurchaseOrderUpsert {
-	u.SetExcluded(purchaseorder.FieldInstallments)
+// UpdateInstallmentPlan sets the "installment_plan" field to the value that was provided on create.
+func (u *PurchaseOrderUpsert) UpdateInstallmentPlan() *PurchaseOrderUpsert {
+	u.SetExcluded(purchaseorder.FieldInstallmentPlan)
 	return u
 }
 
@@ -736,24 +773,6 @@ func (u *PurchaseOrderUpsert) UpdateNextDate() *PurchaseOrderUpsert {
 // ClearNextDate clears the value of the "next_date" field.
 func (u *PurchaseOrderUpsert) ClearNextDate() *PurchaseOrderUpsert {
 	u.SetNull(purchaseorder.FieldNextDate)
-	return u
-}
-
-// SetStore sets the "store" field.
-func (u *PurchaseOrderUpsert) SetStore(v string) *PurchaseOrderUpsert {
-	u.Set(purchaseorder.FieldStore, v)
-	return u
-}
-
-// UpdateStore sets the "store" field to the value that was provided on create.
-func (u *PurchaseOrderUpsert) UpdateStore() *PurchaseOrderUpsert {
-	u.SetExcluded(purchaseorder.FieldStore)
-	return u
-}
-
-// ClearStore clears the value of the "store" field.
-func (u *PurchaseOrderUpsert) ClearStore() *PurchaseOrderUpsert {
-	u.SetNull(purchaseorder.FieldStore)
 	return u
 }
 
@@ -928,6 +947,27 @@ func (u *PurchaseOrderUpsertOne) UpdateGoodsID() *PurchaseOrderUpsertOne {
 	})
 }
 
+// SetStoreID sets the "store_id" field.
+func (u *PurchaseOrderUpsertOne) SetStoreID(v uint64) *PurchaseOrderUpsertOne {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.SetStoreID(v)
+	})
+}
+
+// UpdateStoreID sets the "store_id" field to the value that was provided on create.
+func (u *PurchaseOrderUpsertOne) UpdateStoreID() *PurchaseOrderUpsertOne {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.UpdateStoreID()
+	})
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (u *PurchaseOrderUpsertOne) ClearStoreID() *PurchaseOrderUpsertOne {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.ClearStoreID()
+	})
+}
+
 // SetSn sets the "sn" field.
 func (u *PurchaseOrderUpsertOne) SetSn(v string) *PurchaseOrderUpsertOne {
 	return u.Update(func(s *PurchaseOrderUpsert) {
@@ -977,24 +1017,24 @@ func (u *PurchaseOrderUpsertOne) ClearContractURL() *PurchaseOrderUpsertOne {
 	})
 }
 
-// SetInstallmentIndex sets the "installment_index" field.
-func (u *PurchaseOrderUpsertOne) SetInstallmentIndex(v int) *PurchaseOrderUpsertOne {
+// SetInstallmentStage sets the "installment_stage" field.
+func (u *PurchaseOrderUpsertOne) SetInstallmentStage(v int) *PurchaseOrderUpsertOne {
 	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.SetInstallmentIndex(v)
+		s.SetInstallmentStage(v)
 	})
 }
 
-// AddInstallmentIndex adds v to the "installment_index" field.
-func (u *PurchaseOrderUpsertOne) AddInstallmentIndex(v int) *PurchaseOrderUpsertOne {
+// AddInstallmentStage adds v to the "installment_stage" field.
+func (u *PurchaseOrderUpsertOne) AddInstallmentStage(v int) *PurchaseOrderUpsertOne {
 	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.AddInstallmentIndex(v)
+		s.AddInstallmentStage(v)
 	})
 }
 
-// UpdateInstallmentIndex sets the "installment_index" field to the value that was provided on create.
-func (u *PurchaseOrderUpsertOne) UpdateInstallmentIndex() *PurchaseOrderUpsertOne {
+// UpdateInstallmentStage sets the "installment_stage" field to the value that was provided on create.
+func (u *PurchaseOrderUpsertOne) UpdateInstallmentStage() *PurchaseOrderUpsertOne {
 	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.UpdateInstallmentIndex()
+		s.UpdateInstallmentStage()
 	})
 }
 
@@ -1019,17 +1059,17 @@ func (u *PurchaseOrderUpsertOne) UpdateInstallmentTotal() *PurchaseOrderUpsertOn
 	})
 }
 
-// SetInstallments sets the "installments" field.
-func (u *PurchaseOrderUpsertOne) SetInstallments(v []float64) *PurchaseOrderUpsertOne {
+// SetInstallmentPlan sets the "installment_plan" field.
+func (u *PurchaseOrderUpsertOne) SetInstallmentPlan(v model.GoodsPaymentPlan) *PurchaseOrderUpsertOne {
 	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.SetInstallments(v)
+		s.SetInstallmentPlan(v)
 	})
 }
 
-// UpdateInstallments sets the "installments" field to the value that was provided on create.
-func (u *PurchaseOrderUpsertOne) UpdateInstallments() *PurchaseOrderUpsertOne {
+// UpdateInstallmentPlan sets the "installment_plan" field to the value that was provided on create.
+func (u *PurchaseOrderUpsertOne) UpdateInstallmentPlan() *PurchaseOrderUpsertOne {
 	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.UpdateInstallments()
+		s.UpdateInstallmentPlan()
 	})
 }
 
@@ -1065,27 +1105,6 @@ func (u *PurchaseOrderUpsertOne) UpdateNextDate() *PurchaseOrderUpsertOne {
 func (u *PurchaseOrderUpsertOne) ClearNextDate() *PurchaseOrderUpsertOne {
 	return u.Update(func(s *PurchaseOrderUpsert) {
 		s.ClearNextDate()
-	})
-}
-
-// SetStore sets the "store" field.
-func (u *PurchaseOrderUpsertOne) SetStore(v string) *PurchaseOrderUpsertOne {
-	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.SetStore(v)
-	})
-}
-
-// UpdateStore sets the "store" field to the value that was provided on create.
-func (u *PurchaseOrderUpsertOne) UpdateStore() *PurchaseOrderUpsertOne {
-	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.UpdateStore()
-	})
-}
-
-// ClearStore clears the value of the "store" field.
-func (u *PurchaseOrderUpsertOne) ClearStore() *PurchaseOrderUpsertOne {
-	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.ClearStore()
 	})
 }
 
@@ -1429,6 +1448,27 @@ func (u *PurchaseOrderUpsertBulk) UpdateGoodsID() *PurchaseOrderUpsertBulk {
 	})
 }
 
+// SetStoreID sets the "store_id" field.
+func (u *PurchaseOrderUpsertBulk) SetStoreID(v uint64) *PurchaseOrderUpsertBulk {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.SetStoreID(v)
+	})
+}
+
+// UpdateStoreID sets the "store_id" field to the value that was provided on create.
+func (u *PurchaseOrderUpsertBulk) UpdateStoreID() *PurchaseOrderUpsertBulk {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.UpdateStoreID()
+	})
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (u *PurchaseOrderUpsertBulk) ClearStoreID() *PurchaseOrderUpsertBulk {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.ClearStoreID()
+	})
+}
+
 // SetSn sets the "sn" field.
 func (u *PurchaseOrderUpsertBulk) SetSn(v string) *PurchaseOrderUpsertBulk {
 	return u.Update(func(s *PurchaseOrderUpsert) {
@@ -1478,24 +1518,24 @@ func (u *PurchaseOrderUpsertBulk) ClearContractURL() *PurchaseOrderUpsertBulk {
 	})
 }
 
-// SetInstallmentIndex sets the "installment_index" field.
-func (u *PurchaseOrderUpsertBulk) SetInstallmentIndex(v int) *PurchaseOrderUpsertBulk {
+// SetInstallmentStage sets the "installment_stage" field.
+func (u *PurchaseOrderUpsertBulk) SetInstallmentStage(v int) *PurchaseOrderUpsertBulk {
 	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.SetInstallmentIndex(v)
+		s.SetInstallmentStage(v)
 	})
 }
 
-// AddInstallmentIndex adds v to the "installment_index" field.
-func (u *PurchaseOrderUpsertBulk) AddInstallmentIndex(v int) *PurchaseOrderUpsertBulk {
+// AddInstallmentStage adds v to the "installment_stage" field.
+func (u *PurchaseOrderUpsertBulk) AddInstallmentStage(v int) *PurchaseOrderUpsertBulk {
 	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.AddInstallmentIndex(v)
+		s.AddInstallmentStage(v)
 	})
 }
 
-// UpdateInstallmentIndex sets the "installment_index" field to the value that was provided on create.
-func (u *PurchaseOrderUpsertBulk) UpdateInstallmentIndex() *PurchaseOrderUpsertBulk {
+// UpdateInstallmentStage sets the "installment_stage" field to the value that was provided on create.
+func (u *PurchaseOrderUpsertBulk) UpdateInstallmentStage() *PurchaseOrderUpsertBulk {
 	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.UpdateInstallmentIndex()
+		s.UpdateInstallmentStage()
 	})
 }
 
@@ -1520,17 +1560,17 @@ func (u *PurchaseOrderUpsertBulk) UpdateInstallmentTotal() *PurchaseOrderUpsertB
 	})
 }
 
-// SetInstallments sets the "installments" field.
-func (u *PurchaseOrderUpsertBulk) SetInstallments(v []float64) *PurchaseOrderUpsertBulk {
+// SetInstallmentPlan sets the "installment_plan" field.
+func (u *PurchaseOrderUpsertBulk) SetInstallmentPlan(v model.GoodsPaymentPlan) *PurchaseOrderUpsertBulk {
 	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.SetInstallments(v)
+		s.SetInstallmentPlan(v)
 	})
 }
 
-// UpdateInstallments sets the "installments" field to the value that was provided on create.
-func (u *PurchaseOrderUpsertBulk) UpdateInstallments() *PurchaseOrderUpsertBulk {
+// UpdateInstallmentPlan sets the "installment_plan" field to the value that was provided on create.
+func (u *PurchaseOrderUpsertBulk) UpdateInstallmentPlan() *PurchaseOrderUpsertBulk {
 	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.UpdateInstallments()
+		s.UpdateInstallmentPlan()
 	})
 }
 
@@ -1566,27 +1606,6 @@ func (u *PurchaseOrderUpsertBulk) UpdateNextDate() *PurchaseOrderUpsertBulk {
 func (u *PurchaseOrderUpsertBulk) ClearNextDate() *PurchaseOrderUpsertBulk {
 	return u.Update(func(s *PurchaseOrderUpsert) {
 		s.ClearNextDate()
-	})
-}
-
-// SetStore sets the "store" field.
-func (u *PurchaseOrderUpsertBulk) SetStore(v string) *PurchaseOrderUpsertBulk {
-	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.SetStore(v)
-	})
-}
-
-// UpdateStore sets the "store" field to the value that was provided on create.
-func (u *PurchaseOrderUpsertBulk) UpdateStore() *PurchaseOrderUpsertBulk {
-	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.UpdateStore()
-	})
-}
-
-// ClearStore clears the value of the "store" field.
-func (u *PurchaseOrderUpsertBulk) ClearStore() *PurchaseOrderUpsertBulk {
-	return u.Update(func(s *PurchaseOrderUpsert) {
-		s.ClearStore()
 	})
 }
 

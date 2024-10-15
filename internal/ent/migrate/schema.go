@@ -5794,15 +5794,15 @@ var (
 		{Name: "sn", Type: field.TypeString, Comment: "车架号"},
 		{Name: "status", Type: field.TypeEnum, Comment: "状态, pending: 待支付, staging: 分期执行中, ended: 已完成, cancelled: 已取消, refunded: 已退款", Enums: []string{"pending", "staging", "ended", "cancelled", "refunded"}, Default: "pending"},
 		{Name: "contract_url", Type: field.TypeString, Nullable: true, Comment: "合同URL"},
-		{Name: "installment_index", Type: field.TypeInt, Comment: "当前分期索引", Default: 1},
+		{Name: "installment_stage", Type: field.TypeInt, Comment: "当前分期阶段，从0开始", Default: 0},
 		{Name: "installment_total", Type: field.TypeInt, Comment: "分期总数"},
-		{Name: "installments", Type: field.TypeJSON, Comment: "分期表"},
+		{Name: "installment_plan", Type: field.TypeJSON, Comment: "分期方案"},
 		{Name: "start_date", Type: field.TypeTime, Comment: "开始日期", SchemaType: map[string]string{"postgres": "date"}},
 		{Name: "next_date", Type: field.TypeTime, Nullable: true, Comment: "下次支付日期", SchemaType: map[string]string{"postgres": "date"}},
-		{Name: "store", Type: field.TypeString, Nullable: true, Comment: "门店"},
 		{Name: "images", Type: field.TypeJSON, Nullable: true, Comment: "图片"},
 		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
 		{Name: "goods_id", Type: field.TypeUint64, Comment: "商品ID"},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "门店ID"},
 	}
 	// PurchaseOrderTable holds the schema information for the "purchase_order" table.
 	PurchaseOrderTable = &schema.Table{
@@ -5812,15 +5812,21 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "purchase_order_rider_rider",
-				Columns:    []*schema.Column{PurchaseOrderColumns[17]},
+				Columns:    []*schema.Column{PurchaseOrderColumns[16]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "purchase_order_goods_goods",
-				Columns:    []*schema.Column{PurchaseOrderColumns[18]},
+				Columns:    []*schema.Column{PurchaseOrderColumns[17]},
 				RefColumns: []*schema.Column{GoodsColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "purchase_order_store_store",
+				Columns:    []*schema.Column{PurchaseOrderColumns[18]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -5837,10 +5843,15 @@ var (
 			{
 				Name:    "purchaseorder_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{PurchaseOrderColumns[17]},
+				Columns: []*schema.Column{PurchaseOrderColumns[16]},
 			},
 			{
 				Name:    "purchaseorder_goods_id",
+				Unique:  false,
+				Columns: []*schema.Column{PurchaseOrderColumns[17]},
+			},
+			{
+				Name:    "purchaseorder_store_id",
 				Unique:  false,
 				Columns: []*schema.Column{PurchaseOrderColumns[18]},
 			},
@@ -5858,11 +5869,6 @@ var (
 				Name:    "purchaseorder_next_date",
 				Unique:  false,
 				Columns: []*schema.Column{PurchaseOrderColumns[14]},
-			},
-			{
-				Name:    "purchaseorder_store",
-				Unique:  false,
-				Columns: []*schema.Column{PurchaseOrderColumns[15]},
 			},
 		},
 	}
@@ -8328,6 +8334,7 @@ func init() {
 	}
 	PurchaseOrderTable.ForeignKeys[0].RefTable = RiderTable
 	PurchaseOrderTable.ForeignKeys[1].RefTable = GoodsTable
+	PurchaseOrderTable.ForeignKeys[2].RefTable = StoreTable
 	PurchaseOrderTable.Annotation = &entsql.Annotation{
 		Table: "purchase_order",
 	}
