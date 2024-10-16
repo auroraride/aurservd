@@ -13,6 +13,7 @@ import (
 
 	v2 "github.com/auroraride/aurservd/app/controller/v2/mapi"
 	"github.com/auroraride/aurservd/app/middleware"
+	pm "github.com/auroraride/aurservd/app/purchase/controller/mapi"
 	"github.com/auroraride/aurservd/internal/ar"
 )
 
@@ -51,4 +52,12 @@ func LoadManagerV2Routes(root *echo.Group) {
 	// 资产
 	asset := g.Group("/masset")
 	asset.GET("/count", v2.Asset.Count) // 资产数量
+
+	// 购车订单
+	purchase := g.Group("/purchase/order")
+	purchase.GET("", pm.Order.List)              // 订单列表
+	purchase.GET("/:id", pm.Order.Detail)        // 订单详情
+	purchase.POST("/active", pm.Order.Active)    // 激活订单
+	purchase.POST("/follow", pm.Order.Follow)    // 跟进订单
+	purchase.PUT("/cancel/:id", pm.Order.Cancel) // 跟进订单
 }

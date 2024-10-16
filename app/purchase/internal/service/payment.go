@@ -61,7 +61,10 @@ func (s *paymentService) Create(ctx context.Context, req *pm.PaymentPlanCreateRe
 			SetStatus(purchasepayment.StatusObligation).
 			SetTotal(plan.Amount).
 			SetAmount(plan.Amount).
-			SetBillingDate(dates[k]),
+			SetBillingDate(dates[k]).
+			SetRiderID(o.RiderID).
+			SetGoodsID(o.GoodsID).
+			SetOrderID(o.ID),
 		)
 	}
 	_, err := s.orm.CreateBulk(paymentBulk...).Save(ctx)

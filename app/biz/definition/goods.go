@@ -41,6 +41,7 @@ type GoodsListReq struct {
 
 // Goods 商品公共字段
 type Goods struct {
+	ID           uint64        `json:"id"`           // 商品ID
 	Sn           string        `json:"sn"`           // 商品编号
 	Name         string        `json:"name"`         // 商品名称
 	Type         GoodsType     `json:"type"`         // 商品类型 1-电车

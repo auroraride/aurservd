@@ -64,6 +64,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionmembercommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionprivilege"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
+	"github.com/auroraride/aurservd/internal/ent/purchasefollow"
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/internal/ent/question"
@@ -2394,6 +2395,46 @@ func (c *PromotionWithdrawalClient) GetNotDeleted(ctx context.Context, id uint64
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *PromotionWithdrawalClient) GetNotDeletedX(ctx context.Context, id uint64) *PromotionWithdrawal {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for PurchaseFollow.
+func (c *PurchaseFollowClient) SoftDelete() *PurchaseFollowUpdate {
+	mutation := newPurchaseFollowMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &PurchaseFollowUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *PurchaseFollowClient) SoftDeleteOne(pf *PurchaseFollow) *PurchaseFollowUpdateOne {
+	mutation := newPurchaseFollowMutation(c.config, OpUpdateOne, withPurchaseFollow(pf))
+	mutation.SetDeletedAt(time.Now())
+	return &PurchaseFollowUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *PurchaseFollowClient) SoftDeleteOneID(id uint64) *PurchaseFollowUpdateOne {
+	mutation := newPurchaseFollowMutation(c.config, OpUpdateOne, withPurchaseFollowID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &PurchaseFollowUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for PurchaseFollow.
+func (c *PurchaseFollowClient) QueryNotDeleted() *PurchaseFollowQuery {
+	return c.Query().Where(purchasefollow.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a PurchaseFollow not deleted entity by its id.
+func (c *PurchaseFollowClient) GetNotDeleted(ctx context.Context, id uint64) (*PurchaseFollow, error) {
+	return c.Query().Where(purchasefollow.ID(id), purchasefollow.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *PurchaseFollowClient) GetNotDeletedX(ctx context.Context, id uint64) *PurchaseFollow {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

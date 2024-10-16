@@ -58,6 +58,12 @@ type PurchaseOrder struct {
 	NextDate *time.Time `json:"next_date,omitempty"`
 	// 图片
 	Images []string `json:"images,omitempty"`
+	// 激活人姓名
+	ActiveName string `json:"active_name,omitempty"`
+	// 激活人电话
+	ActivePhone string `json:"active_phone,omitempty"`
+	// 车辆颜色
+	Color string `json:"color,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PurchaseOrderQuery when eager-loading is set.
 	Edges        PurchaseOrderEdges `json:"edges"`
@@ -74,9 +80,11 @@ type PurchaseOrderEdges struct {
 	Store *Store `json:"store,omitempty"`
 	// Payments holds the value of the payments edge.
 	Payments []*PurchasePayment `json:"payments,omitempty"`
+	// Follows holds the value of the follows edge.
+	Follows []*PurchaseFollow `json:"follows,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 }
 
 // RiderOrErr returns the Rider value or an error if the edge
@@ -121,6 +129,15 @@ func (e PurchaseOrderEdges) PaymentsOrErr() ([]*PurchasePayment, error) {
 	return nil, &NotLoadedError{edge: "payments"}
 }
 
+// FollowsOrErr returns the Follows value or an error if the edge
+// was not loaded in eager-loading.
+func (e PurchaseOrderEdges) FollowsOrErr() ([]*PurchaseFollow, error) {
+	if e.loadedTypes[4] {
+		return e.Follows, nil
+	}
+	return nil, &NotLoadedError{edge: "follows"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*PurchaseOrder) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -130,7 +147,7 @@ func (*PurchaseOrder) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case purchaseorder.FieldID, purchaseorder.FieldRiderID, purchaseorder.FieldGoodsID, purchaseorder.FieldStoreID, purchaseorder.FieldInstallmentStage, purchaseorder.FieldInstallmentTotal:
 			values[i] = new(sql.NullInt64)
-		case purchaseorder.FieldRemark, purchaseorder.FieldSn, purchaseorder.FieldStatus, purchaseorder.FieldContractURL:
+		case purchaseorder.FieldRemark, purchaseorder.FieldSn, purchaseorder.FieldStatus, purchaseorder.FieldContractURL, purchaseorder.FieldActiveName, purchaseorder.FieldActivePhone, purchaseorder.FieldColor:
 			values[i] = new(sql.NullString)
 		case purchaseorder.FieldCreatedAt, purchaseorder.FieldUpdatedAt, purchaseorder.FieldDeletedAt, purchaseorder.FieldStartDate, purchaseorder.FieldNextDate:
 			values[i] = new(sql.NullTime)
@@ -274,6 +291,24 @@ func (po *PurchaseOrder) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field images: %w", err)
 				}
 			}
+		case purchaseorder.FieldActiveName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field active_name", values[i])
+			} else if value.Valid {
+				po.ActiveName = value.String
+			}
+		case purchaseorder.FieldActivePhone:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field active_phone", values[i])
+			} else if value.Valid {
+				po.ActivePhone = value.String
+			}
+		case purchaseorder.FieldColor:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field color", values[i])
+			} else if value.Valid {
+				po.Color = value.String
+			}
 		default:
 			po.selectValues.Set(columns[i], values[i])
 		}
@@ -305,6 +340,11 @@ func (po *PurchaseOrder) QueryStore() *StoreQuery {
 // QueryPayments queries the "payments" edge of the PurchaseOrder entity.
 func (po *PurchaseOrder) QueryPayments() *PurchasePaymentQuery {
 	return NewPurchaseOrderClient(po.config).QueryPayments(po)
+}
+
+// QueryFollows queries the "follows" edge of the PurchaseOrder entity.
+func (po *PurchaseOrder) QueryFollows() *PurchaseFollowQuery {
+	return NewPurchaseOrderClient(po.config).QueryFollows(po)
 }
 
 // Update returns a builder for updating this PurchaseOrder.
@@ -389,6 +429,15 @@ func (po *PurchaseOrder) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("images=")
 	builder.WriteString(fmt.Sprintf("%v", po.Images))
+	builder.WriteString(", ")
+	builder.WriteString("active_name=")
+	builder.WriteString(po.ActiveName)
+	builder.WriteString(", ")
+	builder.WriteString("active_phone=")
+	builder.WriteString(po.ActivePhone)
+	builder.WriteString(", ")
+	builder.WriteString("color=")
+	builder.WriteString(po.Color)
 	builder.WriteByte(')')
 	return builder.String()
 }

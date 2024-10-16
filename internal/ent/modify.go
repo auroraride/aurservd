@@ -618,6 +618,13 @@ func (c *PromotionWithdrawalClient) ModifyOne(old *PromotionWithdrawal, data any
 	return EntitySetAttributes[PromotionWithdrawalUpdateOne, PromotionWithdrawal](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for PurchaseFollow.
+func (c *PurchaseFollowClient) ModifyOne(old *PurchaseFollow, data any) *PurchaseFollowUpdateOne {
+	mutation := newPurchaseFollowMutation(c.config, OpUpdateOne, withPurchaseFollow(old))
+	up := &PurchaseFollowUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PurchaseFollowUpdateOne, PurchaseFollow](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for PurchaseOrder.
 func (c *PurchaseOrderClient) ModifyOne(old *PurchaseOrder, data any) *PurchaseOrderUpdateOne {
 	mutation := newPurchaseOrderMutation(c.config, OpUpdateOne, withPurchaseOrder(old))

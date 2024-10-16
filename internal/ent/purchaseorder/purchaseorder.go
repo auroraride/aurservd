@@ -52,6 +52,12 @@ const (
 	FieldNextDate = "next_date"
 	// FieldImages holds the string denoting the images field in the database.
 	FieldImages = "images"
+	// FieldActiveName holds the string denoting the active_name field in the database.
+	FieldActiveName = "active_name"
+	// FieldActivePhone holds the string denoting the active_phone field in the database.
+	FieldActivePhone = "active_phone"
+	// FieldColor holds the string denoting the color field in the database.
+	FieldColor = "color"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeGoods holds the string denoting the goods edge name in mutations.
@@ -60,6 +66,8 @@ const (
 	EdgeStore = "store"
 	// EdgePayments holds the string denoting the payments edge name in mutations.
 	EdgePayments = "payments"
+	// EdgeFollows holds the string denoting the follows edge name in mutations.
+	EdgeFollows = "follows"
 	// Table holds the table name of the purchaseorder in the database.
 	Table = "purchase_order"
 	// RiderTable is the table that holds the rider relation/edge.
@@ -90,6 +98,13 @@ const (
 	PaymentsInverseTable = "purchase_payment"
 	// PaymentsColumn is the table column denoting the payments relation/edge.
 	PaymentsColumn = "order_id"
+	// FollowsTable is the table that holds the follows relation/edge.
+	FollowsTable = "purchase_follow"
+	// FollowsInverseTable is the table name for the PurchaseFollow entity.
+	// It exists in this package in order to avoid circular dependency with the "purchasefollow" package.
+	FollowsInverseTable = "purchase_follow"
+	// FollowsColumn is the table column denoting the follows relation/edge.
+	FollowsColumn = "order_id"
 )
 
 // Columns holds all SQL columns for purchaseorder fields.
@@ -113,6 +128,9 @@ var Columns = []string{
 	FieldStartDate,
 	FieldNextDate,
 	FieldImages,
+	FieldActiveName,
+	FieldActivePhone,
+	FieldColor,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -249,6 +267,21 @@ func ByNextDate(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldNextDate, opts...).ToFunc()
 }
 
+// ByActiveName orders the results by the active_name field.
+func ByActiveName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldActiveName, opts...).ToFunc()
+}
+
+// ByActivePhone orders the results by the active_phone field.
+func ByActivePhone(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldActivePhone, opts...).ToFunc()
+}
+
+// ByColor orders the results by the color field.
+func ByColor(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldColor, opts...).ToFunc()
+}
+
 // ByRiderField orders the results by rider field.
 func ByRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -283,6 +316,20 @@ func ByPayments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newPaymentsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByFollowsCount orders the results by follows count.
+func ByFollowsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newFollowsStep(), opts...)
+	}
+}
+
+// ByFollows orders the results by follows terms.
+func ByFollows(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFollowsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newRiderStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -309,5 +356,12 @@ func newPaymentsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PaymentsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, PaymentsTable, PaymentsColumn),
+	)
+}
+func newFollowsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(FollowsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, FollowsTable, FollowsColumn),
 	)
 }
