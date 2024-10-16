@@ -5680,10 +5680,6 @@ const docTemplate = `{
                     "description": "型号",
                     "type": "string"
                 },
-                "modelId": {
-                    "description": "型号ID",
-                    "type": "integer"
-                },
                 "sn": {
                     "description": "编号",
                     "type": "string"

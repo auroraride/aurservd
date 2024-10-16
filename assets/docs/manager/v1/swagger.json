@@ -544,7 +544,7 @@
                 "tags": [
                     "电池"
                 ],
-              "summary": "电池绑定至骑手",
+                "summary": "电池绑定至骑手",
                 "operationId": "ManagerBatteryBind",
                 "parameters": [
                     {
@@ -2331,7 +2331,6 @@
         },
         "/manager/v1/cabinet/openbind": {
             "post": {
-                "description": "\u003c仅智能电柜可用, 普通电柜无法请求, 判定标准: `intelligent = true`\u003e",
                 "consumes": [
                     "application/json"
                 ],
@@ -13496,6 +13495,16 @@
                     "description": "商品名称, 商品名称",
                     "type": "string"
                 },
+                "paymentPlans": {
+                    "description": "付款方案",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    }
+                },
                 "photos": {
                     "description": "商品图片, 商品图片",
                     "type": "array",
@@ -13564,6 +13573,16 @@
                 "name": {
                     "description": "商品名称",
                     "type": "string"
+                },
+                "paymentPlans": {
+                    "description": "付款方案",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    }
                 },
                 "photos": {
                     "description": "商品图片",
@@ -13686,6 +13705,16 @@
                 "name": {
                     "description": "商品名称, 商品名称",
                     "type": "string"
+                },
+                "paymentPlans": {
+                    "description": "付款方案",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    }
                 },
                 "photos": {
                     "description": "商品图片, 商品图片",
@@ -14597,10 +14626,6 @@
                     "description": "型号",
                     "type": "string"
                 },
-              "modelId": {
-                "description": "型号ID",
-                "type": "integer"
-              },
                 "sn": {
                     "description": "编号",
                     "type": "string"
@@ -16568,7 +16593,6 @@
         "model.CabinetOpenBindReq": {
             "type": "object",
             "required": [
-                "batterySn",
                 "id",
                 "index",
                 "phone",

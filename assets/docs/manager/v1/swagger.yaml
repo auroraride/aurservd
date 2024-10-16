@@ -410,6 +410,13 @@ definitions:
       name:
         description: 商品名称, 商品名称
         type: string
+      paymentPlans:
+        description: 付款方案
+        items:
+          items:
+            type: number
+          type: array
+        type: array
       photos:
         description: 商品图片, 商品图片
         items:
@@ -465,6 +472,13 @@ definitions:
       name:
         description: 商品名称
         type: string
+      paymentPlans:
+        description: 付款方案
+        items:
+          items:
+            type: number
+          type: array
+        type: array
       photos:
         description: 商品图片
         items:
@@ -542,6 +556,13 @@ definitions:
       name:
         description: 商品名称, 商品名称
         type: string
+      paymentPlans:
+        description: 付款方案
+        items:
+          items:
+            type: number
+          type: array
+        type: array
       photos:
         description: 商品图片, 商品图片
         items:
@@ -1180,9 +1201,6 @@ definitions:
       model:
         description: 型号
         type: string
-      modelId:
-        description: 型号ID
-        type: integer
       sn:
         description: 编号
         type: string
@@ -2586,7 +2604,6 @@ definitions:
         description: '操作原因, 可手动输入, 预留项: `吞电池` `柜门未关好` `仓位不足`'
         type: string
     required:
-    - batterySn
     - id
     - index
     - phone
@@ -8944,7 +8961,6 @@ paths:
     post:
       consumes:
       - application/json
-      description: '<仅智能电柜可用, 普通电柜无法请求, 判定标准: `intelligent = true`>'
       operationId: ManagerCabinetOpenBind
       parameters:
       - description: 管理员校验token

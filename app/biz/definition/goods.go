@@ -41,20 +41,21 @@ type GoodsListReq struct {
 
 // Goods 商品公共字段
 type Goods struct {
-	Sn        string        `json:"sn"`        // 商品编号
-	Name      string        `json:"name"`      // 商品名称
-	Type      GoodsType     `json:"type"`      // 商品类型 1-电车
-	Lables    []string      `json:"lables"`    // 商品标签
-	Price     float64       `json:"price"`     // 商品价格
-	Weight    int           `json:"weight"`    // 商品权重
-	HeadPic   string        `json:"headPic"`   // 商品头图
-	Photos    []string      `json:"photos"`    // 商品图片
-	Intro     []string      `json:"intro"`     // 商品介绍
-	Stores    []model.Store `json:"stores"`    // 配置店铺信息
-	CreatedAt string        `json:"createdAt"` // 创建时间
-	Status    GoodsStatus   `json:"status"`    // 商品状态 0-已下架 1-已上架
-	Remark    string        `json:"remark"`    // 备注
-	StoreIds  []uint64      `json:"storeIds"`  // 门店Ids
+	Sn           string        `json:"sn"`           // 商品编号
+	Name         string        `json:"name"`         // 商品名称
+	Type         GoodsType     `json:"type"`         // 商品类型 1-电车
+	Lables       []string      `json:"lables"`       // 商品标签
+	Price        float64       `json:"price"`        // 商品价格
+	Weight       int           `json:"weight"`       // 商品权重
+	HeadPic      string        `json:"headPic"`      // 商品头图
+	Photos       []string      `json:"photos"`       // 商品图片
+	Intro        []string      `json:"intro"`        // 商品介绍
+	Stores       []model.Store `json:"stores"`       // 配置店铺信息
+	CreatedAt    string        `json:"createdAt"`    // 创建时间
+	Status       GoodsStatus   `json:"status"`       // 商品状态 0-已下架 1-已上架
+	Remark       string        `json:"remark"`       // 备注
+	StoreIds     []uint64      `json:"storeIds"`     // 门店Ids
+	PaymentPlans [][]float64   `json:"paymentPlans"` // 付款方案
 }
 
 // GoodsDetail 商品详情
