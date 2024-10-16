@@ -83,3 +83,18 @@ func (c *appClient) Native(pc *model.PaymentCache) (string, error) {
 
 	return res.QRCode, nil
 }
+
+// AppPayPurchase 购买商品
+func (c *appClient) AppPayPurchase(req *model.PurchasePayReq) (string, error) {
+	notifyUrl := ar.Config.Payment.PurchaseNotifyUrl
+	trade := alipay.TradeAppPay{
+		Trade: alipay.Trade{
+			TotalAmount: fmt.Sprintf("%.2f", req.Amount),
+			NotifyURL:   notifyUrl,
+			Subject:     req.Subject,
+			OutTradeNo:  req.OutTradeNo,
+			TimeExpire:  time.Now().Add(10 * time.Minute).Format(carbon.DateTimeLayout),
+		},
+	}
+	return c.TradeAppPay(trade)
+}

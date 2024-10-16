@@ -39,9 +39,9 @@ func (s *orderService) IsAuthed(u *ent.Rider) bool {
 // Create 创建订单
 func (s *orderService) Create(ctx context.Context, r *ent.Rider, req *pm.OrderCreateReq) error {
 	// 判定是否实名认证
-	// if s.IsAuthed(r) {
-	// 	return errors.New("未实名认证, 请先实名认证")
-	// }
+	if s.IsAuthed(r) {
+		return errors.New("未实名认证, 请先实名认证")
+	}
 	// 查询商品
 	g, _ := s.queryGoods(ctx, req.GoodsID)
 	if g == nil {
@@ -69,4 +69,13 @@ func (s *orderService) Create(ctx context.Context, r *ent.Rider, req *pm.OrderCr
 		return err
 	}
 	return nil
+}
+
+// QueryOrderById 通过id查询订单
+func (s *orderService) QueryOrderById(ctx context.Context, id uint64) (*ent.PurchaseOrder, error) {
+	o, _ := s.orm.QueryNotDeleted().Where(purchaseorder.ID(id)).WithGoods().WithRider().First(ctx)
+	if o == nil {
+		return nil, errors.New("订单不存在")
+	}
+	return o, nil
 }

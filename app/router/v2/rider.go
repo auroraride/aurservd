@@ -237,7 +237,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 	g.GET("/ebike/brand/:id", rapi.Ebike.EbikeBrandDetail) // 车电品牌详情
 
 	// 买车
-	g.Group("/purchase", person())
-	g.POST("/purchase/order", pr.Order.Create) // 创建订单
-
+	p := g.Group("/purchase", person())
+	p.POST("/order", pr.Order.Create) // 创建订单
+	p.POST("/pay", pr.Payment.Pay)    // 支付
 }
