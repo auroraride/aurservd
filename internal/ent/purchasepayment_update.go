@@ -119,20 +119,6 @@ func (ppu *PurchasePaymentUpdate) SetNillableGoodsID(u *uint64) *PurchasePayment
 	return ppu
 }
 
-// SetOrderID sets the "order_id" field.
-func (ppu *PurchasePaymentUpdate) SetOrderID(u uint64) *PurchasePaymentUpdate {
-	ppu.mutation.SetOrderID(u)
-	return ppu
-}
-
-// SetNillableOrderID sets the "order_id" field if the given value is not nil.
-func (ppu *PurchasePaymentUpdate) SetNillableOrderID(u *uint64) *PurchasePaymentUpdate {
-	if u != nil {
-		ppu.SetOrderID(*u)
-	}
-	return ppu
-}
-
 // SetOutTradeNo sets the "out_trade_no" field.
 func (ppu *PurchasePaymentUpdate) SetOutTradeNo(s string) *PurchasePaymentUpdate {
 	ppu.mutation.SetOutTradeNo(s)
@@ -293,6 +279,12 @@ func (ppu *PurchasePaymentUpdate) SetNillablePaymentDate(t *time.Time) *Purchase
 	return ppu
 }
 
+// ClearPaymentDate clears the value of the "payment_date" field.
+func (ppu *PurchasePaymentUpdate) ClearPaymentDate() *PurchasePaymentUpdate {
+	ppu.mutation.ClearPaymentDate()
+	return ppu
+}
+
 // SetTradeNo sets the "trade_no" field.
 func (ppu *PurchasePaymentUpdate) SetTradeNo(s string) *PurchasePaymentUpdate {
 	ppu.mutation.SetTradeNo(s)
@@ -310,6 +302,26 @@ func (ppu *PurchasePaymentUpdate) SetNillableTradeNo(s *string) *PurchasePayment
 // ClearTradeNo clears the value of the "trade_no" field.
 func (ppu *PurchasePaymentUpdate) ClearTradeNo() *PurchasePaymentUpdate {
 	ppu.mutation.ClearTradeNo()
+	return ppu
+}
+
+// SetOrderID sets the "order_id" field.
+func (ppu *PurchasePaymentUpdate) SetOrderID(u uint64) *PurchasePaymentUpdate {
+	ppu.mutation.SetOrderID(u)
+	return ppu
+}
+
+// SetNillableOrderID sets the "order_id" field if the given value is not nil.
+func (ppu *PurchasePaymentUpdate) SetNillableOrderID(u *uint64) *PurchasePaymentUpdate {
+	if u != nil {
+		ppu.SetOrderID(*u)
+	}
+	return ppu
+}
+
+// ClearOrderID clears the value of the "order_id" field.
+func (ppu *PurchasePaymentUpdate) ClearOrderID() *PurchasePaymentUpdate {
+	ppu.mutation.ClearOrderID()
 	return ppu
 }
 
@@ -411,9 +423,6 @@ func (ppu *PurchasePaymentUpdate) check() error {
 	if ppu.mutation.GoodsCleared() && len(ppu.mutation.GoodsIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PurchasePayment.goods"`)
 	}
-	if ppu.mutation.OrderCleared() && len(ppu.mutation.OrderIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "PurchasePayment.order"`)
-	}
 	return nil
 }
 
@@ -501,6 +510,9 @@ func (ppu *PurchasePaymentUpdate) sqlSave(ctx context.Context) (n int, err error
 	if value, ok := ppu.mutation.PaymentDate(); ok {
 		_spec.SetField(purchasepayment.FieldPaymentDate, field.TypeTime, value)
 	}
+	if ppu.mutation.PaymentDateCleared() {
+		_spec.ClearField(purchasepayment.FieldPaymentDate, field.TypeTime)
+	}
 	if value, ok := ppu.mutation.TradeNo(); ok {
 		_spec.SetField(purchasepayment.FieldTradeNo, field.TypeString, value)
 	}
@@ -568,7 +580,7 @@ func (ppu *PurchasePaymentUpdate) sqlSave(ctx context.Context) (n int, err error
 	if ppu.mutation.OrderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   purchasepayment.OrderTable,
 			Columns: []string{purchasepayment.OrderColumn},
 			Bidi:    false,
@@ -581,7 +593,7 @@ func (ppu *PurchasePaymentUpdate) sqlSave(ctx context.Context) (n int, err error
 	if nodes := ppu.mutation.OrderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   purchasepayment.OrderTable,
 			Columns: []string{purchasepayment.OrderColumn},
 			Bidi:    false,
@@ -698,20 +710,6 @@ func (ppuo *PurchasePaymentUpdateOne) SetGoodsID(u uint64) *PurchasePaymentUpdat
 func (ppuo *PurchasePaymentUpdateOne) SetNillableGoodsID(u *uint64) *PurchasePaymentUpdateOne {
 	if u != nil {
 		ppuo.SetGoodsID(*u)
-	}
-	return ppuo
-}
-
-// SetOrderID sets the "order_id" field.
-func (ppuo *PurchasePaymentUpdateOne) SetOrderID(u uint64) *PurchasePaymentUpdateOne {
-	ppuo.mutation.SetOrderID(u)
-	return ppuo
-}
-
-// SetNillableOrderID sets the "order_id" field if the given value is not nil.
-func (ppuo *PurchasePaymentUpdateOne) SetNillableOrderID(u *uint64) *PurchasePaymentUpdateOne {
-	if u != nil {
-		ppuo.SetOrderID(*u)
 	}
 	return ppuo
 }
@@ -876,6 +874,12 @@ func (ppuo *PurchasePaymentUpdateOne) SetNillablePaymentDate(t *time.Time) *Purc
 	return ppuo
 }
 
+// ClearPaymentDate clears the value of the "payment_date" field.
+func (ppuo *PurchasePaymentUpdateOne) ClearPaymentDate() *PurchasePaymentUpdateOne {
+	ppuo.mutation.ClearPaymentDate()
+	return ppuo
+}
+
 // SetTradeNo sets the "trade_no" field.
 func (ppuo *PurchasePaymentUpdateOne) SetTradeNo(s string) *PurchasePaymentUpdateOne {
 	ppuo.mutation.SetTradeNo(s)
@@ -893,6 +897,26 @@ func (ppuo *PurchasePaymentUpdateOne) SetNillableTradeNo(s *string) *PurchasePay
 // ClearTradeNo clears the value of the "trade_no" field.
 func (ppuo *PurchasePaymentUpdateOne) ClearTradeNo() *PurchasePaymentUpdateOne {
 	ppuo.mutation.ClearTradeNo()
+	return ppuo
+}
+
+// SetOrderID sets the "order_id" field.
+func (ppuo *PurchasePaymentUpdateOne) SetOrderID(u uint64) *PurchasePaymentUpdateOne {
+	ppuo.mutation.SetOrderID(u)
+	return ppuo
+}
+
+// SetNillableOrderID sets the "order_id" field if the given value is not nil.
+func (ppuo *PurchasePaymentUpdateOne) SetNillableOrderID(u *uint64) *PurchasePaymentUpdateOne {
+	if u != nil {
+		ppuo.SetOrderID(*u)
+	}
+	return ppuo
+}
+
+// ClearOrderID clears the value of the "order_id" field.
+func (ppuo *PurchasePaymentUpdateOne) ClearOrderID() *PurchasePaymentUpdateOne {
+	ppuo.mutation.ClearOrderID()
 	return ppuo
 }
 
@@ -1007,9 +1031,6 @@ func (ppuo *PurchasePaymentUpdateOne) check() error {
 	if ppuo.mutation.GoodsCleared() && len(ppuo.mutation.GoodsIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PurchasePayment.goods"`)
 	}
-	if ppuo.mutation.OrderCleared() && len(ppuo.mutation.OrderIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "PurchasePayment.order"`)
-	}
 	return nil
 }
 
@@ -1114,6 +1135,9 @@ func (ppuo *PurchasePaymentUpdateOne) sqlSave(ctx context.Context) (_node *Purch
 	if value, ok := ppuo.mutation.PaymentDate(); ok {
 		_spec.SetField(purchasepayment.FieldPaymentDate, field.TypeTime, value)
 	}
+	if ppuo.mutation.PaymentDateCleared() {
+		_spec.ClearField(purchasepayment.FieldPaymentDate, field.TypeTime)
+	}
 	if value, ok := ppuo.mutation.TradeNo(); ok {
 		_spec.SetField(purchasepayment.FieldTradeNo, field.TypeString, value)
 	}
@@ -1181,7 +1205,7 @@ func (ppuo *PurchasePaymentUpdateOne) sqlSave(ctx context.Context) (_node *Purch
 	if ppuo.mutation.OrderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   purchasepayment.OrderTable,
 			Columns: []string{purchasepayment.OrderColumn},
 			Bidi:    false,
@@ -1194,7 +1218,7 @@ func (ppuo *PurchasePaymentUpdateOne) sqlSave(ctx context.Context) (_node *Purch
 	if nodes := ppuo.mutation.OrderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   purchasepayment.OrderTable,
 			Columns: []string{purchasepayment.OrderColumn},
 			Bidi:    false,

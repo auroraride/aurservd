@@ -2306,7 +2306,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			purchasepayment.FieldRemark:       {Type: field.TypeString, Column: purchasepayment.FieldRemark},
 			purchasepayment.FieldRiderID:      {Type: field.TypeUint64, Column: purchasepayment.FieldRiderID},
 			purchasepayment.FieldGoodsID:      {Type: field.TypeUint64, Column: purchasepayment.FieldGoodsID},
-			purchasepayment.FieldOrderID:      {Type: field.TypeUint64, Column: purchasepayment.FieldOrderID},
 			purchasepayment.FieldOutTradeNo:   {Type: field.TypeString, Column: purchasepayment.FieldOutTradeNo},
 			purchasepayment.FieldIndex:        {Type: field.TypeInt, Column: purchasepayment.FieldIndex},
 			purchasepayment.FieldStatus:       {Type: field.TypeEnum, Column: purchasepayment.FieldStatus},
@@ -2317,6 +2316,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			purchasepayment.FieldBillingDate:  {Type: field.TypeTime, Column: purchasepayment.FieldBillingDate},
 			purchasepayment.FieldPaymentDate:  {Type: field.TypeTime, Column: purchasepayment.FieldPaymentDate},
 			purchasepayment.FieldTradeNo:      {Type: field.TypeString, Column: purchasepayment.FieldTradeNo},
+			purchasepayment.FieldOrderID:      {Type: field.TypeUint64, Column: purchasepayment.FieldOrderID},
 		},
 	}
 	graph.Nodes[82] = &sqlgraph.Node{
@@ -6769,7 +6769,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"order",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   purchasepayment.OrderTable,
 			Columns: []string{purchasepayment.OrderColumn},
 			Bidi:    false,
@@ -21406,11 +21406,6 @@ func (f *PurchasePaymentFilter) WhereGoodsID(p entql.Uint64P) {
 	f.Where(p.Field(purchasepayment.FieldGoodsID))
 }
 
-// WhereOrderID applies the entql uint64 predicate on the order_id field.
-func (f *PurchasePaymentFilter) WhereOrderID(p entql.Uint64P) {
-	f.Where(p.Field(purchasepayment.FieldOrderID))
-}
-
 // WhereOutTradeNo applies the entql string predicate on the out_trade_no field.
 func (f *PurchasePaymentFilter) WhereOutTradeNo(p entql.StringP) {
 	f.Where(p.Field(purchasepayment.FieldOutTradeNo))
@@ -21459,6 +21454,11 @@ func (f *PurchasePaymentFilter) WherePaymentDate(p entql.TimeP) {
 // WhereTradeNo applies the entql string predicate on the trade_no field.
 func (f *PurchasePaymentFilter) WhereTradeNo(p entql.StringP) {
 	f.Where(p.Field(purchasepayment.FieldTradeNo))
+}
+
+// WhereOrderID applies the entql uint64 predicate on the order_id field.
+func (f *PurchasePaymentFilter) WhereOrderID(p entql.Uint64P) {
+	f.Where(p.Field(purchasepayment.FieldOrderID))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.

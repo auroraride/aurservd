@@ -38,8 +38,6 @@ type PurchasePayment struct {
 	RiderID uint64 `json:"rider_id,omitempty"`
 	// 商品ID
 	GoodsID uint64 `json:"goods_id,omitempty"`
-	// OrderID holds the value of the "order_id" field.
-	OrderID uint64 `json:"order_id,omitempty"`
 	// 交易订单号（自行生成）
 	OutTradeNo string `json:"out_trade_no,omitempty"`
 	// 分期序号
@@ -60,11 +58,12 @@ type PurchasePayment struct {
 	PaymentDate time.Time `json:"payment_date,omitempty"`
 	// 平台订单号（微信或支付宝）
 	TradeNo string `json:"trade_no,omitempty"`
+	// 订单id
+	OrderID uint64 `json:"order_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PurchasePaymentQuery when eager-loading is set.
-	Edges                   PurchasePaymentEdges `json:"edges"`
-	purchase_order_payments *uint64
-	selectValues            sql.SelectValues
+	Edges        PurchasePaymentEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // PurchasePaymentEdges holds the relations/edges for other nodes in the graph.
@@ -122,14 +121,12 @@ func (*PurchasePayment) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case purchasepayment.FieldTotal, purchasepayment.FieldAmount, purchasepayment.FieldForfeit:
 			values[i] = new(sql.NullFloat64)
-		case purchasepayment.FieldID, purchasepayment.FieldRiderID, purchasepayment.FieldGoodsID, purchasepayment.FieldOrderID, purchasepayment.FieldIndex:
+		case purchasepayment.FieldID, purchasepayment.FieldRiderID, purchasepayment.FieldGoodsID, purchasepayment.FieldIndex, purchasepayment.FieldOrderID:
 			values[i] = new(sql.NullInt64)
 		case purchasepayment.FieldRemark, purchasepayment.FieldOutTradeNo, purchasepayment.FieldStatus, purchasepayment.FieldPayway, purchasepayment.FieldTradeNo:
 			values[i] = new(sql.NullString)
 		case purchasepayment.FieldCreatedAt, purchasepayment.FieldUpdatedAt, purchasepayment.FieldDeletedAt, purchasepayment.FieldBillingDate, purchasepayment.FieldPaymentDate:
 			values[i] = new(sql.NullTime)
-		case purchasepayment.ForeignKeys[0]: // purchase_order_payments
-			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -204,12 +201,6 @@ func (pp *PurchasePayment) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pp.GoodsID = uint64(value.Int64)
 			}
-		case purchasepayment.FieldOrderID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field order_id", values[i])
-			} else if value.Valid {
-				pp.OrderID = uint64(value.Int64)
-			}
 		case purchasepayment.FieldOutTradeNo:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field out_trade_no", values[i])
@@ -270,12 +261,11 @@ func (pp *PurchasePayment) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pp.TradeNo = value.String
 			}
-		case purchasepayment.ForeignKeys[0]:
+		case purchasepayment.FieldOrderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field purchase_order_payments", value)
+				return fmt.Errorf("unexpected type %T for field order_id", values[i])
 			} else if value.Valid {
-				pp.purchase_order_payments = new(uint64)
-				*pp.purchase_order_payments = uint64(value.Int64)
+				pp.OrderID = uint64(value.Int64)
 			}
 		default:
 			pp.selectValues.Set(columns[i], values[i])
@@ -354,9 +344,6 @@ func (pp *PurchasePayment) String() string {
 	builder.WriteString("goods_id=")
 	builder.WriteString(fmt.Sprintf("%v", pp.GoodsID))
 	builder.WriteString(", ")
-	builder.WriteString("order_id=")
-	builder.WriteString(fmt.Sprintf("%v", pp.OrderID))
-	builder.WriteString(", ")
 	builder.WriteString("out_trade_no=")
 	builder.WriteString(pp.OutTradeNo)
 	builder.WriteString(", ")
@@ -386,6 +373,9 @@ func (pp *PurchasePayment) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("trade_no=")
 	builder.WriteString(pp.TradeNo)
+	builder.WriteString(", ")
+	builder.WriteString("order_id=")
+	builder.WriteString(fmt.Sprintf("%v", pp.OrderID))
 	builder.WriteByte(')')
 	return builder.String()
 }

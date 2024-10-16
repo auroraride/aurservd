@@ -32,8 +32,6 @@ const (
 	FieldRiderID = "rider_id"
 	// FieldGoodsID holds the string denoting the goods_id field in the database.
 	FieldGoodsID = "goods_id"
-	// FieldOrderID holds the string denoting the order_id field in the database.
-	FieldOrderID = "order_id"
 	// FieldOutTradeNo holds the string denoting the out_trade_no field in the database.
 	FieldOutTradeNo = "out_trade_no"
 	// FieldIndex holds the string denoting the index field in the database.
@@ -54,6 +52,8 @@ const (
 	FieldPaymentDate = "payment_date"
 	// FieldTradeNo holds the string denoting the trade_no field in the database.
 	FieldTradeNo = "trade_no"
+	// FieldOrderID holds the string denoting the order_id field in the database.
+	FieldOrderID = "order_id"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeGoods holds the string denoting the goods edge name in mutations.
@@ -96,7 +96,6 @@ var Columns = []string{
 	FieldRemark,
 	FieldRiderID,
 	FieldGoodsID,
-	FieldOrderID,
 	FieldOutTradeNo,
 	FieldIndex,
 	FieldStatus,
@@ -107,23 +106,13 @@ var Columns = []string{
 	FieldBillingDate,
 	FieldPaymentDate,
 	FieldTradeNo,
-}
-
-// ForeignKeys holds the SQL foreign-keys that are owned by the "purchase_payment"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"purchase_order_payments",
+	FieldOrderID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
-			return true
-		}
-	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -236,11 +225,6 @@ func ByGoodsID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldGoodsID, opts...).ToFunc()
 }
 
-// ByOrderID orders the results by the order_id field.
-func ByOrderID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldOrderID, opts...).ToFunc()
-}
-
 // ByOutTradeNo orders the results by the out_trade_no field.
 func ByOutTradeNo(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldOutTradeNo, opts...).ToFunc()
@@ -291,6 +275,11 @@ func ByTradeNo(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTradeNo, opts...).ToFunc()
 }
 
+// ByOrderID orders the results by the order_id field.
+func ByOrderID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOrderID, opts...).ToFunc()
+}
+
 // ByRiderField orders the results by rider field.
 func ByRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -329,6 +318,6 @@ func newOrderStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(OrderInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, OrderTable, OrderColumn),
+		sqlgraph.Edge(sqlgraph.M2O, true, OrderTable, OrderColumn),
 	)
 }

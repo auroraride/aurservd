@@ -85,11 +85,6 @@ func GoodsID(v uint64) predicate.PurchasePayment {
 	return predicate.PurchasePayment(sql.FieldEQ(FieldGoodsID, v))
 }
 
-// OrderID applies equality check predicate on the "order_id" field. It's identical to OrderIDEQ.
-func OrderID(v uint64) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldEQ(FieldOrderID, v))
-}
-
 // OutTradeNo applies equality check predicate on the "out_trade_no" field. It's identical to OutTradeNoEQ.
 func OutTradeNo(v string) predicate.PurchasePayment {
 	return predicate.PurchasePayment(sql.FieldEQ(FieldOutTradeNo, v))
@@ -128,6 +123,11 @@ func PaymentDate(v time.Time) predicate.PurchasePayment {
 // TradeNo applies equality check predicate on the "trade_no" field. It's identical to TradeNoEQ.
 func TradeNo(v string) predicate.PurchasePayment {
 	return predicate.PurchasePayment(sql.FieldEQ(FieldTradeNo, v))
+}
+
+// OrderID applies equality check predicate on the "order_id" field. It's identical to OrderIDEQ.
+func OrderID(v uint64) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldEQ(FieldOrderID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -393,26 +393,6 @@ func GoodsIDIn(vs ...uint64) predicate.PurchasePayment {
 // GoodsIDNotIn applies the NotIn predicate on the "goods_id" field.
 func GoodsIDNotIn(vs ...uint64) predicate.PurchasePayment {
 	return predicate.PurchasePayment(sql.FieldNotIn(FieldGoodsID, vs...))
-}
-
-// OrderIDEQ applies the EQ predicate on the "order_id" field.
-func OrderIDEQ(v uint64) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldEQ(FieldOrderID, v))
-}
-
-// OrderIDNEQ applies the NEQ predicate on the "order_id" field.
-func OrderIDNEQ(v uint64) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldNEQ(FieldOrderID, v))
-}
-
-// OrderIDIn applies the In predicate on the "order_id" field.
-func OrderIDIn(vs ...uint64) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldIn(FieldOrderID, vs...))
-}
-
-// OrderIDNotIn applies the NotIn predicate on the "order_id" field.
-func OrderIDNotIn(vs ...uint64) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldNotIn(FieldOrderID, vs...))
 }
 
 // OutTradeNoEQ applies the EQ predicate on the "out_trade_no" field.
@@ -770,6 +750,16 @@ func PaymentDateLTE(v time.Time) predicate.PurchasePayment {
 	return predicate.PurchasePayment(sql.FieldLTE(FieldPaymentDate, v))
 }
 
+// PaymentDateIsNil applies the IsNil predicate on the "payment_date" field.
+func PaymentDateIsNil() predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldIsNull(FieldPaymentDate))
+}
+
+// PaymentDateNotNil applies the NotNil predicate on the "payment_date" field.
+func PaymentDateNotNil() predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldNotNull(FieldPaymentDate))
+}
+
 // TradeNoEQ applies the EQ predicate on the "trade_no" field.
 func TradeNoEQ(v string) predicate.PurchasePayment {
 	return predicate.PurchasePayment(sql.FieldEQ(FieldTradeNo, v))
@@ -845,6 +835,36 @@ func TradeNoContainsFold(v string) predicate.PurchasePayment {
 	return predicate.PurchasePayment(sql.FieldContainsFold(FieldTradeNo, v))
 }
 
+// OrderIDEQ applies the EQ predicate on the "order_id" field.
+func OrderIDEQ(v uint64) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldEQ(FieldOrderID, v))
+}
+
+// OrderIDNEQ applies the NEQ predicate on the "order_id" field.
+func OrderIDNEQ(v uint64) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldNEQ(FieldOrderID, v))
+}
+
+// OrderIDIn applies the In predicate on the "order_id" field.
+func OrderIDIn(vs ...uint64) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldIn(FieldOrderID, vs...))
+}
+
+// OrderIDNotIn applies the NotIn predicate on the "order_id" field.
+func OrderIDNotIn(vs ...uint64) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldNotIn(FieldOrderID, vs...))
+}
+
+// OrderIDIsNil applies the IsNil predicate on the "order_id" field.
+func OrderIDIsNil() predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldIsNull(FieldOrderID))
+}
+
+// OrderIDNotNil applies the NotNil predicate on the "order_id" field.
+func OrderIDNotNil() predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldNotNull(FieldOrderID))
+}
+
 // HasRider applies the HasEdge predicate on the "rider" edge.
 func HasRider() predicate.PurchasePayment {
 	return predicate.PurchasePayment(func(s *sql.Selector) {
@@ -896,7 +916,7 @@ func HasOrder() predicate.PurchasePayment {
 	return predicate.PurchasePayment(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, OrderTable, OrderColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, OrderTable, OrderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
