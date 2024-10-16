@@ -637,7 +637,9 @@ func (poq *PurchaseOrderQuery) loadPayments(ctx context.Context, query *Purchase
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(purchasepayment.FieldOrderID)
+	}
 	query.Where(predicate.PurchasePayment(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(purchaseorder.PaymentsColumn), fks...))
 	}))
@@ -646,13 +648,10 @@ func (poq *PurchaseOrderQuery) loadPayments(ctx context.Context, query *Purchase
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.purchase_order_payments
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "purchase_order_payments" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		fk := n.OrderID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "purchase_order_payments" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "order_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

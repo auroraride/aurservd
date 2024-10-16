@@ -68,14 +68,17 @@ func (PurchasePayment) Fields() []ent.Field {
 		field.Float("amount").Comment("账单金额"),
 		field.Float("forfeit").Default(0).Comment("滞纳金"),
 		field.Time("billing_date").SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("账单日期"),
-		field.Time("payment_date").SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("支付日期"),
+		field.Time("payment_date").Optional().SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("支付日期"),
 		field.String("trade_no").Optional().Comment("平台订单号（微信或支付宝）"),
+		field.Uint64("order_id").Optional().Comment("订单id"),
 	}
 }
 
 // Edges of the PurchasePayment.
 func (PurchasePayment) Edges() []ent.Edge {
-	return []ent.Edge{}
+	return []ent.Edge{
+		edge.From("order", PurchaseOrder.Type).Ref("payments").Unique().Field("order_id"),
+	}
 }
 
 func (PurchasePayment) Mixin() []ent.Mixin {
@@ -86,7 +89,6 @@ func (PurchasePayment) Mixin() []ent.Mixin {
 
 		RiderMixin{},
 		GoodsMixin{},
-		PurchaseOrderMixin{},
 	}
 }
 

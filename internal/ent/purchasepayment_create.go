@@ -106,12 +106,6 @@ func (ppc *PurchasePaymentCreate) SetGoodsID(u uint64) *PurchasePaymentCreate {
 	return ppc
 }
 
-// SetOrderID sets the "order_id" field.
-func (ppc *PurchasePaymentCreate) SetOrderID(u uint64) *PurchasePaymentCreate {
-	ppc.mutation.SetOrderID(u)
-	return ppc
-}
-
 // SetOutTradeNo sets the "out_trade_no" field.
 func (ppc *PurchasePaymentCreate) SetOutTradeNo(s string) *PurchasePaymentCreate {
 	ppc.mutation.SetOutTradeNo(s)
@@ -190,6 +184,14 @@ func (ppc *PurchasePaymentCreate) SetPaymentDate(t time.Time) *PurchasePaymentCr
 	return ppc
 }
 
+// SetNillablePaymentDate sets the "payment_date" field if the given value is not nil.
+func (ppc *PurchasePaymentCreate) SetNillablePaymentDate(t *time.Time) *PurchasePaymentCreate {
+	if t != nil {
+		ppc.SetPaymentDate(*t)
+	}
+	return ppc
+}
+
 // SetTradeNo sets the "trade_no" field.
 func (ppc *PurchasePaymentCreate) SetTradeNo(s string) *PurchasePaymentCreate {
 	ppc.mutation.SetTradeNo(s)
@@ -200,6 +202,20 @@ func (ppc *PurchasePaymentCreate) SetTradeNo(s string) *PurchasePaymentCreate {
 func (ppc *PurchasePaymentCreate) SetNillableTradeNo(s *string) *PurchasePaymentCreate {
 	if s != nil {
 		ppc.SetTradeNo(*s)
+	}
+	return ppc
+}
+
+// SetOrderID sets the "order_id" field.
+func (ppc *PurchasePaymentCreate) SetOrderID(u uint64) *PurchasePaymentCreate {
+	ppc.mutation.SetOrderID(u)
+	return ppc
+}
+
+// SetNillableOrderID sets the "order_id" field if the given value is not nil.
+func (ppc *PurchasePaymentCreate) SetNillableOrderID(u *uint64) *PurchasePaymentCreate {
+	if u != nil {
+		ppc.SetOrderID(*u)
 	}
 	return ppc
 }
@@ -295,9 +311,6 @@ func (ppc *PurchasePaymentCreate) check() error {
 	if _, ok := ppc.mutation.GoodsID(); !ok {
 		return &ValidationError{Name: "goods_id", err: errors.New(`ent: missing required field "PurchasePayment.goods_id"`)}
 	}
-	if _, ok := ppc.mutation.OrderID(); !ok {
-		return &ValidationError{Name: "order_id", err: errors.New(`ent: missing required field "PurchasePayment.order_id"`)}
-	}
 	if _, ok := ppc.mutation.OutTradeNo(); !ok {
 		return &ValidationError{Name: "out_trade_no", err: errors.New(`ent: missing required field "PurchasePayment.out_trade_no"`)}
 	}
@@ -329,17 +342,11 @@ func (ppc *PurchasePaymentCreate) check() error {
 	if _, ok := ppc.mutation.BillingDate(); !ok {
 		return &ValidationError{Name: "billing_date", err: errors.New(`ent: missing required field "PurchasePayment.billing_date"`)}
 	}
-	if _, ok := ppc.mutation.PaymentDate(); !ok {
-		return &ValidationError{Name: "payment_date", err: errors.New(`ent: missing required field "PurchasePayment.payment_date"`)}
-	}
 	if len(ppc.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "PurchasePayment.rider"`)}
 	}
 	if len(ppc.mutation.GoodsIDs()) == 0 {
 		return &ValidationError{Name: "goods", err: errors.New(`ent: missing required edge "PurchasePayment.goods"`)}
-	}
-	if len(ppc.mutation.OrderIDs()) == 0 {
-		return &ValidationError{Name: "order", err: errors.New(`ent: missing required edge "PurchasePayment.order"`)}
 	}
 	return nil
 }
@@ -469,7 +476,7 @@ func (ppc *PurchasePaymentCreate) createSpec() (*PurchasePayment, *sqlgraph.Crea
 	if nodes := ppc.mutation.OrderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   purchasepayment.OrderTable,
 			Columns: []string{purchasepayment.OrderColumn},
 			Bidi:    false,
@@ -625,18 +632,6 @@ func (u *PurchasePaymentUpsert) UpdateGoodsID() *PurchasePaymentUpsert {
 	return u
 }
 
-// SetOrderID sets the "order_id" field.
-func (u *PurchasePaymentUpsert) SetOrderID(v uint64) *PurchasePaymentUpsert {
-	u.Set(purchasepayment.FieldOrderID, v)
-	return u
-}
-
-// UpdateOrderID sets the "order_id" field to the value that was provided on create.
-func (u *PurchasePaymentUpsert) UpdateOrderID() *PurchasePaymentUpsert {
-	u.SetExcluded(purchasepayment.FieldOrderID)
-	return u
-}
-
 // SetOutTradeNo sets the "out_trade_no" field.
 func (u *PurchasePaymentUpsert) SetOutTradeNo(v string) *PurchasePaymentUpsert {
 	u.Set(purchasepayment.FieldOutTradeNo, v)
@@ -775,6 +770,12 @@ func (u *PurchasePaymentUpsert) UpdatePaymentDate() *PurchasePaymentUpsert {
 	return u
 }
 
+// ClearPaymentDate clears the value of the "payment_date" field.
+func (u *PurchasePaymentUpsert) ClearPaymentDate() *PurchasePaymentUpsert {
+	u.SetNull(purchasepayment.FieldPaymentDate)
+	return u
+}
+
 // SetTradeNo sets the "trade_no" field.
 func (u *PurchasePaymentUpsert) SetTradeNo(v string) *PurchasePaymentUpsert {
 	u.Set(purchasepayment.FieldTradeNo, v)
@@ -790,6 +791,24 @@ func (u *PurchasePaymentUpsert) UpdateTradeNo() *PurchasePaymentUpsert {
 // ClearTradeNo clears the value of the "trade_no" field.
 func (u *PurchasePaymentUpsert) ClearTradeNo() *PurchasePaymentUpsert {
 	u.SetNull(purchasepayment.FieldTradeNo)
+	return u
+}
+
+// SetOrderID sets the "order_id" field.
+func (u *PurchasePaymentUpsert) SetOrderID(v uint64) *PurchasePaymentUpsert {
+	u.Set(purchasepayment.FieldOrderID, v)
+	return u
+}
+
+// UpdateOrderID sets the "order_id" field to the value that was provided on create.
+func (u *PurchasePaymentUpsert) UpdateOrderID() *PurchasePaymentUpsert {
+	u.SetExcluded(purchasepayment.FieldOrderID)
+	return u
+}
+
+// ClearOrderID clears the value of the "order_id" field.
+func (u *PurchasePaymentUpsert) ClearOrderID() *PurchasePaymentUpsert {
+	u.SetNull(purchasepayment.FieldOrderID)
 	return u
 }
 
@@ -943,20 +962,6 @@ func (u *PurchasePaymentUpsertOne) SetGoodsID(v uint64) *PurchasePaymentUpsertOn
 func (u *PurchasePaymentUpsertOne) UpdateGoodsID() *PurchasePaymentUpsertOne {
 	return u.Update(func(s *PurchasePaymentUpsert) {
 		s.UpdateGoodsID()
-	})
-}
-
-// SetOrderID sets the "order_id" field.
-func (u *PurchasePaymentUpsertOne) SetOrderID(v uint64) *PurchasePaymentUpsertOne {
-	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.SetOrderID(v)
-	})
-}
-
-// UpdateOrderID sets the "order_id" field to the value that was provided on create.
-func (u *PurchasePaymentUpsertOne) UpdateOrderID() *PurchasePaymentUpsertOne {
-	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.UpdateOrderID()
 	})
 }
 
@@ -1121,6 +1126,13 @@ func (u *PurchasePaymentUpsertOne) UpdatePaymentDate() *PurchasePaymentUpsertOne
 	})
 }
 
+// ClearPaymentDate clears the value of the "payment_date" field.
+func (u *PurchasePaymentUpsertOne) ClearPaymentDate() *PurchasePaymentUpsertOne {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.ClearPaymentDate()
+	})
+}
+
 // SetTradeNo sets the "trade_no" field.
 func (u *PurchasePaymentUpsertOne) SetTradeNo(v string) *PurchasePaymentUpsertOne {
 	return u.Update(func(s *PurchasePaymentUpsert) {
@@ -1139,6 +1151,27 @@ func (u *PurchasePaymentUpsertOne) UpdateTradeNo() *PurchasePaymentUpsertOne {
 func (u *PurchasePaymentUpsertOne) ClearTradeNo() *PurchasePaymentUpsertOne {
 	return u.Update(func(s *PurchasePaymentUpsert) {
 		s.ClearTradeNo()
+	})
+}
+
+// SetOrderID sets the "order_id" field.
+func (u *PurchasePaymentUpsertOne) SetOrderID(v uint64) *PurchasePaymentUpsertOne {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.SetOrderID(v)
+	})
+}
+
+// UpdateOrderID sets the "order_id" field to the value that was provided on create.
+func (u *PurchasePaymentUpsertOne) UpdateOrderID() *PurchasePaymentUpsertOne {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.UpdateOrderID()
+	})
+}
+
+// ClearOrderID clears the value of the "order_id" field.
+func (u *PurchasePaymentUpsertOne) ClearOrderID() *PurchasePaymentUpsertOne {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.ClearOrderID()
 	})
 }
 
@@ -1461,20 +1494,6 @@ func (u *PurchasePaymentUpsertBulk) UpdateGoodsID() *PurchasePaymentUpsertBulk {
 	})
 }
 
-// SetOrderID sets the "order_id" field.
-func (u *PurchasePaymentUpsertBulk) SetOrderID(v uint64) *PurchasePaymentUpsertBulk {
-	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.SetOrderID(v)
-	})
-}
-
-// UpdateOrderID sets the "order_id" field to the value that was provided on create.
-func (u *PurchasePaymentUpsertBulk) UpdateOrderID() *PurchasePaymentUpsertBulk {
-	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.UpdateOrderID()
-	})
-}
-
 // SetOutTradeNo sets the "out_trade_no" field.
 func (u *PurchasePaymentUpsertBulk) SetOutTradeNo(v string) *PurchasePaymentUpsertBulk {
 	return u.Update(func(s *PurchasePaymentUpsert) {
@@ -1636,6 +1655,13 @@ func (u *PurchasePaymentUpsertBulk) UpdatePaymentDate() *PurchasePaymentUpsertBu
 	})
 }
 
+// ClearPaymentDate clears the value of the "payment_date" field.
+func (u *PurchasePaymentUpsertBulk) ClearPaymentDate() *PurchasePaymentUpsertBulk {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.ClearPaymentDate()
+	})
+}
+
 // SetTradeNo sets the "trade_no" field.
 func (u *PurchasePaymentUpsertBulk) SetTradeNo(v string) *PurchasePaymentUpsertBulk {
 	return u.Update(func(s *PurchasePaymentUpsert) {
@@ -1654,6 +1680,27 @@ func (u *PurchasePaymentUpsertBulk) UpdateTradeNo() *PurchasePaymentUpsertBulk {
 func (u *PurchasePaymentUpsertBulk) ClearTradeNo() *PurchasePaymentUpsertBulk {
 	return u.Update(func(s *PurchasePaymentUpsert) {
 		s.ClearTradeNo()
+	})
+}
+
+// SetOrderID sets the "order_id" field.
+func (u *PurchasePaymentUpsertBulk) SetOrderID(v uint64) *PurchasePaymentUpsertBulk {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.SetOrderID(v)
+	})
+}
+
+// UpdateOrderID sets the "order_id" field to the value that was provided on create.
+func (u *PurchasePaymentUpsertBulk) UpdateOrderID() *PurchasePaymentUpsertBulk {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.UpdateOrderID()
+	})
+}
+
+// ClearOrderID clears the value of the "order_id" field.
+func (u *PurchasePaymentUpsertBulk) ClearOrderID() *PurchasePaymentUpsertBulk {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.ClearOrderID()
 	})
 }
 

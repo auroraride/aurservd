@@ -89,7 +89,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "purchasepayment" package.
 	PaymentsInverseTable = "purchase_payment"
 	// PaymentsColumn is the table column denoting the payments relation/edge.
-	PaymentsColumn = "purchase_order_payments"
+	PaymentsColumn = "order_id"
 )
 
 // Columns holds all SQL columns for purchaseorder fields.

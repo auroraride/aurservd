@@ -5889,12 +5889,11 @@ var (
 		{Name: "amount", Type: field.TypeFloat64, Comment: "账单金额"},
 		{Name: "forfeit", Type: field.TypeFloat64, Comment: "滞纳金", Default: 0},
 		{Name: "billing_date", Type: field.TypeTime, Comment: "账单日期", SchemaType: map[string]string{"postgres": "date"}},
-		{Name: "payment_date", Type: field.TypeTime, Comment: "支付日期", SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "payment_date", Type: field.TypeTime, Nullable: true, Comment: "支付日期", SchemaType: map[string]string{"postgres": "date"}},
 		{Name: "trade_no", Type: field.TypeString, Nullable: true, Comment: "平台订单号（微信或支付宝）"},
-		{Name: "purchase_order_payments", Type: field.TypeUint64, Nullable: true},
+		{Name: "order_id", Type: field.TypeUint64, Nullable: true, Comment: "订单id"},
 		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
 		{Name: "goods_id", Type: field.TypeUint64, Comment: "商品ID"},
-		{Name: "order_id", Type: field.TypeUint64},
 	}
 	// PurchasePaymentTable holds the schema information for the "purchase_payment" table.
 	PurchasePaymentTable = &schema.Table{
@@ -5920,12 +5919,6 @@ var (
 				RefColumns: []*schema.Column{GoodsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
-			{
-				Symbol:     "purchase_payment_purchase_order_order",
-				Columns:    []*schema.Column{PurchasePaymentColumns[20]},
-				RefColumns: []*schema.Column{PurchaseOrderColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
 		},
 		Indexes: []*schema.Index{
 			{
@@ -5947,11 +5940,6 @@ var (
 				Name:    "purchasepayment_goods_id",
 				Unique:  false,
 				Columns: []*schema.Column{PurchasePaymentColumns[19]},
-			},
-			{
-				Name:    "purchasepayment_order_id",
-				Unique:  false,
-				Columns: []*schema.Column{PurchasePaymentColumns[20]},
 			},
 			{
 				Name:    "purchasepayment_status",
@@ -8341,7 +8329,6 @@ func init() {
 	PurchasePaymentTable.ForeignKeys[0].RefTable = PurchaseOrderTable
 	PurchasePaymentTable.ForeignKeys[1].RefTable = RiderTable
 	PurchasePaymentTable.ForeignKeys[2].RefTable = GoodsTable
-	PurchasePaymentTable.ForeignKeys[3].RefTable = PurchaseOrderTable
 	PurchasePaymentTable.Annotation = &entsql.Annotation{
 		Table: "purchase_payment",
 	}

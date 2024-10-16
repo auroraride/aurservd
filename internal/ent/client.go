@@ -17369,7 +17369,7 @@ func (c *PurchasePaymentClient) QueryOrder(pp *PurchasePayment) *PurchaseOrderQu
 		step := sqlgraph.NewStep(
 			sqlgraph.From(purchasepayment.Table, purchasepayment.FieldID, id),
 			sqlgraph.To(purchaseorder.Table, purchaseorder.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, purchasepayment.OrderTable, purchasepayment.OrderColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, purchasepayment.OrderTable, purchasepayment.OrderColumn),
 		)
 		fromV = sqlgraph.Neighbors(pp.driver.Dialect(), step)
 		return fromV, nil

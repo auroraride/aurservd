@@ -28,7 +28,6 @@ type PurchasePaymentQuery struct {
 	withRider  *RiderQuery
 	withGoods  *GoodsQuery
 	withOrder  *PurchaseOrderQuery
-	withFKs    bool
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -124,7 +123,7 @@ func (ppq *PurchasePaymentQuery) QueryOrder() *PurchaseOrderQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(purchasepayment.Table, purchasepayment.FieldID, selector),
 			sqlgraph.To(purchaseorder.Table, purchaseorder.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, purchasepayment.OrderTable, purchasepayment.OrderColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, purchasepayment.OrderTable, purchasepayment.OrderColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ppq.driver.Dialect(), step)
 		return fromU, nil
@@ -444,7 +443,6 @@ func (ppq *PurchasePaymentQuery) prepareQuery(ctx context.Context) error {
 func (ppq *PurchasePaymentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*PurchasePayment, error) {
 	var (
 		nodes       = []*PurchasePayment{}
-		withFKs     = ppq.withFKs
 		_spec       = ppq.querySpec()
 		loadedTypes = [3]bool{
 			ppq.withRider != nil,
@@ -452,9 +450,6 @@ func (ppq *PurchasePaymentQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 			ppq.withOrder != nil,
 		}
 	)
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, purchasepayment.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*PurchasePayment).scanValues(nil, columns)
 	}
