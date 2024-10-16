@@ -1,17 +1,5 @@
 package model
 
-type PaymentCache struct {
-}
-
-// Payway 支付方式
-type Payway string
-
-const (
-	Alipay Payway = "alipay"
-	Wechat Payway = "wechat"
-	Cash   Payway = "cash"
-)
-
 // OrderStatus 订单状态
 type OrderStatus string
 

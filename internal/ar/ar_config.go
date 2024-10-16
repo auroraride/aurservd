@@ -264,6 +264,7 @@ type config struct {
 			ServiceId string // 芝麻免押的服务ID
 		}
 		AlipayMiniprogram AlipayConfig
+		PurchaseNotifyUrl string // 购买支付回调通知
 	}
 	RiderApp    AppVersion
 	EmployeeApp AppVersion
