@@ -10760,6 +10760,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/selection/goods": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "筛选"
+                ],
+                "summary": "筛选商品",
+                "operationId": "ManagerSelectionGoods",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOptionGoods"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/selection/model": {
             "get": {
                 "consumes": [
@@ -13561,6 +13596,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "description": "商品ID",
                     "type": "integer"
                 },
                 "intro": {
@@ -14139,6 +14175,24 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "github_com_auroraride_aurservd_app_model.Payway": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "PaywayAgentWxMiniprogram": "代理商小程序",
+                "PaywayCash": "现金支付",
+                "PaywayUnknown": "未知"
+            },
+            "x-enum-varnames": [
+                "PaywayUnknown",
+                "PaywayCash",
+                "PaywayAgentWxMiniprogram"
+            ]
         },
         "model.ActivityImage": {
             "type": "object",
@@ -19372,24 +19426,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Payway": {
-            "type": "integer",
-            "enum": [
-                0,
-                1,
-                2
-            ],
-            "x-enum-comments": {
-                "PaywayAgentWxMiniprogram": "代理商小程序",
-                "PaywayCash": "现金支付",
-                "PaywayUnknown": "未知"
-            },
-            "x-enum-varnames": [
-                "PaywayUnknown",
-                "PaywayCash",
-                "PaywayAgentWxMiniprogram"
-            ]
-        },
         "model.Person": {
             "type": "object",
             "properties": {
@@ -20033,7 +20069,7 @@ const docTemplate = `{
                     ],
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.Payway"
+                            "$ref": "#/definitions/github_com_auroraride_aurservd_app_model.Payway"
                         }
                     ]
                 },
@@ -20817,6 +20853,26 @@ const docTemplate = `{
                 "label": {
                     "description": "选择项名称",
                     "type": "string"
+                },
+                "value": {
+                    "description": "选择项值 (ID)",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.SelectOptionGoods": {
+            "type": "object",
+            "properties": {
+                "label": {
+                    "description": "选择项名称",
+                    "type": "string"
+                },
+                "prices": {
+                    "description": "价格数据",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SelectOption"
+                    }
                 },
                 "value": {
                     "description": "选择项值 (ID)",

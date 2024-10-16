@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/goods"
+	"github.com/auroraride/aurservd/internal/ent/purchasefollow"
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -127,6 +128,14 @@ func (poc *PurchaseOrderCreate) SetSn(s string) *PurchaseOrderCreate {
 	return poc
 }
 
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (poc *PurchaseOrderCreate) SetNillableSn(s *string) *PurchaseOrderCreate {
+	if s != nil {
+		poc.SetSn(*s)
+	}
+	return poc
+}
+
 // SetStatus sets the "status" field.
 func (poc *PurchaseOrderCreate) SetStatus(pu purchaseorder.Status) *PurchaseOrderCreate {
 	poc.mutation.SetStatus(pu)
@@ -215,6 +224,48 @@ func (poc *PurchaseOrderCreate) SetImages(s []string) *PurchaseOrderCreate {
 	return poc
 }
 
+// SetActiveName sets the "active_name" field.
+func (poc *PurchaseOrderCreate) SetActiveName(s string) *PurchaseOrderCreate {
+	poc.mutation.SetActiveName(s)
+	return poc
+}
+
+// SetNillableActiveName sets the "active_name" field if the given value is not nil.
+func (poc *PurchaseOrderCreate) SetNillableActiveName(s *string) *PurchaseOrderCreate {
+	if s != nil {
+		poc.SetActiveName(*s)
+	}
+	return poc
+}
+
+// SetActivePhone sets the "active_phone" field.
+func (poc *PurchaseOrderCreate) SetActivePhone(s string) *PurchaseOrderCreate {
+	poc.mutation.SetActivePhone(s)
+	return poc
+}
+
+// SetNillableActivePhone sets the "active_phone" field if the given value is not nil.
+func (poc *PurchaseOrderCreate) SetNillableActivePhone(s *string) *PurchaseOrderCreate {
+	if s != nil {
+		poc.SetActivePhone(*s)
+	}
+	return poc
+}
+
+// SetColor sets the "color" field.
+func (poc *PurchaseOrderCreate) SetColor(s string) *PurchaseOrderCreate {
+	poc.mutation.SetColor(s)
+	return poc
+}
+
+// SetNillableColor sets the "color" field if the given value is not nil.
+func (poc *PurchaseOrderCreate) SetNillableColor(s *string) *PurchaseOrderCreate {
+	if s != nil {
+		poc.SetColor(*s)
+	}
+	return poc
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (poc *PurchaseOrderCreate) SetRider(r *Rider) *PurchaseOrderCreate {
 	return poc.SetRiderID(r.ID)
@@ -243,6 +294,21 @@ func (poc *PurchaseOrderCreate) AddPayments(p ...*PurchasePayment) *PurchaseOrde
 		ids[i] = p[i].ID
 	}
 	return poc.AddPaymentIDs(ids...)
+}
+
+// AddFollowIDs adds the "follows" edge to the PurchaseFollow entity by IDs.
+func (poc *PurchaseOrderCreate) AddFollowIDs(ids ...uint64) *PurchaseOrderCreate {
+	poc.mutation.AddFollowIDs(ids...)
+	return poc
+}
+
+// AddFollows adds the "follows" edges to the PurchaseFollow entity.
+func (poc *PurchaseOrderCreate) AddFollows(p ...*PurchaseFollow) *PurchaseOrderCreate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return poc.AddFollowIDs(ids...)
 }
 
 // Mutation returns the PurchaseOrderMutation object of the builder.
@@ -320,9 +386,6 @@ func (poc *PurchaseOrderCreate) check() error {
 	}
 	if _, ok := poc.mutation.GoodsID(); !ok {
 		return &ValidationError{Name: "goods_id", err: errors.New(`ent: missing required field "PurchaseOrder.goods_id"`)}
-	}
-	if _, ok := poc.mutation.Sn(); !ok {
-		return &ValidationError{Name: "sn", err: errors.New(`ent: missing required field "PurchaseOrder.sn"`)}
 	}
 	if _, ok := poc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "PurchaseOrder.status"`)}
@@ -434,6 +497,18 @@ func (poc *PurchaseOrderCreate) createSpec() (*PurchaseOrder, *sqlgraph.CreateSp
 		_spec.SetField(purchaseorder.FieldImages, field.TypeJSON, value)
 		_node.Images = value
 	}
+	if value, ok := poc.mutation.ActiveName(); ok {
+		_spec.SetField(purchaseorder.FieldActiveName, field.TypeString, value)
+		_node.ActiveName = value
+	}
+	if value, ok := poc.mutation.ActivePhone(); ok {
+		_spec.SetField(purchaseorder.FieldActivePhone, field.TypeString, value)
+		_node.ActivePhone = value
+	}
+	if value, ok := poc.mutation.Color(); ok {
+		_spec.SetField(purchaseorder.FieldColor, field.TypeString, value)
+		_node.Color = value
+	}
 	if nodes := poc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -494,6 +569,22 @@ func (poc *PurchaseOrderCreate) createSpec() (*PurchaseOrder, *sqlgraph.CreateSp
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(purchasepayment.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := poc.mutation.FollowsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   purchaseorder.FollowsTable,
+			Columns: []string{purchaseorder.FollowsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(purchasefollow.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -673,6 +764,12 @@ func (u *PurchaseOrderUpsert) UpdateSn() *PurchaseOrderUpsert {
 	return u
 }
 
+// ClearSn clears the value of the "sn" field.
+func (u *PurchaseOrderUpsert) ClearSn() *PurchaseOrderUpsert {
+	u.SetNull(purchaseorder.FieldSn)
+	return u
+}
+
 // SetStatus sets the "status" field.
 func (u *PurchaseOrderUpsert) SetStatus(v purchaseorder.Status) *PurchaseOrderUpsert {
 	u.Set(purchaseorder.FieldStatus, v)
@@ -802,6 +899,60 @@ func (u *PurchaseOrderUpsert) UpdateImages() *PurchaseOrderUpsert {
 // ClearImages clears the value of the "images" field.
 func (u *PurchaseOrderUpsert) ClearImages() *PurchaseOrderUpsert {
 	u.SetNull(purchaseorder.FieldImages)
+	return u
+}
+
+// SetActiveName sets the "active_name" field.
+func (u *PurchaseOrderUpsert) SetActiveName(v string) *PurchaseOrderUpsert {
+	u.Set(purchaseorder.FieldActiveName, v)
+	return u
+}
+
+// UpdateActiveName sets the "active_name" field to the value that was provided on create.
+func (u *PurchaseOrderUpsert) UpdateActiveName() *PurchaseOrderUpsert {
+	u.SetExcluded(purchaseorder.FieldActiveName)
+	return u
+}
+
+// ClearActiveName clears the value of the "active_name" field.
+func (u *PurchaseOrderUpsert) ClearActiveName() *PurchaseOrderUpsert {
+	u.SetNull(purchaseorder.FieldActiveName)
+	return u
+}
+
+// SetActivePhone sets the "active_phone" field.
+func (u *PurchaseOrderUpsert) SetActivePhone(v string) *PurchaseOrderUpsert {
+	u.Set(purchaseorder.FieldActivePhone, v)
+	return u
+}
+
+// UpdateActivePhone sets the "active_phone" field to the value that was provided on create.
+func (u *PurchaseOrderUpsert) UpdateActivePhone() *PurchaseOrderUpsert {
+	u.SetExcluded(purchaseorder.FieldActivePhone)
+	return u
+}
+
+// ClearActivePhone clears the value of the "active_phone" field.
+func (u *PurchaseOrderUpsert) ClearActivePhone() *PurchaseOrderUpsert {
+	u.SetNull(purchaseorder.FieldActivePhone)
+	return u
+}
+
+// SetColor sets the "color" field.
+func (u *PurchaseOrderUpsert) SetColor(v string) *PurchaseOrderUpsert {
+	u.Set(purchaseorder.FieldColor, v)
+	return u
+}
+
+// UpdateColor sets the "color" field to the value that was provided on create.
+func (u *PurchaseOrderUpsert) UpdateColor() *PurchaseOrderUpsert {
+	u.SetExcluded(purchaseorder.FieldColor)
+	return u
+}
+
+// ClearColor clears the value of the "color" field.
+func (u *PurchaseOrderUpsert) ClearColor() *PurchaseOrderUpsert {
+	u.SetNull(purchaseorder.FieldColor)
 	return u
 }
 
@@ -993,6 +1144,13 @@ func (u *PurchaseOrderUpsertOne) UpdateSn() *PurchaseOrderUpsertOne {
 	})
 }
 
+// ClearSn clears the value of the "sn" field.
+func (u *PurchaseOrderUpsertOne) ClearSn() *PurchaseOrderUpsertOne {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.ClearSn()
+	})
+}
+
 // SetStatus sets the "status" field.
 func (u *PurchaseOrderUpsertOne) SetStatus(v purchaseorder.Status) *PurchaseOrderUpsertOne {
 	return u.Update(func(s *PurchaseOrderUpsert) {
@@ -1144,6 +1302,69 @@ func (u *PurchaseOrderUpsertOne) UpdateImages() *PurchaseOrderUpsertOne {
 func (u *PurchaseOrderUpsertOne) ClearImages() *PurchaseOrderUpsertOne {
 	return u.Update(func(s *PurchaseOrderUpsert) {
 		s.ClearImages()
+	})
+}
+
+// SetActiveName sets the "active_name" field.
+func (u *PurchaseOrderUpsertOne) SetActiveName(v string) *PurchaseOrderUpsertOne {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.SetActiveName(v)
+	})
+}
+
+// UpdateActiveName sets the "active_name" field to the value that was provided on create.
+func (u *PurchaseOrderUpsertOne) UpdateActiveName() *PurchaseOrderUpsertOne {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.UpdateActiveName()
+	})
+}
+
+// ClearActiveName clears the value of the "active_name" field.
+func (u *PurchaseOrderUpsertOne) ClearActiveName() *PurchaseOrderUpsertOne {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.ClearActiveName()
+	})
+}
+
+// SetActivePhone sets the "active_phone" field.
+func (u *PurchaseOrderUpsertOne) SetActivePhone(v string) *PurchaseOrderUpsertOne {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.SetActivePhone(v)
+	})
+}
+
+// UpdateActivePhone sets the "active_phone" field to the value that was provided on create.
+func (u *PurchaseOrderUpsertOne) UpdateActivePhone() *PurchaseOrderUpsertOne {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.UpdateActivePhone()
+	})
+}
+
+// ClearActivePhone clears the value of the "active_phone" field.
+func (u *PurchaseOrderUpsertOne) ClearActivePhone() *PurchaseOrderUpsertOne {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.ClearActivePhone()
+	})
+}
+
+// SetColor sets the "color" field.
+func (u *PurchaseOrderUpsertOne) SetColor(v string) *PurchaseOrderUpsertOne {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.SetColor(v)
+	})
+}
+
+// UpdateColor sets the "color" field to the value that was provided on create.
+func (u *PurchaseOrderUpsertOne) UpdateColor() *PurchaseOrderUpsertOne {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.UpdateColor()
+	})
+}
+
+// ClearColor clears the value of the "color" field.
+func (u *PurchaseOrderUpsertOne) ClearColor() *PurchaseOrderUpsertOne {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.ClearColor()
 	})
 }
 
@@ -1501,6 +1722,13 @@ func (u *PurchaseOrderUpsertBulk) UpdateSn() *PurchaseOrderUpsertBulk {
 	})
 }
 
+// ClearSn clears the value of the "sn" field.
+func (u *PurchaseOrderUpsertBulk) ClearSn() *PurchaseOrderUpsertBulk {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.ClearSn()
+	})
+}
+
 // SetStatus sets the "status" field.
 func (u *PurchaseOrderUpsertBulk) SetStatus(v purchaseorder.Status) *PurchaseOrderUpsertBulk {
 	return u.Update(func(s *PurchaseOrderUpsert) {
@@ -1652,6 +1880,69 @@ func (u *PurchaseOrderUpsertBulk) UpdateImages() *PurchaseOrderUpsertBulk {
 func (u *PurchaseOrderUpsertBulk) ClearImages() *PurchaseOrderUpsertBulk {
 	return u.Update(func(s *PurchaseOrderUpsert) {
 		s.ClearImages()
+	})
+}
+
+// SetActiveName sets the "active_name" field.
+func (u *PurchaseOrderUpsertBulk) SetActiveName(v string) *PurchaseOrderUpsertBulk {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.SetActiveName(v)
+	})
+}
+
+// UpdateActiveName sets the "active_name" field to the value that was provided on create.
+func (u *PurchaseOrderUpsertBulk) UpdateActiveName() *PurchaseOrderUpsertBulk {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.UpdateActiveName()
+	})
+}
+
+// ClearActiveName clears the value of the "active_name" field.
+func (u *PurchaseOrderUpsertBulk) ClearActiveName() *PurchaseOrderUpsertBulk {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.ClearActiveName()
+	})
+}
+
+// SetActivePhone sets the "active_phone" field.
+func (u *PurchaseOrderUpsertBulk) SetActivePhone(v string) *PurchaseOrderUpsertBulk {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.SetActivePhone(v)
+	})
+}
+
+// UpdateActivePhone sets the "active_phone" field to the value that was provided on create.
+func (u *PurchaseOrderUpsertBulk) UpdateActivePhone() *PurchaseOrderUpsertBulk {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.UpdateActivePhone()
+	})
+}
+
+// ClearActivePhone clears the value of the "active_phone" field.
+func (u *PurchaseOrderUpsertBulk) ClearActivePhone() *PurchaseOrderUpsertBulk {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.ClearActivePhone()
+	})
+}
+
+// SetColor sets the "color" field.
+func (u *PurchaseOrderUpsertBulk) SetColor(v string) *PurchaseOrderUpsertBulk {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.SetColor(v)
+	})
+}
+
+// UpdateColor sets the "color" field to the value that was provided on create.
+func (u *PurchaseOrderUpsertBulk) UpdateColor() *PurchaseOrderUpsertBulk {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.UpdateColor()
+	})
+}
+
+// ClearColor clears the value of the "color" field.
+func (u *PurchaseOrderUpsertBulk) ClearColor() *PurchaseOrderUpsertBulk {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.ClearColor()
 	})
 }
 

@@ -109,6 +109,7 @@ func detail(item *ent.Goods) *definition.GoodsDetail {
 	return &definition.GoodsDetail{
 		ID: item.ID,
 		Goods: definition.Goods{
+			ID:           item.ID,
 			Sn:           item.Sn,
 			Name:         item.Name,
 			Type:         definition.GoodsType(item.Type),

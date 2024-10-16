@@ -238,6 +238,8 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 买车
 	p := g.Group("/purchase", person())
+	p.GET("/order", pr.Order.List)    // 订单列表
+	p.GET("/:id", pr.Order.Detail)    // 订单详情
 	p.POST("/order", pr.Order.Create) // 创建订单
 	p.POST("/pay", pr.Payment.Pay)    // 支付
 }

@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/goods"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/purchasefollow"
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -152,6 +153,12 @@ func (pou *PurchaseOrderUpdate) SetNillableSn(s *string) *PurchaseOrderUpdate {
 	if s != nil {
 		pou.SetSn(*s)
 	}
+	return pou
+}
+
+// ClearSn clears the value of the "sn" field.
+func (pou *PurchaseOrderUpdate) ClearSn() *PurchaseOrderUpdate {
+	pou.mutation.ClearSn()
 	return pou
 }
 
@@ -301,6 +308,66 @@ func (pou *PurchaseOrderUpdate) ClearImages() *PurchaseOrderUpdate {
 	return pou
 }
 
+// SetActiveName sets the "active_name" field.
+func (pou *PurchaseOrderUpdate) SetActiveName(s string) *PurchaseOrderUpdate {
+	pou.mutation.SetActiveName(s)
+	return pou
+}
+
+// SetNillableActiveName sets the "active_name" field if the given value is not nil.
+func (pou *PurchaseOrderUpdate) SetNillableActiveName(s *string) *PurchaseOrderUpdate {
+	if s != nil {
+		pou.SetActiveName(*s)
+	}
+	return pou
+}
+
+// ClearActiveName clears the value of the "active_name" field.
+func (pou *PurchaseOrderUpdate) ClearActiveName() *PurchaseOrderUpdate {
+	pou.mutation.ClearActiveName()
+	return pou
+}
+
+// SetActivePhone sets the "active_phone" field.
+func (pou *PurchaseOrderUpdate) SetActivePhone(s string) *PurchaseOrderUpdate {
+	pou.mutation.SetActivePhone(s)
+	return pou
+}
+
+// SetNillableActivePhone sets the "active_phone" field if the given value is not nil.
+func (pou *PurchaseOrderUpdate) SetNillableActivePhone(s *string) *PurchaseOrderUpdate {
+	if s != nil {
+		pou.SetActivePhone(*s)
+	}
+	return pou
+}
+
+// ClearActivePhone clears the value of the "active_phone" field.
+func (pou *PurchaseOrderUpdate) ClearActivePhone() *PurchaseOrderUpdate {
+	pou.mutation.ClearActivePhone()
+	return pou
+}
+
+// SetColor sets the "color" field.
+func (pou *PurchaseOrderUpdate) SetColor(s string) *PurchaseOrderUpdate {
+	pou.mutation.SetColor(s)
+	return pou
+}
+
+// SetNillableColor sets the "color" field if the given value is not nil.
+func (pou *PurchaseOrderUpdate) SetNillableColor(s *string) *PurchaseOrderUpdate {
+	if s != nil {
+		pou.SetColor(*s)
+	}
+	return pou
+}
+
+// ClearColor clears the value of the "color" field.
+func (pou *PurchaseOrderUpdate) ClearColor() *PurchaseOrderUpdate {
+	pou.mutation.ClearColor()
+	return pou
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (pou *PurchaseOrderUpdate) SetRider(r *Rider) *PurchaseOrderUpdate {
 	return pou.SetRiderID(r.ID)
@@ -329,6 +396,21 @@ func (pou *PurchaseOrderUpdate) AddPayments(p ...*PurchasePayment) *PurchaseOrde
 		ids[i] = p[i].ID
 	}
 	return pou.AddPaymentIDs(ids...)
+}
+
+// AddFollowIDs adds the "follows" edge to the PurchaseFollow entity by IDs.
+func (pou *PurchaseOrderUpdate) AddFollowIDs(ids ...uint64) *PurchaseOrderUpdate {
+	pou.mutation.AddFollowIDs(ids...)
+	return pou
+}
+
+// AddFollows adds the "follows" edges to the PurchaseFollow entity.
+func (pou *PurchaseOrderUpdate) AddFollows(p ...*PurchaseFollow) *PurchaseOrderUpdate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pou.AddFollowIDs(ids...)
 }
 
 // Mutation returns the PurchaseOrderMutation object of the builder.
@@ -373,6 +455,27 @@ func (pou *PurchaseOrderUpdate) RemovePayments(p ...*PurchasePayment) *PurchaseO
 		ids[i] = p[i].ID
 	}
 	return pou.RemovePaymentIDs(ids...)
+}
+
+// ClearFollows clears all "follows" edges to the PurchaseFollow entity.
+func (pou *PurchaseOrderUpdate) ClearFollows() *PurchaseOrderUpdate {
+	pou.mutation.ClearFollows()
+	return pou
+}
+
+// RemoveFollowIDs removes the "follows" edge to PurchaseFollow entities by IDs.
+func (pou *PurchaseOrderUpdate) RemoveFollowIDs(ids ...uint64) *PurchaseOrderUpdate {
+	pou.mutation.RemoveFollowIDs(ids...)
+	return pou
+}
+
+// RemoveFollows removes "follows" edges to PurchaseFollow entities.
+func (pou *PurchaseOrderUpdate) RemoveFollows(p ...*PurchaseFollow) *PurchaseOrderUpdate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pou.RemoveFollowIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -478,6 +581,9 @@ func (pou *PurchaseOrderUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	if value, ok := pou.mutation.Sn(); ok {
 		_spec.SetField(purchaseorder.FieldSn, field.TypeString, value)
 	}
+	if pou.mutation.SnCleared() {
+		_spec.ClearField(purchaseorder.FieldSn, field.TypeString)
+	}
 	if value, ok := pou.mutation.Status(); ok {
 		_spec.SetField(purchaseorder.FieldStatus, field.TypeEnum, value)
 	}
@@ -529,6 +635,24 @@ func (pou *PurchaseOrderUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if pou.mutation.ImagesCleared() {
 		_spec.ClearField(purchaseorder.FieldImages, field.TypeJSON)
+	}
+	if value, ok := pou.mutation.ActiveName(); ok {
+		_spec.SetField(purchaseorder.FieldActiveName, field.TypeString, value)
+	}
+	if pou.mutation.ActiveNameCleared() {
+		_spec.ClearField(purchaseorder.FieldActiveName, field.TypeString)
+	}
+	if value, ok := pou.mutation.ActivePhone(); ok {
+		_spec.SetField(purchaseorder.FieldActivePhone, field.TypeString, value)
+	}
+	if pou.mutation.ActivePhoneCleared() {
+		_spec.ClearField(purchaseorder.FieldActivePhone, field.TypeString)
+	}
+	if value, ok := pou.mutation.Color(); ok {
+		_spec.SetField(purchaseorder.FieldColor, field.TypeString, value)
+	}
+	if pou.mutation.ColorCleared() {
+		_spec.ClearField(purchaseorder.FieldColor, field.TypeString)
 	}
 	if pou.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -655,6 +779,51 @@ func (pou *PurchaseOrderUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(purchasepayment.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pou.mutation.FollowsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   purchaseorder.FollowsTable,
+			Columns: []string{purchaseorder.FollowsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(purchasefollow.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pou.mutation.RemovedFollowsIDs(); len(nodes) > 0 && !pou.mutation.FollowsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   purchaseorder.FollowsTable,
+			Columns: []string{purchaseorder.FollowsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(purchasefollow.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pou.mutation.FollowsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   purchaseorder.FollowsTable,
+			Columns: []string{purchaseorder.FollowsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(purchasefollow.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -804,6 +973,12 @@ func (pouo *PurchaseOrderUpdateOne) SetNillableSn(s *string) *PurchaseOrderUpdat
 	return pouo
 }
 
+// ClearSn clears the value of the "sn" field.
+func (pouo *PurchaseOrderUpdateOne) ClearSn() *PurchaseOrderUpdateOne {
+	pouo.mutation.ClearSn()
+	return pouo
+}
+
 // SetStatus sets the "status" field.
 func (pouo *PurchaseOrderUpdateOne) SetStatus(pu purchaseorder.Status) *PurchaseOrderUpdateOne {
 	pouo.mutation.SetStatus(pu)
@@ -950,6 +1125,66 @@ func (pouo *PurchaseOrderUpdateOne) ClearImages() *PurchaseOrderUpdateOne {
 	return pouo
 }
 
+// SetActiveName sets the "active_name" field.
+func (pouo *PurchaseOrderUpdateOne) SetActiveName(s string) *PurchaseOrderUpdateOne {
+	pouo.mutation.SetActiveName(s)
+	return pouo
+}
+
+// SetNillableActiveName sets the "active_name" field if the given value is not nil.
+func (pouo *PurchaseOrderUpdateOne) SetNillableActiveName(s *string) *PurchaseOrderUpdateOne {
+	if s != nil {
+		pouo.SetActiveName(*s)
+	}
+	return pouo
+}
+
+// ClearActiveName clears the value of the "active_name" field.
+func (pouo *PurchaseOrderUpdateOne) ClearActiveName() *PurchaseOrderUpdateOne {
+	pouo.mutation.ClearActiveName()
+	return pouo
+}
+
+// SetActivePhone sets the "active_phone" field.
+func (pouo *PurchaseOrderUpdateOne) SetActivePhone(s string) *PurchaseOrderUpdateOne {
+	pouo.mutation.SetActivePhone(s)
+	return pouo
+}
+
+// SetNillableActivePhone sets the "active_phone" field if the given value is not nil.
+func (pouo *PurchaseOrderUpdateOne) SetNillableActivePhone(s *string) *PurchaseOrderUpdateOne {
+	if s != nil {
+		pouo.SetActivePhone(*s)
+	}
+	return pouo
+}
+
+// ClearActivePhone clears the value of the "active_phone" field.
+func (pouo *PurchaseOrderUpdateOne) ClearActivePhone() *PurchaseOrderUpdateOne {
+	pouo.mutation.ClearActivePhone()
+	return pouo
+}
+
+// SetColor sets the "color" field.
+func (pouo *PurchaseOrderUpdateOne) SetColor(s string) *PurchaseOrderUpdateOne {
+	pouo.mutation.SetColor(s)
+	return pouo
+}
+
+// SetNillableColor sets the "color" field if the given value is not nil.
+func (pouo *PurchaseOrderUpdateOne) SetNillableColor(s *string) *PurchaseOrderUpdateOne {
+	if s != nil {
+		pouo.SetColor(*s)
+	}
+	return pouo
+}
+
+// ClearColor clears the value of the "color" field.
+func (pouo *PurchaseOrderUpdateOne) ClearColor() *PurchaseOrderUpdateOne {
+	pouo.mutation.ClearColor()
+	return pouo
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (pouo *PurchaseOrderUpdateOne) SetRider(r *Rider) *PurchaseOrderUpdateOne {
 	return pouo.SetRiderID(r.ID)
@@ -978,6 +1213,21 @@ func (pouo *PurchaseOrderUpdateOne) AddPayments(p ...*PurchasePayment) *Purchase
 		ids[i] = p[i].ID
 	}
 	return pouo.AddPaymentIDs(ids...)
+}
+
+// AddFollowIDs adds the "follows" edge to the PurchaseFollow entity by IDs.
+func (pouo *PurchaseOrderUpdateOne) AddFollowIDs(ids ...uint64) *PurchaseOrderUpdateOne {
+	pouo.mutation.AddFollowIDs(ids...)
+	return pouo
+}
+
+// AddFollows adds the "follows" edges to the PurchaseFollow entity.
+func (pouo *PurchaseOrderUpdateOne) AddFollows(p ...*PurchaseFollow) *PurchaseOrderUpdateOne {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pouo.AddFollowIDs(ids...)
 }
 
 // Mutation returns the PurchaseOrderMutation object of the builder.
@@ -1022,6 +1272,27 @@ func (pouo *PurchaseOrderUpdateOne) RemovePayments(p ...*PurchasePayment) *Purch
 		ids[i] = p[i].ID
 	}
 	return pouo.RemovePaymentIDs(ids...)
+}
+
+// ClearFollows clears all "follows" edges to the PurchaseFollow entity.
+func (pouo *PurchaseOrderUpdateOne) ClearFollows() *PurchaseOrderUpdateOne {
+	pouo.mutation.ClearFollows()
+	return pouo
+}
+
+// RemoveFollowIDs removes the "follows" edge to PurchaseFollow entities by IDs.
+func (pouo *PurchaseOrderUpdateOne) RemoveFollowIDs(ids ...uint64) *PurchaseOrderUpdateOne {
+	pouo.mutation.RemoveFollowIDs(ids...)
+	return pouo
+}
+
+// RemoveFollows removes "follows" edges to PurchaseFollow entities.
+func (pouo *PurchaseOrderUpdateOne) RemoveFollows(p ...*PurchaseFollow) *PurchaseOrderUpdateOne {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pouo.RemoveFollowIDs(ids...)
 }
 
 // Where appends a list predicates to the PurchaseOrderUpdate builder.
@@ -1157,6 +1428,9 @@ func (pouo *PurchaseOrderUpdateOne) sqlSave(ctx context.Context) (_node *Purchas
 	if value, ok := pouo.mutation.Sn(); ok {
 		_spec.SetField(purchaseorder.FieldSn, field.TypeString, value)
 	}
+	if pouo.mutation.SnCleared() {
+		_spec.ClearField(purchaseorder.FieldSn, field.TypeString)
+	}
 	if value, ok := pouo.mutation.Status(); ok {
 		_spec.SetField(purchaseorder.FieldStatus, field.TypeEnum, value)
 	}
@@ -1208,6 +1482,24 @@ func (pouo *PurchaseOrderUpdateOne) sqlSave(ctx context.Context) (_node *Purchas
 	}
 	if pouo.mutation.ImagesCleared() {
 		_spec.ClearField(purchaseorder.FieldImages, field.TypeJSON)
+	}
+	if value, ok := pouo.mutation.ActiveName(); ok {
+		_spec.SetField(purchaseorder.FieldActiveName, field.TypeString, value)
+	}
+	if pouo.mutation.ActiveNameCleared() {
+		_spec.ClearField(purchaseorder.FieldActiveName, field.TypeString)
+	}
+	if value, ok := pouo.mutation.ActivePhone(); ok {
+		_spec.SetField(purchaseorder.FieldActivePhone, field.TypeString, value)
+	}
+	if pouo.mutation.ActivePhoneCleared() {
+		_spec.ClearField(purchaseorder.FieldActivePhone, field.TypeString)
+	}
+	if value, ok := pouo.mutation.Color(); ok {
+		_spec.SetField(purchaseorder.FieldColor, field.TypeString, value)
+	}
+	if pouo.mutation.ColorCleared() {
+		_spec.ClearField(purchaseorder.FieldColor, field.TypeString)
 	}
 	if pouo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1334,6 +1626,51 @@ func (pouo *PurchaseOrderUpdateOne) sqlSave(ctx context.Context) (_node *Purchas
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(purchasepayment.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pouo.mutation.FollowsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   purchaseorder.FollowsTable,
+			Columns: []string{purchaseorder.FollowsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(purchasefollow.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pouo.mutation.RemovedFollowsIDs(); len(nodes) > 0 && !pouo.mutation.FollowsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   purchaseorder.FollowsTable,
+			Columns: []string{purchaseorder.FollowsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(purchasefollow.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pouo.mutation.FollowsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   purchaseorder.FollowsTable,
+			Columns: []string{purchaseorder.FollowsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(purchasefollow.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

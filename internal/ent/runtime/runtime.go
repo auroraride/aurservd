@@ -86,6 +86,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionreferralsprogress"
 	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
+	"github.com/auroraride/aurservd/internal/ent/purchasefollow"
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/internal/ent/question"
@@ -1980,6 +1981,23 @@ func init() {
 	promotionwithdrawalDescTex := promotionwithdrawalFields[4].Descriptor()
 	// promotionwithdrawal.DefaultTex holds the default value on creation for the tex field.
 	promotionwithdrawal.DefaultTex = promotionwithdrawalDescTex.Default.(float64)
+	purchasefollowMixin := schema.PurchaseFollow{}.Mixin()
+	purchasefollowMixinHooks2 := purchasefollowMixin[2].Hooks()
+	purchasefollow.Hooks[0] = purchasefollowMixinHooks2[0]
+	purchasefollowMixinFields0 := purchasefollowMixin[0].Fields()
+	_ = purchasefollowMixinFields0
+	purchasefollowFields := schema.PurchaseFollow{}.Fields()
+	_ = purchasefollowFields
+	// purchasefollowDescCreatedAt is the schema descriptor for created_at field.
+	purchasefollowDescCreatedAt := purchasefollowMixinFields0[0].Descriptor()
+	// purchasefollow.DefaultCreatedAt holds the default value on creation for the created_at field.
+	purchasefollow.DefaultCreatedAt = purchasefollowDescCreatedAt.Default.(func() time.Time)
+	// purchasefollowDescUpdatedAt is the schema descriptor for updated_at field.
+	purchasefollowDescUpdatedAt := purchasefollowMixinFields0[1].Descriptor()
+	// purchasefollow.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	purchasefollow.DefaultUpdatedAt = purchasefollowDescUpdatedAt.Default.(func() time.Time)
+	// purchasefollow.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	purchasefollow.UpdateDefaultUpdatedAt = purchasefollowDescUpdatedAt.UpdateDefault.(func() time.Time)
 	purchaseorderMixin := schema.PurchaseOrder{}.Mixin()
 	purchaseorderMixinHooks2 := purchaseorderMixin[2].Hooks()
 	purchaseorder.Hooks[0] = purchaseorderMixinHooks2[0]

@@ -4411,6 +4411,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "description": "商品ID",
                     "type": "integer"
                 },
                 "intro": {

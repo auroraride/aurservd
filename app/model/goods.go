@@ -163,3 +163,13 @@ func (plans GoodsPaymentPlans) PlanStage(index, stage int) (o GoodsPaymentPlanSt
 	}
 	return plans[index][stage]
 }
+
+// PlanIndex 获取商品付款方案索引
+func (plans GoodsPaymentPlans) PlanIndex(plan GoodsPaymentPlan) int {
+	for i, p := range plans {
+		if p.Equal(plan) {
+			return i
+		}
+	}
+	return -1
+}

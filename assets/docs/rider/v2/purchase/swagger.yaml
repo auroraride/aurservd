@@ -1,0 +1,610 @@
+basePath: /
+definitions:
+  definition.Goods:
+    properties:
+      createdAt:
+        description: 创建时间
+        type: string
+      headPic:
+        description: 商品头图
+        type: string
+      id:
+        description: 商品ID
+        type: integer
+      intro:
+        description: 商品介绍
+        items:
+          type: string
+        type: array
+      lables:
+        description: 商品标签
+        items:
+          type: string
+        type: array
+      name:
+        description: 商品名称
+        type: string
+      paymentPlans:
+        description: 付款方案
+        items:
+          items:
+            type: number
+          type: array
+        type: array
+      photos:
+        description: 商品图片
+        items:
+          type: string
+        type: array
+      price:
+        description: 商品价格
+        type: number
+      remark:
+        description: 备注
+        type: string
+      sn:
+        description: 商品编号
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/definition.GoodsStatus'
+        description: 商品状态 0-已下架 1-已上架
+      storeIds:
+        description: 门店Ids
+        items:
+          type: integer
+        type: array
+      stores:
+        description: 配置店铺信息
+        items:
+          $ref: '#/definitions/model.Store'
+        type: array
+      type:
+        allOf:
+        - $ref: '#/definitions/definition.GoodsType'
+        description: 商品类型 1-电车
+      weight:
+        description: 商品权重
+        type: integer
+    type: object
+  definition.GoodsStatus:
+    enum:
+    - 0
+    - 1
+    type: integer
+    x-enum-comments:
+      GoodsStatusOffline: 下架
+      GoodsStatusOnline: 上架
+    x-enum-varnames:
+    - GoodsStatusOffline
+    - GoodsStatusOnline
+  definition.GoodsType:
+    enum:
+    - 1
+    type: integer
+    x-enum-comments:
+      GoodsTypeEbike: 电车
+    x-enum-varnames:
+    - GoodsTypeEbike
+  github_com_auroraride_aurservd_app_purchase_internal_model.Payway:
+    enum:
+    - alipay
+    - wechat
+    - cash
+    type: string
+    x-enum-varnames:
+    - Alipay
+    - Wechat
+    - Cash
+  model.Modifier:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
+  model.OrderStatus:
+    enum:
+    - pending
+    - staging
+    - ended
+    - cancelled
+    - refunded
+    type: string
+    x-enum-comments:
+      OrderStatusCancelled: 已取消
+      OrderStatusEnded: 已完成
+      OrderStatusPending: 待支付
+      OrderStatusRefunded: 已退款
+      OrderStatusStaging: 分期执行中
+    x-enum-varnames:
+    - OrderStatusPending
+    - OrderStatusStaging
+    - OrderStatusEnded
+    - OrderStatusCancelled
+    - OrderStatusRefunded
+  model.Pagination:
+    properties:
+      current:
+        description: 当前页
+        type: integer
+      pages:
+        description: 总页数
+        type: integer
+      total:
+        description: 总条数
+        type: integer
+    type: object
+  model.PaginationRes:
+    properties:
+      items:
+        description: 返回数据
+      pagination:
+        allOf:
+        - $ref: '#/definitions/model.Pagination'
+        description: 分页属性
+    type: object
+  model.PaymentDetail:
+    properties:
+      amount:
+        description: 订单金额
+        type: number
+      billingDate:
+        description: 账单日期
+        type: string
+      forfeit:
+        description: 逾期金额（滞纳金）
+        type: number
+      id:
+        description: 分期订单ID
+        type: integer
+      outTradeNo:
+        description: 交易订单号
+        type: string
+      overdueDays:
+        description: 逾期天数
+        type: integer
+      paymentDate:
+        description: 支付日期
+        type: string
+      payway:
+        allOf:
+        - $ref: '#/definitions/github_com_auroraride_aurservd_app_purchase_internal_model.Payway'
+        description: 支付方式 alipay-支付宝 wechat-微信支付 cash-现金
+      status:
+        allOf:
+        - $ref: '#/definitions/model.PaymentStatus'
+        description: '支付状态 obligation: 待付款, paid: 已支付, canceled: 已取消'
+      total:
+        description: 支付金额（订单金额+逾期金额）
+        type: number
+    type: object
+  model.PaymentReq:
+    properties:
+      orderId:
+        description: 订单id
+        type: integer
+      payway:
+        allOf:
+        - $ref: '#/definitions/github_com_auroraride_aurservd_app_purchase_internal_model.Payway'
+        description: 支付方式
+      planIndex:
+        description: 付款计划索引
+        type: integer
+    required:
+    - orderId
+    - payway
+    - planIndex
+    type: object
+  model.PaymentStatus:
+    enum:
+    - obligation
+    - paid
+    - canceled
+    type: string
+    x-enum-comments:
+      PaymentStatusCanceled: 已取消
+      PaymentStatusObligation: 待付款
+      PaymentStatusPaid: 已支付
+    x-enum-varnames:
+    - PaymentStatusObligation
+    - PaymentStatusPaid
+    - PaymentStatusCanceled
+  model.PurchaseOrderCreateReq:
+    properties:
+      goodsId:
+        description: 商品id
+        type: integer
+      planIndex:
+        description: 付款计划索引
+        type: integer
+    required:
+    - goodsId
+    - planIndex
+    type: object
+  model.PurchaseOrderDetail:
+    properties:
+      activeName:
+        description: 激活人名称
+        type: string
+      activePhone:
+        description: 激活人电话
+        type: string
+      amount:
+        description: 订单金额
+        type: number
+      color:
+        description: 车辆颜色
+        type: string
+      contractUrl:
+        description: 合同url
+        type: string
+      createdAt:
+        description: 创建时间
+        type: string
+      follows:
+        description: 订单跟进数据
+        items:
+          $ref: '#/definitions/model.PurchaseOrderFollow'
+        type: array
+      goods:
+        allOf:
+        - $ref: '#/definitions/definition.Goods'
+        description: 商品信息
+      id:
+        description: 订单编号
+        type: integer
+      installmentStage:
+        description: 当前分期阶段
+        type: integer
+      installmentTotal:
+        description: 分期总数
+        type: integer
+      paidAmount:
+        description: 已支付金额
+        type: number
+      payments:
+        description: 分期订单数据（还款计划）
+        items:
+          $ref: '#/definitions/model.PaymentDetail'
+        type: array
+      planIndex:
+        description: 付款计划索引
+        type: integer
+      remark:
+        description: 备注
+        type: string
+      repayStatus:
+        allOf:
+        - $ref: '#/definitions/model.RepayStatus'
+        description: 还款状态 // 1-正常 2-逾期
+      riderName:
+        description: 骑手名称
+        type: string
+      riderPhone:
+        description: 骑手电话
+        type: string
+      sn:
+        description: 车架号
+        type: string
+      startDate:
+        description: 激活时间
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/model.OrderStatus'
+        description: '订单状态 pending: 待支付, staging: 分期执行中, ended: 已完成, cancelled: 已取消,
+          refunded: 已退款'
+      storeId:
+        description: 门店ID
+        type: integer
+      storeName:
+        description: 提车门店
+        type: string
+    type: object
+  model.PurchaseOrderFollow:
+    properties:
+      content:
+        description: 跟进内容
+        type: string
+      createdAt:
+        description: 跟进时间
+        type: string
+      id:
+        description: 跟进ID
+        type: integer
+      modifier:
+        allOf:
+        - $ref: '#/definitions/model.Modifier'
+        description: 跟进人
+      pics:
+        description: 跟进图片
+        items:
+          type: string
+        type: array
+    type: object
+  model.PurchaseOrderListRes:
+    properties:
+      activeName:
+        description: 激活人名称
+        type: string
+      activePhone:
+        description: 激活人电话
+        type: string
+      amount:
+        description: 订单金额
+        type: number
+      color:
+        description: 车辆颜色
+        type: string
+      contractUrl:
+        description: 合同url
+        type: string
+      createdAt:
+        description: 创建时间
+        type: string
+      goods:
+        allOf:
+        - $ref: '#/definitions/definition.Goods'
+        description: 商品信息
+      id:
+        description: 订单编号
+        type: integer
+      installmentStage:
+        description: 当前分期阶段
+        type: integer
+      installmentTotal:
+        description: 分期总数
+        type: integer
+      paidAmount:
+        description: 已支付金额
+        type: number
+      planIndex:
+        description: 付款计划索引
+        type: integer
+      remark:
+        description: 备注
+        type: string
+      repayStatus:
+        allOf:
+        - $ref: '#/definitions/model.RepayStatus'
+        description: 还款状态 // 1-正常 2-逾期
+      riderName:
+        description: 骑手名称
+        type: string
+      riderPhone:
+        description: 骑手电话
+        type: string
+      sn:
+        description: 车架号
+        type: string
+      startDate:
+        description: 激活时间
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/model.OrderStatus'
+        description: '订单状态 pending: 待支付, staging: 分期执行中, ended: 已完成, cancelled: 已取消,
+          refunded: 已退款'
+      storeId:
+        description: 门店ID
+        type: integer
+      storeName:
+        description: 提车门店
+        type: string
+    type: object
+  model.PurchasePayRes:
+    properties:
+      outTradeNo:
+        description: 交易编码
+        type: string
+      prepay:
+        description: 预支付字符串
+        type: string
+    type: object
+  model.RepayStatus:
+    enum:
+    - 1
+    - 2
+    type: integer
+    x-enum-comments:
+      RepayStatusNormal: 正常
+      RepayStatusOverdue: 逾期
+    x-enum-varnames:
+    - RepayStatusNormal
+    - RepayStatusOverdue
+  model.StatusResponse:
+    properties:
+      status:
+        type: boolean
+    type: object
+  model.Store:
+    properties:
+      id:
+        type: integer
+      name:
+        description: 门店名称
+        type: string
+    type: object
+info:
+  contact: {}
+  title: 极光出行API - 骑手端购车api
+  version: "2.0"
+paths:
+  /rider/v2/purchase/order:
+    get:
+      consumes:
+      - application/json
+      operationId: OrderList
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 订单编号
+        in: query
+        name: id
+        type: integer
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 还款状态
+        enum:
+        - 1
+        - 2
+        in: query
+        name: repayStatus
+        type: integer
+        x-enum-comments:
+          RepayStatusNormal: 正常
+          RepayStatusOverdue: 逾期
+        x-enum-varnames:
+        - RepayStatusNormal
+        - RepayStatusOverdue
+      - description: 车架号
+        in: query
+        name: sn
+        type: string
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      - description: 订单状态
+        enum:
+        - pending
+        - staging
+        - ended
+        - cancelled
+        - refunded
+        in: query
+        name: status
+        type: string
+        x-enum-comments:
+          OrderStatusCancelled: 已取消
+          OrderStatusEnded: 已完成
+          OrderStatusPending: 待支付
+          OrderStatusRefunded: 已退款
+          OrderStatusStaging: 分期执行中
+        x-enum-varnames:
+        - OrderStatusPending
+        - OrderStatusStaging
+        - OrderStatusEnded
+        - OrderStatusCancelled
+        - OrderStatusRefunded
+      - description: 门店ID
+        in: query
+        name: storeId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.PurchaseOrderListRes'
+                  type: array
+              type: object
+      summary: 订单列表
+      tags:
+      - Order - 购车订单
+    post:
+      consumes:
+      - application/json
+      operationId: OrderCreate
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.PurchaseOrderCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 创建订单
+      tags:
+      - Order - 购车订单
+  /rider/v2/purchase/order/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: OrderDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 订单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.PurchaseOrderDetail'
+      summary: 订单详情
+      tags:
+      - Order - 购车订单
+  /rider/v2/purchase/pay:
+    post:
+      consumes:
+      - application/json
+      operationId: PaymentPay
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.PaymentReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.PurchasePayRes'
+      summary: 订单支付
+      tags:
+      - Order - 购车订单
+swagger: "2.0"

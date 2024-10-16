@@ -290,3 +290,17 @@ func (*selection) StoreGroup(c echo.Context) (err error) {
 	ctx := app.Context(c)
 	return ctx.SendResponse(service.NewSelection().StoreGroup())
 }
+
+// Goods
+// @ID		ManagerSelectionGoods
+// @Router	/manager/v1/selection/goods [GET]
+// @Summary	筛选商品
+// @Tags	筛选
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string						true	"管理员校验token"
+// @Success	200				{object}	[]model.SelectOptionGoods	"请求成功"
+func (*selection) Goods(c echo.Context) (err error) {
+	ctx := app.Context(c)
+	return ctx.SendResponse(service.NewSelection().Goods())
+}

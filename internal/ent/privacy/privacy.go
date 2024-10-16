@@ -2031,6 +2031,30 @@ func (f PromotionWithdrawalMutationRuleFunc) EvalMutation(ctx context.Context, m
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionWithdrawalMutation", m)
 }
 
+// The PurchaseFollowQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PurchaseFollowQueryRuleFunc func(context.Context, *ent.PurchaseFollowQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PurchaseFollowQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PurchaseFollowQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PurchaseFollowQuery", q)
+}
+
+// The PurchaseFollowMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PurchaseFollowMutationRuleFunc func(context.Context, *ent.PurchaseFollowMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PurchaseFollowMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PurchaseFollowMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PurchaseFollowMutation", m)
+}
+
 // The PurchaseOrderQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type PurchaseOrderQueryRuleFunc func(context.Context, *ent.PurchaseOrderQuery) error
@@ -2754,6 +2778,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.PromotionWithdrawalQuery:
 		return q.Filter(), nil
+	case *ent.PurchaseFollowQuery:
+		return q.Filter(), nil
 	case *ent.PurchaseOrderQuery:
 		return q.Filter(), nil
 	case *ent.PurchasePaymentQuery:
@@ -2964,6 +2990,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.PromotionSettingMutation:
 		return m.Filter(), nil
 	case *ent.PromotionWithdrawalMutation:
+		return m.Filter(), nil
+	case *ent.PurchaseFollowMutation:
 		return m.Filter(), nil
 	case *ent.PurchaseOrderMutation:
 		return m.Filter(), nil

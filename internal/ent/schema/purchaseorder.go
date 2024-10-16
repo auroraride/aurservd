@@ -61,7 +61,7 @@ func (PurchaseOrder) Annotations() []schema.Annotation {
 // Fields of the PurchaseOrder.
 func (PurchaseOrder) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("sn").Comment("车架号"),
+		field.String("sn").Optional().Comment("车架号"),
 		field.Enum("status").
 			Values("pending", "staging", "ended", "cancelled", "refunded").
 			Default("pending").
@@ -73,6 +73,9 @@ func (PurchaseOrder) Fields() []ent.Field {
 		field.Time("start_date").Optional().SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("开始日期"),
 		field.Time("next_date").Nillable().Optional().SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("下次支付日期"),
 		field.Strings("images").Optional().Comment("图片"),
+		field.String("active_name").Optional().Comment("激活人姓名"),
+		field.String("active_phone").Optional().Comment("激活人电话"),
+		field.String("color").Optional().Comment("车辆颜色"),
 	}
 }
 
@@ -80,6 +83,7 @@ func (PurchaseOrder) Fields() []ent.Field {
 func (PurchaseOrder) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("payments", PurchasePayment.Type),
+		edge.To("follows", PurchaseFollow.Type),
 	}
 }
 

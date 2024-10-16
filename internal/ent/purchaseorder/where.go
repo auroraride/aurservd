@@ -120,6 +120,21 @@ func NextDate(v time.Time) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldEQ(FieldNextDate, v))
 }
 
+// ActiveName applies equality check predicate on the "active_name" field. It's identical to ActiveNameEQ.
+func ActiveName(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEQ(FieldActiveName, v))
+}
+
+// ActivePhone applies equality check predicate on the "active_phone" field. It's identical to ActivePhoneEQ.
+func ActivePhone(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEQ(FieldActivePhone, v))
+}
+
+// Color applies equality check predicate on the "color" field. It's identical to ColorEQ.
+func Color(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEQ(FieldColor, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldEQ(FieldCreatedAt, v))
@@ -470,6 +485,16 @@ func SnHasSuffix(v string) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldHasSuffix(FieldSn, v))
 }
 
+// SnIsNil applies the IsNil predicate on the "sn" field.
+func SnIsNil() predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldIsNull(FieldSn))
+}
+
+// SnNotNil applies the NotNil predicate on the "sn" field.
+func SnNotNil() predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNotNull(FieldSn))
+}
+
 // SnEqualFold applies the EqualFold predicate on the "sn" field.
 func SnEqualFold(v string) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldEqualFold(FieldSn, v))
@@ -765,6 +790,231 @@ func ImagesNotNil() predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldNotNull(FieldImages))
 }
 
+// ActiveNameEQ applies the EQ predicate on the "active_name" field.
+func ActiveNameEQ(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEQ(FieldActiveName, v))
+}
+
+// ActiveNameNEQ applies the NEQ predicate on the "active_name" field.
+func ActiveNameNEQ(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNEQ(FieldActiveName, v))
+}
+
+// ActiveNameIn applies the In predicate on the "active_name" field.
+func ActiveNameIn(vs ...string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldIn(FieldActiveName, vs...))
+}
+
+// ActiveNameNotIn applies the NotIn predicate on the "active_name" field.
+func ActiveNameNotIn(vs ...string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNotIn(FieldActiveName, vs...))
+}
+
+// ActiveNameGT applies the GT predicate on the "active_name" field.
+func ActiveNameGT(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldGT(FieldActiveName, v))
+}
+
+// ActiveNameGTE applies the GTE predicate on the "active_name" field.
+func ActiveNameGTE(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldGTE(FieldActiveName, v))
+}
+
+// ActiveNameLT applies the LT predicate on the "active_name" field.
+func ActiveNameLT(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldLT(FieldActiveName, v))
+}
+
+// ActiveNameLTE applies the LTE predicate on the "active_name" field.
+func ActiveNameLTE(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldLTE(FieldActiveName, v))
+}
+
+// ActiveNameContains applies the Contains predicate on the "active_name" field.
+func ActiveNameContains(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldContains(FieldActiveName, v))
+}
+
+// ActiveNameHasPrefix applies the HasPrefix predicate on the "active_name" field.
+func ActiveNameHasPrefix(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldHasPrefix(FieldActiveName, v))
+}
+
+// ActiveNameHasSuffix applies the HasSuffix predicate on the "active_name" field.
+func ActiveNameHasSuffix(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldHasSuffix(FieldActiveName, v))
+}
+
+// ActiveNameIsNil applies the IsNil predicate on the "active_name" field.
+func ActiveNameIsNil() predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldIsNull(FieldActiveName))
+}
+
+// ActiveNameNotNil applies the NotNil predicate on the "active_name" field.
+func ActiveNameNotNil() predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNotNull(FieldActiveName))
+}
+
+// ActiveNameEqualFold applies the EqualFold predicate on the "active_name" field.
+func ActiveNameEqualFold(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEqualFold(FieldActiveName, v))
+}
+
+// ActiveNameContainsFold applies the ContainsFold predicate on the "active_name" field.
+func ActiveNameContainsFold(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldContainsFold(FieldActiveName, v))
+}
+
+// ActivePhoneEQ applies the EQ predicate on the "active_phone" field.
+func ActivePhoneEQ(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEQ(FieldActivePhone, v))
+}
+
+// ActivePhoneNEQ applies the NEQ predicate on the "active_phone" field.
+func ActivePhoneNEQ(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNEQ(FieldActivePhone, v))
+}
+
+// ActivePhoneIn applies the In predicate on the "active_phone" field.
+func ActivePhoneIn(vs ...string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldIn(FieldActivePhone, vs...))
+}
+
+// ActivePhoneNotIn applies the NotIn predicate on the "active_phone" field.
+func ActivePhoneNotIn(vs ...string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNotIn(FieldActivePhone, vs...))
+}
+
+// ActivePhoneGT applies the GT predicate on the "active_phone" field.
+func ActivePhoneGT(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldGT(FieldActivePhone, v))
+}
+
+// ActivePhoneGTE applies the GTE predicate on the "active_phone" field.
+func ActivePhoneGTE(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldGTE(FieldActivePhone, v))
+}
+
+// ActivePhoneLT applies the LT predicate on the "active_phone" field.
+func ActivePhoneLT(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldLT(FieldActivePhone, v))
+}
+
+// ActivePhoneLTE applies the LTE predicate on the "active_phone" field.
+func ActivePhoneLTE(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldLTE(FieldActivePhone, v))
+}
+
+// ActivePhoneContains applies the Contains predicate on the "active_phone" field.
+func ActivePhoneContains(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldContains(FieldActivePhone, v))
+}
+
+// ActivePhoneHasPrefix applies the HasPrefix predicate on the "active_phone" field.
+func ActivePhoneHasPrefix(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldHasPrefix(FieldActivePhone, v))
+}
+
+// ActivePhoneHasSuffix applies the HasSuffix predicate on the "active_phone" field.
+func ActivePhoneHasSuffix(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldHasSuffix(FieldActivePhone, v))
+}
+
+// ActivePhoneIsNil applies the IsNil predicate on the "active_phone" field.
+func ActivePhoneIsNil() predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldIsNull(FieldActivePhone))
+}
+
+// ActivePhoneNotNil applies the NotNil predicate on the "active_phone" field.
+func ActivePhoneNotNil() predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNotNull(FieldActivePhone))
+}
+
+// ActivePhoneEqualFold applies the EqualFold predicate on the "active_phone" field.
+func ActivePhoneEqualFold(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEqualFold(FieldActivePhone, v))
+}
+
+// ActivePhoneContainsFold applies the ContainsFold predicate on the "active_phone" field.
+func ActivePhoneContainsFold(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldContainsFold(FieldActivePhone, v))
+}
+
+// ColorEQ applies the EQ predicate on the "color" field.
+func ColorEQ(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEQ(FieldColor, v))
+}
+
+// ColorNEQ applies the NEQ predicate on the "color" field.
+func ColorNEQ(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNEQ(FieldColor, v))
+}
+
+// ColorIn applies the In predicate on the "color" field.
+func ColorIn(vs ...string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldIn(FieldColor, vs...))
+}
+
+// ColorNotIn applies the NotIn predicate on the "color" field.
+func ColorNotIn(vs ...string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNotIn(FieldColor, vs...))
+}
+
+// ColorGT applies the GT predicate on the "color" field.
+func ColorGT(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldGT(FieldColor, v))
+}
+
+// ColorGTE applies the GTE predicate on the "color" field.
+func ColorGTE(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldGTE(FieldColor, v))
+}
+
+// ColorLT applies the LT predicate on the "color" field.
+func ColorLT(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldLT(FieldColor, v))
+}
+
+// ColorLTE applies the LTE predicate on the "color" field.
+func ColorLTE(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldLTE(FieldColor, v))
+}
+
+// ColorContains applies the Contains predicate on the "color" field.
+func ColorContains(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldContains(FieldColor, v))
+}
+
+// ColorHasPrefix applies the HasPrefix predicate on the "color" field.
+func ColorHasPrefix(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldHasPrefix(FieldColor, v))
+}
+
+// ColorHasSuffix applies the HasSuffix predicate on the "color" field.
+func ColorHasSuffix(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldHasSuffix(FieldColor, v))
+}
+
+// ColorIsNil applies the IsNil predicate on the "color" field.
+func ColorIsNil() predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldIsNull(FieldColor))
+}
+
+// ColorNotNil applies the NotNil predicate on the "color" field.
+func ColorNotNil() predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNotNull(FieldColor))
+}
+
+// ColorEqualFold applies the EqualFold predicate on the "color" field.
+func ColorEqualFold(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEqualFold(FieldColor, v))
+}
+
+// ColorContainsFold applies the ContainsFold predicate on the "color" field.
+func ColorContainsFold(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldContainsFold(FieldColor, v))
+}
+
 // HasRider applies the HasEdge predicate on the "rider" edge.
 func HasRider() predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(func(s *sql.Selector) {
@@ -849,6 +1099,29 @@ func HasPayments() predicate.PurchaseOrder {
 func HasPaymentsWith(preds ...predicate.PurchasePayment) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(func(s *sql.Selector) {
 		step := newPaymentsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasFollows applies the HasEdge predicate on the "follows" edge.
+func HasFollows() predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, FollowsTable, FollowsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasFollowsWith applies the HasEdge predicate on the "follows" edge with a given conditions (other predicates).
+func HasFollowsWith(preds ...predicate.PurchaseFollow) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(func(s *sql.Selector) {
+		step := newFollowsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
