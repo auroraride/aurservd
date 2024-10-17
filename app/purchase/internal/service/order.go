@@ -46,7 +46,7 @@ func (s *orderService) IsAuthed(u *ent.Rider) bool {
 // Create 创建订单
 func (s *orderService) Create(ctx context.Context, r *ent.Rider, req *pm.PurchaseOrderCreateReq) error {
 	// 判定是否实名认证
-	if s.IsAuthed(r) {
+	if !s.IsAuthed(r) {
 		return errors.New("未实名认证, 请先实名认证")
 	}
 	// 查询商品
