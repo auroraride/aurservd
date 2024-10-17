@@ -303,6 +303,9 @@ definitions:
         items:
           $ref: '#/definitions/model.PurchaseOrderFollow'
         type: array
+      formula:
+        description: 违约说明
+        type: string
       goods:
         allOf:
         - $ref: '#/definitions/definition.Goods'
@@ -401,6 +404,9 @@ definitions:
         type: string
       docId:
         description: 合同ID
+        type: string
+      formula:
+        description: 违约说明
         type: string
       goods:
         allOf:

@@ -112,6 +112,7 @@ type PurchaseOrderListRes struct {
 	ContractUrl      string            `json:"contractUrl"`      // 合同url
 	PlanIndex        int               `json:"planIndex"`        // 付款计划索引
 	DocID            string            `json:"docId"`            // 合同ID
+	Formula          string            `json:"formula"`          // 违约说明
 }
 
 // PurchaseOrderDetail 订单详情

@@ -230,6 +230,8 @@ func (s *orderService) detail(item *ent.PurchaseOrder) (res pm.PurchaseOrderList
 		res.RiderName = item.Edges.Rider.Name
 		res.RiderPhone = item.Edges.Rider.Phone
 	}
+	// 违约说明（暂时先固定文本返回前段）
+	res.Formula = "计算方法：违约时间超过7天，按照本期应支付金额的20%计算。"
 
 	return
 }
