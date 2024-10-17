@@ -114,7 +114,7 @@ func (c *appClient) Native(pc *model.PaymentCache) (string, error) {
 // AppPayPurchase 购买商品
 func (c *appClient) AppPayPurchase(req *model.PurchasePayReq) (string, error) {
 	cfg := ar.Config.Payment.Wechat
-	notifyUrl := ar.Config.Payment.PurchaseNotifyUrl
+	notifyUrl := ar.Config.Payment.PurchaseWechatNotifyUrl
 	svc := app.AppApiService{
 		Client: c.Client,
 	}

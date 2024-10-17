@@ -5844,6 +5844,7 @@ var (
 		{Name: "sn", Type: field.TypeString, Nullable: true, Comment: "车架号"},
 		{Name: "status", Type: field.TypeEnum, Comment: "状态, pending: 待支付, staging: 分期执行中, ended: 已完成, cancelled: 已取消, refunded: 已退款", Enums: []string{"pending", "staging", "ended", "cancelled", "refunded"}, Default: "pending"},
 		{Name: "contract_url", Type: field.TypeString, Nullable: true, Comment: "合同URL"},
+		{Name: "doc_id", Type: field.TypeString, Nullable: true, Comment: "合同ID"},
 		{Name: "installment_stage", Type: field.TypeInt, Comment: "当前分期阶段，从0开始", Default: 0},
 		{Name: "installment_total", Type: field.TypeInt, Comment: "分期总数"},
 		{Name: "installment_plan", Type: field.TypeJSON, Comment: "分期方案"},
@@ -5865,19 +5866,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "purchase_order_rider_rider",
-				Columns:    []*schema.Column{PurchaseOrderColumns[19]},
+				Columns:    []*schema.Column{PurchaseOrderColumns[20]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "purchase_order_goods_goods",
-				Columns:    []*schema.Column{PurchaseOrderColumns[20]},
+				Columns:    []*schema.Column{PurchaseOrderColumns[21]},
 				RefColumns: []*schema.Column{GoodsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "purchase_order_store_store",
-				Columns:    []*schema.Column{PurchaseOrderColumns[21]},
+				Columns:    []*schema.Column{PurchaseOrderColumns[22]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -5896,17 +5897,17 @@ var (
 			{
 				Name:    "purchaseorder_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{PurchaseOrderColumns[19]},
+				Columns: []*schema.Column{PurchaseOrderColumns[20]},
 			},
 			{
 				Name:    "purchaseorder_goods_id",
 				Unique:  false,
-				Columns: []*schema.Column{PurchaseOrderColumns[20]},
+				Columns: []*schema.Column{PurchaseOrderColumns[21]},
 			},
 			{
 				Name:    "purchaseorder_store_id",
 				Unique:  false,
-				Columns: []*schema.Column{PurchaseOrderColumns[21]},
+				Columns: []*schema.Column{PurchaseOrderColumns[22]},
 			},
 			{
 				Name:    "purchaseorder_sn",
@@ -5921,7 +5922,7 @@ var (
 			{
 				Name:    "purchaseorder_next_date",
 				Unique:  false,
-				Columns: []*schema.Column{PurchaseOrderColumns[14]},
+				Columns: []*schema.Column{PurchaseOrderColumns[15]},
 			},
 		},
 	}

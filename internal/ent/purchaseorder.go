@@ -46,6 +46,8 @@ type PurchaseOrder struct {
 	Status purchaseorder.Status `json:"status,omitempty"`
 	// 合同URL
 	ContractURL string `json:"contract_url,omitempty"`
+	// 合同ID
+	DocID string `json:"doc_id,omitempty"`
 	// 当前分期阶段，从0开始
 	InstallmentStage int `json:"installment_stage,omitempty"`
 	// 分期总数
@@ -147,7 +149,7 @@ func (*PurchaseOrder) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case purchaseorder.FieldID, purchaseorder.FieldRiderID, purchaseorder.FieldGoodsID, purchaseorder.FieldStoreID, purchaseorder.FieldInstallmentStage, purchaseorder.FieldInstallmentTotal:
 			values[i] = new(sql.NullInt64)
-		case purchaseorder.FieldRemark, purchaseorder.FieldSn, purchaseorder.FieldStatus, purchaseorder.FieldContractURL, purchaseorder.FieldActiveName, purchaseorder.FieldActivePhone, purchaseorder.FieldColor:
+		case purchaseorder.FieldRemark, purchaseorder.FieldSn, purchaseorder.FieldStatus, purchaseorder.FieldContractURL, purchaseorder.FieldDocID, purchaseorder.FieldActiveName, purchaseorder.FieldActivePhone, purchaseorder.FieldColor:
 			values[i] = new(sql.NullString)
 		case purchaseorder.FieldCreatedAt, purchaseorder.FieldUpdatedAt, purchaseorder.FieldDeletedAt, purchaseorder.FieldStartDate, purchaseorder.FieldNextDate:
 			values[i] = new(sql.NullTime)
@@ -249,6 +251,12 @@ func (po *PurchaseOrder) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field contract_url", values[i])
 			} else if value.Valid {
 				po.ContractURL = value.String
+			}
+		case purchaseorder.FieldDocID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field doc_id", values[i])
+			} else if value.Valid {
+				po.DocID = value.String
 			}
 		case purchaseorder.FieldInstallmentStage:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -409,6 +417,9 @@ func (po *PurchaseOrder) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("contract_url=")
 	builder.WriteString(po.ContractURL)
+	builder.WriteString(", ")
+	builder.WriteString("doc_id=")
+	builder.WriteString(po.DocID)
 	builder.WriteString(", ")
 	builder.WriteString("installment_stage=")
 	builder.WriteString(fmt.Sprintf("%v", po.InstallmentStage))

@@ -40,6 +40,8 @@ const (
 	FieldStatus = "status"
 	// FieldContractURL holds the string denoting the contract_url field in the database.
 	FieldContractURL = "contract_url"
+	// FieldDocID holds the string denoting the doc_id field in the database.
+	FieldDocID = "doc_id"
 	// FieldInstallmentStage holds the string denoting the installment_stage field in the database.
 	FieldInstallmentStage = "installment_stage"
 	// FieldInstallmentTotal holds the string denoting the installment_total field in the database.
@@ -122,6 +124,7 @@ var Columns = []string{
 	FieldSn,
 	FieldStatus,
 	FieldContractURL,
+	FieldDocID,
 	FieldInstallmentStage,
 	FieldInstallmentTotal,
 	FieldInstallmentPlan,
@@ -245,6 +248,11 @@ func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 // ByContractURL orders the results by the contract_url field.
 func ByContractURL(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldContractURL, opts...).ToFunc()
+}
+
+// ByDocID orders the results by the doc_id field.
+func ByDocID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDocID, opts...).ToFunc()
 }
 
 // ByInstallmentStage orders the results by the installment_stage field.

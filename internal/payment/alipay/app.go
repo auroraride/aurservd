@@ -86,7 +86,7 @@ func (c *appClient) Native(pc *model.PaymentCache) (string, error) {
 
 // AppPayPurchase 购买商品
 func (c *appClient) AppPayPurchase(req *model.PurchasePayReq) (string, error) {
-	notifyUrl := ar.Config.Payment.PurchaseNotifyUrl
+	notifyUrl := ar.Config.Payment.PurchaseAlipayNotifyUrl
 	trade := alipay.TradeAppPay{
 		Trade: alipay.Trade{
 			TotalAmount: fmt.Sprintf("%.2f", req.Amount),

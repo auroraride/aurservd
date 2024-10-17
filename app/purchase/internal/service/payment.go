@@ -119,3 +119,59 @@ func (s *paymentService) Pay(ctx context.Context, req *pm.PaymentReq) (*model.Pu
 		OutTradeNo: stage.OutTradeNo,
 	}, err
 }
+
+// DoPayment 支付完成
+func (s *paymentService) DoPayment(req *model.PurchaseNotificationRes) error {
+	payment, _ := s.orm.QueryNotDeleted().WithOrder(func(query *ent.PurchaseOrderQuery) {
+		query.Where(purchaseorder.StatusIn(purchaseorder.StatusPending, purchaseorder.StatusStaging))
+	}).Where(purchasepayment.OutTradeNo(req.OutTradeNo)).First(context.Background())
+	if payment == nil {
+		return errors.New("支付计划不存在")
+	}
+	if payment.Status != purchasepayment.StatusObligation {
+		return errors.New("支付计划状态不正确")
+	}
+	err := s.orm.UpdateOne(payment).
+		SetStatus(purchasepayment.StatusPaid).
+		SetPayway(purchasepayment.Payway(req.Payway)).
+		SetPaymentDate(time.Now()).
+		SetTradeNo(req.TradeNo).
+		Exec(context.Background())
+	if err != nil {
+		return err
+	}
+	o := payment.Edges.Order
+	if o == nil {
+		return errors.New("订单不存在")
+	}
+	// 判定订单状态
+	status, stage := s.CheckOrderStatus(o)
+	update := o.Update().SetStatus(status)
+	if status != purchaseorder.StatusEnded {
+		update.SetInstallmentStage(stage)
+		billingDates := o.InstallmentPlan.BillingDates(time.Now())
+		if stage < len(billingDates) {
+			update.SetNextDate(billingDates[stage])
+		}
+	}
+	err = update.Exec(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// CheckOrderStatus 判定订单状态
+func (s *paymentService) CheckOrderStatus(o *ent.PurchaseOrder) (status purchaseorder.Status, stage int) {
+	// 查询是否已经全部支付完成
+	b, _ := ent.Database.PurchasePayment.QueryNotDeleted().
+		Where(purchasepayment.OrderID(o.ID),
+			purchasepayment.StatusEQ(purchasepayment.StatusPaid),
+			purchasepayment.Index(o.InstallmentTotal),
+		).Exist(context.Background())
+	if b {
+		return purchaseorder.StatusEnded, 0
+	} else {
+		return purchaseorder.StatusStaging, o.InstallmentStage + 1
+	}
+}

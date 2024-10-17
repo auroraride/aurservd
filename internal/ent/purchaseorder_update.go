@@ -196,6 +196,26 @@ func (pou *PurchaseOrderUpdate) ClearContractURL() *PurchaseOrderUpdate {
 	return pou
 }
 
+// SetDocID sets the "doc_id" field.
+func (pou *PurchaseOrderUpdate) SetDocID(s string) *PurchaseOrderUpdate {
+	pou.mutation.SetDocID(s)
+	return pou
+}
+
+// SetNillableDocID sets the "doc_id" field if the given value is not nil.
+func (pou *PurchaseOrderUpdate) SetNillableDocID(s *string) *PurchaseOrderUpdate {
+	if s != nil {
+		pou.SetDocID(*s)
+	}
+	return pou
+}
+
+// ClearDocID clears the value of the "doc_id" field.
+func (pou *PurchaseOrderUpdate) ClearDocID() *PurchaseOrderUpdate {
+	pou.mutation.ClearDocID()
+	return pou
+}
+
 // SetInstallmentStage sets the "installment_stage" field.
 func (pou *PurchaseOrderUpdate) SetInstallmentStage(i int) *PurchaseOrderUpdate {
 	pou.mutation.ResetInstallmentStage()
@@ -592,6 +612,12 @@ func (pou *PurchaseOrderUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if pou.mutation.ContractURLCleared() {
 		_spec.ClearField(purchaseorder.FieldContractURL, field.TypeString)
+	}
+	if value, ok := pou.mutation.DocID(); ok {
+		_spec.SetField(purchaseorder.FieldDocID, field.TypeString, value)
+	}
+	if pou.mutation.DocIDCleared() {
+		_spec.ClearField(purchaseorder.FieldDocID, field.TypeString)
 	}
 	if value, ok := pou.mutation.InstallmentStage(); ok {
 		_spec.SetField(purchaseorder.FieldInstallmentStage, field.TypeInt, value)
@@ -1010,6 +1036,26 @@ func (pouo *PurchaseOrderUpdateOne) SetNillableContractURL(s *string) *PurchaseO
 // ClearContractURL clears the value of the "contract_url" field.
 func (pouo *PurchaseOrderUpdateOne) ClearContractURL() *PurchaseOrderUpdateOne {
 	pouo.mutation.ClearContractURL()
+	return pouo
+}
+
+// SetDocID sets the "doc_id" field.
+func (pouo *PurchaseOrderUpdateOne) SetDocID(s string) *PurchaseOrderUpdateOne {
+	pouo.mutation.SetDocID(s)
+	return pouo
+}
+
+// SetNillableDocID sets the "doc_id" field if the given value is not nil.
+func (pouo *PurchaseOrderUpdateOne) SetNillableDocID(s *string) *PurchaseOrderUpdateOne {
+	if s != nil {
+		pouo.SetDocID(*s)
+	}
+	return pouo
+}
+
+// ClearDocID clears the value of the "doc_id" field.
+func (pouo *PurchaseOrderUpdateOne) ClearDocID() *PurchaseOrderUpdateOne {
+	pouo.mutation.ClearDocID()
 	return pouo
 }
 
@@ -1439,6 +1485,12 @@ func (pouo *PurchaseOrderUpdateOne) sqlSave(ctx context.Context) (_node *Purchas
 	}
 	if pouo.mutation.ContractURLCleared() {
 		_spec.ClearField(purchaseorder.FieldContractURL, field.TypeString)
+	}
+	if value, ok := pouo.mutation.DocID(); ok {
+		_spec.SetField(purchaseorder.FieldDocID, field.TypeString, value)
+	}
+	if pouo.mutation.DocIDCleared() {
+		_spec.ClearField(purchaseorder.FieldDocID, field.TypeString)
 	}
 	if value, ok := pouo.mutation.InstallmentStage(); ok {
 		_spec.SetField(purchaseorder.FieldInstallmentStage, field.TypeInt, value)

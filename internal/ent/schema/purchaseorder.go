@@ -67,6 +67,7 @@ func (PurchaseOrder) Fields() []ent.Field {
 			Default("pending").
 			Comment("状态, pending: 待支付, staging: 分期执行中, ended: 已完成, cancelled: 已取消, refunded: 已退款"),
 		field.String("contract_url").Optional().Comment("合同URL"),
+		field.String("doc_id").Optional().Comment("合同ID"),
 		field.Int("installment_stage").Default(0).Comment("当前分期阶段，从0开始"),
 		field.Int("installment_total").Comment("分期总数"),
 		field.JSON("installment_plan", model.GoodsPaymentPlan{}).Comment("分期方案"),

@@ -34,6 +34,10 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	g.Any("/callback/alipay/mini/pay", rapi.Callback.AlipayMiniProgramPay, rawDump) // 支付宝小程序支付回调
 
+	// 购买商品回调
+	g.Any("/callback/purchase/callback/alipay", pr.Callback.PurchaseAlipay, rawDump) // 支付宝购买商品回调
+	g.Any("/callback/purchase/callback/wechat", pr.Callback.PurchaseWechat, rawDump) // 微信购买商品回调
+
 	// 记录请求日志
 	dumpSkipPaths := map[string]bool{}
 	dumpReqHeaders := map[string]struct{}{
@@ -242,4 +246,10 @@ func LoadRiderV2Routes(root *echo.Group) {
 	p.GET("/:id", pr.Order.Detail)    // 订单详情
 	p.POST("/order", pr.Order.Create) // 创建订单
 	p.POST("/pay", pr.Payment.Pay)    // 支付
+
+	// 买车合同
+	c := p.Group("/contract")
+	c.POST("/sign", pr.Contract.Sign)     // 签署合同
+	c.POST("/create", pr.Contract.Create) // 创建合同
+	c.GET("/:docId", pr.Contract.Detail)  // 查看合同
 }

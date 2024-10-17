@@ -164,6 +164,20 @@ func (poc *PurchaseOrderCreate) SetNillableContractURL(s *string) *PurchaseOrder
 	return poc
 }
 
+// SetDocID sets the "doc_id" field.
+func (poc *PurchaseOrderCreate) SetDocID(s string) *PurchaseOrderCreate {
+	poc.mutation.SetDocID(s)
+	return poc
+}
+
+// SetNillableDocID sets the "doc_id" field if the given value is not nil.
+func (poc *PurchaseOrderCreate) SetNillableDocID(s *string) *PurchaseOrderCreate {
+	if s != nil {
+		poc.SetDocID(*s)
+	}
+	return poc
+}
+
 // SetInstallmentStage sets the "installment_stage" field.
 func (poc *PurchaseOrderCreate) SetInstallmentStage(i int) *PurchaseOrderCreate {
 	poc.mutation.SetInstallmentStage(i)
@@ -472,6 +486,10 @@ func (poc *PurchaseOrderCreate) createSpec() (*PurchaseOrder, *sqlgraph.CreateSp
 	if value, ok := poc.mutation.ContractURL(); ok {
 		_spec.SetField(purchaseorder.FieldContractURL, field.TypeString, value)
 		_node.ContractURL = value
+	}
+	if value, ok := poc.mutation.DocID(); ok {
+		_spec.SetField(purchaseorder.FieldDocID, field.TypeString, value)
+		_node.DocID = value
 	}
 	if value, ok := poc.mutation.InstallmentStage(); ok {
 		_spec.SetField(purchaseorder.FieldInstallmentStage, field.TypeInt, value)
@@ -797,6 +815,24 @@ func (u *PurchaseOrderUpsert) UpdateContractURL() *PurchaseOrderUpsert {
 // ClearContractURL clears the value of the "contract_url" field.
 func (u *PurchaseOrderUpsert) ClearContractURL() *PurchaseOrderUpsert {
 	u.SetNull(purchaseorder.FieldContractURL)
+	return u
+}
+
+// SetDocID sets the "doc_id" field.
+func (u *PurchaseOrderUpsert) SetDocID(v string) *PurchaseOrderUpsert {
+	u.Set(purchaseorder.FieldDocID, v)
+	return u
+}
+
+// UpdateDocID sets the "doc_id" field to the value that was provided on create.
+func (u *PurchaseOrderUpsert) UpdateDocID() *PurchaseOrderUpsert {
+	u.SetExcluded(purchaseorder.FieldDocID)
+	return u
+}
+
+// ClearDocID clears the value of the "doc_id" field.
+func (u *PurchaseOrderUpsert) ClearDocID() *PurchaseOrderUpsert {
+	u.SetNull(purchaseorder.FieldDocID)
 	return u
 }
 
@@ -1183,6 +1219,27 @@ func (u *PurchaseOrderUpsertOne) UpdateContractURL() *PurchaseOrderUpsertOne {
 func (u *PurchaseOrderUpsertOne) ClearContractURL() *PurchaseOrderUpsertOne {
 	return u.Update(func(s *PurchaseOrderUpsert) {
 		s.ClearContractURL()
+	})
+}
+
+// SetDocID sets the "doc_id" field.
+func (u *PurchaseOrderUpsertOne) SetDocID(v string) *PurchaseOrderUpsertOne {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.SetDocID(v)
+	})
+}
+
+// UpdateDocID sets the "doc_id" field to the value that was provided on create.
+func (u *PurchaseOrderUpsertOne) UpdateDocID() *PurchaseOrderUpsertOne {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.UpdateDocID()
+	})
+}
+
+// ClearDocID clears the value of the "doc_id" field.
+func (u *PurchaseOrderUpsertOne) ClearDocID() *PurchaseOrderUpsertOne {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.ClearDocID()
 	})
 }
 
@@ -1761,6 +1818,27 @@ func (u *PurchaseOrderUpsertBulk) UpdateContractURL() *PurchaseOrderUpsertBulk {
 func (u *PurchaseOrderUpsertBulk) ClearContractURL() *PurchaseOrderUpsertBulk {
 	return u.Update(func(s *PurchaseOrderUpsert) {
 		s.ClearContractURL()
+	})
+}
+
+// SetDocID sets the "doc_id" field.
+func (u *PurchaseOrderUpsertBulk) SetDocID(v string) *PurchaseOrderUpsertBulk {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.SetDocID(v)
+	})
+}
+
+// UpdateDocID sets the "doc_id" field to the value that was provided on create.
+func (u *PurchaseOrderUpsertBulk) UpdateDocID() *PurchaseOrderUpsertBulk {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.UpdateDocID()
+	})
+}
+
+// ClearDocID clears the value of the "doc_id" field.
+func (u *PurchaseOrderUpsertBulk) ClearDocID() *PurchaseOrderUpsertBulk {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.ClearDocID()
 	})
 }
 

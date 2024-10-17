@@ -100,6 +100,11 @@ func ContractURL(v string) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldEQ(FieldContractURL, v))
 }
 
+// DocID applies equality check predicate on the "doc_id" field. It's identical to DocIDEQ.
+func DocID(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEQ(FieldDocID, v))
+}
+
 // InstallmentStage applies equality check predicate on the "installment_stage" field. It's identical to InstallmentStageEQ.
 func InstallmentStage(v int) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldEQ(FieldInstallmentStage, v))
@@ -598,6 +603,81 @@ func ContractURLEqualFold(v string) predicate.PurchaseOrder {
 // ContractURLContainsFold applies the ContainsFold predicate on the "contract_url" field.
 func ContractURLContainsFold(v string) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldContainsFold(FieldContractURL, v))
+}
+
+// DocIDEQ applies the EQ predicate on the "doc_id" field.
+func DocIDEQ(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEQ(FieldDocID, v))
+}
+
+// DocIDNEQ applies the NEQ predicate on the "doc_id" field.
+func DocIDNEQ(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNEQ(FieldDocID, v))
+}
+
+// DocIDIn applies the In predicate on the "doc_id" field.
+func DocIDIn(vs ...string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldIn(FieldDocID, vs...))
+}
+
+// DocIDNotIn applies the NotIn predicate on the "doc_id" field.
+func DocIDNotIn(vs ...string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNotIn(FieldDocID, vs...))
+}
+
+// DocIDGT applies the GT predicate on the "doc_id" field.
+func DocIDGT(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldGT(FieldDocID, v))
+}
+
+// DocIDGTE applies the GTE predicate on the "doc_id" field.
+func DocIDGTE(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldGTE(FieldDocID, v))
+}
+
+// DocIDLT applies the LT predicate on the "doc_id" field.
+func DocIDLT(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldLT(FieldDocID, v))
+}
+
+// DocIDLTE applies the LTE predicate on the "doc_id" field.
+func DocIDLTE(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldLTE(FieldDocID, v))
+}
+
+// DocIDContains applies the Contains predicate on the "doc_id" field.
+func DocIDContains(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldContains(FieldDocID, v))
+}
+
+// DocIDHasPrefix applies the HasPrefix predicate on the "doc_id" field.
+func DocIDHasPrefix(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldHasPrefix(FieldDocID, v))
+}
+
+// DocIDHasSuffix applies the HasSuffix predicate on the "doc_id" field.
+func DocIDHasSuffix(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldHasSuffix(FieldDocID, v))
+}
+
+// DocIDIsNil applies the IsNil predicate on the "doc_id" field.
+func DocIDIsNil() predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldIsNull(FieldDocID))
+}
+
+// DocIDNotNil applies the NotNil predicate on the "doc_id" field.
+func DocIDNotNil() predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNotNull(FieldDocID))
+}
+
+// DocIDEqualFold applies the EqualFold predicate on the "doc_id" field.
+func DocIDEqualFold(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEqualFold(FieldDocID, v))
+}
+
+// DocIDContainsFold applies the ContainsFold predicate on the "doc_id" field.
+func DocIDContainsFold(v string) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldContainsFold(FieldDocID, v))
 }
 
 // InstallmentStageEQ applies the EQ predicate on the "installment_stage" field.
