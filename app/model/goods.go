@@ -65,6 +65,10 @@ func (plan GoodsPaymentPlan) BillingDates(t time.Time) (dates []time.Time) {
 	c := carbon.CreateFromStdTime(t).StartOfDay()
 	dates = make([]time.Time, len(plan))
 	for i, option := range plan {
+		if i == 0 {
+			dates[i] = c.StdTime()
+			continue
+		}
 		switch option.Period {
 		case GoodsPaymentPeriodOnce:
 			if dates[i].IsZero() {

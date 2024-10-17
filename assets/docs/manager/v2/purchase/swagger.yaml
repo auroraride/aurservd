@@ -96,6 +96,12 @@ definitions:
     - Alipay
     - Wechat
     - Cash
+  model.ExportRes:
+    properties:
+      sn:
+        description: 导出编号
+        type: string
+    type: object
   model.Modifier:
     properties:
       id:
@@ -246,6 +252,9 @@ definitions:
       createdAt:
         description: 创建时间
         type: string
+      docId:
+        description: 合同ID
+        type: string
       follows:
         description: 订单跟进数据
         items:
@@ -306,6 +315,40 @@ definitions:
         description: 提车门店
         type: string
     type: object
+  model.PurchaseOrderExportReq:
+    properties:
+      end:
+        description: 结束时间
+        type: string
+      id:
+        description: 订单编号
+        type: integer
+      keyword:
+        description: 关键字
+        type: string
+      remark:
+        description: 备注
+        type: string
+      repayStatus:
+        allOf:
+        - $ref: '#/definitions/model.RepayStatus'
+        description: 还款状态
+      sn:
+        description: 车架号
+        type: string
+      start:
+        description: 开始时间
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/model.OrderStatus'
+        description: 订单状态
+      storeId:
+        description: 门店ID
+        type: integer
+    required:
+    - remark
+    type: object
   model.PurchaseOrderFollow:
     properties:
       content:
@@ -364,6 +407,9 @@ definitions:
         type: string
       createdAt:
         description: 创建时间
+        type: string
+      docId:
+        description: 合同ID
         type: string
       goods:
         allOf:
@@ -697,6 +743,33 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: 取消订单
+      tags:
+      - Order - 购车订单
+  /manager/v2/purchase/order/export:
+    post:
+      consumes:
+      - application/json
+      operationId: OrderExport
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 筛选条件
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.PurchaseOrderExportReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: 导出购车订单
       tags:
       - Order - 购车订单
   /manager/v2/purchase/order/follow:

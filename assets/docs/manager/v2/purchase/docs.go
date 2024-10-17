@@ -235,6 +235,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v2/purchase/order/export": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order - 购车订单"
+                ],
+                "summary": "导出购车订单",
+                "operationId": "OrderExport",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "筛选条件",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.PurchaseOrderExportReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExportRes"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v2/purchase/order/follow": {
             "post": {
                 "consumes": [
@@ -455,6 +496,15 @@ const docTemplate = `{
                 "Cash"
             ]
         },
+        "model.ExportRes": {
+            "type": "object",
+            "properties": {
+                "sn": {
+                    "description": "导出编号",
+                    "type": "string"
+                }
+            }
+        },
         "model.Modifier": {
             "type": "object",
             "properties": {
@@ -665,6 +715,10 @@ const docTemplate = `{
                     "description": "创建时间",
                     "type": "string"
                 },
+                "docId": {
+                    "description": "合同ID",
+                    "type": "string"
+                },
                 "follows": {
                     "description": "订单跟进数据",
                     "type": "array",
@@ -753,6 +807,58 @@ const docTemplate = `{
                 }
             }
         },
+        "model.PurchaseOrderExportReq": {
+            "type": "object",
+            "required": [
+                "remark"
+            ],
+            "properties": {
+                "end": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "订单编号",
+                    "type": "integer"
+                },
+                "keyword": {
+                    "description": "关键字",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "repayStatus": {
+                    "description": "还款状态",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RepayStatus"
+                        }
+                    ]
+                },
+                "sn": {
+                    "description": "车架号",
+                    "type": "string"
+                },
+                "start": {
+                    "description": "开始时间",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "订单状态",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.OrderStatus"
+                        }
+                    ]
+                },
+                "storeId": {
+                    "description": "门店ID",
+                    "type": "integer"
+                }
+            }
+        },
         "model.PurchaseOrderFollow": {
             "type": "object",
             "properties": {
@@ -835,6 +941,10 @@ const docTemplate = `{
                 },
                 "createdAt": {
                     "description": "创建时间",
+                    "type": "string"
+                },
+                "docId": {
+                    "description": "合同ID",
                     "type": "string"
                 },
                 "goods": {

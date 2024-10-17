@@ -55,7 +55,7 @@ type PurchaseOrder struct {
 	// 分期方案
 	InstallmentPlan model.GoodsPaymentPlan `json:"installment_plan,omitempty"`
 	// 开始日期
-	StartDate time.Time `json:"start_date,omitempty"`
+	StartDate *time.Time `json:"start_date,omitempty"`
 	// 下次支付日期
 	NextDate *time.Time `json:"next_date,omitempty"`
 	// 图片
@@ -282,7 +282,8 @@ func (po *PurchaseOrder) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field start_date", values[i])
 			} else if value.Valid {
-				po.StartDate = value.Time
+				po.StartDate = new(time.Time)
+				*po.StartDate = value.Time
 			}
 		case purchaseorder.FieldNextDate:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -430,8 +431,10 @@ func (po *PurchaseOrder) String() string {
 	builder.WriteString("installment_plan=")
 	builder.WriteString(fmt.Sprintf("%v", po.InstallmentPlan))
 	builder.WriteString(", ")
-	builder.WriteString("start_date=")
-	builder.WriteString(po.StartDate.Format(time.ANSIC))
+	if v := po.StartDate; v != nil {
+		builder.WriteString("start_date=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", ")
 	if v := po.NextDate; v != nil {
 		builder.WriteString("next_date=")

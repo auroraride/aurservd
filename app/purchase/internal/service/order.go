@@ -10,6 +10,7 @@ import (
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	pm "github.com/auroraride/aurservd/app/purchase/internal/model"
+	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/goods"
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
@@ -88,7 +89,7 @@ func (s *orderService) QueryOrderById(ctx context.Context, id uint64) (*ent.Purc
 // List 订单列表
 func (s *orderService) List(req *pm.PurchaseOrderListReq) (res *model.PaginationRes) {
 	q := s.orm.QueryNotDeleted().WithPayments().WithRider().WithStore().WithGoods()
-	s.listFilter(q, req)
+	s.listFilter(q, req.PurchaseOrderListFilter)
 	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.PurchaseOrder) (result pm.PurchaseOrderListRes) {
 		return s.detail(item)
 	})
@@ -96,7 +97,7 @@ func (s *orderService) List(req *pm.PurchaseOrderListReq) (res *model.Pagination
 }
 
 // listFilter 订单列表筛选
-func (s *orderService) listFilter(q *ent.PurchaseOrderQuery, req *pm.PurchaseOrderListReq) {
+func (s *orderService) listFilter(q *ent.PurchaseOrderQuery, req pm.PurchaseOrderListFilter) {
 	if req.Keyword != nil {
 		q.Where(
 			purchaseorder.Or(
@@ -167,9 +168,10 @@ func (s *orderService) detail(item *ent.PurchaseOrder) (res pm.PurchaseOrderList
 		Remark:           item.Remark,
 		RepayStatus:      pm.RepayStatusNormal,
 		ContractUrl:      item.ContractURL,
+		DocID:            item.DocID,
 	}
 
-	if !item.StartDate.IsZero() {
+	if item.StartDate != nil {
 		res.StartDate = item.StartDate.Format(carbon.DateTimeLayout)
 	}
 	// 商品信息
@@ -314,7 +316,7 @@ func (s *orderService) Active(ctx context.Context, req *pm.PurchaseOrderActiveRe
 		return errors.New("订单已取消")
 	}
 	// 判断订单是否已激活
-	if !order.StartDate.IsZero() {
+	if order.StartDate != nil {
 		return errors.New("订单已激活")
 	}
 	// 订单更新
@@ -326,6 +328,7 @@ func (s *orderService) Active(ctx context.Context, req *pm.PurchaseOrderActiveRe
 		SetRemark(req.Remark).
 		SetActiveName(md.Name).
 		SetActivePhone(md.Phone).
+		SetStartDate(time.Now()).
 		SetLastModifier(md)
 
 	// 查询订单默认商品
@@ -367,9 +370,7 @@ func (s *orderService) Active(ctx context.Context, req *pm.PurchaseOrderActiveRe
 	}
 
 	// 创建分期计划订单数据
-	return NewPayment().Create(ctx, &pm.PaymentPlanCreateReq{
-		OrderID: req.ID,
-	})
+	return NewPayment().Create(ctx, &pm.PaymentPlanCreateReq{OrderID: req.ID}, md)
 }
 
 // Cancel 订单取消
@@ -386,4 +387,56 @@ func (s *orderService) Cancel(ctx context.Context, id uint64, md *model.Modifier
 		SetLastModifier(md).
 		Exec(ctx)
 
+}
+
+// Export 订单导出
+func (s *orderService) Export(req *pm.PurchaseOrderExportReq, md *model.Modifier) model.ExportRes {
+	q := s.orm.QueryNotDeleted().WithPayments().WithRider().WithStore().WithGoods()
+	s.listFilter(q, req.PurchaseOrderListFilter)
+	return service.NewExportWithModifier(md).Start("购车订单", req.PurchaseOrderListFilter, nil, req.Remark, func(path string) {
+		items, _ := q.All(context.Background())
+		var rows tools.ExcelItems
+		title := []any{
+			"订单编号",
+			"订单状态",
+			"商品名称",
+			"商品编号",
+			"订单金额",
+			"已支付",
+			"分期期数",
+			"还款状态",
+			"骑手",
+			"骑手电话",
+			"提车门店",
+			"车架号",
+			"激活人",
+			"订单时间",
+			"激活时间",
+			"备注",
+		}
+		rows = append(rows, title)
+		for _, item := range items {
+			detail := s.detail(item)
+			row := []any{
+				detail.ID,
+				detail.Status.String(),
+				detail.Goods.Name,
+				detail.Goods.Sn,
+				detail.Amount,
+				detail.PaidAmount,
+				detail.InstallmentTotal,
+				detail.RepayStatus.String(),
+				detail.RiderName,
+				detail.RiderPhone,
+				detail.StoreName,
+				detail.Sn,
+				detail.ActiveName + "-" + detail.ActivePhone,
+				detail.CreatedAt,
+				detail.StartDate,
+				detail.Remark,
+			}
+			rows = append(rows, row)
+		}
+		tools.NewExcel(path).AddValues(rows).Done()
+	})
 }

@@ -505,7 +505,7 @@ func (poc *PurchaseOrderCreate) createSpec() (*PurchaseOrder, *sqlgraph.CreateSp
 	}
 	if value, ok := poc.mutation.StartDate(); ok {
 		_spec.SetField(purchaseorder.FieldStartDate, field.TypeTime, value)
-		_node.StartDate = value
+		_node.StartDate = &value
 	}
 	if value, ok := poc.mutation.NextDate(); ok {
 		_spec.SetField(purchaseorder.FieldNextDate, field.TypeTime, value)

@@ -55,9 +55,10 @@ func LoadManagerV2Routes(root *echo.Group) {
 
 	// 购车订单
 	purchase := g.Group("/purchase/order")
-	purchase.GET("", pm.Order.List)              // 订单列表
-	purchase.GET("/:id", pm.Order.Detail)        // 订单详情
-	purchase.POST("/active", pm.Order.Active)    // 激活订单
-	purchase.POST("/follow", pm.Order.Follow)    // 跟进订单
-	purchase.PUT("/cancel/:id", pm.Order.Cancel) // 跟进订单
+	purchase.GET("", pm.PurchaseOrder.List)              // 订单列表
+	purchase.GET("/:id", pm.PurchaseOrder.Detail)        // 订单详情
+	purchase.POST("/active", pm.PurchaseOrder.Active)    // 激活订单
+	purchase.POST("/follow", pm.PurchaseOrder.Follow)    // 跟进订单
+	purchase.PUT("/cancel/:id", pm.PurchaseOrder.Cancel) // 跟进订单
+	purchase.POST("/export", pm.PurchaseOrder.Export)    // 导出订单
 }

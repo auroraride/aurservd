@@ -5848,7 +5848,7 @@ var (
 		{Name: "installment_stage", Type: field.TypeInt, Comment: "当前分期阶段，从0开始", Default: 0},
 		{Name: "installment_total", Type: field.TypeInt, Comment: "分期总数"},
 		{Name: "installment_plan", Type: field.TypeJSON, Comment: "分期方案"},
-		{Name: "start_date", Type: field.TypeTime, Nullable: true, Comment: "开始日期", SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "start_date", Type: field.TypeTime, Nullable: true, Comment: "开始日期"},
 		{Name: "next_date", Type: field.TypeTime, Nullable: true, Comment: "下次支付日期", SchemaType: map[string]string{"postgres": "date"}},
 		{Name: "images", Type: field.TypeJSON, Nullable: true, Comment: "图片"},
 		{Name: "active_name", Type: field.TypeString, Nullable: true, Comment: "激活人姓名"},

@@ -33,6 +33,7 @@ func main() {
 	ds := []string{
 		"./app/controller/v1/mapi",
 		"./app/controller/v2/mapi",
+		"./app/purchase/controller/mapi",
 	}
 	m := make(map[string]*permission.Group)
 	for _, d := range ds {

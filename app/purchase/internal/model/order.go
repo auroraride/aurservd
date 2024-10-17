@@ -49,6 +49,17 @@ func (r RepayStatus) Value() uint8 {
 	return uint8(r)
 }
 
+func (r RepayStatus) String() string {
+	switch r {
+	case RepayStatusNormal:
+		return "正常"
+	case RepayStatusOverdue:
+		return "逾期"
+	default:
+		return "未知"
+	}
+}
+
 // PurchaseOrderCreateReq 创建订单请求
 type PurchaseOrderCreateReq struct {
 	GoodsID   uint64 `json:"goodsId" validate:"required"`   // 商品id
@@ -58,6 +69,10 @@ type PurchaseOrderCreateReq struct {
 // PurchaseOrderListReq 订单列表请求
 type PurchaseOrderListReq struct {
 	model.PaginationReq
+	PurchaseOrderListFilter
+}
+
+type PurchaseOrderListFilter struct {
 	Keyword     *string      `json:"keyword" query:"keyword"`         // 关键字
 	ID          *uint64      `json:"id" query:"id"`                   // 订单编号
 	Sn          *string      `json:"sn" query:"sn"`                   // 车架号
@@ -66,6 +81,11 @@ type PurchaseOrderListReq struct {
 	StoreID     *uint64      `json:"storeId" query:"storeId"`         // 门店ID
 	Start       *string      `json:"start" query:"start"`             // 开始时间
 	End         *string      `json:"end" query:"end"`                 // 结束时间
+}
+
+type PurchaseOrderExportReq struct {
+	PurchaseOrderListFilter
+	Remark string `json:"remark" validate:"required" trans:"备注"`
 }
 
 // PurchaseOrderListRes 订单列表返回
@@ -91,6 +111,7 @@ type PurchaseOrderListRes struct {
 	Remark           string            `json:"remark"`           // 备注
 	ContractUrl      string            `json:"contractUrl"`      // 合同url
 	PlanIndex        int               `json:"planIndex"`        // 付款计划索引
+	DocID            string            `json:"docId"`            // 合同ID
 }
 
 // PurchaseOrderDetail 订单详情

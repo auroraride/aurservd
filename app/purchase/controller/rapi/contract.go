@@ -20,7 +20,7 @@ var Contract = new(contract)
 // @Tags	Contract - 合同
 // @Accept	json
 // @Produce	json
-// @Param	X-Rider-Token	header		string							true	"骑手校验token"
+// @Param	X-Rider-Token	header		string						true	"骑手校验token"
 // @Param	body			body		model.ContractSignNewReq	true	"desc"
 // @Success	200				{object}	model.ContractSignNewRes	"请求成功"
 func (*contract) Sign(c echo.Context) (err error) {
@@ -35,7 +35,7 @@ func (*contract) Sign(c echo.Context) (err error) {
 // @Tags	Contract - 合同
 // @Accept	json
 // @Produce	json
-// @Param	X-Rider-Token	header		string							true	"骑手校验token"
+// @Param	X-Rider-Token	header		string					true	"骑手校验token"
 // @Param	body			body		model.ContractCreateReq	true	"desc"
 // @Success	200				{object}	model.ContractCreateRes	"请求成功"
 func (*contract) Create(c echo.Context) (err error) {
@@ -50,8 +50,8 @@ func (*contract) Create(c echo.Context) (err error) {
 // @Tags	Contract - 合同
 // @Accept	json
 // @Produce	json
-// @Param	X-Rider-Token	header		string							true	"骑手校验token"
-// @Param	docId			path		string							true	"合同ID"
+// @Param	X-Rider-Token	header		string					true	"骑手校验token"
+// @Param	docId			path		string					true	"合同ID"
 // @Success	200				{object}	model.ContractDetailRes	"请求成功"
 func (*contract) Detail(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.ContractDetailReq](c)

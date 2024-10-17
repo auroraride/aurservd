@@ -15,6 +15,127 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/rider/v2/purchase/contract/create": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Contract - 合同"
+                ],
+                "summary": "创建合同",
+                "operationId": "ContractCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ContractCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ContractCreateRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/purchase/contract/sign": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Contract - 合同"
+                ],
+                "summary": "签署合同",
+                "operationId": "ContractSign",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ContractSignNewReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ContractSignNewRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/purchase/contract/{docId}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Contract - 合同"
+                ],
+                "summary": "查看合同",
+                "operationId": "ContractDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "合同ID",
+                        "name": "docId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ContractDetailRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/purchase/order": {
             "get": {
                 "consumes": [
@@ -414,6 +535,79 @@ const docTemplate = `{
                 "Cash"
             ]
         },
+        "model.ContractCreateReq": {
+            "type": "object",
+            "required": [
+                "orderId"
+            ],
+            "properties": {
+                "orderId": {
+                    "description": "订单ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.ContractCreateRes": {
+            "type": "object",
+            "properties": {
+                "docId": {
+                    "description": "合同ID",
+                    "type": "string"
+                },
+                "effective": {
+                    "description": "是否存在生效中的合同, 若返回值为true则代表无需签合同",
+                    "type": "boolean"
+                },
+                "link": {
+                    "description": "合同链接",
+                    "type": "string"
+                },
+                "needRealName": {
+                    "description": "是否需要实名认证   true:需要  false:不需要",
+                    "type": "boolean"
+                }
+            }
+        },
+        "model.ContractDetailRes": {
+            "type": "object",
+            "properties": {
+                "link": {
+                    "description": "合同链接",
+                    "type": "string"
+                }
+            }
+        },
+        "model.ContractSignNewReq": {
+            "type": "object",
+            "required": [
+                "docId",
+                "orderId",
+                "seal"
+            ],
+            "properties": {
+                "docId": {
+                    "description": "合同ID",
+                    "type": "string"
+                },
+                "orderId": {
+                    "description": "订单ID",
+                    "type": "integer"
+                },
+                "seal": {
+                    "description": "签名Base64",
+                    "type": "string"
+                }
+            }
+        },
+        "model.ContractSignNewRes": {
+            "type": "object",
+            "properties": {
+                "link": {
+                    "description": "合同链接",
+                    "type": "string"
+                }
+            }
+        },
         "model.Modifier": {
             "type": "object",
             "properties": {
@@ -626,6 +820,10 @@ const docTemplate = `{
                     "description": "创建时间",
                     "type": "string"
                 },
+                "docId": {
+                    "description": "合同ID",
+                    "type": "string"
+                },
                 "follows": {
                     "description": "订单跟进数据",
                     "type": "array",
@@ -771,6 +969,10 @@ const docTemplate = `{
                 },
                 "createdAt": {
                     "description": "创建时间",
+                    "type": "string"
+                },
+                "docId": {
+                    "description": "合同ID",
                     "type": "string"
                 },
                 "goods": {

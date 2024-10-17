@@ -33,7 +33,7 @@ func (s *paymentService) QueryByIndex(ctx context.Context, orderID uint64, index
 }
 
 // Create 创建支付计划(支付计划以订单的分期计划为准)
-func (s *paymentService) Create(ctx context.Context, req *pm.PaymentPlanCreateReq) error {
+func (s *paymentService) Create(ctx context.Context, req *pm.PaymentPlanCreateReq, md *model.Modifier) error {
 	// 如果已经有支付计划，则不再创建
 	b, _ := s.orm.QueryNotDeleted().Where(purchasepayment.OrderID(req.OrderID)).Exist(ctx)
 	if b {
@@ -64,7 +64,9 @@ func (s *paymentService) Create(ctx context.Context, req *pm.PaymentPlanCreateRe
 			SetBillingDate(dates[k]).
 			SetRiderID(o.RiderID).
 			SetGoodsID(o.GoodsID).
-			SetOrderID(o.ID),
+			SetOrderID(o.ID).
+			SetCreator(md).
+			SetLastModifier(md),
 		)
 	}
 	_, err := s.orm.CreateBulk(paymentBulk...).Save(ctx)
