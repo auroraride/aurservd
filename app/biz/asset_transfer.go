@@ -376,8 +376,7 @@ func (b *assetTransferBiz) TransferDetailsList(assetSignInfo definition.AssetSig
 			Start:             req.Start,
 			End:               req.End,
 			AssetType:         req.AssetType,
-			CabinetSN:         req.Keyword,
-			SN:                req.Keyword,
+			Keyword:           req.Keyword,
 		},
 	}
 	if assetSignInfo.AssetManager != nil {

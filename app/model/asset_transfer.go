@@ -254,6 +254,7 @@ type AssetTransferDetailListFilter struct {
 	EmployeeID        uint64              `json:"employeeID" query:"employeeID"`                                   // 门店管理员ID
 	AgentID           uint64              `json:"agentID" query:"agentID"`                                         // 代理员ID
 	MaintainerID      uint64              `json:"maintainerID" query:"maintainerID"`                               // 运维ID
+	Keyword           *string             `json:"keyword" query:"keyword"`                                         // 关键字
 }
 
 // AssetTransferDetailListRes 资产出入库明细
