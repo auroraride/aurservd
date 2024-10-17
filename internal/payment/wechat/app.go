@@ -110,3 +110,51 @@ func (c *appClient) Native(pc *model.PaymentCache) (string, error) {
 
 	return *resp.CodeUrl, nil
 }
+
+// AppPayPurchase 购买商品
+func (c *appClient) AppPayPurchase(req *model.PurchasePayReq) (string, error) {
+	cfg := ar.Config.Payment.Wechat
+	notifyUrl := ar.Config.Payment.PurchaseWechatNotifyUrl
+	svc := app.AppApiService{
+		Client: c.Client,
+	}
+
+	resp, result, err := svc.PrepayWithRequestPayment(context.Background(), app.PrepayRequest{
+		Appid:       core.String(cfg.AppID),
+		Mchid:       core.String(cfg.MchID),
+		Description: core.String(req.Subject),
+		OutTradeNo:  core.String(req.OutTradeNo),
+		TimeExpire:  core.Time(time.Now().Add(10 * time.Minute)),
+		NotifyUrl:   core.String(notifyUrl),
+		Amount: &app.Amount{
+			Currency: core.String("CNY"),
+			Total:    core.Int64(int64(math.Round(req.Amount * 100))),
+		},
+	})
+
+	if result == nil {
+		zap.L().Error("微信App支付调用失败result为空")
+		return "", err
+	}
+
+	if err != nil {
+		if result.Response != nil {
+			b, _ := io.ReadAll(result.Response.Body)
+			zap.L().Error("微信App支付调用失败 Response.Body:", log.ResponseBody(b))
+		}
+		zap.L().Error("微信App支付调用失败", zap.Error(err))
+		return "", err
+	}
+
+	var out struct {
+		*app.PrepayWithRequestPaymentResponse
+		AppID string `json:"appId"`
+	}
+
+	out.PrepayWithRequestPaymentResponse = resp
+	out.AppID = cfg.AppID
+
+	b, _ := jsoniter.Marshal(out)
+
+	return string(b), nil
+}

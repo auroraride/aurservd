@@ -4260,6 +4260,7 @@ var (
 		{Name: "photos", Type: field.TypeJSON, Comment: "商品图片"},
 		{Name: "intro", Type: field.TypeJSON, Comment: "商品介绍"},
 		{Name: "status", Type: field.TypeUint8, Comment: "商品状态 0下架 1上架", Default: 0},
+		{Name: "payment_plans", Type: field.TypeJSON, Nullable: true, Comment: "付款方案"},
 	}
 	// GoodsTable holds the schema information for the "goods" table.
 	GoodsTable = &schema.Table{
@@ -5778,6 +5779,241 @@ var (
 				Name:    "promotionwithdrawal_member_id",
 				Unique:  false,
 				Columns: []*schema.Column{PromotionWithdrawalColumns[16]},
+			},
+		},
+	}
+	// PurchaseFollowColumns holds the columns for the "purchase_follow" table.
+	PurchaseFollowColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "content", Type: field.TypeString, Comment: "跟进内容"},
+		{Name: "pics", Type: field.TypeJSON, Comment: "跟进图片"},
+		{Name: "order_id", Type: field.TypeUint64, Nullable: true, Comment: "订单id"},
+	}
+	// PurchaseFollowTable holds the schema information for the "purchase_follow" table.
+	PurchaseFollowTable = &schema.Table{
+		Name:       "purchase_follow",
+		Columns:    PurchaseFollowColumns,
+		PrimaryKey: []*schema.Column{PurchaseFollowColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "purchase_follow_purchase_order_follows",
+				Columns:    []*schema.Column{PurchaseFollowColumns[9]},
+				RefColumns: []*schema.Column{PurchaseOrderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "purchasefollow_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PurchaseFollowColumns[1]},
+			},
+			{
+				Name:    "purchasefollow_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{PurchaseFollowColumns[3]},
+			},
+			{
+				Name:    "purchasefollow_content",
+				Unique:  false,
+				Columns: []*schema.Column{PurchaseFollowColumns[7]},
+				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+		},
+	}
+	// PurchaseOrderColumns holds the columns for the "purchase_order" table.
+	PurchaseOrderColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "sn", Type: field.TypeString, Nullable: true, Comment: "车架号"},
+		{Name: "status", Type: field.TypeEnum, Comment: "状态, pending: 待支付, staging: 分期执行中, ended: 已完成, cancelled: 已取消, refunded: 已退款", Enums: []string{"pending", "staging", "ended", "cancelled", "refunded"}, Default: "pending"},
+		{Name: "contract_url", Type: field.TypeString, Nullable: true, Comment: "合同URL"},
+		{Name: "doc_id", Type: field.TypeString, Nullable: true, Comment: "合同ID"},
+		{Name: "installment_stage", Type: field.TypeInt, Comment: "当前分期阶段，从0开始", Default: 0},
+		{Name: "installment_total", Type: field.TypeInt, Comment: "分期总数"},
+		{Name: "installment_plan", Type: field.TypeJSON, Comment: "分期方案"},
+		{Name: "start_date", Type: field.TypeTime, Nullable: true, Comment: "开始日期"},
+		{Name: "next_date", Type: field.TypeTime, Nullable: true, Comment: "下次支付日期", SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "images", Type: field.TypeJSON, Nullable: true, Comment: "图片"},
+		{Name: "active_name", Type: field.TypeString, Nullable: true, Comment: "激活人姓名"},
+		{Name: "active_phone", Type: field.TypeString, Nullable: true, Comment: "激活人电话"},
+		{Name: "color", Type: field.TypeString, Nullable: true, Comment: "车辆颜色"},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
+		{Name: "goods_id", Type: field.TypeUint64, Comment: "商品ID"},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "门店ID"},
+	}
+	// PurchaseOrderTable holds the schema information for the "purchase_order" table.
+	PurchaseOrderTable = &schema.Table{
+		Name:       "purchase_order",
+		Columns:    PurchaseOrderColumns,
+		PrimaryKey: []*schema.Column{PurchaseOrderColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "purchase_order_rider_rider",
+				Columns:    []*schema.Column{PurchaseOrderColumns[20]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "purchase_order_goods_goods",
+				Columns:    []*schema.Column{PurchaseOrderColumns[21]},
+				RefColumns: []*schema.Column{GoodsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "purchase_order_store_store",
+				Columns:    []*schema.Column{PurchaseOrderColumns[22]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "purchaseorder_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PurchaseOrderColumns[1]},
+			},
+			{
+				Name:    "purchaseorder_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{PurchaseOrderColumns[3]},
+			},
+			{
+				Name:    "purchaseorder_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{PurchaseOrderColumns[20]},
+			},
+			{
+				Name:    "purchaseorder_goods_id",
+				Unique:  false,
+				Columns: []*schema.Column{PurchaseOrderColumns[21]},
+			},
+			{
+				Name:    "purchaseorder_store_id",
+				Unique:  false,
+				Columns: []*schema.Column{PurchaseOrderColumns[22]},
+			},
+			{
+				Name:    "purchaseorder_sn",
+				Unique:  false,
+				Columns: []*schema.Column{PurchaseOrderColumns[7]},
+			},
+			{
+				Name:    "purchaseorder_status",
+				Unique:  false,
+				Columns: []*schema.Column{PurchaseOrderColumns[8]},
+			},
+			{
+				Name:    "purchaseorder_next_date",
+				Unique:  false,
+				Columns: []*schema.Column{PurchaseOrderColumns[15]},
+			},
+		},
+	}
+	// PurchasePaymentColumns holds the columns for the "purchase_payment" table.
+	PurchasePaymentColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "out_trade_no", Type: field.TypeString, Comment: "交易订单号（自行生成）"},
+		{Name: "index", Type: field.TypeInt, Comment: "分期序号"},
+		{Name: "status", Type: field.TypeEnum, Comment: "支付状态，obligation: 待付款, paid: 已支付, canceled: 已取消", Enums: []string{"obligation", "paid", "canceled"}, Default: "obligation"},
+		{Name: "payway", Type: field.TypeEnum, Nullable: true, Comment: "支付方式，alipay: 支付宝, wechat: 微信, cash: 现金", Enums: []string{"alipay", "wechat", "cash"}},
+		{Name: "total", Type: field.TypeFloat64, Comment: "支付金额"},
+		{Name: "amount", Type: field.TypeFloat64, Comment: "账单金额"},
+		{Name: "forfeit", Type: field.TypeFloat64, Comment: "滞纳金", Default: 0},
+		{Name: "billing_date", Type: field.TypeTime, Comment: "账单日期", SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "payment_date", Type: field.TypeTime, Nullable: true, Comment: "支付日期", SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "trade_no", Type: field.TypeString, Nullable: true, Comment: "平台订单号（微信或支付宝）"},
+		{Name: "order_id", Type: field.TypeUint64, Nullable: true, Comment: "订单id"},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
+		{Name: "goods_id", Type: field.TypeUint64, Comment: "商品ID"},
+	}
+	// PurchasePaymentTable holds the schema information for the "purchase_payment" table.
+	PurchasePaymentTable = &schema.Table{
+		Name:       "purchase_payment",
+		Columns:    PurchasePaymentColumns,
+		PrimaryKey: []*schema.Column{PurchasePaymentColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "purchase_payment_purchase_order_payments",
+				Columns:    []*schema.Column{PurchasePaymentColumns[17]},
+				RefColumns: []*schema.Column{PurchaseOrderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "purchase_payment_rider_rider",
+				Columns:    []*schema.Column{PurchasePaymentColumns[18]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "purchase_payment_goods_goods",
+				Columns:    []*schema.Column{PurchasePaymentColumns[19]},
+				RefColumns: []*schema.Column{GoodsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "purchasepayment_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PurchasePaymentColumns[1]},
+			},
+			{
+				Name:    "purchasepayment_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{PurchasePaymentColumns[3]},
+			},
+			{
+				Name:    "purchasepayment_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{PurchasePaymentColumns[18]},
+			},
+			{
+				Name:    "purchasepayment_goods_id",
+				Unique:  false,
+				Columns: []*schema.Column{PurchasePaymentColumns[19]},
+			},
+			{
+				Name:    "purchasepayment_status",
+				Unique:  false,
+				Columns: []*schema.Column{PurchasePaymentColumns[9]},
+			},
+			{
+				Name:    "purchasepayment_payway",
+				Unique:  false,
+				Columns: []*schema.Column{PurchasePaymentColumns[10]},
+			},
+			{
+				Name:    "purchasepayment_index",
+				Unique:  false,
+				Columns: []*schema.Column{PurchasePaymentColumns[8]},
+			},
+			{
+				Name:    "purchasepayment_trade_no",
+				Unique:  false,
+				Columns: []*schema.Column{PurchasePaymentColumns[16]},
 			},
 		},
 	}
@@ -7620,6 +7856,9 @@ var (
 		PromotionReferralsProgressTable,
 		PromotionSettingTable,
 		PromotionWithdrawalTable,
+		PurchaseFollowTable,
+		PurchaseOrderTable,
+		PurchasePaymentTable,
 		QuestionTable,
 		QuestionCategoryTable,
 		ReserveTable,
@@ -8135,6 +8374,22 @@ func init() {
 	PromotionWithdrawalTable.ForeignKeys[1].RefTable = PromotionMemberTable
 	PromotionWithdrawalTable.Annotation = &entsql.Annotation{
 		Table: "promotion_withdrawal",
+	}
+	PurchaseFollowTable.ForeignKeys[0].RefTable = PurchaseOrderTable
+	PurchaseFollowTable.Annotation = &entsql.Annotation{
+		Table: "purchase_follow",
+	}
+	PurchaseOrderTable.ForeignKeys[0].RefTable = RiderTable
+	PurchaseOrderTable.ForeignKeys[1].RefTable = GoodsTable
+	PurchaseOrderTable.ForeignKeys[2].RefTable = StoreTable
+	PurchaseOrderTable.Annotation = &entsql.Annotation{
+		Table: "purchase_order",
+	}
+	PurchasePaymentTable.ForeignKeys[0].RefTable = PurchaseOrderTable
+	PurchasePaymentTable.ForeignKeys[1].RefTable = RiderTable
+	PurchasePaymentTable.ForeignKeys[2].RefTable = GoodsTable
+	PurchasePaymentTable.Annotation = &entsql.Annotation{
+		Table: "purchase_payment",
 	}
 	QuestionTable.ForeignKeys[0].RefTable = QuestionCategoryTable
 	QuestionTable.Annotation = &entsql.Annotation{

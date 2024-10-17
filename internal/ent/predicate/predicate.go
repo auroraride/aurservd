@@ -249,6 +249,15 @@ type PromotionSetting func(*sql.Selector)
 // PromotionWithdrawal is the predicate function for promotionwithdrawal builders.
 type PromotionWithdrawal func(*sql.Selector)
 
+// PurchaseFollow is the predicate function for purchasefollow builders.
+type PurchaseFollow func(*sql.Selector)
+
+// PurchaseOrder is the predicate function for purchaseorder builders.
+type PurchaseOrder func(*sql.Selector)
+
+// PurchasePayment is the predicate function for purchasepayment builders.
+type PurchasePayment func(*sql.Selector)
+
 // Question is the predicate function for question builders.
 type Question func(*sql.Selector)
 

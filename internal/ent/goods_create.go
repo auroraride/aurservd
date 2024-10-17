@@ -168,6 +168,12 @@ func (gc *GoodsCreate) SetNillableStatus(u *uint8) *GoodsCreate {
 	return gc
 }
 
+// SetPaymentPlans sets the "payment_plans" field.
+func (gc *GoodsCreate) SetPaymentPlans(mpp model.GoodsPaymentPlans) *GoodsCreate {
+	gc.mutation.SetPaymentPlans(mpp)
+	return gc
+}
+
 // AddStoreIDs adds the "stores" edge to the StoreGoods entity by IDs.
 func (gc *GoodsCreate) AddStoreIDs(ids ...uint64) *GoodsCreate {
 	gc.mutation.AddStoreIDs(ids...)
@@ -370,6 +376,10 @@ func (gc *GoodsCreate) createSpec() (*Goods, *sqlgraph.CreateSpec) {
 	if value, ok := gc.mutation.Status(); ok {
 		_spec.SetField(goods.FieldStatus, field.TypeUint8, value)
 		_node.Status = value
+	}
+	if value, ok := gc.mutation.PaymentPlans(); ok {
+		_spec.SetField(goods.FieldPaymentPlans, field.TypeJSON, value)
+		_node.PaymentPlans = value
 	}
 	if nodes := gc.mutation.StoresIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -652,6 +662,24 @@ func (u *GoodsUpsert) UpdateStatus() *GoodsUpsert {
 // AddStatus adds v to the "status" field.
 func (u *GoodsUpsert) AddStatus(v uint8) *GoodsUpsert {
 	u.Add(goods.FieldStatus, v)
+	return u
+}
+
+// SetPaymentPlans sets the "payment_plans" field.
+func (u *GoodsUpsert) SetPaymentPlans(v model.GoodsPaymentPlans) *GoodsUpsert {
+	u.Set(goods.FieldPaymentPlans, v)
+	return u
+}
+
+// UpdatePaymentPlans sets the "payment_plans" field to the value that was provided on create.
+func (u *GoodsUpsert) UpdatePaymentPlans() *GoodsUpsert {
+	u.SetExcluded(goods.FieldPaymentPlans)
+	return u
+}
+
+// ClearPaymentPlans clears the value of the "payment_plans" field.
+func (u *GoodsUpsert) ClearPaymentPlans() *GoodsUpsert {
+	u.SetNull(goods.FieldPaymentPlans)
 	return u
 }
 
@@ -952,6 +980,27 @@ func (u *GoodsUpsertOne) AddStatus(v uint8) *GoodsUpsertOne {
 func (u *GoodsUpsertOne) UpdateStatus() *GoodsUpsertOne {
 	return u.Update(func(s *GoodsUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// SetPaymentPlans sets the "payment_plans" field.
+func (u *GoodsUpsertOne) SetPaymentPlans(v model.GoodsPaymentPlans) *GoodsUpsertOne {
+	return u.Update(func(s *GoodsUpsert) {
+		s.SetPaymentPlans(v)
+	})
+}
+
+// UpdatePaymentPlans sets the "payment_plans" field to the value that was provided on create.
+func (u *GoodsUpsertOne) UpdatePaymentPlans() *GoodsUpsertOne {
+	return u.Update(func(s *GoodsUpsert) {
+		s.UpdatePaymentPlans()
+	})
+}
+
+// ClearPaymentPlans clears the value of the "payment_plans" field.
+func (u *GoodsUpsertOne) ClearPaymentPlans() *GoodsUpsertOne {
+	return u.Update(func(s *GoodsUpsert) {
+		s.ClearPaymentPlans()
 	})
 }
 
@@ -1418,6 +1467,27 @@ func (u *GoodsUpsertBulk) AddStatus(v uint8) *GoodsUpsertBulk {
 func (u *GoodsUpsertBulk) UpdateStatus() *GoodsUpsertBulk {
 	return u.Update(func(s *GoodsUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// SetPaymentPlans sets the "payment_plans" field.
+func (u *GoodsUpsertBulk) SetPaymentPlans(v model.GoodsPaymentPlans) *GoodsUpsertBulk {
+	return u.Update(func(s *GoodsUpsert) {
+		s.SetPaymentPlans(v)
+	})
+}
+
+// UpdatePaymentPlans sets the "payment_plans" field to the value that was provided on create.
+func (u *GoodsUpsertBulk) UpdatePaymentPlans() *GoodsUpsertBulk {
+	return u.Update(func(s *GoodsUpsert) {
+		s.UpdatePaymentPlans()
+	})
+}
+
+// ClearPaymentPlans clears the value of the "payment_plans" field.
+func (u *GoodsUpsertBulk) ClearPaymentPlans() *GoodsUpsertBulk {
+	return u.Update(func(s *GoodsUpsert) {
+		s.ClearPaymentPlans()
 	})
 }
 

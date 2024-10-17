@@ -629,3 +629,23 @@ func (s *selectionService) StoreGroup() (items []model.SelectOption) {
 	}
 	return
 }
+
+// Goods 筛选商品
+func (s *selectionService) Goods() (items []model.SelectOptionGoods) {
+	goods, _ := ent.Database.Goods.Query().All(s.ctx)
+	for _, g := range goods {
+		prices := make([]model.SelectOption, 0)
+		for k, p := range g.PaymentPlans {
+			prices = append(prices, model.SelectOption{
+				Value: uint64(k),
+				Label: fmt.Sprintf("%v期", len(p)),
+			})
+		}
+		items = append(items, model.SelectOptionGoods{
+			Value:  g.ID,
+			Label:  g.Name,
+			Prices: prices,
+		})
+	}
+	return
+}

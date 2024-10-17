@@ -4411,6 +4411,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "description": "商品ID",
                     "type": "integer"
                 },
                 "intro": {
@@ -4430,6 +4431,16 @@ const docTemplate = `{
                 "name": {
                     "description": "商品名称",
                     "type": "string"
+                },
+                "paymentPlans": {
+                    "description": "付款方案",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    }
                 },
                 "photos": {
                     "description": "商品图片",

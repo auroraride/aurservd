@@ -96,6 +96,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionreferralsprogress"
 	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
+	"github.com/auroraride/aurservd/internal/ent/purchasefollow"
+	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
+	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/internal/ent/question"
 	"github.com/auroraride/aurservd/internal/ent/questioncategory"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
@@ -287,6 +290,12 @@ type Client struct {
 	PromotionSetting *PromotionSettingClient
 	// PromotionWithdrawal is the client for interacting with the PromotionWithdrawal builders.
 	PromotionWithdrawal *PromotionWithdrawalClient
+	// PurchaseFollow is the client for interacting with the PurchaseFollow builders.
+	PurchaseFollow *PurchaseFollowClient
+	// PurchaseOrder is the client for interacting with the PurchaseOrder builders.
+	PurchaseOrder *PurchaseOrderClient
+	// PurchasePayment is the client for interacting with the PurchasePayment builders.
+	PurchasePayment *PurchasePaymentClient
 	// Question is the client for interacting with the Question builders.
 	Question *QuestionClient
 	// QuestionCategory is the client for interacting with the QuestionCategory builders.
@@ -419,6 +428,9 @@ func (c *Client) init() {
 	c.PromotionReferralsProgress = NewPromotionReferralsProgressClient(c.config)
 	c.PromotionSetting = NewPromotionSettingClient(c.config)
 	c.PromotionWithdrawal = NewPromotionWithdrawalClient(c.config)
+	c.PurchaseFollow = NewPurchaseFollowClient(c.config)
+	c.PurchaseOrder = NewPurchaseOrderClient(c.config)
+	c.PurchasePayment = NewPurchasePaymentClient(c.config)
 	c.Question = NewQuestionClient(c.config)
 	c.QuestionCategory = NewQuestionCategoryClient(c.config)
 	c.Reserve = NewReserveClient(c.config)
@@ -612,6 +624,9 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		PromotionReferralsProgress: NewPromotionReferralsProgressClient(cfg),
 		PromotionSetting:           NewPromotionSettingClient(cfg),
 		PromotionWithdrawal:        NewPromotionWithdrawalClient(cfg),
+		PurchaseFollow:             NewPurchaseFollowClient(cfg),
+		PurchaseOrder:              NewPurchaseOrderClient(cfg),
+		PurchasePayment:            NewPurchasePaymentClient(cfg),
 		Question:                   NewQuestionClient(cfg),
 		QuestionCategory:           NewQuestionCategoryClient(cfg),
 		Reserve:                    NewReserveClient(cfg),
@@ -732,6 +747,9 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		PromotionReferralsProgress: NewPromotionReferralsProgressClient(cfg),
 		PromotionSetting:           NewPromotionSettingClient(cfg),
 		PromotionWithdrawal:        NewPromotionWithdrawalClient(cfg),
+		PurchaseFollow:             NewPurchaseFollowClient(cfg),
+		PurchaseOrder:              NewPurchaseOrderClient(cfg),
+		PurchasePayment:            NewPurchasePaymentClient(cfg),
 		Question:                   NewQuestionClient(cfg),
 		QuestionCategory:           NewQuestionCategoryClient(cfg),
 		Reserve:                    NewReserveClient(cfg),
@@ -799,11 +817,11 @@ func (c *Client) Use(hooks ...Hook) {
 		c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
-		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
-		c.RiderFollowUp, c.RiderPhoneDevice, c.Role, c.Setting, c.Stock,
-		c.StockSummary, c.Store, c.StoreGoods, c.StoreGroup, c.Subscribe,
-		c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
-		c.Version, c.Warehouse,
+		c.PromotionWithdrawal, c.PurchaseFollow, c.PurchaseOrder, c.PurchasePayment,
+		c.Question, c.QuestionCategory, c.Reserve, c.Rider, c.RiderFollowUp,
+		c.RiderPhoneDevice, c.Role, c.Setting, c.Stock, c.StockSummary, c.Store,
+		c.StoreGoods, c.StoreGroup, c.Subscribe, c.SubscribeAlter, c.SubscribePause,
+		c.SubscribeReminder, c.SubscribeSuspend, c.Version, c.Warehouse,
 	} {
 		n.Use(hooks...)
 	}
@@ -831,11 +849,11 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
-		c.PromotionWithdrawal, c.Question, c.QuestionCategory, c.Reserve, c.Rider,
-		c.RiderFollowUp, c.RiderPhoneDevice, c.Role, c.Setting, c.Stock,
-		c.StockSummary, c.Store, c.StoreGoods, c.StoreGroup, c.Subscribe,
-		c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
-		c.Version, c.Warehouse,
+		c.PromotionWithdrawal, c.PurchaseFollow, c.PurchaseOrder, c.PurchasePayment,
+		c.Question, c.QuestionCategory, c.Reserve, c.Rider, c.RiderFollowUp,
+		c.RiderPhoneDevice, c.Role, c.Setting, c.Stock, c.StockSummary, c.Store,
+		c.StoreGoods, c.StoreGroup, c.Subscribe, c.SubscribeAlter, c.SubscribePause,
+		c.SubscribeReminder, c.SubscribeSuspend, c.Version, c.Warehouse,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -1006,6 +1024,12 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.PromotionSetting.mutate(ctx, m)
 	case *PromotionWithdrawalMutation:
 		return c.PromotionWithdrawal.mutate(ctx, m)
+	case *PurchaseFollowMutation:
+		return c.PurchaseFollow.mutate(ctx, m)
+	case *PurchaseOrderMutation:
+		return c.PurchaseOrder.mutate(ctx, m)
+	case *PurchasePaymentMutation:
+		return c.PurchasePayment.mutate(ctx, m)
 	case *QuestionMutation:
 		return c.Question.mutate(ctx, m)
 	case *QuestionCategoryMutation:
@@ -17007,6 +17031,552 @@ func (c *PromotionWithdrawalClient) mutate(ctx context.Context, m *PromotionWith
 	}
 }
 
+// PurchaseFollowClient is a client for the PurchaseFollow schema.
+type PurchaseFollowClient struct {
+	config
+}
+
+// NewPurchaseFollowClient returns a client for the PurchaseFollow from the given config.
+func NewPurchaseFollowClient(c config) *PurchaseFollowClient {
+	return &PurchaseFollowClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `purchasefollow.Hooks(f(g(h())))`.
+func (c *PurchaseFollowClient) Use(hooks ...Hook) {
+	c.hooks.PurchaseFollow = append(c.hooks.PurchaseFollow, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `purchasefollow.Intercept(f(g(h())))`.
+func (c *PurchaseFollowClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PurchaseFollow = append(c.inters.PurchaseFollow, interceptors...)
+}
+
+// Create returns a builder for creating a PurchaseFollow entity.
+func (c *PurchaseFollowClient) Create() *PurchaseFollowCreate {
+	mutation := newPurchaseFollowMutation(c.config, OpCreate)
+	return &PurchaseFollowCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PurchaseFollow entities.
+func (c *PurchaseFollowClient) CreateBulk(builders ...*PurchaseFollowCreate) *PurchaseFollowCreateBulk {
+	return &PurchaseFollowCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PurchaseFollowClient) MapCreateBulk(slice any, setFunc func(*PurchaseFollowCreate, int)) *PurchaseFollowCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PurchaseFollowCreateBulk{err: fmt.Errorf("calling to PurchaseFollowClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PurchaseFollowCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PurchaseFollowCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PurchaseFollow.
+func (c *PurchaseFollowClient) Update() *PurchaseFollowUpdate {
+	mutation := newPurchaseFollowMutation(c.config, OpUpdate)
+	return &PurchaseFollowUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PurchaseFollowClient) UpdateOne(pf *PurchaseFollow) *PurchaseFollowUpdateOne {
+	mutation := newPurchaseFollowMutation(c.config, OpUpdateOne, withPurchaseFollow(pf))
+	return &PurchaseFollowUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PurchaseFollowClient) UpdateOneID(id uint64) *PurchaseFollowUpdateOne {
+	mutation := newPurchaseFollowMutation(c.config, OpUpdateOne, withPurchaseFollowID(id))
+	return &PurchaseFollowUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PurchaseFollow.
+func (c *PurchaseFollowClient) Delete() *PurchaseFollowDelete {
+	mutation := newPurchaseFollowMutation(c.config, OpDelete)
+	return &PurchaseFollowDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PurchaseFollowClient) DeleteOne(pf *PurchaseFollow) *PurchaseFollowDeleteOne {
+	return c.DeleteOneID(pf.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PurchaseFollowClient) DeleteOneID(id uint64) *PurchaseFollowDeleteOne {
+	builder := c.Delete().Where(purchasefollow.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PurchaseFollowDeleteOne{builder}
+}
+
+// Query returns a query builder for PurchaseFollow.
+func (c *PurchaseFollowClient) Query() *PurchaseFollowQuery {
+	return &PurchaseFollowQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePurchaseFollow},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a PurchaseFollow entity by its id.
+func (c *PurchaseFollowClient) Get(ctx context.Context, id uint64) (*PurchaseFollow, error) {
+	return c.Query().Where(purchasefollow.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PurchaseFollowClient) GetX(ctx context.Context, id uint64) *PurchaseFollow {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryOrder queries the order edge of a PurchaseFollow.
+func (c *PurchaseFollowClient) QueryOrder(pf *PurchaseFollow) *PurchaseOrderQuery {
+	query := (&PurchaseOrderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pf.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(purchasefollow.Table, purchasefollow.FieldID, id),
+			sqlgraph.To(purchaseorder.Table, purchaseorder.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, purchasefollow.OrderTable, purchasefollow.OrderColumn),
+		)
+		fromV = sqlgraph.Neighbors(pf.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PurchaseFollowClient) Hooks() []Hook {
+	hooks := c.hooks.PurchaseFollow
+	return append(hooks[:len(hooks):len(hooks)], purchasefollow.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *PurchaseFollowClient) Interceptors() []Interceptor {
+	return c.inters.PurchaseFollow
+}
+
+func (c *PurchaseFollowClient) mutate(ctx context.Context, m *PurchaseFollowMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PurchaseFollowCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PurchaseFollowUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PurchaseFollowUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PurchaseFollowDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PurchaseFollow mutation op: %q", m.Op())
+	}
+}
+
+// PurchaseOrderClient is a client for the PurchaseOrder schema.
+type PurchaseOrderClient struct {
+	config
+}
+
+// NewPurchaseOrderClient returns a client for the PurchaseOrder from the given config.
+func NewPurchaseOrderClient(c config) *PurchaseOrderClient {
+	return &PurchaseOrderClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `purchaseorder.Hooks(f(g(h())))`.
+func (c *PurchaseOrderClient) Use(hooks ...Hook) {
+	c.hooks.PurchaseOrder = append(c.hooks.PurchaseOrder, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `purchaseorder.Intercept(f(g(h())))`.
+func (c *PurchaseOrderClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PurchaseOrder = append(c.inters.PurchaseOrder, interceptors...)
+}
+
+// Create returns a builder for creating a PurchaseOrder entity.
+func (c *PurchaseOrderClient) Create() *PurchaseOrderCreate {
+	mutation := newPurchaseOrderMutation(c.config, OpCreate)
+	return &PurchaseOrderCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PurchaseOrder entities.
+func (c *PurchaseOrderClient) CreateBulk(builders ...*PurchaseOrderCreate) *PurchaseOrderCreateBulk {
+	return &PurchaseOrderCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PurchaseOrderClient) MapCreateBulk(slice any, setFunc func(*PurchaseOrderCreate, int)) *PurchaseOrderCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PurchaseOrderCreateBulk{err: fmt.Errorf("calling to PurchaseOrderClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PurchaseOrderCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PurchaseOrderCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PurchaseOrder.
+func (c *PurchaseOrderClient) Update() *PurchaseOrderUpdate {
+	mutation := newPurchaseOrderMutation(c.config, OpUpdate)
+	return &PurchaseOrderUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PurchaseOrderClient) UpdateOne(po *PurchaseOrder) *PurchaseOrderUpdateOne {
+	mutation := newPurchaseOrderMutation(c.config, OpUpdateOne, withPurchaseOrder(po))
+	return &PurchaseOrderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PurchaseOrderClient) UpdateOneID(id uint64) *PurchaseOrderUpdateOne {
+	mutation := newPurchaseOrderMutation(c.config, OpUpdateOne, withPurchaseOrderID(id))
+	return &PurchaseOrderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PurchaseOrder.
+func (c *PurchaseOrderClient) Delete() *PurchaseOrderDelete {
+	mutation := newPurchaseOrderMutation(c.config, OpDelete)
+	return &PurchaseOrderDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PurchaseOrderClient) DeleteOne(po *PurchaseOrder) *PurchaseOrderDeleteOne {
+	return c.DeleteOneID(po.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PurchaseOrderClient) DeleteOneID(id uint64) *PurchaseOrderDeleteOne {
+	builder := c.Delete().Where(purchaseorder.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PurchaseOrderDeleteOne{builder}
+}
+
+// Query returns a query builder for PurchaseOrder.
+func (c *PurchaseOrderClient) Query() *PurchaseOrderQuery {
+	return &PurchaseOrderQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePurchaseOrder},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a PurchaseOrder entity by its id.
+func (c *PurchaseOrderClient) Get(ctx context.Context, id uint64) (*PurchaseOrder, error) {
+	return c.Query().Where(purchaseorder.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PurchaseOrderClient) GetX(ctx context.Context, id uint64) *PurchaseOrder {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryRider queries the rider edge of a PurchaseOrder.
+func (c *PurchaseOrderClient) QueryRider(po *PurchaseOrder) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := po.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(purchaseorder.Table, purchaseorder.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, purchaseorder.RiderTable, purchaseorder.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(po.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryGoods queries the goods edge of a PurchaseOrder.
+func (c *PurchaseOrderClient) QueryGoods(po *PurchaseOrder) *GoodsQuery {
+	query := (&GoodsClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := po.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(purchaseorder.Table, purchaseorder.FieldID, id),
+			sqlgraph.To(goods.Table, goods.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, purchaseorder.GoodsTable, purchaseorder.GoodsColumn),
+		)
+		fromV = sqlgraph.Neighbors(po.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStore queries the store edge of a PurchaseOrder.
+func (c *PurchaseOrderClient) QueryStore(po *PurchaseOrder) *StoreQuery {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := po.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(purchaseorder.Table, purchaseorder.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, purchaseorder.StoreTable, purchaseorder.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(po.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPayments queries the payments edge of a PurchaseOrder.
+func (c *PurchaseOrderClient) QueryPayments(po *PurchaseOrder) *PurchasePaymentQuery {
+	query := (&PurchasePaymentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := po.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(purchaseorder.Table, purchaseorder.FieldID, id),
+			sqlgraph.To(purchasepayment.Table, purchasepayment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, purchaseorder.PaymentsTable, purchaseorder.PaymentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(po.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryFollows queries the follows edge of a PurchaseOrder.
+func (c *PurchaseOrderClient) QueryFollows(po *PurchaseOrder) *PurchaseFollowQuery {
+	query := (&PurchaseFollowClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := po.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(purchaseorder.Table, purchaseorder.FieldID, id),
+			sqlgraph.To(purchasefollow.Table, purchasefollow.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, purchaseorder.FollowsTable, purchaseorder.FollowsColumn),
+		)
+		fromV = sqlgraph.Neighbors(po.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PurchaseOrderClient) Hooks() []Hook {
+	hooks := c.hooks.PurchaseOrder
+	return append(hooks[:len(hooks):len(hooks)], purchaseorder.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *PurchaseOrderClient) Interceptors() []Interceptor {
+	return c.inters.PurchaseOrder
+}
+
+func (c *PurchaseOrderClient) mutate(ctx context.Context, m *PurchaseOrderMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PurchaseOrderCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PurchaseOrderUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PurchaseOrderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PurchaseOrderDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PurchaseOrder mutation op: %q", m.Op())
+	}
+}
+
+// PurchasePaymentClient is a client for the PurchasePayment schema.
+type PurchasePaymentClient struct {
+	config
+}
+
+// NewPurchasePaymentClient returns a client for the PurchasePayment from the given config.
+func NewPurchasePaymentClient(c config) *PurchasePaymentClient {
+	return &PurchasePaymentClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `purchasepayment.Hooks(f(g(h())))`.
+func (c *PurchasePaymentClient) Use(hooks ...Hook) {
+	c.hooks.PurchasePayment = append(c.hooks.PurchasePayment, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `purchasepayment.Intercept(f(g(h())))`.
+func (c *PurchasePaymentClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PurchasePayment = append(c.inters.PurchasePayment, interceptors...)
+}
+
+// Create returns a builder for creating a PurchasePayment entity.
+func (c *PurchasePaymentClient) Create() *PurchasePaymentCreate {
+	mutation := newPurchasePaymentMutation(c.config, OpCreate)
+	return &PurchasePaymentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PurchasePayment entities.
+func (c *PurchasePaymentClient) CreateBulk(builders ...*PurchasePaymentCreate) *PurchasePaymentCreateBulk {
+	return &PurchasePaymentCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PurchasePaymentClient) MapCreateBulk(slice any, setFunc func(*PurchasePaymentCreate, int)) *PurchasePaymentCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PurchasePaymentCreateBulk{err: fmt.Errorf("calling to PurchasePaymentClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PurchasePaymentCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PurchasePaymentCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PurchasePayment.
+func (c *PurchasePaymentClient) Update() *PurchasePaymentUpdate {
+	mutation := newPurchasePaymentMutation(c.config, OpUpdate)
+	return &PurchasePaymentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PurchasePaymentClient) UpdateOne(pp *PurchasePayment) *PurchasePaymentUpdateOne {
+	mutation := newPurchasePaymentMutation(c.config, OpUpdateOne, withPurchasePayment(pp))
+	return &PurchasePaymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PurchasePaymentClient) UpdateOneID(id uint64) *PurchasePaymentUpdateOne {
+	mutation := newPurchasePaymentMutation(c.config, OpUpdateOne, withPurchasePaymentID(id))
+	return &PurchasePaymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PurchasePayment.
+func (c *PurchasePaymentClient) Delete() *PurchasePaymentDelete {
+	mutation := newPurchasePaymentMutation(c.config, OpDelete)
+	return &PurchasePaymentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PurchasePaymentClient) DeleteOne(pp *PurchasePayment) *PurchasePaymentDeleteOne {
+	return c.DeleteOneID(pp.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PurchasePaymentClient) DeleteOneID(id uint64) *PurchasePaymentDeleteOne {
+	builder := c.Delete().Where(purchasepayment.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PurchasePaymentDeleteOne{builder}
+}
+
+// Query returns a query builder for PurchasePayment.
+func (c *PurchasePaymentClient) Query() *PurchasePaymentQuery {
+	return &PurchasePaymentQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePurchasePayment},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a PurchasePayment entity by its id.
+func (c *PurchasePaymentClient) Get(ctx context.Context, id uint64) (*PurchasePayment, error) {
+	return c.Query().Where(purchasepayment.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PurchasePaymentClient) GetX(ctx context.Context, id uint64) *PurchasePayment {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryRider queries the rider edge of a PurchasePayment.
+func (c *PurchasePaymentClient) QueryRider(pp *PurchasePayment) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(purchasepayment.Table, purchasepayment.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, purchasepayment.RiderTable, purchasepayment.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(pp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryGoods queries the goods edge of a PurchasePayment.
+func (c *PurchasePaymentClient) QueryGoods(pp *PurchasePayment) *GoodsQuery {
+	query := (&GoodsClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(purchasepayment.Table, purchasepayment.FieldID, id),
+			sqlgraph.To(goods.Table, goods.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, purchasepayment.GoodsTable, purchasepayment.GoodsColumn),
+		)
+		fromV = sqlgraph.Neighbors(pp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOrder queries the order edge of a PurchasePayment.
+func (c *PurchasePaymentClient) QueryOrder(pp *PurchasePayment) *PurchaseOrderQuery {
+	query := (&PurchaseOrderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(purchasepayment.Table, purchasepayment.FieldID, id),
+			sqlgraph.To(purchaseorder.Table, purchaseorder.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, purchasepayment.OrderTable, purchasepayment.OrderColumn),
+		)
+		fromV = sqlgraph.Neighbors(pp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PurchasePaymentClient) Hooks() []Hook {
+	hooks := c.hooks.PurchasePayment
+	return append(hooks[:len(hooks):len(hooks)], purchasepayment.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *PurchasePaymentClient) Interceptors() []Interceptor {
+	return c.inters.PurchasePayment
+}
+
+func (c *PurchasePaymentClient) mutate(ctx context.Context, m *PurchasePaymentMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PurchasePaymentCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PurchasePaymentUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PurchasePaymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PurchasePaymentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PurchasePayment mutation op: %q", m.Op())
+	}
+}
+
 // QuestionClient is a client for the Question schema.
 type QuestionClient struct {
 	config
@@ -21285,10 +21855,11 @@ type (
 		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,
 		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
 		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
-		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
-		RiderPhoneDevice, Role, Setting, Stock, StockSummary, Store, StoreGoods,
-		StoreGroup, Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder,
-		SubscribeSuspend, Version, Warehouse []ent.Hook
+		PromotionWithdrawal, PurchaseFollow, PurchaseOrder, PurchasePayment, Question,
+		QuestionCategory, Reserve, Rider, RiderFollowUp, RiderPhoneDevice, Role,
+		Setting, Stock, StockSummary, Store, StoreGoods, StoreGroup, Subscribe,
+		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend, Version,
+		Warehouse []ent.Hook
 	}
 	inters struct {
 		Activity, Agent, Agreement, Allocate, Asset, AssetAttributeValues,
@@ -21307,10 +21878,11 @@ type (
 		PromotionGrowth, PromotionLevel, PromotionLevelTask, PromotionMember,
 		PromotionMemberCommission, PromotionPerson, PromotionPrivilege,
 		PromotionReferrals, PromotionReferralsProgress, PromotionSetting,
-		PromotionWithdrawal, Question, QuestionCategory, Reserve, Rider, RiderFollowUp,
-		RiderPhoneDevice, Role, Setting, Stock, StockSummary, Store, StoreGoods,
-		StoreGroup, Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder,
-		SubscribeSuspend, Version, Warehouse []ent.Interceptor
+		PromotionWithdrawal, PurchaseFollow, PurchaseOrder, PurchasePayment, Question,
+		QuestionCategory, Reserve, Rider, RiderFollowUp, RiderPhoneDevice, Role,
+		Setting, Stock, StockSummary, Store, StoreGoods, StoreGroup, Subscribe,
+		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend, Version,
+		Warehouse []ent.Interceptor
 	}
 )
 
