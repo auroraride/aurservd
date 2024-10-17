@@ -2050,43 +2050,32 @@ func (s *assetTransferService) transferDetailsFilter(q *ent.AssetTransferDetails
 			),
 		)
 	}
-	if req.AssetManagerID != 0 {
-		// 查询库管人员配置的仓库数据
-		wIds := make([]uint64, 0)
-		am, _ := ent.Database.AssetManager.QueryNotDeleted().WithBelongWarehouses().
-			Where(
-				assetmanager.ID(req.AssetManagerID),
-				assetmanager.HasBelongWarehousesWith(warehouse.DeletedAtIsNil()),
-			).First(context.Background())
-		if am != nil {
-			for _, wh := range am.Edges.BelongWarehouses {
-				wIds = append(wIds, wh.ID)
-			}
-		}
+	if req.Keyword != nil {
 		q.Where(
 			assettransferdetails.Or(
-				assettransferdetails.HasTransferWith(assettransfer.HasFromLocationWarehouseWith(warehouse.IDIn(wIds...))),
-				assettransferdetails.HasTransferWith(assettransfer.HasToLocationWarehouseWith(warehouse.IDIn(wIds...))),
+				assettransferdetails.HasTransferWith(
+					assettransfer.Or(
+						assettransfer.HasFromLocationCabinetWith(cabinet.SerialContains(*req.Keyword)),
+						assettransfer.HasToLocationCabinetWith(cabinet.SerialContains(*req.Keyword)),
+					),
+				),
+				assettransferdetails.HasAssetWith(asset.SnContainsFold(*req.Keyword)),
+			),
+		)
+	}
+	if req.AssetManagerID != 0 {
+		q.Where(
+			assettransferdetails.Or(
+				assettransferdetails.HasTransferWith(assettransfer.HasFromLocationWarehouseWith(warehouse.HasBelongAssetManagersWith(assetmanager.ID(req.AssetManagerID)))),
+				assettransferdetails.HasTransferWith(assettransfer.HasToLocationWarehouseWith(warehouse.HasBelongAssetManagersWith(assetmanager.ID(req.AssetManagerID)))),
 			),
 		)
 	}
 	if req.EmployeeID != 0 {
-		// 查询门店人员配置的门店数据
-		sIds := make([]uint64, 0)
-		ep, _ := ent.Database.Employee.QueryNotDeleted().WithStores().
-			Where(
-				employee.ID(req.EmployeeID),
-				employee.HasStoresWith(store.DeletedAtIsNil()),
-			).First(context.Background())
-		if ep != nil {
-			for _, st := range ep.Edges.Stores {
-				sIds = append(sIds, st.ID)
-			}
-		}
 		q.Where(
 			assettransferdetails.Or(
-				assettransferdetails.HasTransferWith(assettransfer.HasFromLocationStoreWith(store.IDIn(sIds...))),
-				assettransferdetails.HasTransferWith(assettransfer.HasToLocationStoreWith(store.IDIn(sIds...))),
+				assettransferdetails.HasTransferWith(assettransfer.HasFromLocationStoreWith(store.HasEmployeesWith(employee.ID(req.EmployeeID)))),
+				assettransferdetails.HasTransferWith(assettransfer.HasToLocationStoreWith(store.HasEmployeesWith(employee.ID(req.EmployeeID)))),
 			),
 		)
 	}
