@@ -726,6 +726,10 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.PurchaseOrderFollow"
                     }
                 },
+                "formula": {
+                    "description": "违约说明",
+                    "type": "string"
+                },
                 "goods": {
                     "description": "商品信息",
                     "allOf": [
@@ -945,6 +949,10 @@ const docTemplate = `{
                 },
                 "docId": {
                     "description": "合同ID",
+                    "type": "string"
+                },
+                "formula": {
+                    "description": "违约说明",
                     "type": "string"
                 },
                 "goods": {
