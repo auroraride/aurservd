@@ -9,6 +9,7 @@ import (
 
 	"github.com/auroraride/aurservd/app/model"
 	pm "github.com/auroraride/aurservd/app/purchase/internal/model"
+	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
@@ -92,10 +93,15 @@ func (s *paymentService) Pay(ctx context.Context, req *pm.PaymentReq) (*model.Pu
 	if stage == nil {
 		return nil, errors.New("支付计划不存在")
 	}
+	// 测试环境金额为0.01
+	amount := tools.NewDecimal().Sum(stage.Amount, stage.Forfeit)
+	if ar.Config.Environment.IsDevelopment() {
+		amount = 0.01
+	}
 	payreq := &model.PurchasePayReq{
 		OutTradeNo: stage.OutTradeNo,
 		Subject:    order.Edges.Goods.Name,
-		Amount:     tools.NewDecimal().Sum(stage.Amount, stage.Forfeit),
+		Amount:     amount,
 	}
 
 	var err error
