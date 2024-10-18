@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
 
@@ -180,7 +181,7 @@ func (s *orderService) detail(item *ent.PurchaseOrder) (res pm.PurchaseOrderList
 	}
 
 	if item.StartDate != nil {
-		res.StartDate = item.StartDate.Format(carbon.DateTimeLayout)
+		res.StartDate = silk.String(item.StartDate.Format(carbon.DateTimeLayout))
 	}
 	// 商品信息
 	if item.Edges.Goods != nil {
@@ -313,9 +314,7 @@ func (s *orderService) Follow(ctx context.Context, req *pm.PurchaseOrderFollowRe
 	if order == nil {
 		return errors.New("订单不存在")
 	}
-	if order.Status.String() == pm.OrderStatusCancelled.Value() {
-		return errors.New("订单已取消")
-	}
+
 	return ent.Database.PurchaseFollow.Create().
 		SetOrderID(order.ID).
 		SetContent(req.Content).

@@ -112,7 +112,7 @@ type PurchaseOrderListRes struct {
 	ActiveName       string            `json:"activeName"`       // 激活人名称
 	ActivePhone      string            `json:"activePhone"`      // 激活人电话
 	CreatedAt        string            `json:"createdAt"`        // 创建时间
-	StartDate        string            `json:"startDate"`        // 激活时间
+	StartDate        *string           `json:"startDate"`        // 激活时间
 	Remark           string            `json:"remark"`           // 备注
 	ContractUrl      string            `json:"contractUrl"`      // 合同url
 	PlanIndex        int               `json:"planIndex"`        // 付款计划索引
