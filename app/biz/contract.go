@@ -364,17 +364,17 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 			templateID = cfg.Template.Enterprise
 		}
 
-		values := make(map[string]*pb.ContractFromField)
+		values := make(map[string]*pb.ContractFormField)
 
 		for k, v := range m {
 			switch value := v.(type) {
 			case bool:
-				values[k] = &pb.ContractFromField{
-					Value: &pb.ContractFromField_Checkbox{Checkbox: value},
+				values[k] = &pb.ContractFormField{
+					Value: &pb.ContractFormField_Checkbox{Checkbox: value},
 				}
 			case string:
-				values[k] = &pb.ContractFromField{
-					Value: &pb.ContractFromField_Text{Text: value},
+				values[k] = &pb.ContractFormField{
+					Value: &pb.ContractFormField_Text{Text: value},
 				}
 			case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, float32, float64:
 				var str string
@@ -382,8 +382,8 @@ func (s *Contract) Create(r *ent.Rider, req *definition.ContractCreateReq) (*def
 				if err != nil {
 					return nil, err
 				}
-				values[k] = &pb.ContractFromField{
-					Value: &pb.ContractFromField_Text{Text: str},
+				values[k] = &pb.ContractFormField{
+					Value: &pb.ContractFormField_Text{Text: str},
 				}
 			}
 		}
