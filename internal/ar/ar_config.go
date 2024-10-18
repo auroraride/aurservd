@@ -299,6 +299,7 @@ type config struct {
 		Template struct {
 			Personal   string
 			Enterprise string
+			Purchase   string
 		}
 		EncryptKey string // 合同加密key
 	}

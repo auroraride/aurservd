@@ -127,11 +127,18 @@ func (s *contractService) Sign(ctx context.Context, r *ent.Rider, req *mp.Contra
 // Create 添加合同
 func (s *contractService) Create(ctx context.Context, r *ent.Rider, req *mp.ContractCreateReq) (*definition.ContractCreateRes, error) {
 	var link, docId string
-	o, _ := s.orm.QueryNotDeleted().WithStore(func(query *ent.StoreQuery) {
-		query.WithCity(func(query *ent.CityQuery) {
-			query.WithParent()
-		})
-	}).Where(purchaseorder.ID(req.OrderID), purchaseorder.ContractURLIsNil()).First(ctx)
+	o, _ := s.orm.QueryNotDeleted().
+		WithStore(func(query *ent.StoreQuery) {
+			query.WithCity(func(query *ent.CityQuery) {
+				query.WithParent()
+			})
+		}).
+		WithGoods().
+		Where(
+			purchaseorder.ID(req.OrderID),
+			purchaseorder.ContractURLIsNil(),
+			purchaseorder.StatusEQ(purchaseorder.StatusPending)).
+		First(ctx)
 
 	if o == nil {
 		return nil, errors.New("未找到订单信息")
@@ -140,18 +147,28 @@ func (s *contractService) Create(ctx context.Context, r *ent.Rider, req *mp.Cont
 	if o.Edges.Store == nil || o.Edges.Store.Edges.City == nil {
 		return nil, errors.New("未找到城市信息")
 	}
+	if o.Edges.Goods == nil {
+		return nil, errors.New("未找到商品信息")
+	}
+
+	gs := o.Edges.Goods
 
 	ec := o.Edges.Store.Edges.City
 
 	// 定义变量
 	var (
-		m            = make(ar.Map)
-		p            = service.NewPerson().GetNormalAuthedPerson(r)
-		isEnterprise = r.EnterpriseID != nil
-		err          error
+		m   = make(ar.Map)
+		p   = service.NewPerson().GetNormalAuthedPerson(r)
+		err error
 		// 当前日期
-		now = time.Now().Format("2006年01月02日")
+		now         = time.Now().Format("2006年01月02日")
+		ebikeAmount float64
 	)
+
+	// 计算车辆价值
+	for _, v := range o.InstallmentPlan {
+		ebikeAmount += v.Amount
+	}
 	// 判断是否需要补充身份信息
 	if p.FaceVerifyResult == nil || p.FaceVerifyResult != nil && p.FaceVerifyResult.Address == "" || p.Name == "" || p.IDCardNumber == "" || r.Phone == "" {
 		return &definition.ContractCreateRes{NeedRealName: true}, nil
@@ -173,41 +190,30 @@ func (s *contractService) Create(ctx context.Context, r *ent.Rider, req *mp.Cont
 	m["city"] = ec.Name
 	// 骑手签字
 	m["riderSign"] = p.Name
-	// 紧急联系人
-	m["riderContact"] = r.Contact.String()
 	// 企业签署日期
 	m["aurDate"] = now
 	// 骑手签署日期
 	m["riderDate"] = now
-
-	var un *model.ContractSignUniversal
-
-	if un == nil {
-		return nil, errors.New("合同信息错误")
-	}
-
-	m["payMonth"] = un.Month
-
-	// 单电方案
-	m["schemaBattery"] = true
-	// 电池规格
-	// 单电方案起租日
-	m["batteryStart"] = now
-	// 单电方案结束日
-	m["batteryStop"] = un.Stop
-	// 单电月租金
-	m["batteryPrice"] = un.Price
-	// 单电方案首次缴纳月数
-	m["batteryPayMonth"] = un.Month
-	// 单电方案首次缴纳租金
-	m["batteryPayTotal"] = un.Total
+	// 紧急联系人
+	m["riderContact"] = r.Contact.String()
+	// 车辆名称
+	m["ebikeBrand"] = gs.Name
+	// 车辆颜色
+	m["ebikeColor"] = o.Color
+	// 车辆价值
+	m["ebikeAmount"] = ebikeAmount
+	// 车架号
+	m["ebikeSN"] = o.Sn
+	// 分期总期数
+	m["stages"] = o.InstallmentTotal
+	// 首期应付
+	m["amount"] = o.InstallmentPlan[0].Amount
+	// 还款期数达标后转移产
+	// m["stagesTransfer"] = o.InstallmentTotal
 
 	// 获取模版id
 	cfg := ar.Config.Contract
-	templateID := cfg.Template.Personal
-	if isEnterprise {
-		templateID = cfg.Template.Enterprise
-	}
+	templateID := cfg.Template.Purchase
 
 	values := make(map[string]*pb.ContractFormField)
 
@@ -232,6 +238,31 @@ func (s *contractService) Create(ctx context.Context, r *ent.Rider, req *mp.Cont
 			}
 		}
 	}
+
+	rows := make([]*pb.ContractTableRow, 0)
+	billingDates := o.InstallmentPlan.BillingDates(time.Now())
+	for k, v := range billingDates {
+		rows = append(rows, &pb.ContractTableRow{
+			Cells: []string{
+				strconv.Itoa(k + 1),
+				v.Format("2006年01月02日"),
+				strconv.FormatFloat(o.InstallmentPlan[k].Amount, 'f', 2, 64),
+			},
+		})
+
+	}
+	installment := &pb.ContractFormField_Table{
+		Table: &pb.ContractTable{
+			Columns: []*pb.ContractTableColumn{
+				{Header: "分期期数", Scale: 0.2},
+				{Header: "付款日期", Scale: 0.4},
+				{Header: "付款金额", Scale: 0.4},
+			},
+			Rows: rows,
+		},
+	}
+	// 分期信息
+	values["installment"] = &pb.ContractFormField{Value: installment}
 
 	expiresAt := time.Now().Add(model.ContractExpiration * time.Minute)
 	contractCreateResponse, err := rpc.Create(context.Background(), values, &definition.ContractCreateRPCReq{
