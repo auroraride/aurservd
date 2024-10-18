@@ -35,7 +35,7 @@ func Sgin(ctx context.Context, req *pb.ContractSignRequest, addr string) (string
 }
 
 // Create 创建合同
-func Create(ctx context.Context, values map[string]*pb.ContractFromField, req *definition.ContractCreateRPCReq) (request *pb.ContractCreateResponse, err error) {
+func Create(ctx context.Context, values map[string]*pb.ContractFormField, req *definition.ContractCreateRPCReq) (request *pb.ContractCreateResponse, err error) {
 	gc, err := grpc.NewClient(req.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		zap.L().Error("rpc连接失败", zap.Error(err))
