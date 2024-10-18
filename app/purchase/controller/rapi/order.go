@@ -7,6 +7,7 @@ import (
 	am "github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/purchase/internal/model"
 	"github.com/auroraride/aurservd/app/purchase/internal/service"
+	"github.com/auroraride/aurservd/pkg/silk"
 )
 
 type order struct{}
@@ -40,6 +41,7 @@ func (*order) Create(c echo.Context) error {
 // @Success	200				{object}	model.PaginationRes{items=[]model.PurchaseOrderListRes}	"请求成功"
 func (*order) List(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.PurchaseOrderListReq](c)
+	req.RiderID = silk.UInt64(ctx.Rider.ID)
 	return ctx.SendResponse(service.NewOrder().List(req))
 }
 
