@@ -216,6 +216,20 @@ func (pou *PurchaseOrderUpdate) ClearDocID() *PurchaseOrderUpdate {
 	return pou
 }
 
+// SetSigned sets the "signed" field.
+func (pou *PurchaseOrderUpdate) SetSigned(b bool) *PurchaseOrderUpdate {
+	pou.mutation.SetSigned(b)
+	return pou
+}
+
+// SetNillableSigned sets the "signed" field if the given value is not nil.
+func (pou *PurchaseOrderUpdate) SetNillableSigned(b *bool) *PurchaseOrderUpdate {
+	if b != nil {
+		pou.SetSigned(*b)
+	}
+	return pou
+}
+
 // SetInstallmentStage sets the "installment_stage" field.
 func (pou *PurchaseOrderUpdate) SetInstallmentStage(i int) *PurchaseOrderUpdate {
 	pou.mutation.ResetInstallmentStage()
@@ -618,6 +632,9 @@ func (pou *PurchaseOrderUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if pou.mutation.DocIDCleared() {
 		_spec.ClearField(purchaseorder.FieldDocID, field.TypeString)
+	}
+	if value, ok := pou.mutation.Signed(); ok {
+		_spec.SetField(purchaseorder.FieldSigned, field.TypeBool, value)
 	}
 	if value, ok := pou.mutation.InstallmentStage(); ok {
 		_spec.SetField(purchaseorder.FieldInstallmentStage, field.TypeInt, value)
@@ -1059,6 +1076,20 @@ func (pouo *PurchaseOrderUpdateOne) ClearDocID() *PurchaseOrderUpdateOne {
 	return pouo
 }
 
+// SetSigned sets the "signed" field.
+func (pouo *PurchaseOrderUpdateOne) SetSigned(b bool) *PurchaseOrderUpdateOne {
+	pouo.mutation.SetSigned(b)
+	return pouo
+}
+
+// SetNillableSigned sets the "signed" field if the given value is not nil.
+func (pouo *PurchaseOrderUpdateOne) SetNillableSigned(b *bool) *PurchaseOrderUpdateOne {
+	if b != nil {
+		pouo.SetSigned(*b)
+	}
+	return pouo
+}
+
 // SetInstallmentStage sets the "installment_stage" field.
 func (pouo *PurchaseOrderUpdateOne) SetInstallmentStage(i int) *PurchaseOrderUpdateOne {
 	pouo.mutation.ResetInstallmentStage()
@@ -1491,6 +1522,9 @@ func (pouo *PurchaseOrderUpdateOne) sqlSave(ctx context.Context) (_node *Purchas
 	}
 	if pouo.mutation.DocIDCleared() {
 		_spec.ClearField(purchaseorder.FieldDocID, field.TypeString)
+	}
+	if value, ok := pouo.mutation.Signed(); ok {
+		_spec.SetField(purchaseorder.FieldSigned, field.TypeBool, value)
 	}
 	if value, ok := pouo.mutation.InstallmentStage(); ok {
 		_spec.SetField(purchaseorder.FieldInstallmentStage, field.TypeInt, value)

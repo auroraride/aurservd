@@ -94,6 +94,7 @@ func (s *contractService) Sign(ctx context.Context, r *ent.Rider, req *mp.Contra
 	//  更新合同状态
 	err = o.Update().
 		SetContractURL(url).
+		SetSigned(true).
 		Exec(ctx)
 	if err != nil {
 		zap.L().Error("更新合同状态失败", zap.Error(err))
@@ -278,7 +279,7 @@ func (s *contractService) Create(ctx context.Context, r *ent.Rider, req *mp.Cont
 	link = contractCreateResponse.Url
 	docId = contractCreateResponse.DocId
 
-	_ = o.Update().SetContractURL(link).SetDocID(docId).Exec(ctx)
+	_ = o.Update().SetContractURL(link).SetDocID(docId).SetSigned(false).Exec(ctx)
 
 	if err != nil {
 		return nil, err

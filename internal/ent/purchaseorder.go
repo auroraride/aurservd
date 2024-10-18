@@ -48,6 +48,8 @@ type PurchaseOrder struct {
 	ContractURL string `json:"contract_url,omitempty"`
 	// 合同ID
 	DocID string `json:"doc_id,omitempty"`
+	// 是否签约
+	Signed bool `json:"signed,omitempty"`
 	// 当前分期阶段，从0开始
 	InstallmentStage int `json:"installment_stage,omitempty"`
 	// 分期总数
@@ -147,6 +149,8 @@ func (*PurchaseOrder) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case purchaseorder.FieldCreator, purchaseorder.FieldLastModifier, purchaseorder.FieldInstallmentPlan, purchaseorder.FieldImages:
 			values[i] = new([]byte)
+		case purchaseorder.FieldSigned:
+			values[i] = new(sql.NullBool)
 		case purchaseorder.FieldID, purchaseorder.FieldRiderID, purchaseorder.FieldGoodsID, purchaseorder.FieldStoreID, purchaseorder.FieldInstallmentStage, purchaseorder.FieldInstallmentTotal:
 			values[i] = new(sql.NullInt64)
 		case purchaseorder.FieldRemark, purchaseorder.FieldSn, purchaseorder.FieldStatus, purchaseorder.FieldContractURL, purchaseorder.FieldDocID, purchaseorder.FieldActiveName, purchaseorder.FieldActivePhone, purchaseorder.FieldColor:
@@ -257,6 +261,12 @@ func (po *PurchaseOrder) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field doc_id", values[i])
 			} else if value.Valid {
 				po.DocID = value.String
+			}
+		case purchaseorder.FieldSigned:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field signed", values[i])
+			} else if value.Valid {
+				po.Signed = value.Bool
 			}
 		case purchaseorder.FieldInstallmentStage:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -421,6 +431,9 @@ func (po *PurchaseOrder) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("doc_id=")
 	builder.WriteString(po.DocID)
+	builder.WriteString(", ")
+	builder.WriteString("signed=")
+	builder.WriteString(fmt.Sprintf("%v", po.Signed))
 	builder.WriteString(", ")
 	builder.WriteString("installment_stage=")
 	builder.WriteString(fmt.Sprintf("%v", po.InstallmentStage))
