@@ -176,12 +176,17 @@ func (s *orderService) detail(item *ent.PurchaseOrder) (res pm.PurchaseOrderList
 		CreatedAt:        item.CreatedAt.Format(carbon.DateTimeLayout),
 		Remark:           item.Remark,
 		RepayStatus:      pm.RepayStatusNormal,
-		ContractUrl:      silk.String(item.ContractURL),
-		DocID:            silk.String(item.DocID),
 	}
 
+	// 订单信息关键字段完善
 	if item.StartDate != nil {
 		res.StartDate = silk.String(item.StartDate.Format(carbon.DateTimeLayout))
+	}
+	if item.ContractURL != "" {
+		res.ContractUrl = silk.String(item.ContractURL)
+	}
+	if item.DocID != "" {
+		res.DocID = silk.String(item.DocID)
 	}
 	// 商品信息
 	if item.Edges.Goods != nil {

@@ -209,7 +209,7 @@ func (s *contractService) Create(ctx context.Context, r *ent.Rider, req *mp.Cont
 	// 首期应付
 	m["amount"] = o.InstallmentPlan[0].Amount
 	// 还款期数达标后转移产
-	// m["stagesTransfer"] = o.InstallmentTotal
+	m["stagesTransfer"] = o.InstallmentTotal
 
 	// 获取模版id
 	cfg := ar.Config.Contract
