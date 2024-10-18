@@ -2335,6 +2335,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			purchaseorder.FieldStatus:           {Type: field.TypeEnum, Column: purchaseorder.FieldStatus},
 			purchaseorder.FieldContractURL:      {Type: field.TypeString, Column: purchaseorder.FieldContractURL},
 			purchaseorder.FieldDocID:            {Type: field.TypeString, Column: purchaseorder.FieldDocID},
+			purchaseorder.FieldSigned:           {Type: field.TypeBool, Column: purchaseorder.FieldSigned},
 			purchaseorder.FieldInstallmentStage: {Type: field.TypeInt, Column: purchaseorder.FieldInstallmentStage},
 			purchaseorder.FieldInstallmentTotal: {Type: field.TypeInt, Column: purchaseorder.FieldInstallmentTotal},
 			purchaseorder.FieldInstallmentPlan:  {Type: field.TypeJSON, Column: purchaseorder.FieldInstallmentPlan},
@@ -21581,6 +21582,11 @@ func (f *PurchaseOrderFilter) WhereContractURL(p entql.StringP) {
 // WhereDocID applies the entql string predicate on the doc_id field.
 func (f *PurchaseOrderFilter) WhereDocID(p entql.StringP) {
 	f.Where(p.Field(purchaseorder.FieldDocID))
+}
+
+// WhereSigned applies the entql bool predicate on the signed field.
+func (f *PurchaseOrderFilter) WhereSigned(p entql.BoolP) {
+	f.Where(p.Field(purchaseorder.FieldSigned))
 }
 
 // WhereInstallmentStage applies the entql int predicate on the installment_stage field.

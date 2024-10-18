@@ -178,6 +178,20 @@ func (poc *PurchaseOrderCreate) SetNillableDocID(s *string) *PurchaseOrderCreate
 	return poc
 }
 
+// SetSigned sets the "signed" field.
+func (poc *PurchaseOrderCreate) SetSigned(b bool) *PurchaseOrderCreate {
+	poc.mutation.SetSigned(b)
+	return poc
+}
+
+// SetNillableSigned sets the "signed" field if the given value is not nil.
+func (poc *PurchaseOrderCreate) SetNillableSigned(b *bool) *PurchaseOrderCreate {
+	if b != nil {
+		poc.SetSigned(*b)
+	}
+	return poc
+}
+
 // SetInstallmentStage sets the "installment_stage" field.
 func (poc *PurchaseOrderCreate) SetInstallmentStage(i int) *PurchaseOrderCreate {
 	poc.mutation.SetInstallmentStage(i)
@@ -380,6 +394,10 @@ func (poc *PurchaseOrderCreate) defaults() error {
 		v := purchaseorder.DefaultStatus
 		poc.mutation.SetStatus(v)
 	}
+	if _, ok := poc.mutation.Signed(); !ok {
+		v := purchaseorder.DefaultSigned
+		poc.mutation.SetSigned(v)
+	}
 	if _, ok := poc.mutation.InstallmentStage(); !ok {
 		v := purchaseorder.DefaultInstallmentStage
 		poc.mutation.SetInstallmentStage(v)
@@ -408,6 +426,9 @@ func (poc *PurchaseOrderCreate) check() error {
 		if err := purchaseorder.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "PurchaseOrder.status": %w`, err)}
 		}
+	}
+	if _, ok := poc.mutation.Signed(); !ok {
+		return &ValidationError{Name: "signed", err: errors.New(`ent: missing required field "PurchaseOrder.signed"`)}
 	}
 	if _, ok := poc.mutation.InstallmentStage(); !ok {
 		return &ValidationError{Name: "installment_stage", err: errors.New(`ent: missing required field "PurchaseOrder.installment_stage"`)}
@@ -490,6 +511,10 @@ func (poc *PurchaseOrderCreate) createSpec() (*PurchaseOrder, *sqlgraph.CreateSp
 	if value, ok := poc.mutation.DocID(); ok {
 		_spec.SetField(purchaseorder.FieldDocID, field.TypeString, value)
 		_node.DocID = value
+	}
+	if value, ok := poc.mutation.Signed(); ok {
+		_spec.SetField(purchaseorder.FieldSigned, field.TypeBool, value)
+		_node.Signed = value
 	}
 	if value, ok := poc.mutation.InstallmentStage(); ok {
 		_spec.SetField(purchaseorder.FieldInstallmentStage, field.TypeInt, value)
@@ -833,6 +858,18 @@ func (u *PurchaseOrderUpsert) UpdateDocID() *PurchaseOrderUpsert {
 // ClearDocID clears the value of the "doc_id" field.
 func (u *PurchaseOrderUpsert) ClearDocID() *PurchaseOrderUpsert {
 	u.SetNull(purchaseorder.FieldDocID)
+	return u
+}
+
+// SetSigned sets the "signed" field.
+func (u *PurchaseOrderUpsert) SetSigned(v bool) *PurchaseOrderUpsert {
+	u.Set(purchaseorder.FieldSigned, v)
+	return u
+}
+
+// UpdateSigned sets the "signed" field to the value that was provided on create.
+func (u *PurchaseOrderUpsert) UpdateSigned() *PurchaseOrderUpsert {
+	u.SetExcluded(purchaseorder.FieldSigned)
 	return u
 }
 
@@ -1240,6 +1277,20 @@ func (u *PurchaseOrderUpsertOne) UpdateDocID() *PurchaseOrderUpsertOne {
 func (u *PurchaseOrderUpsertOne) ClearDocID() *PurchaseOrderUpsertOne {
 	return u.Update(func(s *PurchaseOrderUpsert) {
 		s.ClearDocID()
+	})
+}
+
+// SetSigned sets the "signed" field.
+func (u *PurchaseOrderUpsertOne) SetSigned(v bool) *PurchaseOrderUpsertOne {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.SetSigned(v)
+	})
+}
+
+// UpdateSigned sets the "signed" field to the value that was provided on create.
+func (u *PurchaseOrderUpsertOne) UpdateSigned() *PurchaseOrderUpsertOne {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.UpdateSigned()
 	})
 }
 
@@ -1839,6 +1890,20 @@ func (u *PurchaseOrderUpsertBulk) UpdateDocID() *PurchaseOrderUpsertBulk {
 func (u *PurchaseOrderUpsertBulk) ClearDocID() *PurchaseOrderUpsertBulk {
 	return u.Update(func(s *PurchaseOrderUpsert) {
 		s.ClearDocID()
+	})
+}
+
+// SetSigned sets the "signed" field.
+func (u *PurchaseOrderUpsertBulk) SetSigned(v bool) *PurchaseOrderUpsertBulk {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.SetSigned(v)
+	})
+}
+
+// UpdateSigned sets the "signed" field to the value that was provided on create.
+func (u *PurchaseOrderUpsertBulk) UpdateSigned() *PurchaseOrderUpsertBulk {
+	return u.Update(func(s *PurchaseOrderUpsert) {
+		s.UpdateSigned()
 	})
 }
 

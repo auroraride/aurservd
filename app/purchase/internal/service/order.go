@@ -176,6 +176,7 @@ func (s *orderService) detail(item *ent.PurchaseOrder) (res pm.PurchaseOrderList
 		CreatedAt:        item.CreatedAt.Format(carbon.DateTimeLayout),
 		Remark:           item.Remark,
 		RepayStatus:      pm.RepayStatusNormal,
+		Signed:           item.Signed,
 	}
 
 	// 订单信息关键字段完善

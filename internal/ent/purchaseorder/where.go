@@ -105,6 +105,11 @@ func DocID(v string) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldEQ(FieldDocID, v))
 }
 
+// Signed applies equality check predicate on the "signed" field. It's identical to SignedEQ.
+func Signed(v bool) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEQ(FieldSigned, v))
+}
+
 // InstallmentStage applies equality check predicate on the "installment_stage" field. It's identical to InstallmentStageEQ.
 func InstallmentStage(v int) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldEQ(FieldInstallmentStage, v))
@@ -678,6 +683,16 @@ func DocIDEqualFold(v string) predicate.PurchaseOrder {
 // DocIDContainsFold applies the ContainsFold predicate on the "doc_id" field.
 func DocIDContainsFold(v string) predicate.PurchaseOrder {
 	return predicate.PurchaseOrder(sql.FieldContainsFold(FieldDocID, v))
+}
+
+// SignedEQ applies the EQ predicate on the "signed" field.
+func SignedEQ(v bool) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldEQ(FieldSigned, v))
+}
+
+// SignedNEQ applies the NEQ predicate on the "signed" field.
+func SignedNEQ(v bool) predicate.PurchaseOrder {
+	return predicate.PurchaseOrder(sql.FieldNEQ(FieldSigned, v))
 }
 
 // InstallmentStageEQ applies the EQ predicate on the "installment_stage" field.

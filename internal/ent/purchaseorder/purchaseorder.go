@@ -42,6 +42,8 @@ const (
 	FieldContractURL = "contract_url"
 	// FieldDocID holds the string denoting the doc_id field in the database.
 	FieldDocID = "doc_id"
+	// FieldSigned holds the string denoting the signed field in the database.
+	FieldSigned = "signed"
 	// FieldInstallmentStage holds the string denoting the installment_stage field in the database.
 	FieldInstallmentStage = "installment_stage"
 	// FieldInstallmentTotal holds the string denoting the installment_total field in the database.
@@ -125,6 +127,7 @@ var Columns = []string{
 	FieldStatus,
 	FieldContractURL,
 	FieldDocID,
+	FieldSigned,
 	FieldInstallmentStage,
 	FieldInstallmentTotal,
 	FieldInstallmentPlan,
@@ -159,6 +162,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultSigned holds the default value on creation for the "signed" field.
+	DefaultSigned bool
 	// DefaultInstallmentStage holds the default value on creation for the "installment_stage" field.
 	DefaultInstallmentStage int
 )
@@ -253,6 +258,11 @@ func ByContractURL(opts ...sql.OrderTermOption) OrderOption {
 // ByDocID orders the results by the doc_id field.
 func ByDocID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDocID, opts...).ToFunc()
+}
+
+// BySigned orders the results by the signed field.
+func BySigned(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSigned, opts...).ToFunc()
 }
 
 // ByInstallmentStage orders the results by the installment_stage field.
