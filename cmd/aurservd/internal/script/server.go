@@ -14,6 +14,7 @@ import (
 
 	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
+	pt "github.com/auroraride/aurservd/app/purchase/task"
 	"github.com/auroraride/aurservd/app/router"
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/app/sync"
@@ -81,6 +82,11 @@ func serverCommand() *cobra.Command {
 
 			// 缓存所有电柜名称
 			go service.NewCabinet().CacheAll()
+
+			// 购买逾期账单金额
+			go pt.NewPurchaseOrder().Start()
+			// 购买逾期提醒
+			go pt.NewPurchaseReminder().Start()
 
 			// Demo
 			go internal.Demo()

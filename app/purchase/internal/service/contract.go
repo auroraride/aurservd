@@ -12,7 +12,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
-	"github.com/auroraride/aurservd/app/model"
 	mp "github.com/auroraride/aurservd/app/purchase/internal/model"
 	"github.com/auroraride/aurservd/app/rpc"
 	"github.com/auroraride/aurservd/app/service"
@@ -109,7 +108,7 @@ func (s *contractService) Sign(ctx context.Context, r *ent.Rider, req *mp.Contra
 		}
 	}
 	// 更新订单
-	_ = o.Update().SetNextDate(now).Exec(ctx)
+	_ = o.Update().SetNextDate(now).SetStartDate(now).Exec(ctx)
 	// 更新分期计划开始时间
 	for k, v := range billingDates {
 		_ = ent.Database.PurchasePayment.Update().
@@ -265,7 +264,7 @@ func (s *contractService) Create(ctx context.Context, r *ent.Rider, req *mp.Cont
 	// 分期信息
 	values["installment"] = &pb.ContractFormField{Value: installment}
 
-	expiresAt := time.Now().Add(model.ContractExpiration * time.Minute)
+	expiresAt := time.Now().Add(10 * time.Minute)
 	contractCreateResponse, err := rpc.Create(context.Background(), values, &definition.ContractCreateRPCReq{
 		TemplateId: templateID,
 		Addr:       cfg.Address,
@@ -279,7 +278,7 @@ func (s *contractService) Create(ctx context.Context, r *ent.Rider, req *mp.Cont
 	link = contractCreateResponse.Url
 	docId = contractCreateResponse.DocId
 
-	_ = o.Update().SetContractURL(link).SetDocID(docId).SetSigned(false).Exec(ctx)
+	_ = o.Update().SetDocID(docId).SetSigned(false).Exec(ctx)
 
 	if err != nil {
 		return nil, err
