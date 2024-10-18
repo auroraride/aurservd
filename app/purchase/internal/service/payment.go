@@ -56,7 +56,7 @@ func (s *paymentService) Create(ctx context.Context, req *pm.PaymentPlanCreateRe
 	dates := o.InstallmentPlan.BillingDates(time.Now())
 	for k, plan := range o.InstallmentPlan {
 		paymentBulk = append(paymentBulk, s.orm.Create().
-			SetOutTradeNo(tools.NewUnique().NewSN()).
+			SetOutTradeNo(tools.NewUnique().NewSN28()).
 			SetIndex(k).
 			SetStatus(purchasepayment.StatusObligation).
 			SetTotal(plan.Amount).

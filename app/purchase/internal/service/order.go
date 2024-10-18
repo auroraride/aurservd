@@ -176,8 +176,8 @@ func (s *orderService) detail(item *ent.PurchaseOrder) (res pm.PurchaseOrderList
 		CreatedAt:        item.CreatedAt.Format(carbon.DateTimeLayout),
 		Remark:           item.Remark,
 		RepayStatus:      pm.RepayStatusNormal,
-		ContractUrl:      item.ContractURL,
-		DocID:            item.DocID,
+		ContractUrl:      silk.String(item.ContractURL),
+		DocID:            silk.String(item.DocID),
 	}
 
 	if item.StartDate != nil {
@@ -214,7 +214,7 @@ func (s *orderService) detail(item *ent.PurchaseOrder) (res pm.PurchaseOrderList
 		// 未激活时订单金额默认为商品价格
 		res.Amount = res.Goods.Price
 		// 当前订单默认分期方案索引
-		res.PlanIndex = g.PaymentPlans.PlanIndex(item.InstallmentPlan)
+		res.PlanIndex = silk.Int(g.PaymentPlans.PlanIndex(item.InstallmentPlan))
 	}
 	// 门店信息
 	if item.Edges.Store != nil {
