@@ -206,6 +206,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "骑手ID",
+                        "name": "riderId",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "车架号",
                         "name": "sn",
@@ -847,6 +853,13 @@ const docTemplate = `{
                     "description": "订单编号",
                     "type": "integer"
                 },
+                "installmentPlan": {
+                    "description": "分期方案",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
                 "installmentStage": {
                     "description": "当前分期阶段",
                     "type": "integer"
@@ -994,6 +1007,13 @@ const docTemplate = `{
                 "id": {
                     "description": "订单编号",
                     "type": "integer"
+                },
+                "installmentPlan": {
+                    "description": "分期方案",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
                 },
                 "installmentStage": {
                     "description": "当前分期阶段",

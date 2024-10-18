@@ -4824,6 +4824,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "关键字",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "资产位置ID",
                         "name": "locationsId",
@@ -8652,6 +8658,10 @@ const docTemplate = `{
                 },
                 "end": {
                     "description": "结束时间",
+                    "type": "string"
+                },
+                "keyword": {
+                    "description": "关键字",
                     "type": "string"
                 },
                 "locationsId": {

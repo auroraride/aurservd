@@ -5,6 +5,10 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 )
 
+var (
+	PurchaseOrderFormula = "计算方法：违约时间超过7天，按照本期应支付金额的20%计算。"
+)
+
 // OrderStatus 订单状态
 type OrderStatus string
 
@@ -114,6 +118,7 @@ type PurchaseOrderListRes struct {
 	PlanIndex        int               `json:"planIndex"`        // 付款计划索引
 	DocID            string            `json:"docId"`            // 合同ID
 	Formula          string            `json:"formula"`          // 违约说明
+	InstallmentPlan  []float64         `json:"installmentPlan"`  // 分期方案
 }
 
 // PurchaseOrderDetail 订单详情
