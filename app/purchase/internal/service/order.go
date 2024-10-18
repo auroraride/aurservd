@@ -124,23 +124,29 @@ func (s *orderService) listFilter(q *ent.PurchaseOrderQuery, req pm.PurchaseOrde
 		q.Where(purchaseorder.StatusEQ(purchaseorder.Status(req.Status.Value())))
 	}
 	if req.RepayStatus != nil {
-		// todo 还有问题
 		switch *req.RepayStatus {
 		case pm.RepayStatusNormal:
-			// 正常还款（分期付款记录表中账单日期大于当前日期且已付款的数据）todo 还有问题
+			// 正常：订单未激活，订单已激活未超过付款日
 			q.Where(
-				purchaseorder.HasPaymentsWith(
-					purchasepayment.StatusEQ(purchasepayment.Status(pm.PaymentStatusPaid)),
-					purchasepayment.PaymentDateGTE(time.Now()),
+				purchaseorder.Or(
+					purchaseorder.StartDateIsNil(),
+					purchaseorder.And(
+						purchaseorder.StartDateNotNil(),
+						purchaseorder.HasPaymentsWith(
+							purchasepayment.StatusEQ(purchasepayment.Status(pm.PaymentStatusObligation)),
+							purchasepayment.BillingDateGTE(time.Now().AddDate(0, 0, -1)),
+						),
+					),
 				),
 			)
 
 		case pm.RepayStatusOverdue:
-			// 已逾期（分期付款记录表中逾期日小于当前时间且未付款的数据）
+			// 逾期：订单已激活且已超过付款日
 			q.Where(
+				purchaseorder.StartDateNotNil(),
 				purchaseorder.HasPaymentsWith(
 					purchasepayment.StatusEQ(purchasepayment.Status(pm.PaymentStatusObligation)),
-					purchasepayment.BillingDateLT(time.Now()),
+					purchasepayment.BillingDateLT(time.Now().AddDate(0, 0, -1)),
 				),
 			)
 		}
@@ -171,8 +177,6 @@ func (s *orderService) detail(item *ent.PurchaseOrder) (res pm.PurchaseOrderList
 		InstallmentStage: item.InstallmentStage,
 		Sn:               item.Sn,
 		Color:            item.Color,
-		ActiveName:       item.ActiveName,
-		ActivePhone:      item.ActivePhone,
 		CreatedAt:        item.CreatedAt.Format(carbon.DateTimeLayout),
 		Remark:           item.Remark,
 		RepayStatus:      pm.RepayStatusNormal,
@@ -188,6 +192,10 @@ func (s *orderService) detail(item *ent.PurchaseOrder) (res pm.PurchaseOrderList
 	}
 	if item.DocID != "" {
 		res.DocID = silk.String(item.DocID)
+	}
+	if item.ActiveName != "" && item.ActivePhone != "" {
+		res.ActiveName = silk.String(item.ActiveName)
+		res.ActivePhone = silk.String(item.ActivePhone)
 	}
 	// 商品信息
 	if item.Edges.Goods != nil {
@@ -233,9 +241,10 @@ func (s *orderService) detail(item *ent.PurchaseOrder) (res pm.PurchaseOrderList
 		if p.Status.String() == pm.PaymentStatusPaid.Value() {
 			res.PaidAmount += p.Amount
 		}
-		if item.Status.String() == pm.OrderStatusStaging.Value() &&
+		// 订单已激活且分期账单有未付款逾期数据
+		if item.StartDate != nil &&
 			p.Status.String() == pm.PaymentStatusObligation.Value() &&
-			p.BillingDate.Before(time.Now()) {
+			p.BillingDate.Before(time.Now().AddDate(0, 0, -1)) {
 			res.RepayStatus = pm.RepayStatusOverdue
 		}
 
@@ -352,7 +361,6 @@ func (s *orderService) Active(ctx context.Context, req *pm.PurchaseOrderActiveRe
 		SetRemark(req.Remark).
 		SetActiveName(md.Name).
 		SetActivePhone(md.Phone).
-		SetStartDate(time.Now()).
 		SetLastModifier(md)
 
 	// 查询订单默认商品
@@ -441,6 +449,10 @@ func (s *orderService) Export(req *pm.PurchaseOrderExportReq, md *model.Modifier
 		rows = append(rows, title)
 		for _, item := range items {
 			detail := s.detail(item)
+			var activeInfo string
+			if detail.ActiveName != nil && detail.ActivePhone != nil {
+				activeInfo = *detail.ActiveName + "-" + *detail.ActivePhone
+			}
 			row := []any{
 				detail.ID,
 				detail.Status.String(),
@@ -454,7 +466,7 @@ func (s *orderService) Export(req *pm.PurchaseOrderExportReq, md *model.Modifier
 				detail.RiderPhone,
 				detail.StoreName,
 				detail.Sn,
-				detail.ActiveName + "-" + detail.ActivePhone,
+				activeInfo,
 				detail.CreatedAt,
 				detail.StartDate,
 				detail.Remark,

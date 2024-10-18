@@ -109,8 +109,8 @@ type PurchaseOrderListRes struct {
 	StoreName        string            `json:"storeName"`        // 提车门店
 	Sn               string            `json:"sn"`               // 车架号
 	Color            string            `json:"color"`            // 车辆颜色
-	ActiveName       string            `json:"activeName"`       // 激活人名称
-	ActivePhone      string            `json:"activePhone"`      // 激活人电话
+	ActiveName       *string           `json:"activeName"`       // 激活人名称
+	ActivePhone      *string           `json:"activePhone"`      // 激活人电话
 	CreatedAt        string            `json:"createdAt"`        // 创建时间
 	StartDate        *string           `json:"startDate"`        // 激活时间
 	Remark           string            `json:"remark"`           // 备注

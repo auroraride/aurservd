@@ -903,6 +903,10 @@ const docTemplate = `{
                     "description": "骑手电话",
                     "type": "string"
                 },
+                "signed": {
+                    "description": "是否签约 true:已签约 false:未签约",
+                    "type": "boolean"
+                },
                 "sn": {
                     "description": "车架号",
                     "type": "string"
@@ -1050,6 +1054,10 @@ const docTemplate = `{
                 "riderPhone": {
                     "description": "骑手电话",
                     "type": "string"
+                },
+                "signed": {
+                    "description": "是否签约 true:已签约 false:未签约",
+                    "type": "boolean"
                 },
                 "sn": {
                     "description": "车架号",
