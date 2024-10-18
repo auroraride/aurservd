@@ -137,10 +137,11 @@ func (s *paymentService) DoPayment(req *model.PurchaseNotificationRes) error {
 	if payment.Status != purchasepayment.StatusObligation {
 		return errors.New("支付计划状态不正确")
 	}
+	now := time.Now()
 	err := s.orm.UpdateOne(payment).
 		SetStatus(purchasepayment.StatusPaid).
 		SetPayway(purchasepayment.Payway(req.Payway)).
-		SetPaymentDate(time.Now()).
+		SetPaymentDate(now).
 		SetTradeNo(req.TradeNo).
 		Exec(context.Background())
 	if err != nil {
@@ -168,12 +169,12 @@ func (s *paymentService) DoPayment(req *model.PurchaseNotificationRes) error {
 }
 
 // CheckOrderStatus 判定订单状态
-func (s *paymentService) CheckOrderStatus(o *ent.PurchaseOrder) (status purchaseorder.Status, stage int) {
+func (s *paymentService) CheckOrderStatus(o *ent.PurchaseOrder) (status purchaseorder.Status, nextStage int) {
 	// 查询是否已经全部支付完成
 	b, _ := ent.Database.PurchasePayment.QueryNotDeleted().
 		Where(purchasepayment.OrderID(o.ID),
 			purchasepayment.StatusEQ(purchasepayment.StatusPaid),
-			purchasepayment.Index(o.InstallmentTotal),
+			purchasepayment.Index(o.InstallmentTotal-1),
 		).Exist(context.Background())
 	if b {
 		return purchaseorder.StatusEnded, 0

@@ -99,14 +99,15 @@ type config struct {
 	RpcServer map[string]string `koanf:"rpc-server"`
 
 	Task struct {
-		Branch     bool // 网点合同到期提醒
-		Enterprise bool // 团签账单
-		Sim        bool // SIM卡到期提醒
-		Subscribe  bool // 个签订阅日期计算
-		Reserve    bool // 预约到期计算
-		Reminder   bool // 个签到期提醒
-		Cabinet    bool // 电柜任务失效
-		Earnings   bool // 返佣收益结算
+		Branch           bool // 网点合同到期提醒
+		Enterprise       bool // 团签账单
+		Sim              bool // SIM卡到期提醒
+		Subscribe        bool // 个签订阅日期计算
+		Reserve          bool // 预约到期计算
+		Reminder         bool // 个签到期提醒
+		Cabinet          bool // 电柜任务失效
+		Earnings         bool // 返佣收益结算
+		PurchaseReminder bool // 购买提醒
 	}
 
 	Cabinet struct {
@@ -161,6 +162,11 @@ type config struct {
 				Template *string
 				Tel      *string
 			}
+			// 购买商品逾期通知
+			PurchaseOverdue struct {
+				Template *string
+				Tel      *string
+			}
 		}
 		Sms struct {
 			AccessKeyId     string
@@ -176,6 +182,8 @@ type config struct {
 				Overdue string
 				// 签署合同成功通知
 				ContractSuccess string
+				// 商品购买分期支付逾期通知
+				PurchaseOverdue string
 			}
 		}
 		Sls struct {
