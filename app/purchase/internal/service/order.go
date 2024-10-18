@@ -274,7 +274,7 @@ func (s *orderService) Detail(id uint64) (res pm.PurchaseOrderDetail) {
 		).
 		WithPayments(
 			func(query *ent.PurchasePaymentQuery) {
-				query.Order(ent.Desc(purchasepayment.FieldCreatedAt))
+				query.Order(ent.Asc(purchasepayment.FieldCreatedAt))
 			},
 		).
 		WithRider().
