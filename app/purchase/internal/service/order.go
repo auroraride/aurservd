@@ -272,7 +272,11 @@ func (s *orderService) Detail(id uint64) (res pm.PurchaseOrderDetail) {
 		Where(
 			purchaseorder.ID(id),
 		).
-		WithPayments().
+		WithPayments(
+			func(query *ent.PurchasePaymentQuery) {
+				query.Order(ent.Desc(purchasepayment.FieldCreatedAt))
+			},
+		).
 		WithRider().
 		WithStore().
 		WithGoods().
