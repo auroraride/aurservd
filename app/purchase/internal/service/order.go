@@ -286,19 +286,23 @@ func (s *orderService) Detail(id uint64) (res pm.PurchaseOrderDetail) {
 	payments := make([]*pm.PaymentDetail, 0)
 	for _, p := range item.Edges.Payments {
 		payment := &pm.PaymentDetail{
-			ID:          p.ID,
-			Total:       p.Total,
-			Amount:      p.Amount,
-			BillingDate: p.BillingDate.Format(carbon.DateLayout),
-			Forfeit:     p.Forfeit,
-			Payway:      pm.Payway(p.Payway),
-			OutTradeNo:  p.OutTradeNo,
-			Status:      pm.PaymentStatus(p.Status),
+			ID:         p.ID,
+			Total:      p.Total,
+			Amount:     p.Amount,
+			Forfeit:    p.Forfeit,
+			Payway:     pm.Payway(p.Payway),
+			OutTradeNo: p.OutTradeNo,
+			Status:     pm.PaymentStatus(p.Status),
 		}
-		// 逾期天数
-		if time.Now().After(p.BillingDate) {
-			payment.OverdueDays = int(time.Since(p.BillingDate).Hours() / 24)
+		// 账单日期
+		if !p.BillingDate.IsZero() {
+			payment.BillingDate = p.BillingDate.Format(carbon.DateLayout)
+			// 逾期天数
+			if time.Now().After(p.BillingDate) {
+				payment.OverdueDays = int(time.Since(p.BillingDate).Hours() / 24)
+			}
 		}
+
 		// 支付时间
 		if p.PaymentDate != nil {
 			payment.PaymentDate = p.PaymentDate.Format(carbon.DateTimeLayout)
