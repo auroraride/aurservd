@@ -13,10 +13,10 @@ import (
 )
 
 var (
-	ErrorGoodsPaymentDuplicate = errors.New("商品付款阶段重复")
-	ErrorGoodsPaymentInvalid   = errors.New("商品付款阶段无效")
-	ErrorGoodsPaymentEmpty     = errors.New("商品付款阶段为空")
-	ErrorGoodsPaymentAmount    = errors.New("商品付款金额无效")
+	ErrorGoodsPaymentDuplicate = errors.New("分期方案重复")
+	ErrorGoodsPaymentInvalid   = errors.New("分期方案无效")
+	ErrorGoodsPaymentEmpty     = errors.New("分期方案为空")
+	ErrorGoodsPaymentAmount    = errors.New("付款金额无效")
 )
 
 type GoodsPaymentPeriod int

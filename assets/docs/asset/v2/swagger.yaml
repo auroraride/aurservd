@@ -1852,6 +1852,9 @@ definitions:
       end:
         description: 结束时间
         type: string
+      keyword:
+        description: 关键字
+        type: string
       locationsId:
         description: 资产位置ID
         type: integer
@@ -6388,6 +6391,10 @@ paths:
       - description: 结束时间
         in: query
         name: end
+        type: string
+      - description: 关键字
+        in: query
+        name: keyword
         type: string
       - description: 资产位置ID
         in: query

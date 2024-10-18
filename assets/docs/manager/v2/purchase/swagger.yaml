@@ -270,6 +270,11 @@ definitions:
       id:
         description: 订单编号
         type: integer
+      installmentPlan:
+        description: 分期方案
+        items:
+          type: number
+        type: array
       installmentStage:
         description: 当前分期阶段
         type: integer
@@ -336,6 +341,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.RepayStatus'
         description: 还款状态
+      riderId:
+        description: 骑手ID
+        type: integer
       sn:
         description: 车架号
         type: string
@@ -424,6 +432,11 @@ definitions:
       id:
         description: 订单编号
         type: integer
+      installmentPlan:
+        description: 分期方案
+        items:
+          type: number
+        type: array
       installmentStage:
         description: 当前分期阶段
         type: integer
@@ -621,6 +634,10 @@ paths:
         x-enum-varnames:
         - RepayStatusNormal
         - RepayStatusOverdue
+      - description: 骑手ID
+        in: query
+        name: riderId
+        type: integer
       - description: 车架号
         in: query
         name: sn
