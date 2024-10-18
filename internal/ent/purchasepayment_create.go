@@ -178,6 +178,14 @@ func (ppc *PurchasePaymentCreate) SetBillingDate(t time.Time) *PurchasePaymentCr
 	return ppc
 }
 
+// SetNillableBillingDate sets the "billing_date" field if the given value is not nil.
+func (ppc *PurchasePaymentCreate) SetNillableBillingDate(t *time.Time) *PurchasePaymentCreate {
+	if t != nil {
+		ppc.SetBillingDate(*t)
+	}
+	return ppc
+}
+
 // SetPaymentDate sets the "payment_date" field.
 func (ppc *PurchasePaymentCreate) SetPaymentDate(t time.Time) *PurchasePaymentCreate {
 	ppc.mutation.SetPaymentDate(t)
@@ -338,9 +346,6 @@ func (ppc *PurchasePaymentCreate) check() error {
 	}
 	if _, ok := ppc.mutation.Forfeit(); !ok {
 		return &ValidationError{Name: "forfeit", err: errors.New(`ent: missing required field "PurchasePayment.forfeit"`)}
-	}
-	if _, ok := ppc.mutation.BillingDate(); !ok {
-		return &ValidationError{Name: "billing_date", err: errors.New(`ent: missing required field "PurchasePayment.billing_date"`)}
 	}
 	if len(ppc.mutation.RiderIDs()) == 0 {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "PurchasePayment.rider"`)}
@@ -758,6 +763,12 @@ func (u *PurchasePaymentUpsert) UpdateBillingDate() *PurchasePaymentUpsert {
 	return u
 }
 
+// ClearBillingDate clears the value of the "billing_date" field.
+func (u *PurchasePaymentUpsert) ClearBillingDate() *PurchasePaymentUpsert {
+	u.SetNull(purchasepayment.FieldBillingDate)
+	return u
+}
+
 // SetPaymentDate sets the "payment_date" field.
 func (u *PurchasePaymentUpsert) SetPaymentDate(v time.Time) *PurchasePaymentUpsert {
 	u.Set(purchasepayment.FieldPaymentDate, v)
@@ -1109,6 +1120,13 @@ func (u *PurchasePaymentUpsertOne) SetBillingDate(v time.Time) *PurchasePaymentU
 func (u *PurchasePaymentUpsertOne) UpdateBillingDate() *PurchasePaymentUpsertOne {
 	return u.Update(func(s *PurchasePaymentUpsert) {
 		s.UpdateBillingDate()
+	})
+}
+
+// ClearBillingDate clears the value of the "billing_date" field.
+func (u *PurchasePaymentUpsertOne) ClearBillingDate() *PurchasePaymentUpsertOne {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.ClearBillingDate()
 	})
 }
 
@@ -1638,6 +1656,13 @@ func (u *PurchasePaymentUpsertBulk) SetBillingDate(v time.Time) *PurchasePayment
 func (u *PurchasePaymentUpsertBulk) UpdateBillingDate() *PurchasePaymentUpsertBulk {
 	return u.Update(func(s *PurchasePaymentUpsert) {
 		s.UpdateBillingDate()
+	})
+}
+
+// ClearBillingDate clears the value of the "billing_date" field.
+func (u *PurchasePaymentUpsertBulk) ClearBillingDate() *PurchasePaymentUpsertBulk {
+	return u.Update(func(s *PurchasePaymentUpsert) {
+		s.ClearBillingDate()
 	})
 }
 
