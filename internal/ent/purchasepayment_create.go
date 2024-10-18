@@ -433,7 +433,7 @@ func (ppc *PurchasePaymentCreate) createSpec() (*PurchasePayment, *sqlgraph.Crea
 	}
 	if value, ok := ppc.mutation.PaymentDate(); ok {
 		_spec.SetField(purchasepayment.FieldPaymentDate, field.TypeTime, value)
-		_node.PaymentDate = value
+		_node.PaymentDate = &value
 	}
 	if value, ok := ppc.mutation.TradeNo(); ok {
 		_spec.SetField(purchasepayment.FieldTradeNo, field.TypeString, value)

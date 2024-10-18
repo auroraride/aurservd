@@ -54,8 +54,8 @@ type PurchasePayment struct {
 	Forfeit float64 `json:"forfeit,omitempty"`
 	// 账单日期
 	BillingDate time.Time `json:"billing_date,omitempty"`
-	// 支付日期
-	PaymentDate time.Time `json:"payment_date,omitempty"`
+	// 支付时间
+	PaymentDate *time.Time `json:"payment_date,omitempty"`
 	// 平台订单号（微信或支付宝）
 	TradeNo string `json:"trade_no,omitempty"`
 	// 订单id
@@ -253,7 +253,8 @@ func (pp *PurchasePayment) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field payment_date", values[i])
 			} else if value.Valid {
-				pp.PaymentDate = value.Time
+				pp.PaymentDate = new(time.Time)
+				*pp.PaymentDate = value.Time
 			}
 		case purchasepayment.FieldTradeNo:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -368,8 +369,10 @@ func (pp *PurchasePayment) String() string {
 	builder.WriteString("billing_date=")
 	builder.WriteString(pp.BillingDate.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("payment_date=")
-	builder.WriteString(pp.PaymentDate.Format(time.ANSIC))
+	if v := pp.PaymentDate; v != nil {
+		builder.WriteString("payment_date=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("trade_no=")
 	builder.WriteString(pp.TradeNo)

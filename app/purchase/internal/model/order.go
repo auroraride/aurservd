@@ -81,6 +81,7 @@ type PurchaseOrderListFilter struct {
 	StoreID     *uint64      `json:"storeId" query:"storeId"`         // 门店ID
 	Start       *string      `json:"start" query:"start"`             // 开始时间
 	End         *string      `json:"end" query:"end"`                 // 结束时间
+	RiderID     *uint64      `json:"riderId" query:"riderId"`         // 骑手ID
 }
 
 type PurchaseOrderExportReq struct {

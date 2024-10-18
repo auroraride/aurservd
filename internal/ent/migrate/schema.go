@@ -5943,7 +5943,7 @@ var (
 		{Name: "amount", Type: field.TypeFloat64, Comment: "账单金额"},
 		{Name: "forfeit", Type: field.TypeFloat64, Comment: "滞纳金", Default: 0},
 		{Name: "billing_date", Type: field.TypeTime, Comment: "账单日期", SchemaType: map[string]string{"postgres": "date"}},
-		{Name: "payment_date", Type: field.TypeTime, Nullable: true, Comment: "支付日期", SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "payment_date", Type: field.TypeTime, Nullable: true, Comment: "支付时间"},
 		{Name: "trade_no", Type: field.TypeString, Nullable: true, Comment: "平台订单号（微信或支付宝）"},
 		{Name: "order_id", Type: field.TypeUint64, Nullable: true, Comment: "订单id"},
 		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},

@@ -88,7 +88,12 @@ func (s *orderService) QueryOrderById(ctx context.Context, id uint64) (*ent.Purc
 
 // List 订单列表
 func (s *orderService) List(req *pm.PurchaseOrderListReq) (res *model.PaginationRes) {
-	q := s.orm.QueryNotDeleted().WithPayments().WithRider().WithStore().WithGoods()
+	q := s.orm.QueryNotDeleted().
+		WithPayments().
+		WithRider().
+		WithStore().
+		WithGoods().
+		Order(ent.Desc(purchaseorder.FieldCreatedAt))
 	s.listFilter(q, req.PurchaseOrderListFilter)
 	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.PurchaseOrder) (result pm.PurchaseOrderListRes) {
 		return s.detail(item)
@@ -150,6 +155,9 @@ func (s *orderService) listFilter(q *ent.PurchaseOrderQuery, req pm.PurchaseOrde
 			purchaseorder.CreatedAtGTE(start),
 			purchaseorder.CreatedAtLTE(end),
 		)
+	}
+	if req.RiderID != nil {
+		q.Where(purchaseorder.RiderID(*req.RiderID))
 	}
 }
 
@@ -261,7 +269,6 @@ func (s *orderService) Detail(id uint64) (res pm.PurchaseOrderDetail) {
 			Amount:      p.Amount,
 			BillingDate: p.BillingDate.Format(carbon.DateLayout),
 			Forfeit:     p.Forfeit,
-			PaymentDate: p.PaymentDate.Format(carbon.DateLayout),
 			Payway:      pm.Payway(p.Payway),
 			OutTradeNo:  p.OutTradeNo,
 			Status:      pm.PaymentStatus(p.Status),
@@ -269,6 +276,10 @@ func (s *orderService) Detail(id uint64) (res pm.PurchaseOrderDetail) {
 		// 逾期天数
 		if time.Now().After(p.BillingDate) {
 			payment.OverdueDays = int(time.Since(p.BillingDate).Hours() / 24)
+		}
+		// 支付时间
+		if p.PaymentDate != nil {
+			payment.PaymentDate = p.PaymentDate.Format(carbon.DateTimeLayout)
 		}
 		payments = append(payments, payment)
 	}
