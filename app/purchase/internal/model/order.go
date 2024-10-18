@@ -114,9 +114,9 @@ type PurchaseOrderListRes struct {
 	CreatedAt        string            `json:"createdAt"`        // 创建时间
 	StartDate        *string           `json:"startDate"`        // 激活时间
 	Remark           string            `json:"remark"`           // 备注
-	ContractUrl      string            `json:"contractUrl"`      // 合同url
-	PlanIndex        int               `json:"planIndex"`        // 付款计划索引
-	DocID            string            `json:"docId"`            // 合同ID
+	ContractUrl      *string           `json:"contractUrl"`      // 合同url
+	PlanIndex        *int              `json:"planIndex"`        // 付款计划索引
+	DocID            *string           `json:"docId"`            // 合同ID
 	Formula          string            `json:"formula"`          // 违约说明
 	InstallmentPlan  []float64         `json:"installmentPlan"`  // 分期方案
 }
