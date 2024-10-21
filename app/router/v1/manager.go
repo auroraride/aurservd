@@ -229,6 +229,7 @@ func LoadManagerV1Routes(root *echo.Group) {
 	g.GET("/selection/question/category", mapi.Selection.QuestionCategory)
 	g.GET("/selection/store_group", mapi.Selection.StoreGroup)
 	g.GET("/selection/goods", mapi.Selection.Goods)
+	g.GET("/selection/goods_store", mapi.Selection.GoodsStore)
 
 	// 救援
 	g.GET("/assistance", mapi.Assistance.List)

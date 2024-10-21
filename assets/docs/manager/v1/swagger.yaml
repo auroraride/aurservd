@@ -14460,6 +14460,29 @@ paths:
       summary: 筛选商品
       tags:
       - 筛选
+  /manager/v1/selection/goods_store:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionGoodsStore
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CascaderOptionLevel2'
+            type: array
+      summary: 筛选购车门店
+      tags:
+      - 筛选
   /manager/v1/selection/model:
     get:
       consumes:
