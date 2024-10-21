@@ -54,6 +54,7 @@ func (s *paymentService) Create(ctx context.Context, req *pm.PaymentPlanCreateRe
 		return errors.New("订单用户不存在")
 	}
 	paymentBulk := make([]*ent.PurchasePaymentCreate, 0)
+	billingDate := o.InstallmentPlan.BillingDates(time.Now())
 	for k, plan := range o.InstallmentPlan {
 		paymentBulk = append(paymentBulk, s.orm.Create().
 			SetOutTradeNo(tools.NewUnique().NewSN28()).
@@ -64,6 +65,7 @@ func (s *paymentService) Create(ctx context.Context, req *pm.PaymentPlanCreateRe
 			SetRiderID(o.RiderID).
 			SetGoodsID(o.GoodsID).
 			SetOrderID(o.ID).
+			SetBillingDate(billingDate[k]).
 			SetCreator(md).
 			SetLastModifier(md),
 		)

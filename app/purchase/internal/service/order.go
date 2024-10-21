@@ -432,8 +432,7 @@ func (s *orderService) Active(ctx context.Context, req *pm.PurchaseOrderActiveRe
 		return err
 	}
 
-	// 创建分期计划订单数据
-	return NewPayment().Create(ctx, &pm.PaymentPlanCreateReq{OrderID: req.ID}, md)
+	return nil
 }
 
 // Cancel 订单取消

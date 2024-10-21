@@ -12,13 +12,12 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
-	mp "github.com/auroraride/aurservd/app/purchase/internal/model"
+	pm "github.com/auroraride/aurservd/app/purchase/internal/model"
 	"github.com/auroraride/aurservd/app/rpc"
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
-	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/pkg/tools"
 	"github.com/auroraride/aurservd/pkg/utils"
 )
@@ -34,7 +33,7 @@ func NewContract() *contractService {
 }
 
 // Sign 签约
-func (s *contractService) Sign(ctx context.Context, r *ent.Rider, req *mp.ContractSignNewReq) (res *definition.ContractSignNewRes, err error) {
+func (s *contractService) Sign(ctx context.Context, r *ent.Rider, req *pm.ContractSignNewReq) (res *definition.ContractSignNewRes, err error) {
 	// 查找订单
 	o, _ := ent.Database.PurchaseOrder.QueryNotDeleted().
 		Where(
@@ -95,7 +94,6 @@ func (s *contractService) Sign(ctx context.Context, r *ent.Rider, req *mp.Contra
 	}
 
 	now := time.Now()
-	billingDates := o.InstallmentPlan.BillingDates(now)
 
 	//  更新合同状态
 	err = o.Update().
@@ -116,15 +114,11 @@ func (s *contractService) Sign(ctx context.Context, r *ent.Rider, req *mp.Contra
 	}
 	// 更新订单
 	_ = o.Update().SetNextDate(now).SetStartDate(now).Exec(ctx)
-	// 更新分期计划开始时间
-	for k, v := range billingDates {
-		_ = ent.Database.PurchasePayment.Update().
-			Where(
-				purchasepayment.OrderID(o.ID),
-				purchasepayment.Index(k),
-			).
-			SetBillingDate(v).
-			Exec(ctx)
+
+	// 创建支付计划
+	err = NewPayment().Create(ctx, &pm.PaymentPlanCreateReq{OrderID: o.ID}, nil)
+	if err != nil {
+		return nil, err
 	}
 	return &definition.ContractSignNewRes{
 		Link: url,
@@ -132,7 +126,7 @@ func (s *contractService) Sign(ctx context.Context, r *ent.Rider, req *mp.Contra
 }
 
 // Create 添加合同
-func (s *contractService) Create(ctx context.Context, r *ent.Rider, req *mp.ContractCreateReq) (*definition.ContractCreateRes, error) {
+func (s *contractService) Create(ctx context.Context, r *ent.Rider, req *pm.ContractCreateReq) (*definition.ContractCreateRes, error) {
 	var link, docId string
 	o, _ := s.orm.QueryNotDeleted().
 		WithStore(func(query *ent.StoreQuery) {
