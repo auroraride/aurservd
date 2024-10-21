@@ -45,6 +45,8 @@ func (t *purchaseReminderTask) Start() {
 		return
 	}
 
+	go t.Do()
+
 	c := cron.New()
 	_, err := c.AddFunc("0 9 * * *", func() {
 		zap.L().Info("开始执行 @daily[purchaseReminderTask] 定时任务")
