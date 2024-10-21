@@ -2,7 +2,6 @@ package schema
 
 import (
 	"entgo.io/ent"
-	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
@@ -73,7 +72,7 @@ func (PurchaseOrder) Fields() []ent.Field {
 		field.Int("installment_total").Comment("分期总数"),
 		field.JSON("installment_plan", model.GoodsPaymentPlan{}).Comment("分期方案"),
 		field.Time("start_date").Optional().Nillable().Comment("开始日期"),
-		field.Time("next_date").Nillable().Optional().SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("下次支付日期"),
+		field.Time("next_date").Nillable().Optional().Comment("下次支付日期"),
 		field.Strings("images").Optional().Comment("图片"),
 		field.String("active_name").Optional().Comment("激活人姓名"),
 		field.String("active_phone").Optional().Comment("激活人电话"),
