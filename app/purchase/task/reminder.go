@@ -60,10 +60,10 @@ func (t *purchaseReminderTask) Start() {
 // Do 提前提醒用户还款 提前三天短信提醒 提前一天语音提醒
 func (t *purchaseReminderTask) Do() {
 	// 查询即将逾期的账单
-	now := carbon.Now()
+	now := carbon.Now().AddDay().StartOfDay()
 	payments, _ := ent.Database.PurchasePayment.QueryNotDeleted().Where(
 		purchasepayment.StatusEQ(purchasepayment.StatusObligation),
-		purchasepayment.BillingDateLT(now.StartOfDay().AddDays(3).StdTime()),
+		purchasepayment.BillingDateLTE(now.AddDays(3).StdTime()),
 	).WithRider().All(context.Background())
 	tk := Task{
 		vms: &vmsconfig{
@@ -82,7 +82,7 @@ func (t *purchaseReminderTask) Do() {
 	}
 	payments, _ = ent.Database.PurchasePayment.QueryNotDeleted().Where(
 		purchasepayment.StatusEQ(purchasepayment.StatusObligation),
-		purchasepayment.BillingDateLT(now.StartOfDay().AddDay().StdTime()),
+		purchasepayment.BillingDateLTE(now.EndOfDay().AddDay().StdTime()),
 	).WithRider().All(context.Background())
 	for _, v := range payments {
 		// 发送语音
