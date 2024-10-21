@@ -284,9 +284,14 @@ func (s *contractService) Create(ctx context.Context, r *ent.Rider, req *mp.Cont
 		return nil, err
 	}
 
+	encryptDocID, err := utils.EncryptAES([]byte(ar.Config.Contract.EncryptKey), docId)
+	if err != nil || encryptDocID == "" {
+		zap.L().Error("加密合同编号失败", zap.Error(err))
+		return nil, err
+	}
 	return &definition.ContractCreateRes{
 		Link:  link,
-		DocId: docId,
+		DocId: encryptDocID,
 	}, nil
 }
 
