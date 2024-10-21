@@ -49,15 +49,6 @@ func (b *goodsBiz) List(req *definition.GoodsListReq) *model.PaginationRes {
 				query.Where(storegoods.DeletedAtIsNil()).WithStore()
 			},
 		).
-		Where(
-			goods.HasStoresWith(
-				storegoods.HasStoreWith(
-					store.EbikeSale(true),
-				),
-			),
-			goods.Status(definition.GoodsStatusOnline.Value()),
-			goods.PaymentPlansNotNil(),
-		).
 		Order(ent.Desc(goods.FieldWeight))
 
 	b.listFilter(req, q)
@@ -270,8 +261,13 @@ func (b *goodsBiz) ListForRider(req *definition.GoodsListForRiderReq) []*definit
 		Where(
 			goods.HasStoresWith(
 				storegoods.DeletedAtIsNil(),
-				storegoods.HasStoreWith(store.CityID(req.CityID)),
+				storegoods.HasStoreWith(
+					store.CityID(req.CityID),
+					store.EbikeSale(true),
+				),
 			),
+			goods.Status(definition.GoodsStatusOnline.Value()),
+			goods.PaymentPlansNotNil(),
 		).
 		WithStores(
 			func(q *ent.StoreGoodsQuery) {

@@ -36,6 +36,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -1231,6 +1232,15 @@ func (s *riderService) Delete(req *model.IDParamReq) {
 	sub, _ := q.First(s.ctx)
 	if sub != nil {
 		snag.Panic("骑手当前有使用中的订阅")
+	}
+	// 进行中的购车订单不允许注销（处于待付款、分期进行中）
+	existPurchase, _ := ent.Database.PurchaseOrder.QueryNotDeleted().
+		Where(
+			purchaseorder.ID(u.ID),
+			purchaseorder.StatusIn(purchaseorder.StatusPending, purchaseorder.StatusStaging),
+		).Exist(context.Background())
+	if existPurchase {
+		snag.Panic("骑手当前有使用中的购车订单")
 	}
 
 	_, err := s.orm.SoftDeleteOneID(req.ID).Save(s.ctx)
