@@ -33,7 +33,7 @@ func (t *purchaseOrderTask) Start() {
 
 // Do 检查当前分期账单是否逾期
 func (*purchaseOrderTask) Do() {
-	now := carbon.Now().StdTime()
+	now := carbon.Now().StartOfDay().AddDays(-7).StdTime()
 	payments, _ := ent.Database.PurchasePayment.QueryNotDeleted().Where(
 		purchasepayment.StatusEQ(purchasepayment.StatusObligation),
 		purchasepayment.BillingDateLT(now),
