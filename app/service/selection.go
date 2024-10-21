@@ -621,6 +621,7 @@ func (s *selectionService) EbikeBrandByCity(req *model.SelectionBrandByCityReq) 
 
 // StoreGroup 筛选门店集合
 func (s *selectionService) StoreGroup() (items []model.SelectOption) {
+	items = make([]model.SelectOption, 0)
 	list, _ := ent.Database.StoreGroup.QueryNotDeleted().All(context.Background())
 	for _, v := range list {
 		items = append(items, model.SelectOption{
@@ -633,6 +634,7 @@ func (s *selectionService) StoreGroup() (items []model.SelectOption) {
 
 // Goods 筛选商品
 func (s *selectionService) Goods() (items []model.SelectOptionGoods) {
+	items = make([]model.SelectOptionGoods, 0)
 	goods, _ := ent.Database.Goods.Query().All(s.ctx)
 	for _, g := range goods {
 		prices := make([]model.SelectOption, 0)

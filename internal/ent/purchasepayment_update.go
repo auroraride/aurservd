@@ -265,12 +265,6 @@ func (ppu *PurchasePaymentUpdate) SetNillableBillingDate(t *time.Time) *Purchase
 	return ppu
 }
 
-// ClearBillingDate clears the value of the "billing_date" field.
-func (ppu *PurchasePaymentUpdate) ClearBillingDate() *PurchasePaymentUpdate {
-	ppu.mutation.ClearBillingDate()
-	return ppu
-}
-
 // SetPaymentDate sets the "payment_date" field.
 func (ppu *PurchasePaymentUpdate) SetPaymentDate(t time.Time) *PurchasePaymentUpdate {
 	ppu.mutation.SetPaymentDate(t)
@@ -512,9 +506,6 @@ func (ppu *PurchasePaymentUpdate) sqlSave(ctx context.Context) (n int, err error
 	}
 	if value, ok := ppu.mutation.BillingDate(); ok {
 		_spec.SetField(purchasepayment.FieldBillingDate, field.TypeTime, value)
-	}
-	if ppu.mutation.BillingDateCleared() {
-		_spec.ClearField(purchasepayment.FieldBillingDate, field.TypeTime)
 	}
 	if value, ok := ppu.mutation.PaymentDate(); ok {
 		_spec.SetField(purchasepayment.FieldPaymentDate, field.TypeTime, value)
@@ -869,12 +860,6 @@ func (ppuo *PurchasePaymentUpdateOne) SetNillableBillingDate(t *time.Time) *Purc
 	return ppuo
 }
 
-// ClearBillingDate clears the value of the "billing_date" field.
-func (ppuo *PurchasePaymentUpdateOne) ClearBillingDate() *PurchasePaymentUpdateOne {
-	ppuo.mutation.ClearBillingDate()
-	return ppuo
-}
-
 // SetPaymentDate sets the "payment_date" field.
 func (ppuo *PurchasePaymentUpdateOne) SetPaymentDate(t time.Time) *PurchasePaymentUpdateOne {
 	ppuo.mutation.SetPaymentDate(t)
@@ -1146,9 +1131,6 @@ func (ppuo *PurchasePaymentUpdateOne) sqlSave(ctx context.Context) (_node *Purch
 	}
 	if value, ok := ppuo.mutation.BillingDate(); ok {
 		_spec.SetField(purchasepayment.FieldBillingDate, field.TypeTime, value)
-	}
-	if ppuo.mutation.BillingDateCleared() {
-		_spec.ClearField(purchasepayment.FieldBillingDate, field.TypeTime)
 	}
 	if value, ok := ppuo.mutation.PaymentDate(); ok {
 		_spec.SetField(purchasepayment.FieldPaymentDate, field.TypeTime, value)
