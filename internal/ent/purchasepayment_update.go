@@ -265,23 +265,23 @@ func (ppu *PurchasePaymentUpdate) SetNillableBillingDate(t *time.Time) *Purchase
 	return ppu
 }
 
-// SetPaymentDate sets the "payment_date" field.
-func (ppu *PurchasePaymentUpdate) SetPaymentDate(t time.Time) *PurchasePaymentUpdate {
-	ppu.mutation.SetPaymentDate(t)
+// SetPaymentTime sets the "payment_time" field.
+func (ppu *PurchasePaymentUpdate) SetPaymentTime(t time.Time) *PurchasePaymentUpdate {
+	ppu.mutation.SetPaymentTime(t)
 	return ppu
 }
 
-// SetNillablePaymentDate sets the "payment_date" field if the given value is not nil.
-func (ppu *PurchasePaymentUpdate) SetNillablePaymentDate(t *time.Time) *PurchasePaymentUpdate {
+// SetNillablePaymentTime sets the "payment_time" field if the given value is not nil.
+func (ppu *PurchasePaymentUpdate) SetNillablePaymentTime(t *time.Time) *PurchasePaymentUpdate {
 	if t != nil {
-		ppu.SetPaymentDate(*t)
+		ppu.SetPaymentTime(*t)
 	}
 	return ppu
 }
 
-// ClearPaymentDate clears the value of the "payment_date" field.
-func (ppu *PurchasePaymentUpdate) ClearPaymentDate() *PurchasePaymentUpdate {
-	ppu.mutation.ClearPaymentDate()
+// ClearPaymentTime clears the value of the "payment_time" field.
+func (ppu *PurchasePaymentUpdate) ClearPaymentTime() *PurchasePaymentUpdate {
+	ppu.mutation.ClearPaymentTime()
 	return ppu
 }
 
@@ -507,11 +507,11 @@ func (ppu *PurchasePaymentUpdate) sqlSave(ctx context.Context) (n int, err error
 	if value, ok := ppu.mutation.BillingDate(); ok {
 		_spec.SetField(purchasepayment.FieldBillingDate, field.TypeTime, value)
 	}
-	if value, ok := ppu.mutation.PaymentDate(); ok {
-		_spec.SetField(purchasepayment.FieldPaymentDate, field.TypeTime, value)
+	if value, ok := ppu.mutation.PaymentTime(); ok {
+		_spec.SetField(purchasepayment.FieldPaymentTime, field.TypeTime, value)
 	}
-	if ppu.mutation.PaymentDateCleared() {
-		_spec.ClearField(purchasepayment.FieldPaymentDate, field.TypeTime)
+	if ppu.mutation.PaymentTimeCleared() {
+		_spec.ClearField(purchasepayment.FieldPaymentTime, field.TypeTime)
 	}
 	if value, ok := ppu.mutation.TradeNo(); ok {
 		_spec.SetField(purchasepayment.FieldTradeNo, field.TypeString, value)
@@ -860,23 +860,23 @@ func (ppuo *PurchasePaymentUpdateOne) SetNillableBillingDate(t *time.Time) *Purc
 	return ppuo
 }
 
-// SetPaymentDate sets the "payment_date" field.
-func (ppuo *PurchasePaymentUpdateOne) SetPaymentDate(t time.Time) *PurchasePaymentUpdateOne {
-	ppuo.mutation.SetPaymentDate(t)
+// SetPaymentTime sets the "payment_time" field.
+func (ppuo *PurchasePaymentUpdateOne) SetPaymentTime(t time.Time) *PurchasePaymentUpdateOne {
+	ppuo.mutation.SetPaymentTime(t)
 	return ppuo
 }
 
-// SetNillablePaymentDate sets the "payment_date" field if the given value is not nil.
-func (ppuo *PurchasePaymentUpdateOne) SetNillablePaymentDate(t *time.Time) *PurchasePaymentUpdateOne {
+// SetNillablePaymentTime sets the "payment_time" field if the given value is not nil.
+func (ppuo *PurchasePaymentUpdateOne) SetNillablePaymentTime(t *time.Time) *PurchasePaymentUpdateOne {
 	if t != nil {
-		ppuo.SetPaymentDate(*t)
+		ppuo.SetPaymentTime(*t)
 	}
 	return ppuo
 }
 
-// ClearPaymentDate clears the value of the "payment_date" field.
-func (ppuo *PurchasePaymentUpdateOne) ClearPaymentDate() *PurchasePaymentUpdateOne {
-	ppuo.mutation.ClearPaymentDate()
+// ClearPaymentTime clears the value of the "payment_time" field.
+func (ppuo *PurchasePaymentUpdateOne) ClearPaymentTime() *PurchasePaymentUpdateOne {
+	ppuo.mutation.ClearPaymentTime()
 	return ppuo
 }
 
@@ -1132,11 +1132,11 @@ func (ppuo *PurchasePaymentUpdateOne) sqlSave(ctx context.Context) (_node *Purch
 	if value, ok := ppuo.mutation.BillingDate(); ok {
 		_spec.SetField(purchasepayment.FieldBillingDate, field.TypeTime, value)
 	}
-	if value, ok := ppuo.mutation.PaymentDate(); ok {
-		_spec.SetField(purchasepayment.FieldPaymentDate, field.TypeTime, value)
+	if value, ok := ppuo.mutation.PaymentTime(); ok {
+		_spec.SetField(purchasepayment.FieldPaymentTime, field.TypeTime, value)
 	}
-	if ppuo.mutation.PaymentDateCleared() {
-		_spec.ClearField(purchasepayment.FieldPaymentDate, field.TypeTime)
+	if ppuo.mutation.PaymentTimeCleared() {
+		_spec.ClearField(purchasepayment.FieldPaymentTime, field.TypeTime)
 	}
 	if value, ok := ppuo.mutation.TradeNo(); ok {
 		_spec.SetField(purchasepayment.FieldTradeNo, field.TypeString, value)

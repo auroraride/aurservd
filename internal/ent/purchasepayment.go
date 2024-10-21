@@ -55,7 +55,7 @@ type PurchasePayment struct {
 	// 账单日期
 	BillingDate time.Time `json:"billing_date,omitempty"`
 	// 支付时间
-	PaymentDate *time.Time `json:"payment_date,omitempty"`
+	PaymentTime *time.Time `json:"payment_time,omitempty"`
 	// 平台订单号（微信或支付宝）
 	TradeNo string `json:"trade_no,omitempty"`
 	// 订单id
@@ -125,7 +125,7 @@ func (*PurchasePayment) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case purchasepayment.FieldRemark, purchasepayment.FieldOutTradeNo, purchasepayment.FieldStatus, purchasepayment.FieldPayway, purchasepayment.FieldTradeNo:
 			values[i] = new(sql.NullString)
-		case purchasepayment.FieldCreatedAt, purchasepayment.FieldUpdatedAt, purchasepayment.FieldDeletedAt, purchasepayment.FieldBillingDate, purchasepayment.FieldPaymentDate:
+		case purchasepayment.FieldCreatedAt, purchasepayment.FieldUpdatedAt, purchasepayment.FieldDeletedAt, purchasepayment.FieldBillingDate, purchasepayment.FieldPaymentTime:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -249,12 +249,12 @@ func (pp *PurchasePayment) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pp.BillingDate = value.Time
 			}
-		case purchasepayment.FieldPaymentDate:
+		case purchasepayment.FieldPaymentTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field payment_date", values[i])
+				return fmt.Errorf("unexpected type %T for field payment_time", values[i])
 			} else if value.Valid {
-				pp.PaymentDate = new(time.Time)
-				*pp.PaymentDate = value.Time
+				pp.PaymentTime = new(time.Time)
+				*pp.PaymentTime = value.Time
 			}
 		case purchasepayment.FieldTradeNo:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -369,8 +369,8 @@ func (pp *PurchasePayment) String() string {
 	builder.WriteString("billing_date=")
 	builder.WriteString(pp.BillingDate.Format(time.ANSIC))
 	builder.WriteString(", ")
-	if v := pp.PaymentDate; v != nil {
-		builder.WriteString("payment_date=")
+	if v := pp.PaymentTime; v != nil {
+		builder.WriteString("payment_time=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")

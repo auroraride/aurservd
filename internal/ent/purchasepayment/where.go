@@ -115,9 +115,9 @@ func BillingDate(v time.Time) predicate.PurchasePayment {
 	return predicate.PurchasePayment(sql.FieldEQ(FieldBillingDate, v))
 }
 
-// PaymentDate applies equality check predicate on the "payment_date" field. It's identical to PaymentDateEQ.
-func PaymentDate(v time.Time) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldEQ(FieldPaymentDate, v))
+// PaymentTime applies equality check predicate on the "payment_time" field. It's identical to PaymentTimeEQ.
+func PaymentTime(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldEQ(FieldPaymentTime, v))
 }
 
 // TradeNo applies equality check predicate on the "trade_no" field. It's identical to TradeNoEQ.
@@ -710,54 +710,54 @@ func BillingDateLTE(v time.Time) predicate.PurchasePayment {
 	return predicate.PurchasePayment(sql.FieldLTE(FieldBillingDate, v))
 }
 
-// PaymentDateEQ applies the EQ predicate on the "payment_date" field.
-func PaymentDateEQ(v time.Time) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldEQ(FieldPaymentDate, v))
+// PaymentTimeEQ applies the EQ predicate on the "payment_time" field.
+func PaymentTimeEQ(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldEQ(FieldPaymentTime, v))
 }
 
-// PaymentDateNEQ applies the NEQ predicate on the "payment_date" field.
-func PaymentDateNEQ(v time.Time) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldNEQ(FieldPaymentDate, v))
+// PaymentTimeNEQ applies the NEQ predicate on the "payment_time" field.
+func PaymentTimeNEQ(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldNEQ(FieldPaymentTime, v))
 }
 
-// PaymentDateIn applies the In predicate on the "payment_date" field.
-func PaymentDateIn(vs ...time.Time) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldIn(FieldPaymentDate, vs...))
+// PaymentTimeIn applies the In predicate on the "payment_time" field.
+func PaymentTimeIn(vs ...time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldIn(FieldPaymentTime, vs...))
 }
 
-// PaymentDateNotIn applies the NotIn predicate on the "payment_date" field.
-func PaymentDateNotIn(vs ...time.Time) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldNotIn(FieldPaymentDate, vs...))
+// PaymentTimeNotIn applies the NotIn predicate on the "payment_time" field.
+func PaymentTimeNotIn(vs ...time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldNotIn(FieldPaymentTime, vs...))
 }
 
-// PaymentDateGT applies the GT predicate on the "payment_date" field.
-func PaymentDateGT(v time.Time) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldGT(FieldPaymentDate, v))
+// PaymentTimeGT applies the GT predicate on the "payment_time" field.
+func PaymentTimeGT(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldGT(FieldPaymentTime, v))
 }
 
-// PaymentDateGTE applies the GTE predicate on the "payment_date" field.
-func PaymentDateGTE(v time.Time) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldGTE(FieldPaymentDate, v))
+// PaymentTimeGTE applies the GTE predicate on the "payment_time" field.
+func PaymentTimeGTE(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldGTE(FieldPaymentTime, v))
 }
 
-// PaymentDateLT applies the LT predicate on the "payment_date" field.
-func PaymentDateLT(v time.Time) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldLT(FieldPaymentDate, v))
+// PaymentTimeLT applies the LT predicate on the "payment_time" field.
+func PaymentTimeLT(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldLT(FieldPaymentTime, v))
 }
 
-// PaymentDateLTE applies the LTE predicate on the "payment_date" field.
-func PaymentDateLTE(v time.Time) predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldLTE(FieldPaymentDate, v))
+// PaymentTimeLTE applies the LTE predicate on the "payment_time" field.
+func PaymentTimeLTE(v time.Time) predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldLTE(FieldPaymentTime, v))
 }
 
-// PaymentDateIsNil applies the IsNil predicate on the "payment_date" field.
-func PaymentDateIsNil() predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldIsNull(FieldPaymentDate))
+// PaymentTimeIsNil applies the IsNil predicate on the "payment_time" field.
+func PaymentTimeIsNil() predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldIsNull(FieldPaymentTime))
 }
 
-// PaymentDateNotNil applies the NotNil predicate on the "payment_date" field.
-func PaymentDateNotNil() predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldNotNull(FieldPaymentDate))
+// PaymentTimeNotNil applies the NotNil predicate on the "payment_time" field.
+func PaymentTimeNotNil() predicate.PurchasePayment {
+	return predicate.PurchasePayment(sql.FieldNotNull(FieldPaymentTime))
 }
 
 // TradeNoEQ applies the EQ predicate on the "trade_no" field.

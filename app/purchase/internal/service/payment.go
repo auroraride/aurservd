@@ -143,7 +143,7 @@ func (s *paymentService) DoPayment(req *model.PurchaseNotificationRes) error {
 	err := s.orm.UpdateOne(payment).
 		SetStatus(purchasepayment.StatusPaid).
 		SetPayway(purchasepayment.Payway(req.Payway)).
-		SetPaymentDate(now).
+		SetPaymentTime(now).
 		SetTradeNo(req.TradeNo).
 		Exec(context.Background())
 	if err != nil {

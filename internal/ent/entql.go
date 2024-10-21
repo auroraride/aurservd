@@ -2374,7 +2374,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			purchasepayment.FieldAmount:       {Type: field.TypeFloat64, Column: purchasepayment.FieldAmount},
 			purchasepayment.FieldForfeit:      {Type: field.TypeFloat64, Column: purchasepayment.FieldForfeit},
 			purchasepayment.FieldBillingDate:  {Type: field.TypeTime, Column: purchasepayment.FieldBillingDate},
-			purchasepayment.FieldPaymentDate:  {Type: field.TypeTime, Column: purchasepayment.FieldPaymentDate},
+			purchasepayment.FieldPaymentTime:  {Type: field.TypeTime, Column: purchasepayment.FieldPaymentTime},
 			purchasepayment.FieldTradeNo:      {Type: field.TypeString, Column: purchasepayment.FieldTradeNo},
 			purchasepayment.FieldOrderID:      {Type: field.TypeUint64, Column: purchasepayment.FieldOrderID},
 		},
@@ -21824,9 +21824,9 @@ func (f *PurchasePaymentFilter) WhereBillingDate(p entql.TimeP) {
 	f.Where(p.Field(purchasepayment.FieldBillingDate))
 }
 
-// WherePaymentDate applies the entql time.Time predicate on the payment_date field.
-func (f *PurchasePaymentFilter) WherePaymentDate(p entql.TimeP) {
-	f.Where(p.Field(purchasepayment.FieldPaymentDate))
+// WherePaymentTime applies the entql time.Time predicate on the payment_time field.
+func (f *PurchasePaymentFilter) WherePaymentTime(p entql.TimeP) {
+	f.Where(p.Field(purchasepayment.FieldPaymentTime))
 }
 
 // WhereTradeNo applies the entql string predicate on the trade_no field.

@@ -178,16 +178,16 @@ func (ppc *PurchasePaymentCreate) SetBillingDate(t time.Time) *PurchasePaymentCr
 	return ppc
 }
 
-// SetPaymentDate sets the "payment_date" field.
-func (ppc *PurchasePaymentCreate) SetPaymentDate(t time.Time) *PurchasePaymentCreate {
-	ppc.mutation.SetPaymentDate(t)
+// SetPaymentTime sets the "payment_time" field.
+func (ppc *PurchasePaymentCreate) SetPaymentTime(t time.Time) *PurchasePaymentCreate {
+	ppc.mutation.SetPaymentTime(t)
 	return ppc
 }
 
-// SetNillablePaymentDate sets the "payment_date" field if the given value is not nil.
-func (ppc *PurchasePaymentCreate) SetNillablePaymentDate(t *time.Time) *PurchasePaymentCreate {
+// SetNillablePaymentTime sets the "payment_time" field if the given value is not nil.
+func (ppc *PurchasePaymentCreate) SetNillablePaymentTime(t *time.Time) *PurchasePaymentCreate {
 	if t != nil {
-		ppc.SetPaymentDate(*t)
+		ppc.SetPaymentTime(*t)
 	}
 	return ppc
 }
@@ -431,9 +431,9 @@ func (ppc *PurchasePaymentCreate) createSpec() (*PurchasePayment, *sqlgraph.Crea
 		_spec.SetField(purchasepayment.FieldBillingDate, field.TypeTime, value)
 		_node.BillingDate = value
 	}
-	if value, ok := ppc.mutation.PaymentDate(); ok {
-		_spec.SetField(purchasepayment.FieldPaymentDate, field.TypeTime, value)
-		_node.PaymentDate = &value
+	if value, ok := ppc.mutation.PaymentTime(); ok {
+		_spec.SetField(purchasepayment.FieldPaymentTime, field.TypeTime, value)
+		_node.PaymentTime = &value
 	}
 	if value, ok := ppc.mutation.TradeNo(); ok {
 		_spec.SetField(purchasepayment.FieldTradeNo, field.TypeString, value)
@@ -758,21 +758,21 @@ func (u *PurchasePaymentUpsert) UpdateBillingDate() *PurchasePaymentUpsert {
 	return u
 }
 
-// SetPaymentDate sets the "payment_date" field.
-func (u *PurchasePaymentUpsert) SetPaymentDate(v time.Time) *PurchasePaymentUpsert {
-	u.Set(purchasepayment.FieldPaymentDate, v)
+// SetPaymentTime sets the "payment_time" field.
+func (u *PurchasePaymentUpsert) SetPaymentTime(v time.Time) *PurchasePaymentUpsert {
+	u.Set(purchasepayment.FieldPaymentTime, v)
 	return u
 }
 
-// UpdatePaymentDate sets the "payment_date" field to the value that was provided on create.
-func (u *PurchasePaymentUpsert) UpdatePaymentDate() *PurchasePaymentUpsert {
-	u.SetExcluded(purchasepayment.FieldPaymentDate)
+// UpdatePaymentTime sets the "payment_time" field to the value that was provided on create.
+func (u *PurchasePaymentUpsert) UpdatePaymentTime() *PurchasePaymentUpsert {
+	u.SetExcluded(purchasepayment.FieldPaymentTime)
 	return u
 }
 
-// ClearPaymentDate clears the value of the "payment_date" field.
-func (u *PurchasePaymentUpsert) ClearPaymentDate() *PurchasePaymentUpsert {
-	u.SetNull(purchasepayment.FieldPaymentDate)
+// ClearPaymentTime clears the value of the "payment_time" field.
+func (u *PurchasePaymentUpsert) ClearPaymentTime() *PurchasePaymentUpsert {
+	u.SetNull(purchasepayment.FieldPaymentTime)
 	return u
 }
 
@@ -1112,24 +1112,24 @@ func (u *PurchasePaymentUpsertOne) UpdateBillingDate() *PurchasePaymentUpsertOne
 	})
 }
 
-// SetPaymentDate sets the "payment_date" field.
-func (u *PurchasePaymentUpsertOne) SetPaymentDate(v time.Time) *PurchasePaymentUpsertOne {
+// SetPaymentTime sets the "payment_time" field.
+func (u *PurchasePaymentUpsertOne) SetPaymentTime(v time.Time) *PurchasePaymentUpsertOne {
 	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.SetPaymentDate(v)
+		s.SetPaymentTime(v)
 	})
 }
 
-// UpdatePaymentDate sets the "payment_date" field to the value that was provided on create.
-func (u *PurchasePaymentUpsertOne) UpdatePaymentDate() *PurchasePaymentUpsertOne {
+// UpdatePaymentTime sets the "payment_time" field to the value that was provided on create.
+func (u *PurchasePaymentUpsertOne) UpdatePaymentTime() *PurchasePaymentUpsertOne {
 	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.UpdatePaymentDate()
+		s.UpdatePaymentTime()
 	})
 }
 
-// ClearPaymentDate clears the value of the "payment_date" field.
-func (u *PurchasePaymentUpsertOne) ClearPaymentDate() *PurchasePaymentUpsertOne {
+// ClearPaymentTime clears the value of the "payment_time" field.
+func (u *PurchasePaymentUpsertOne) ClearPaymentTime() *PurchasePaymentUpsertOne {
 	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.ClearPaymentDate()
+		s.ClearPaymentTime()
 	})
 }
 
@@ -1641,24 +1641,24 @@ func (u *PurchasePaymentUpsertBulk) UpdateBillingDate() *PurchasePaymentUpsertBu
 	})
 }
 
-// SetPaymentDate sets the "payment_date" field.
-func (u *PurchasePaymentUpsertBulk) SetPaymentDate(v time.Time) *PurchasePaymentUpsertBulk {
+// SetPaymentTime sets the "payment_time" field.
+func (u *PurchasePaymentUpsertBulk) SetPaymentTime(v time.Time) *PurchasePaymentUpsertBulk {
 	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.SetPaymentDate(v)
+		s.SetPaymentTime(v)
 	})
 }
 
-// UpdatePaymentDate sets the "payment_date" field to the value that was provided on create.
-func (u *PurchasePaymentUpsertBulk) UpdatePaymentDate() *PurchasePaymentUpsertBulk {
+// UpdatePaymentTime sets the "payment_time" field to the value that was provided on create.
+func (u *PurchasePaymentUpsertBulk) UpdatePaymentTime() *PurchasePaymentUpsertBulk {
 	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.UpdatePaymentDate()
+		s.UpdatePaymentTime()
 	})
 }
 
-// ClearPaymentDate clears the value of the "payment_date" field.
-func (u *PurchasePaymentUpsertBulk) ClearPaymentDate() *PurchasePaymentUpsertBulk {
+// ClearPaymentTime clears the value of the "payment_time" field.
+func (u *PurchasePaymentUpsertBulk) ClearPaymentTime() *PurchasePaymentUpsertBulk {
 	return u.Update(func(s *PurchasePaymentUpsert) {
-		s.ClearPaymentDate()
+		s.ClearPaymentTime()
 	})
 }
 

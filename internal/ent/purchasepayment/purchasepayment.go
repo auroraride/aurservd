@@ -48,8 +48,8 @@ const (
 	FieldForfeit = "forfeit"
 	// FieldBillingDate holds the string denoting the billing_date field in the database.
 	FieldBillingDate = "billing_date"
-	// FieldPaymentDate holds the string denoting the payment_date field in the database.
-	FieldPaymentDate = "payment_date"
+	// FieldPaymentTime holds the string denoting the payment_time field in the database.
+	FieldPaymentTime = "payment_time"
 	// FieldTradeNo holds the string denoting the trade_no field in the database.
 	FieldTradeNo = "trade_no"
 	// FieldOrderID holds the string denoting the order_id field in the database.
@@ -104,7 +104,7 @@ var Columns = []string{
 	FieldAmount,
 	FieldForfeit,
 	FieldBillingDate,
-	FieldPaymentDate,
+	FieldPaymentTime,
 	FieldTradeNo,
 	FieldOrderID,
 }
@@ -265,9 +265,9 @@ func ByBillingDate(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBillingDate, opts...).ToFunc()
 }
 
-// ByPaymentDate orders the results by the payment_date field.
-func ByPaymentDate(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPaymentDate, opts...).ToFunc()
+// ByPaymentTime orders the results by the payment_time field.
+func ByPaymentTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPaymentTime, opts...).ToFunc()
 }
 
 // ByTradeNo orders the results by the trade_no field.

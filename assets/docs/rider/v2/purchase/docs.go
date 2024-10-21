@@ -727,8 +727,8 @@ const docTemplate = `{
                     "description": "逾期天数",
                     "type": "integer"
                 },
-                "paymentDate": {
-                    "description": "支付日期",
+                "paymentTime": {
+                    "description": "支付时间",
                     "type": "string"
                 },
                 "payway": {
