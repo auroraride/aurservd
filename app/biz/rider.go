@@ -227,20 +227,26 @@ func (b *riderBiz) Profile(u *ent.Rider, device *model.Device, token string) (*d
 	}
 
 	// 待支付购车订单
-	profile.Purchase = b.PurchaseObligation(u.ID)
+	p := b.PurchaseObligation(u.ID)
+	if p != nil {
+		profile.Purchase = true
+		profile.PurchaseOrderId = silk.UInt64(p.ID)
+	}
 
 	return profile, nil
 }
 
-// PurchaseObligation 查询骑手是否含有待支付订单 (还款时间前3天APP首页提示还款)
-func (b *riderBiz) PurchaseObligation(rId uint64) bool {
+// PurchaseObligation 查询骑手是否含有待支付订单，还款时间前3天APP首页提示还款（订单处于已激活且待付款、分期进行中，且分期订单中待付款且账单日期的提前三天）
+func (b *riderBiz) PurchaseObligation(rId uint64) *ent.PurchaseOrder {
 	p, _ := ent.Database.PurchaseOrder.QueryNotDeleted().
 		Where(
 			purchaseorder.ID(rId),
+			purchaseorder.StartDateNotNil(),
+			purchaseorder.StatusIn(purchaseorder.StatusPending, purchaseorder.StatusStaging),
 			purchaseorder.HasPaymentsWith(
 				purchasepayment.StatusEQ(purchasepayment.StatusObligation),
 				purchasepayment.BillingDateLTE(carbon.Now().StartOfDay().AddDays(3).StdTime()),
 			),
-		).Exist(context.Background())
+		).First(b.ctx)
 	return p
 }
