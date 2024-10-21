@@ -52,4 +52,5 @@ type RiderSigninRes struct {
 	ExitEnterprise    bool                     `json:"exitEnterprise"`              // 判断能否退出团签
 	Station           *model.EnterpriseStation `json:"station,omitempty"`           // 站点
 	ContractDocID     string                   `json:"contractDocId,omitempty"`     // 签署合同编号
+	Purchase          bool                     `json:"purchase"`                    // 待支付购车订单
 }
