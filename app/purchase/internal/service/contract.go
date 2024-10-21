@@ -64,11 +64,18 @@ func (s *contractService) Sign(ctx context.Context, r *ent.Rider, req *mp.Contra
 		return nil, errors.New("未找到城市信息")
 	}
 
+	// 解密合同编号
+	docId, err := utils.DecryptAES([]byte(ar.Config.Contract.EncryptKey), req.DocId)
+	if err != nil || docId == "" {
+		zap.L().Error("解密失败", zap.Error(err), zap.String("docId", req.DocId))
+		return nil, errors.New("解密失败")
+	}
+
 	// 获取模版id
 	cfg := ar.Config.Contract
 	// 请求签署合同
 	url, err := rpc.Sgin(ctx, &pb.ContractSignRequest{
-		DocId:    req.DocId,
+		DocId:    docId,
 		Image:    req.Seal,
 		Name:     person.Name,
 		Province: province,
