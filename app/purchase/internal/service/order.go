@@ -9,6 +9,7 @@ import (
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/purchase/internal/helper"
 	pm "github.com/auroraride/aurservd/app/purchase/internal/model"
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ar"
@@ -140,19 +141,20 @@ func (s *orderService) listFilter(q *ent.PurchaseOrderQuery, req pm.PurchaseOrde
 						purchaseorder.StartDateNotNil(),
 						purchaseorder.HasPaymentsWith(
 							purchasepayment.StatusEQ(purchasepayment.Status(pm.PaymentStatusObligation)),
-							purchasepayment.BillingDateGTE(time.Now().AddDate(0, 0, -1)),
+							purchasepayment.BillingDateGTE(carbon.Now().StartOfDay().StdTime()),
 						),
 					),
 				),
 			)
 
 		case pm.BillStatusOverdue:
-			// 逾期：订单已激活且已超过付款日
+			// 逾期：订单已激活且处于待支付、分期中状态且代付款的分期订单已超过付款日
 			q.Where(
 				purchaseorder.StartDateNotNil(),
+				purchaseorder.StatusIn(purchaseorder.Status(pm.OrderStatusPending), purchaseorder.Status(pm.OrderStatusStaging)),
 				purchaseorder.HasPaymentsWith(
 					purchasepayment.StatusEQ(purchasepayment.Status(pm.PaymentStatusObligation)),
-					purchasepayment.BillingDateLT(time.Now().AddDate(0, 0, -1)),
+					purchasepayment.BillingDateLT(carbon.Now().StartOfDay().StdTime()),
 				),
 			)
 		}
@@ -327,7 +329,7 @@ func (s *orderService) Detail(id uint64) (res pm.PurchaseOrderDetail) {
 			payment.BillingDate = p.BillingDate.Format(carbon.DateLayout)
 			// 逾期天数
 			if time.Now().After(p.BillingDate) {
-				payment.OverdueDays = int(time.Since(p.BillingDate).Hours() / 24)
+				payment.OverdueDays = helper.OverdueDays(time.Now(), p.BillingDate)
 			}
 		}
 

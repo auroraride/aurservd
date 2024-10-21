@@ -5098,6 +5098,10 @@ const docTemplate = `{
                     "description": "待支付购车订单",
                     "type": "boolean"
                 },
+                "purchaseOrderId": {
+                    "description": "待支付订单ID",
+                    "type": "integer"
+                },
                 "qrcode": {
                     "description": "二维码",
                     "type": "string"
