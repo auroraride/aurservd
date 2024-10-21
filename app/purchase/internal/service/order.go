@@ -11,6 +11,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	pm "github.com/auroraride/aurservd/app/purchase/internal/model"
 	"github.com/auroraride/aurservd/app/service"
+	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/goods"
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
@@ -18,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/tools"
+	"github.com/auroraride/aurservd/pkg/utils"
 )
 
 type orderService struct {
@@ -191,7 +193,10 @@ func (s *orderService) detail(item *ent.PurchaseOrder) (res pm.PurchaseOrderList
 		res.ContractUrl = silk.String(item.ContractURL)
 	}
 	if item.DocID != "" {
-		res.DocID = silk.String(item.DocID)
+		encryptDocID, _ := utils.EncryptAES([]byte(ar.Config.Contract.EncryptKey), item.DocID)
+		if encryptDocID != "" {
+			res.DocID = silk.String(encryptDocID)
+		}
 	}
 	if item.ActiveName != "" && item.ActivePhone != "" {
 		res.ActiveName = silk.String(item.ActiveName)
