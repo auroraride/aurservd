@@ -322,13 +322,10 @@ func (s *orderService) Detail(id uint64) (res pm.PurchaseOrderDetail) {
 		}
 
 		// 账单日期
-		if !p.BillingDate.IsZero() {
-			payment.BillingDate = p.BillingDate.Format(carbon.DateLayout)
-			// 逾期天数
-			if time.Now().After(p.BillingDate) {
-				payment.OverdueDays = helper.OverdueDays(p.BillingDate, time.Now())
-			}
-		}
+		payment.BillingDate = p.BillingDate.Format(carbon.DateLayout)
+
+		// 逾期天数
+		payment.OverdueDays = helper.OverdueDays(p.BillingDate, time.Now())
 
 		// 支付时间
 		if p.PaymentDate != nil {
@@ -432,7 +429,7 @@ func (s *orderService) Active(ctx context.Context, req *pm.PurchaseOrderActiveRe
 		return err
 	}
 
-	return nil
+	return
 }
 
 // Cancel 订单取消

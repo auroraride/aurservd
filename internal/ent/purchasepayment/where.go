@@ -710,16 +710,6 @@ func BillingDateLTE(v time.Time) predicate.PurchasePayment {
 	return predicate.PurchasePayment(sql.FieldLTE(FieldBillingDate, v))
 }
 
-// BillingDateIsNil applies the IsNil predicate on the "billing_date" field.
-func BillingDateIsNil() predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldIsNull(FieldBillingDate))
-}
-
-// BillingDateNotNil applies the NotNil predicate on the "billing_date" field.
-func BillingDateNotNil() predicate.PurchasePayment {
-	return predicate.PurchasePayment(sql.FieldNotNull(FieldBillingDate))
-}
-
 // PaymentDateEQ applies the EQ predicate on the "payment_date" field.
 func PaymentDateEQ(v time.Time) predicate.PurchasePayment {
 	return predicate.PurchasePayment(sql.FieldEQ(FieldPaymentDate, v))
