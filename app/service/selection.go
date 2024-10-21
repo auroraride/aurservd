@@ -23,6 +23,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/questioncategory"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
@@ -648,4 +649,17 @@ func (s *selectionService) Goods() (items []model.SelectOptionGoods) {
 		})
 	}
 	return
+}
+
+// GoodsStore 筛选购车门店
+func (s *selectionService) GoodsStore() (items []*model.CascaderOptionLevel2) {
+	res, _ := ent.Database.Store.QueryNotDeleted().WithCity().
+		Where(
+			store.EbikeSale(true),
+		).
+		All(s.ctx)
+
+	return cascaderLevel2IDName(res, func(r *ent.Store) model.IDName {
+		return s.nilableCity(r.Edges.City)
+	}, "未选择网点", true)
 }
