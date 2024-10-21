@@ -16,6 +16,7 @@ const (
 	PaymentStatusObligation PaymentStatus = "obligation" // 待付款
 	PaymentStatusPaid       PaymentStatus = "paid"       // 已支付
 	PaymentStatusCanceled   PaymentStatus = "canceled"   // 已取消
+	PaymentStatusOverdue    PaymentStatus = "overdue"    // 已逾期
 )
 
 func (p PaymentStatus) Value() string {
@@ -30,6 +31,8 @@ func (p PaymentStatus) String() string {
 		return "已支付"
 	case PaymentStatusCanceled:
 		return "已取消"
+	case PaymentStatusOverdue:
+		return "已逾期"
 	default:
 		return "未知"
 	}
@@ -56,5 +59,5 @@ type PaymentDetail struct {
 	PaymentDate string        `json:"paymentDate"` // 支付日期
 	Payway      Payway        `json:"payway"`      // 支付方式 alipay-支付宝 wechat-微信支付 cash-现金
 	OutTradeNo  string        `json:"outTradeNo"`  // 交易订单号
-	Status      PaymentStatus `json:"status"`      // 支付状态 obligation: 待付款, paid: 已支付, canceled: 已取消
+	Status      PaymentStatus `json:"status"`      // 支付状态 obligation:待付款, paid:已支付, canceled:已取消, overdue:已逾期
 }

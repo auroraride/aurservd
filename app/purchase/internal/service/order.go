@@ -294,6 +294,13 @@ func (s *orderService) Detail(id uint64) (res pm.PurchaseOrderDetail) {
 	// 分期订单数据
 	payments := make([]*pm.PaymentDetail, 0)
 	for _, p := range item.Edges.Payments {
+		status := pm.PaymentStatus(p.Status)
+
+		// 未支付逾期判定，当期逾期未支付
+		if p.Status == purchasepayment.StatusObligation && p.BillingDate.Before(carbon.Now().StartOfDay().StdTime()) {
+			status = pm.PaymentStatusOverdue
+		}
+
 		payment := &pm.PaymentDetail{
 			ID:         p.ID,
 			Total:      p.Total,
@@ -301,8 +308,9 @@ func (s *orderService) Detail(id uint64) (res pm.PurchaseOrderDetail) {
 			Forfeit:    p.Forfeit,
 			Payway:     pm.Payway(p.Payway),
 			OutTradeNo: p.OutTradeNo,
-			Status:     pm.PaymentStatus(p.Status),
+			Status:     status,
 		}
+
 		// 账单日期
 		if !p.BillingDate.IsZero() {
 			payment.BillingDate = p.BillingDate.Format(carbon.DateLayout)
