@@ -161,14 +161,9 @@ func (s *contractService) Create(ctx context.Context, r *ent.Rider, req *mp.Cont
 		p   = service.NewPerson().GetNormalAuthedPerson(r)
 		err error
 		// 当前日期
-		now         = time.Now().Format("2006年01月02日")
-		ebikeAmount float64
+		now = time.Now().Format("2006年01月02日")
 	)
 
-	// 计算车辆价值
-	for _, v := range o.InstallmentPlan {
-		ebikeAmount += v.Amount
-	}
 	// 判断是否需要补充身份信息
 	if p.FaceVerifyResult == nil || p.FaceVerifyResult != nil && p.FaceVerifyResult.Address == "" || p.Name == "" || p.IDCardNumber == "" || r.Phone == "" {
 		return &definition.ContractCreateRes{NeedRealName: true}, nil
@@ -201,7 +196,7 @@ func (s *contractService) Create(ctx context.Context, r *ent.Rider, req *mp.Cont
 	// 车辆颜色
 	m["ebikeColor"] = o.Color
 	// 车辆价值
-	m["ebikeAmount"] = ebikeAmount
+	m["ebikeAmount"] = gs.Price
 	// 车架号
 	m["ebikeSN"] = o.Sn
 	// 分期总期数
