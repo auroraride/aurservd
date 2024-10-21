@@ -92,7 +92,11 @@ func (s *orderService) QueryOrderById(ctx context.Context, id uint64) (*ent.Purc
 // List 订单列表
 func (s *orderService) List(req *pm.PurchaseOrderListReq) (res *model.PaginationRes) {
 	q := s.orm.QueryNotDeleted().
-		WithPayments().
+		WithPayments(
+			func(query *ent.PurchasePaymentQuery) {
+				query.Order(ent.Asc(purchasepayment.FieldIndex))
+			},
+		).
 		WithRider().
 		WithStore().
 		WithGoods().
@@ -286,7 +290,7 @@ func (s *orderService) Detail(id uint64) (res pm.PurchaseOrderDetail) {
 		).
 		WithPayments(
 			func(query *ent.PurchasePaymentQuery) {
-				query.Order(ent.Asc(purchasepayment.FieldCreatedAt))
+				query.Order(ent.Asc(purchasepayment.FieldIndex))
 			},
 		).
 		WithRider().
@@ -462,7 +466,11 @@ func (s *orderService) Cancel(ctx context.Context, id uint64, md *model.Modifier
 // Export 订单导出
 func (s *orderService) Export(req *pm.PurchaseOrderExportReq, md *model.Modifier) model.ExportRes {
 	q := s.orm.QueryNotDeleted().
-		WithPayments().
+		WithPayments(
+			func(query *ent.PurchasePaymentQuery) {
+				query.Order(ent.Asc(purchasepayment.FieldIndex))
+			},
+		).
 		WithRider().
 		WithStore().
 		WithGoods()
