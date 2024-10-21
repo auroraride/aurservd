@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"slices"
 
+	"github.com/golang-module/carbon/v2"
 	"github.com/rs/xid"
 	"go.uber.org/zap"
 
@@ -15,6 +16,8 @@ import (
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
+	"github.com/auroraride/aurservd/internal/ent/purchasepayment"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/payment/alipay"
 	"github.com/auroraride/aurservd/pkg/cache"
@@ -223,5 +226,21 @@ func (b *riderBiz) Profile(u *ent.Rider, device *model.Device, token string) (*d
 		profile.ContractDocID = encryptDocID
 	}
 
+	// 待支付购车订单
+	profile.Purchase = b.PurchaseObligation(u.ID)
+
 	return profile, nil
+}
+
+// PurchaseObligation 查询骑手是否含有待支付订单 (还款时间前3天APP首页提示还款)
+func (b *riderBiz) PurchaseObligation(rId uint64) bool {
+	p, _ := ent.Database.PurchaseOrder.QueryNotDeleted().
+		Where(
+			purchaseorder.ID(rId),
+			purchaseorder.HasPaymentsWith(
+				purchasepayment.StatusEQ(purchasepayment.StatusObligation),
+				purchasepayment.BillingDateLTE(carbon.Now().StartOfDay().AddDays(3).StdTime()),
+			),
+		).Exist(context.Background())
+	return p
 }

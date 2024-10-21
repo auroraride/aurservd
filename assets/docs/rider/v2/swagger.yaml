@@ -783,6 +783,9 @@ definitions:
       phone:
         description: 电话
         type: string
+      purchase:
+        description: 待支付购车订单
+        type: boolean
       qrcode:
         description: 二维码
         type: string

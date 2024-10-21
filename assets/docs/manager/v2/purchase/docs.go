@@ -637,7 +637,7 @@ const docTemplate = `{
                     ]
                 },
                 "status": {
-                    "description": "支付状态 obligation: 待付款, paid: 已支付, canceled: 已取消",
+                    "description": "支付状态 obligation:待付款, paid:已支付, canceled:已取消, overdue:已逾期",
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.PaymentStatus"
@@ -655,17 +655,20 @@ const docTemplate = `{
             "enum": [
                 "obligation",
                 "paid",
-                "canceled"
+                "canceled",
+                "overdue"
             ],
             "x-enum-comments": {
                 "PaymentStatusCanceled": "已取消",
                 "PaymentStatusObligation": "待付款",
+                "PaymentStatusOverdue": "已逾期",
                 "PaymentStatusPaid": "已支付"
             },
             "x-enum-varnames": [
                 "PaymentStatusObligation",
                 "PaymentStatusPaid",
-                "PaymentStatusCanceled"
+                "PaymentStatusCanceled",
+                "PaymentStatusOverdue"
             ]
         },
         "model.PurchaseOrderActiveReq": {

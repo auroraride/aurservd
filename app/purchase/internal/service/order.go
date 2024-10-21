@@ -202,6 +202,7 @@ func (s *orderService) detail(item *ent.PurchaseOrder) (res pm.PurchaseOrderList
 		res.ActiveName = silk.String(item.ActiveName)
 		res.ActivePhone = silk.String(item.ActivePhone)
 	}
+
 	// 商品信息
 	if item.Edges.Goods != nil {
 		g := item.Edges.Goods
@@ -235,32 +236,38 @@ func (s *orderService) detail(item *ent.PurchaseOrder) (res pm.PurchaseOrderList
 		// 当前订单默认分期方案索引
 		res.PlanIndex = silk.Int(g.PaymentPlans.PlanIndex(item.InstallmentPlan))
 	}
+
 	// 门店信息
 	if item.Edges.Store != nil {
 		res.StoreID = item.Edges.Store.ID
 		res.StoreName = item.Edges.Store.Name
 	}
-	// 支付金额信息
-	for _, p := range item.Edges.Payments {
-		res.Amount += p.Amount
-		if p.Status.String() == pm.PaymentStatusPaid.Value() {
-			res.PaidAmount += p.Amount
-		}
-		// 订单已激活且分期账单有未付款逾期数据
-		if item.StartDate != nil &&
-			p.Status.String() == pm.PaymentStatusObligation.Value() &&
-			p.BillingDate.Before(time.Now().AddDate(0, 0, -1)) {
-			res.BillStatus = pm.BillStatusOverdue
-		}
 
+	// 当订单状态为分期中（已激活）时
+	if item.Status == purchaseorder.StatusStaging {
+		// 支付金额信息
+		for _, p := range item.Edges.Payments {
+			res.Amount += p.Amount
+			if p.Status.String() == pm.PaymentStatusPaid.Value() {
+				res.PaidAmount += p.Amount
+			}
+			// 订单已激活且分期账单有未付款逾期数据
+			if p.Status == purchasepayment.StatusObligation &&
+				p.BillingDate.Before(carbon.Now().StartOfDay().StdTime()) {
+				res.BillStatus = pm.BillStatusOverdue
+			}
+		}
 	}
+
 	// 骑手信息
 	if item.Edges.Rider != nil {
 		res.RiderName = item.Edges.Rider.Name
 		res.RiderPhone = item.Edges.Rider.Phone
 	}
+
 	// 违约说明（暂时先固定文本返回前段）
 	res.Formula = pm.PurchaseOrderFormula
+
 	// 解析分期方案数据
 	insPlan := make([]float64, 0)
 	for _, o := range item.InstallmentPlan {
@@ -435,16 +442,30 @@ func (s *orderService) Cancel(ctx context.Context, id uint64, md *model.Modifier
 	if order.Status.String() == pm.OrderStatusCancelled.Value() {
 		return errors.New("订单已取消")
 	}
-	return s.orm.Update().Where(purchaseorder.ID(order.ID)).
+	// 更新订单
+	err = s.orm.Update().Where(purchaseorder.ID(order.ID)).
 		SetStatus(purchaseorder.Status(pm.OrderStatusCancelled)).
 		SetLastModifier(md).
 		Exec(ctx)
+	if err != nil {
+		return
+	}
+	// 更新分期订单
+	ent.Database.PurchasePayment.Update().
+		Where(purchasepayment.OrderID(order.ID)).
+		SetStatus(purchasepayment.Status(pm.PaymentStatusCanceled)).SetLastModifier(md)
+
+	return
 
 }
 
 // Export 订单导出
 func (s *orderService) Export(req *pm.PurchaseOrderExportReq, md *model.Modifier) model.ExportRes {
-	q := s.orm.QueryNotDeleted().WithPayments().WithRider().WithStore().WithGoods()
+	q := s.orm.QueryNotDeleted().
+		WithPayments().
+		WithRider().
+		WithStore().
+		WithGoods()
 	s.listFilter(q, req.PurchaseOrderListFilter)
 	return service.NewExportWithModifier(md).Start("购车订单", req.PurchaseOrderListFilter, nil, req.Remark, func(path string) {
 		items, _ := q.All(context.Background())

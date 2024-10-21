@@ -238,7 +238,7 @@ definitions:
       status:
         allOf:
         - $ref: '#/definitions/model.PaymentStatus'
-        description: '支付状态 obligation: 待付款, paid: 已支付, canceled: 已取消'
+        description: 支付状态 obligation:待付款, paid:已支付, canceled:已取消, overdue:已逾期
       total:
         description: 支付金额（订单金额+逾期金额）
         type: number
@@ -265,15 +265,18 @@ definitions:
     - obligation
     - paid
     - canceled
+    - overdue
     type: string
     x-enum-comments:
       PaymentStatusCanceled: 已取消
       PaymentStatusObligation: 待付款
+      PaymentStatusOverdue: 已逾期
       PaymentStatusPaid: 已支付
     x-enum-varnames:
     - PaymentStatusObligation
     - PaymentStatusPaid
     - PaymentStatusCanceled
+    - PaymentStatusOverdue
   model.PurchaseOrderCreateReq:
     properties:
       goodsId:
