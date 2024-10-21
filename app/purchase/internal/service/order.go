@@ -250,10 +250,14 @@ func (s *orderService) detail(item *ent.PurchaseOrder) (res pm.PurchaseOrderList
 	}
 
 	// 支付金额信息
-	for _, p := range item.Edges.Payments {
-		res.Amount += p.Amount
+	for i, p := range item.Edges.Payments {
+		// 订单总金额重置
+		if i == 0 {
+			res.Amount = 0
+		}
+		res.Amount = res.Amount + p.Amount + p.Forfeit
 		if p.Status.String() == pm.PaymentStatusPaid.Value() {
-			res.PaidAmount += p.Amount
+			res.PaidAmount = res.PaidAmount + p.Amount + p.Forfeit
 		}
 		// 订单已激活且分期账单有未付款逾期数据
 		if p.Status == purchasepayment.StatusObligation &&
