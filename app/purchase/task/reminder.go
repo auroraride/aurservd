@@ -60,10 +60,10 @@ func (t *purchaseReminderTask) Start() {
 // Do 提前提醒用户还款 提前三天短信提醒 提前一天语音提醒
 func (t *purchaseReminderTask) Do() {
 	// 查询即将逾期的账单
-	now := carbon.Now().AddDay().StartOfDay()
+	now := carbon.Now().StartOfDay()
 	payments, _ := ent.Database.PurchasePayment.QueryNotDeleted().Where(
 		purchasepayment.StatusEQ(purchasepayment.StatusObligation),
-		purchasepayment.BillingDateLTE(now.AddDays(3).StdTime()),
+		purchasepayment.BillingDateEQ(now.AddDays(3).StdTime()),
 	).WithRider().All(context.Background())
 	tk := Task{
 		vms: &vmsconfig{
@@ -82,12 +82,13 @@ func (t *purchaseReminderTask) Do() {
 	}
 	payments, _ = ent.Database.PurchasePayment.QueryNotDeleted().Where(
 		purchasepayment.StatusEQ(purchasepayment.StatusObligation),
-		purchasepayment.BillingDateLTE(now.EndOfDay().AddDay().StdTime()),
+		purchasepayment.BillingDateEQ(now.AddDay().StdTime()),
 	).WithRider().All(context.Background())
 	for _, v := range payments {
 		// 发送语音
 		tk.Name = v.Edges.Rider.Name
 		tk.Time = v.BillingDate.Format("2006-01-02")
+		tk.Phone = v.Edges.Rider.Phone
 		t.sendvms(&tk)
 	}
 }
@@ -104,16 +105,18 @@ func (t *purchaseReminderTask) sendvms(task *Task) {
 		DateFormat: task.Time,
 	}
 
-	b, _ := jsoniter.Marshal(data)
+	d, _ := jsoniter.Marshal(data)
 
 	vms := task.vms
-	ali.NewVms().SendVoiceMessageByTts(
+	b := ali.NewVms().SendVoiceMessageByTts(
 		silk.Pointer(task.Phone),
-		silk.Pointer(string(b)),
+		silk.Pointer(string(d)),
 		vms.tel,
 		vms.tmpl,
 	)
-	zap.L().Info("逾期语音发送成功", log.JsonData(data))
+	if b {
+		zap.L().Info("逾期语音发送成功", log.JsonData(data))
+	}
 }
 
 // sendsms 发送短信
