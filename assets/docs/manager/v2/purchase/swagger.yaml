@@ -96,6 +96,17 @@ definitions:
     - Alipay
     - Wechat
     - Cash
+  model.BillStatus:
+    enum:
+    - 1
+    - 2
+    type: integer
+    x-enum-comments:
+      BillStatusNormal: 正常
+      BillStatusOverdue: 逾期
+    x-enum-varnames:
+    - BillStatusNormal
+    - BillStatusOverdue
   model.ExportRes:
     properties:
       sn:
@@ -243,6 +254,10 @@ definitions:
       amount:
         description: 订单金额
         type: number
+      billStatus:
+        allOf:
+        - $ref: '#/definitions/model.BillStatus'
+        description: 账单状态 // 1-正常 2-逾期
       color:
         description: 车辆颜色
         type: string
@@ -295,10 +310,6 @@ definitions:
       remark:
         description: 备注
         type: string
-      repayStatus:
-        allOf:
-        - $ref: '#/definitions/model.RepayStatus'
-        description: 还款状态 // 1-正常 2-逾期
       riderName:
         description: 骑手名称
         type: string
@@ -328,6 +339,10 @@ definitions:
     type: object
   model.PurchaseOrderExportReq:
     properties:
+      billStatus:
+        allOf:
+        - $ref: '#/definitions/model.BillStatus'
+        description: 还款状态
       end:
         description: 结束时间
         type: string
@@ -340,10 +355,6 @@ definitions:
       remark:
         description: 备注
         type: string
-      repayStatus:
-        allOf:
-        - $ref: '#/definitions/model.RepayStatus'
-        description: 还款状态
       riderId:
         description: 骑手ID
         type: integer
@@ -413,6 +424,10 @@ definitions:
       amount:
         description: 订单金额
         type: number
+      billStatus:
+        allOf:
+        - $ref: '#/definitions/model.BillStatus'
+        description: 账单状态 // 1-正常 2-逾期
       color:
         description: 车辆颜色
         type: string
@@ -455,10 +470,6 @@ definitions:
       remark:
         description: 备注
         type: string
-      repayStatus:
-        allOf:
-        - $ref: '#/definitions/model.RepayStatus'
-        description: 还款状态 // 1-正常 2-逾期
       riderName:
         description: 骑手名称
         type: string
@@ -486,17 +497,6 @@ definitions:
         description: 提车门店
         type: string
     type: object
-  model.RepayStatus:
-    enum:
-    - 1
-    - 2
-    type: integer
-    x-enum-comments:
-      RepayStatusNormal: 正常
-      RepayStatusOverdue: 逾期
-    x-enum-varnames:
-    - RepayStatusNormal
-    - RepayStatusOverdue
   model.StatusResponse:
     properties:
       status:
@@ -607,6 +607,19 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: 还款状态
+        enum:
+        - 1
+        - 2
+        in: query
+        name: billStatus
+        type: integer
+        x-enum-comments:
+          BillStatusNormal: 正常
+          BillStatusOverdue: 逾期
+        x-enum-varnames:
+        - BillStatusNormal
+        - BillStatusOverdue
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
@@ -627,19 +640,6 @@ paths:
         in: query
         name: pageSize
         type: integer
-      - description: 还款状态
-        enum:
-        - 1
-        - 2
-        in: query
-        name: repayStatus
-        type: integer
-        x-enum-comments:
-          RepayStatusNormal: 正常
-          RepayStatusOverdue: 逾期
-        x-enum-varnames:
-        - RepayStatusNormal
-        - RepayStatusOverdue
       - description: 骑手ID
         in: query
         name: riderId

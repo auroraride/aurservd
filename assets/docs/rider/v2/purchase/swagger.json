@@ -150,6 +150,24 @@
                         "required": true
                     },
                     {
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "BillStatusNormal": "正常",
+                            "BillStatusOverdue": "逾期"
+                        },
+                        "x-enum-varnames": [
+                            "BillStatusNormal",
+                            "BillStatusOverdue"
+                        ],
+                        "description": "还款状态",
+                        "name": "billStatus",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
@@ -177,24 +195,6 @@
                         "type": "integer",
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            1,
-                            2
-                        ],
-                        "type": "integer",
-                        "x-enum-comments": {
-                            "RepayStatusNormal": "正常",
-                            "RepayStatusOverdue": "逾期"
-                        },
-                        "x-enum-varnames": [
-                            "RepayStatusNormal",
-                            "RepayStatusOverdue"
-                        ],
-                        "description": "还款状态",
-                        "name": "repayStatus",
                         "in": "query"
                     },
                     {
@@ -533,6 +533,21 @@
                 "Cash"
             ]
         },
+        "model.BillStatus": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "BillStatusNormal": "正常",
+                "BillStatusOverdue": "逾期"
+            },
+            "x-enum-varnames": [
+                "BillStatusNormal",
+                "BillStatusOverdue"
+            ]
+        },
         "model.ContractCreateReq": {
             "type": "object",
             "required": [
@@ -806,6 +821,14 @@
                     "description": "订单金额",
                     "type": "number"
                 },
+                "billStatus": {
+                    "description": "账单状态 // 1-正常 2-逾期",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.BillStatus"
+                        }
+                    ]
+                },
                 "color": {
                     "description": "车辆颜色",
                     "type": "string"
@@ -878,14 +901,6 @@
                 "remark": {
                     "description": "备注",
                     "type": "string"
-                },
-                "repayStatus": {
-                    "description": "还款状态 // 1-正常 2-逾期",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.RepayStatus"
-                        }
-                    ]
                 },
                 "riderName": {
                     "description": "骑手名称",
@@ -972,6 +987,14 @@
                     "description": "订单金额",
                     "type": "number"
                 },
+                "billStatus": {
+                    "description": "账单状态 // 1-正常 2-逾期",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.BillStatus"
+                        }
+                    ]
+                },
                 "color": {
                     "description": "车辆颜色",
                     "type": "string"
@@ -1031,14 +1054,6 @@
                     "description": "备注",
                     "type": "string"
                 },
-                "repayStatus": {
-                    "description": "还款状态 // 1-正常 2-逾期",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.RepayStatus"
-                        }
-                    ]
-                },
                 "riderName": {
                     "description": "骑手名称",
                     "type": "string"
@@ -1089,21 +1104,6 @@
                     "type": "string"
                 }
             }
-        },
-        "model.RepayStatus": {
-            "type": "integer",
-            "enum": [
-                1,
-                2
-            ],
-            "x-enum-comments": {
-                "RepayStatusNormal": "正常",
-                "RepayStatusOverdue": "逾期"
-            },
-            "x-enum-varnames": [
-                "RepayStatusNormal",
-                "RepayStatusOverdue"
-            ]
         },
         "model.StatusResponse": {
             "type": "object",

@@ -125,9 +125,9 @@ func (s *orderService) listFilter(q *ent.PurchaseOrderQuery, req pm.PurchaseOrde
 	if req.Status != nil {
 		q.Where(purchaseorder.StatusEQ(purchaseorder.Status(req.Status.Value())))
 	}
-	if req.RepayStatus != nil {
-		switch *req.RepayStatus {
-		case pm.RepayStatusNormal:
+	if req.BillStatus != nil {
+		switch *req.BillStatus {
+		case pm.BillStatusNormal:
 			// 正常：订单未激活，订单已激活未超过付款日
 			q.Where(
 				purchaseorder.Or(
@@ -142,7 +142,7 @@ func (s *orderService) listFilter(q *ent.PurchaseOrderQuery, req pm.PurchaseOrde
 				),
 			)
 
-		case pm.RepayStatusOverdue:
+		case pm.BillStatusOverdue:
 			// 逾期：订单已激活且已超过付款日
 			q.Where(
 				purchaseorder.StartDateNotNil(),
@@ -181,7 +181,7 @@ func (s *orderService) detail(item *ent.PurchaseOrder) (res pm.PurchaseOrderList
 		Color:            item.Color,
 		CreatedAt:        item.CreatedAt.Format(carbon.DateTimeLayout),
 		Remark:           item.Remark,
-		RepayStatus:      pm.RepayStatusNormal,
+		BillStatus:       pm.BillStatusNormal,
 		Signed:           item.Signed,
 	}
 
@@ -250,7 +250,7 @@ func (s *orderService) detail(item *ent.PurchaseOrder) (res pm.PurchaseOrderList
 		if item.StartDate != nil &&
 			p.Status.String() == pm.PaymentStatusObligation.Value() &&
 			p.BillingDate.Before(time.Now().AddDate(0, 0, -1)) {
-			res.RepayStatus = pm.RepayStatusOverdue
+			res.BillStatus = pm.BillStatusOverdue
 		}
 
 	}
@@ -474,7 +474,7 @@ func (s *orderService) Export(req *pm.PurchaseOrderExportReq, md *model.Modifier
 				detail.Amount,
 				detail.PaidAmount,
 				detail.InstallmentTotal,
-				detail.RepayStatus.String(),
+				detail.BillStatus.String(),
 				detail.RiderName,
 				detail.RiderPhone,
 				detail.StoreName,

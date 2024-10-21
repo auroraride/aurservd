@@ -41,23 +41,23 @@ func (o OrderStatus) String() string {
 	}
 }
 
-// RepayStatus 还款状态
-type RepayStatus uint8
+// BillStatus 账单状态
+type BillStatus uint8
 
 const (
-	RepayStatusNormal  RepayStatus = iota + 1 // 正常
-	RepayStatusOverdue                        // 逾期
+	BillStatusNormal  BillStatus = iota + 1 // 正常
+	BillStatusOverdue                       // 逾期
 )
 
-func (r RepayStatus) Value() uint8 {
+func (r BillStatus) Value() uint8 {
 	return uint8(r)
 }
 
-func (r RepayStatus) String() string {
+func (r BillStatus) String() string {
 	switch r {
-	case RepayStatusNormal:
+	case BillStatusNormal:
 		return "正常"
-	case RepayStatusOverdue:
+	case BillStatusOverdue:
 		return "逾期"
 	default:
 		return "未知"
@@ -77,15 +77,15 @@ type PurchaseOrderListReq struct {
 }
 
 type PurchaseOrderListFilter struct {
-	Keyword     *string      `json:"keyword" query:"keyword"`         // 关键字
-	ID          *uint64      `json:"id" query:"id"`                   // 订单编号
-	Sn          *string      `json:"sn" query:"sn"`                   // 车架号
-	Status      *OrderStatus `json:"status" query:"status"`           // 订单状态
-	RepayStatus *RepayStatus `json:"repayStatus" query:"repayStatus"` // 还款状态
-	StoreID     *uint64      `json:"storeId" query:"storeId"`         // 门店ID
-	Start       *string      `json:"start" query:"start"`             // 开始时间
-	End         *string      `json:"end" query:"end"`                 // 结束时间
-	RiderID     *uint64      `json:"riderId" query:"riderId"`         // 骑手ID
+	Keyword    *string      `json:"keyword" query:"keyword"`       // 关键字
+	ID         *uint64      `json:"id" query:"id"`                 // 订单编号
+	Sn         *string      `json:"sn" query:"sn"`                 // 车架号
+	Status     *OrderStatus `json:"status" query:"status"`         // 订单状态
+	BillStatus *BillStatus  `json:"billStatus" query:"billStatus"` // 还款状态
+	StoreID    *uint64      `json:"storeId" query:"storeId"`       // 门店ID
+	Start      *string      `json:"start" query:"start"`           // 开始时间
+	End        *string      `json:"end" query:"end"`               // 结束时间
+	RiderID    *uint64      `json:"riderId" query:"riderId"`       // 骑手ID
 }
 
 type PurchaseOrderExportReq struct {
@@ -102,7 +102,7 @@ type PurchaseOrderListRes struct {
 	PaidAmount       float64           `json:"paidAmount"`       // 已支付金额
 	InstallmentTotal int               `json:"installmentTotal"` // 分期总数
 	InstallmentStage int               `json:"installmentStage"` // 当前分期阶段
-	RepayStatus      RepayStatus       `json:"repayStatus"`      // 还款状态 // 1-正常 2-逾期
+	BillStatus       BillStatus        `json:"billStatus"`       // 账单状态 // 1-正常 2-逾期
 	RiderName        string            `json:"riderName"`        // 骑手名称
 	RiderPhone       string            `json:"riderPhone"`       // 骑手电话
 	StoreID          uint64            `json:"storeId"`          // 门店ID
