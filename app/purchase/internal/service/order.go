@@ -297,6 +297,9 @@ func (s *orderService) Detail(id uint64) (res pm.PurchaseOrderDetail) {
 		WithGoods().
 		WithFollows().
 		First(context.Background())
+	if item == nil {
+		return
+	}
 
 	// 订单详情数据
 	res.PurchaseOrderListRes = s.detail(item)
@@ -328,8 +331,8 @@ func (s *orderService) Detail(id uint64) (res pm.PurchaseOrderDetail) {
 		payment.OverdueDays = helper.OverdueDays(p.BillingDate, time.Now())
 
 		// 支付时间
-		if p.PaymentDate != nil {
-			payment.PaymentDate = p.PaymentDate.Format(carbon.DateTimeLayout)
+		if p.PaymentTime != nil {
+			payment.PaymentTime = p.PaymentTime.Format(carbon.DateTimeLayout)
 		}
 		payments = append(payments, payment)
 	}

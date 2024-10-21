@@ -56,7 +56,7 @@ type PaymentDetail struct {
 	BillingDate string        `json:"billingDate"` // 账单日期
 	OverdueDays int           `json:"overdueDays"` // 逾期天数
 	Forfeit     float64       `json:"forfeit"`     // 逾期金额（滞纳金）
-	PaymentDate string        `json:"paymentDate"` // 支付日期
+	PaymentTime string        `json:"paymentTime"` // 支付时间
 	Payway      Payway        `json:"payway"`      // 支付方式 alipay-支付宝 wechat-微信支付 cash-现金
 	OutTradeNo  string        `json:"outTradeNo"`  // 交易订单号
 	Status      PaymentStatus `json:"status"`      // 支付状态 obligation:待付款, paid:已支付, canceled:已取消, overdue:已逾期

@@ -1236,7 +1236,7 @@ func (s *riderService) Delete(req *model.IDParamReq) {
 	// 进行中的购车订单不允许注销（处于待付款、分期进行中）
 	existPurchase, _ := ent.Database.PurchaseOrder.QueryNotDeleted().
 		Where(
-			purchaseorder.ID(u.ID),
+			purchaseorder.RiderID(u.ID),
 			purchaseorder.StatusIn(purchaseorder.StatusPending, purchaseorder.StatusStaging),
 		).Exist(context.Background())
 	if existPurchase {

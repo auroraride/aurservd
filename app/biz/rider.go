@@ -240,7 +240,7 @@ func (b *riderBiz) Profile(u *ent.Rider, device *model.Device, token string) (*d
 func (b *riderBiz) PurchaseObligation(rId uint64) *ent.PurchaseOrder {
 	p, _ := ent.Database.PurchaseOrder.QueryNotDeleted().
 		Where(
-			purchaseorder.ID(rId),
+			purchaseorder.RiderID(rId),
 			purchaseorder.StartDateNotNil(),
 			purchaseorder.StatusIn(purchaseorder.StatusPending, purchaseorder.StatusStaging),
 			purchaseorder.HasPaymentsWith(

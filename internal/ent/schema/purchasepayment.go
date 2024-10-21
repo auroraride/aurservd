@@ -67,7 +67,7 @@ func (PurchasePayment) Fields() []ent.Field {
 		field.Float("amount").Comment("账单金额"),
 		field.Float("forfeit").Default(0).Comment("滞纳金"),
 		field.Time("billing_date").Comment("账单日期"),
-		field.Time("payment_date").Optional().Nillable().Comment("支付时间"),
+		field.Time("payment_time").Optional().Nillable().Comment("支付时间"),
 		field.String("trade_no").Optional().Comment("平台订单号（微信或支付宝）"),
 		field.Uint64("order_id").Optional().Comment("订单id"),
 	}
