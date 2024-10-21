@@ -249,19 +249,16 @@ func (s *orderService) detail(item *ent.PurchaseOrder) (res pm.PurchaseOrderList
 		res.StoreName = item.Edges.Store.Name
 	}
 
-	// 当订单状态为分期中（已激活）时
-	if item.Status == purchaseorder.StatusStaging {
-		// 支付金额信息
-		for _, p := range item.Edges.Payments {
-			res.Amount += p.Amount
-			if p.Status.String() == pm.PaymentStatusPaid.Value() {
-				res.PaidAmount += p.Amount
-			}
-			// 订单已激活且分期账单有未付款逾期数据
-			if p.Status == purchasepayment.StatusObligation &&
-				p.BillingDate.Before(carbon.Now().StartOfDay().StdTime()) {
-				res.BillStatus = pm.BillStatusOverdue
-			}
+	// 支付金额信息
+	for _, p := range item.Edges.Payments {
+		res.Amount += p.Amount
+		if p.Status.String() == pm.PaymentStatusPaid.Value() {
+			res.PaidAmount += p.Amount
+		}
+		// 订单已激活且分期账单有未付款逾期数据
+		if p.Status == purchasepayment.StatusObligation &&
+			p.BillingDate.Before(carbon.Now().StartOfDay().StdTime()) {
+			res.BillStatus = pm.BillStatusOverdue
 		}
 	}
 
@@ -329,7 +326,7 @@ func (s *orderService) Detail(id uint64) (res pm.PurchaseOrderDetail) {
 			payment.BillingDate = p.BillingDate.Format(carbon.DateLayout)
 			// 逾期天数
 			if time.Now().After(p.BillingDate) {
-				payment.OverdueDays = helper.OverdueDays(time.Now(), p.BillingDate)
+				payment.OverdueDays = helper.OverdueDays(p.BillingDate, time.Now())
 			}
 		}
 

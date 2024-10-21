@@ -19,6 +19,7 @@ func NewPurchaseOrder() *purchaseOrderTask {
 }
 
 func (t *purchaseOrderTask) Start() {
+	go t.Do()
 	c := cron.New()
 	_, err := c.AddFunc("@daily", func() {
 		zap.L().Info("开始执行 @daily[purchaseOrderTask] 定时任务")
@@ -36,7 +37,7 @@ func (*purchaseOrderTask) Do() {
 	now := carbon.Now().StartOfDay().AddDays(-7).StdTime()
 	payments, _ := ent.Database.PurchasePayment.QueryNotDeleted().Where(
 		purchasepayment.StatusEQ(purchasepayment.StatusObligation),
-		purchasepayment.BillingDateLT(now),
+		purchasepayment.BillingDateEQ(now),
 	).All(context.Background())
 	for _, v := range payments {
 		// 逾期金额
