@@ -15,6 +15,7 @@ import (
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
+	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/order"
 )
@@ -27,6 +28,10 @@ func NewOrder() *orderTask {
 }
 
 func (t *orderTask) Start() {
+	if !ar.Config.Task.Order {
+		return
+	}
+
 	// 处理预授权订单
 	c := cron.New()
 	_, err := c.AddFunc("0 9 * * *", func() {

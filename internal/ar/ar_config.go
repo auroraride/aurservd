@@ -108,6 +108,7 @@ type config struct {
 		Cabinet          bool // 电柜任务失效
 		Earnings         bool // 返佣收益结算
 		PurchaseReminder bool // 购买提醒
+		Order            bool // 订单
 	}
 
 	Cabinet struct {

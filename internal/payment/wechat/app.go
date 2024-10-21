@@ -131,7 +131,7 @@ func (c *appClient) AppPayPurchase(req *model.PurchasePayReq) (string, error) {
 			Total:    core.Int64(int64(math.Round(req.Amount * 100))),
 		},
 	})
-
+	zap.L().Info("微信支付", log.JsonData(notifyUrl))
 	if result == nil {
 		zap.L().Error("微信App支付调用失败result为空")
 		return "", err
