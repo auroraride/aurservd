@@ -288,6 +288,37 @@ func (acdq *AssetCheckDetailsQuery) PaginationResult(req model.PaginationReq) mo
 	}
 }
 
+// Pagination returns pagination query builder for AssetExportQuery.
+func (aeq *AssetExportQuery) Pagination(req model.PaginationReq) *AssetExportQuery {
+	aeq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return aeq
+}
+
+// PaginationItems returns pagination query builder for AssetExportQuery.
+func (aeq *AssetExportQuery) PaginationItemsX(req model.PaginationReq) any {
+	return aeq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for AssetExportQuery.
+func (aeq *AssetExportQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := aeq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for AssetMaintenanceQuery.
 func (amq *AssetMaintenanceQuery) Pagination(req model.PaginationReq) *AssetMaintenanceQuery {
 	amq.Offset(req.GetOffset()).Limit(req.GetLimit())
@@ -2472,6 +2503,99 @@ func (pwq *PromotionWithdrawalQuery) PaginationItemsX(req model.PaginationReq) a
 // PaginationResult returns pagination for PromotionWithdrawalQuery.
 func (pwq *PromotionWithdrawalQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := pwq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for PurchaseFollowQuery.
+func (pfq *PurchaseFollowQuery) Pagination(req model.PaginationReq) *PurchaseFollowQuery {
+	pfq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return pfq
+}
+
+// PaginationItems returns pagination query builder for PurchaseFollowQuery.
+func (pfq *PurchaseFollowQuery) PaginationItemsX(req model.PaginationReq) any {
+	return pfq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for PurchaseFollowQuery.
+func (pfq *PurchaseFollowQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := pfq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for PurchaseOrderQuery.
+func (poq *PurchaseOrderQuery) Pagination(req model.PaginationReq) *PurchaseOrderQuery {
+	poq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return poq
+}
+
+// PaginationItems returns pagination query builder for PurchaseOrderQuery.
+func (poq *PurchaseOrderQuery) PaginationItemsX(req model.PaginationReq) any {
+	return poq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for PurchaseOrderQuery.
+func (poq *PurchaseOrderQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := poq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for PurchasePaymentQuery.
+func (ppq *PurchasePaymentQuery) Pagination(req model.PaginationReq) *PurchasePaymentQuery {
+	ppq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return ppq
+}
+
+// PaginationItems returns pagination query builder for PurchasePaymentQuery.
+func (ppq *PurchasePaymentQuery) PaginationItemsX(req model.PaginationReq) any {
+	return ppq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for PurchasePaymentQuery.
+func (ppq *PurchasePaymentQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := ppq.Clone()
 	query.order = nil
 	query.ctx.Limit = nil
 	query.ctx.Offset = nil

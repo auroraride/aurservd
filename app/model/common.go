@@ -108,6 +108,12 @@ type CascaderOptionLevel3 struct {
 	Children *[]CascaderOptionLevel2 `json:"children"` // 级联选择子项目
 }
 
+type SelectOptionGoods struct {
+	Value  uint64         `json:"value"`  // 选择项值 (ID)
+	Label  string         `json:"label"`  // 选择项名称
+	Prices []SelectOption `json:"prices"` // 价格数据
+}
+
 type LngLat struct {
 	Lng float64 `json:"lng" query:"lng"` // 经度
 	Lat float64 `json:"lat" query:"lat"` // 纬度

@@ -110,6 +110,10 @@ type AssetCheckDetailListReq struct {
 // AssetCheckListReq 获取资产盘点请求
 type AssetCheckListReq struct {
 	PaginationReq
+	AssetCheckListFilter
+}
+
+type AssetCheckListFilter struct {
 	LocationsID   *uint64             `json:"locationsId" query:"locationsId"`     // 位置ID
 	LocationsType *AssetLocationsType `json:"locationsType" query:"locationsType"` // 位置类型 1:仓库 2:门店 3:站点
 	Keyword       *string             `json:"keyword" query:"keyword"`             // 关键字

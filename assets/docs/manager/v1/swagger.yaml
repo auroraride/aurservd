@@ -410,6 +410,13 @@ definitions:
       name:
         description: 商品名称, 商品名称
         type: string
+      paymentPlans:
+        description: 付款方案
+        items:
+          items:
+            type: number
+          type: array
+        type: array
       photos:
         description: 商品图片, 商品图片
         items:
@@ -451,6 +458,7 @@ definitions:
         description: 商品头图
         type: string
       id:
+        description: 商品ID
         type: integer
       intro:
         description: 商品介绍
@@ -465,6 +473,13 @@ definitions:
       name:
         description: 商品名称
         type: string
+      paymentPlans:
+        description: 付款方案
+        items:
+          items:
+            type: number
+          type: array
+        type: array
       photos:
         description: 商品图片
         items:
@@ -542,6 +557,13 @@ definitions:
       name:
         description: 商品名称, 商品名称
         type: string
+      paymentPlans:
+        description: 付款方案
+        items:
+          items:
+            type: number
+          type: array
+        type: array
       photos:
         description: 商品图片, 商品图片
         items:
@@ -841,6 +863,20 @@ definitions:
     - enable
     - version
     type: object
+  github_com_auroraride_aurservd_app_model.Payway:
+    enum:
+    - 0
+    - 1
+    - 2
+    type: integer
+    x-enum-comments:
+      PaywayAgentWxMiniprogram: 代理商小程序
+      PaywayCash: 现金支付
+      PaywayUnknown: 未知
+    x-enum-varnames:
+    - PaywayUnknown
+    - PaywayCash
+    - PaywayAgentWxMiniprogram
   model.ActivityImage:
     properties:
       home:
@@ -1180,9 +1216,6 @@ definitions:
       model:
         description: 型号
         type: string
-      modelId:
-        description: 型号ID
-        type: integer
       sn:
         description: 编号
         type: string
@@ -2586,7 +2619,6 @@ definitions:
         description: '操作原因, 可手动输入, 预留项: `吞电池` `柜门未关好` `仓位不足`'
         type: string
     required:
-    - batterySn
     - id
     - index
     - phone
@@ -4520,20 +4552,6 @@ definitions:
         - $ref: '#/definitions/model.Pagination'
         description: 分页属性
     type: object
-  model.Payway:
-    enum:
-    - 0
-    - 1
-    - 2
-    type: integer
-    x-enum-comments:
-      PaywayAgentWxMiniprogram: 代理商小程序
-      PaywayCash: 现金支付
-      PaywayUnknown: 未知
-    x-enum-varnames:
-    - PaywayUnknown
-    - PaywayCash
-    - PaywayAgentWxMiniprogram
   model.Person:
     properties:
       authFace:
@@ -4985,7 +5003,7 @@ definitions:
         type: string
       payway:
         allOf:
-        - $ref: '#/definitions/model.Payway'
+        - $ref: '#/definitions/github_com_auroraride_aurservd_app_model.Payway'
         description: 支付方式 1:现金 2:微信
         enum:
         - 1
@@ -5534,6 +5552,20 @@ definitions:
       label:
         description: 选择项名称
         type: string
+      value:
+        description: 选择项值 (ID)
+        type: integer
+    type: object
+  model.SelectOptionGoods:
+    properties:
+      label:
+        description: 选择项名称
+        type: string
+      prices:
+        description: 价格数据
+        items:
+          $ref: '#/definitions/model.SelectOption'
+        type: array
       value:
         description: 选择项值 (ID)
         type: integer
@@ -8944,7 +8976,6 @@ paths:
     post:
       consumes:
       - application/json
-      description: '<仅智能电柜可用, 普通电柜无法请求, 判定标准: `intelligent = true`>'
       operationId: ManagerCabinetOpenBind
       parameters:
       - description: 管理员校验token
@@ -14404,6 +14435,52 @@ paths:
               $ref: '#/definitions/model.CascaderOptionLevel2'
             type: array
       summary: 筛选企业
+      tags:
+      - 筛选
+  /manager/v1/selection/goods:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionGoods
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SelectOptionGoods'
+            type: array
+      summary: 筛选商品
+      tags:
+      - 筛选
+  /manager/v1/selection/goods_store:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionGoodsStore
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CascaderOptionLevel2'
+            type: array
+      summary: 筛选购车门店
       tags:
       - 筛选
   /manager/v1/selection/model:

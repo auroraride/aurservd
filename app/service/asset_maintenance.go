@@ -204,3 +204,104 @@ func (s *assetMaintenanceService) QueryByID(cabId uint64) (res model.AssetMainte
 		Status: model.AssetMaintenanceStatus(mt.Status),
 	}
 }
+
+// Export 列表导出
+func (s *assetMaintenanceService) Export(ctx context.Context, req *model.AssetMaintenanceListReq, md *model.Modifier) model.AssetExportRes {
+	q := ent.Database.AssetMaintenance.
+		QueryNotDeleted().
+		Order(ent.Desc(asset.FieldCreatedAt)).
+		WithMaintainer().
+		WithCabinet().
+		WithMaintenanceDetails()
+	if req.Keyword != nil {
+		q.Where(
+			assetmaintenance.Or(
+				assetmaintenance.HasMaintainerWith(maintainer.NameContains(*req.Keyword)),
+				assetmaintenance.HasMaintainerWith(maintainer.PhoneContains(*req.Keyword)),
+				assetmaintenance.HasCabinetWith(cabinet.SerialContains(*req.Keyword)),
+			),
+		)
+	}
+	if req.Status != nil {
+		q.Where(assetmaintenance.Status(*req.Status))
+	}
+	if req.Start != nil && req.End != nil {
+		start := tools.NewTime().ParseDateStringX(*req.Start)
+		end := tools.NewTime().ParseNextDateStringX(*req.End)
+		q.Where(
+			assetmaintenance.CreatedAtGTE(start),
+			assetmaintenance.CreatedAtLTE(end),
+		)
+	}
+
+	q.Modify(func(sel *sql.Selector) {
+		if req.IsUseAccessory != nil {
+			if *req.IsUseAccessory {
+				sel.Where(
+					sql.Exists(
+						sql.Select(assetmaintenancedetails.FieldID).
+							From(sql.Table("asset_maintenance_details")).
+							Where(sql.ColumnsEQ(sql.Table("asset_maintenance_details").C("maintenance_id"), sql.Table("asset_maintenance").C("id"))),
+					),
+				)
+			} else {
+				sel.Where(
+					sql.NotExists(
+						sql.Select(assetmaintenancedetails.FieldID).
+							From(sql.Table("asset_maintenance_details")).
+							Where(sql.ColumnsEQ(sql.Table("asset_maintenance_details").C("maintenance_id"), sql.Table("asset_maintenance").C("id"))),
+					),
+				)
+			}
+		}
+	})
+
+	return NewAssetExportWithModifier(md).Start("运维维保记录", req.AssetMaintenanceListFilter, nil, "", func(path string) {
+		items, _ := q.All(context.Background())
+		var rows tools.ExcelItems
+		title := []any{
+			"电柜名称",
+			"电柜编号",
+			"维保内容",
+			"使用配件",
+			"维修结果",
+			"失败原因",
+			"维保人员",
+			"手机号",
+			"时间",
+		}
+		rows = append(rows, title)
+		for _, item := range items {
+			useAccessory := "否"
+			for _, v := range item.Edges.MaintenanceDetails {
+				if v.MaterialID != nil {
+					useAccessory = "是"
+					break
+				}
+			}
+			var opName, opPhone, cabName, cabSn string
+			if item.Edges.Maintainer != nil {
+				opName = item.Edges.Maintainer.Name
+				opPhone = item.Edges.Maintainer.Phone
+			}
+			if item.Edges.Cabinet != nil {
+				cabName = item.Edges.Cabinet.Name
+				cabSn = item.Edges.Cabinet.Serial
+			}
+
+			row := []any{
+				cabName,
+				cabSn,
+				item.Content,
+				useAccessory,
+				model.AssetMaintenanceStatus(item.Status).String(),
+				item.Reason,
+				opName,
+				opPhone,
+				item.CreatedAt.Format("2006-01-02 15:04:05"),
+			}
+			rows = append(rows, row)
+		}
+		tools.NewExcel(path).AddValues(rows).Done()
+	})
+}

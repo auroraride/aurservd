@@ -15,6 +15,8 @@ import (
 	inapp "github.com/auroraride/aurservd/app"
 	v1 "github.com/auroraride/aurservd/app/controller/v1/rapi"
 	"github.com/auroraride/aurservd/app/controller/v2/rapi"
+	pr "github.com/auroraride/aurservd/app/purchase/controller/rapi"
+
 	"github.com/auroraride/aurservd/app/middleware"
 	"github.com/auroraride/aurservd/internal/ent"
 )
@@ -31,6 +33,10 @@ func LoadRiderV2Routes(root *echo.Group) {
 	g.Any("/callback/alipay/trade/pay", rapi.Callback.AlipayTradePay, rawDump)             // 冻结转支付回调
 
 	g.Any("/callback/alipay/mini/pay", rapi.Callback.AlipayMiniProgramPay, rawDump) // 支付宝小程序支付回调
+
+	// 购买商品回调
+	g.Any("/callback/purchase/alipay", pr.Callback.PurchaseAlipay, rawDump)    // 支付宝购买商品回调
+	g.Any("/callback/purchase/wechatpay", pr.Callback.PurchaseWechat, rawDump) // 微信购买商品回调
 
 	// 记录请求日志
 	dumpSkipPaths := map[string]bool{}
@@ -233,4 +239,17 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 车电品牌
 	g.GET("/ebike/brand/:id", rapi.Ebike.EbikeBrandDetail) // 车电品牌详情
+
+	// 买车
+	p := g.Group("/purchase", person())
+	p.GET("/order", pr.Order.List)       // 订单列表
+	p.GET("/order/:id", pr.Order.Detail) // 订单详情
+	p.POST("/order", pr.Order.Create)    // 创建订单
+	p.POST("/pay", pr.Payment.Pay)       // 支付
+
+	// 买车合同
+	c := p.Group("/contract")
+	c.POST("/sign", pr.Contract.Sign)     // 签署合同
+	c.POST("/create", pr.Contract.Create) // 创建合同
+	c.GET("/:docId", pr.Contract.Detail)  // 查看合同
 }

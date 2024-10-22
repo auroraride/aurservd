@@ -40,6 +40,8 @@ type AssetTransferDetails struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
+	// 资产SN
+	Sn string `json:"sn,omitempty"`
 	// 调拨ID
 	TransferID uint64 `json:"transfer_id,omitempty"`
 	// 是否入库
@@ -193,7 +195,7 @@ func (*AssetTransferDetails) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case assettransferdetails.FieldID, assettransferdetails.FieldTransferID, assettransferdetails.FieldInOperateID, assettransferdetails.FieldInOperateType, assettransferdetails.FieldAssetID:
 			values[i] = new(sql.NullInt64)
-		case assettransferdetails.FieldRemark:
+		case assettransferdetails.FieldRemark, assettransferdetails.FieldSn:
 			values[i] = new(sql.NullString)
 		case assettransferdetails.FieldCreatedAt, assettransferdetails.FieldUpdatedAt, assettransferdetails.FieldDeletedAt, assettransferdetails.FieldInTimeAt:
 			values[i] = new(sql.NullTime)
@@ -258,6 +260,12 @@ func (atd *AssetTransferDetails) assignValues(columns []string, values []any) er
 				return fmt.Errorf("unexpected type %T for field remark", values[i])
 			} else if value.Valid {
 				atd.Remark = value.String
+			}
+		case assettransferdetails.FieldSn:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field sn", values[i])
+			} else if value.Valid {
+				atd.Sn = value.String
 			}
 		case assettransferdetails.FieldTransferID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -396,6 +404,9 @@ func (atd *AssetTransferDetails) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("remark=")
 	builder.WriteString(atd.Remark)
+	builder.WriteString(", ")
+	builder.WriteString("sn=")
+	builder.WriteString(atd.Sn)
 	builder.WriteString(", ")
 	builder.WriteString("transfer_id=")
 	builder.WriteString(fmt.Sprintf("%v", atd.TransferID))

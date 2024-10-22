@@ -112,6 +112,16 @@ func (acd *AssetCheckDetails) GetID() uint64 {
 	return acd.ID
 }
 
+// GetTableName returns table name for AssetExport.
+func (ae *AssetExport) GetTableName() string {
+	return "asset_export"
+}
+
+// GetID returns id for AssetExport.
+func (ae *AssetExport) GetID() uint64 {
+	return ae.ID
+}
+
 // GetTableName returns table name for AssetMaintenance.
 func (am *AssetMaintenance) GetTableName() string {
 	return "asset_maintenance"
@@ -940,6 +950,36 @@ func (pw *PromotionWithdrawal) GetTableName() string {
 // GetID returns id for PromotionWithdrawal.
 func (pw *PromotionWithdrawal) GetID() uint64 {
 	return pw.ID
+}
+
+// GetTableName returns table name for PurchaseFollow.
+func (pf *PurchaseFollow) GetTableName() string {
+	return "purchase_follow"
+}
+
+// GetID returns id for PurchaseFollow.
+func (pf *PurchaseFollow) GetID() uint64 {
+	return pf.ID
+}
+
+// GetTableName returns table name for PurchaseOrder.
+func (po *PurchaseOrder) GetTableName() string {
+	return "purchase_order"
+}
+
+// GetID returns id for PurchaseOrder.
+func (po *PurchaseOrder) GetID() uint64 {
+	return po.ID
+}
+
+// GetTableName returns table name for PurchasePayment.
+func (pp *PurchasePayment) GetTableName() string {
+	return "purchase_payment"
+}
+
+// GetID returns id for PurchasePayment.
+func (pp *PurchasePayment) GetID() uint64 {
+	return pp.ID
 }
 
 // GetTableName returns table name for Question.

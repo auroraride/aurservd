@@ -80,6 +80,11 @@ func MaterialID(v uint64) predicate.AssetMaintenanceDetails {
 	return predicate.AssetMaintenanceDetails(sql.FieldEQ(FieldMaterialID, v))
 }
 
+// Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
+func Sn(v string) predicate.AssetMaintenanceDetails {
+	return predicate.AssetMaintenanceDetails(sql.FieldEQ(FieldSn, v))
+}
+
 // AssetID applies equality check predicate on the "asset_id" field. It's identical to AssetIDEQ.
 func AssetID(v uint64) predicate.AssetMaintenanceDetails {
 	return predicate.AssetMaintenanceDetails(sql.FieldEQ(FieldAssetID, v))
@@ -343,6 +348,81 @@ func MaterialIDIsNil() predicate.AssetMaintenanceDetails {
 // MaterialIDNotNil applies the NotNil predicate on the "material_id" field.
 func MaterialIDNotNil() predicate.AssetMaintenanceDetails {
 	return predicate.AssetMaintenanceDetails(sql.FieldNotNull(FieldMaterialID))
+}
+
+// SnEQ applies the EQ predicate on the "sn" field.
+func SnEQ(v string) predicate.AssetMaintenanceDetails {
+	return predicate.AssetMaintenanceDetails(sql.FieldEQ(FieldSn, v))
+}
+
+// SnNEQ applies the NEQ predicate on the "sn" field.
+func SnNEQ(v string) predicate.AssetMaintenanceDetails {
+	return predicate.AssetMaintenanceDetails(sql.FieldNEQ(FieldSn, v))
+}
+
+// SnIn applies the In predicate on the "sn" field.
+func SnIn(vs ...string) predicate.AssetMaintenanceDetails {
+	return predicate.AssetMaintenanceDetails(sql.FieldIn(FieldSn, vs...))
+}
+
+// SnNotIn applies the NotIn predicate on the "sn" field.
+func SnNotIn(vs ...string) predicate.AssetMaintenanceDetails {
+	return predicate.AssetMaintenanceDetails(sql.FieldNotIn(FieldSn, vs...))
+}
+
+// SnGT applies the GT predicate on the "sn" field.
+func SnGT(v string) predicate.AssetMaintenanceDetails {
+	return predicate.AssetMaintenanceDetails(sql.FieldGT(FieldSn, v))
+}
+
+// SnGTE applies the GTE predicate on the "sn" field.
+func SnGTE(v string) predicate.AssetMaintenanceDetails {
+	return predicate.AssetMaintenanceDetails(sql.FieldGTE(FieldSn, v))
+}
+
+// SnLT applies the LT predicate on the "sn" field.
+func SnLT(v string) predicate.AssetMaintenanceDetails {
+	return predicate.AssetMaintenanceDetails(sql.FieldLT(FieldSn, v))
+}
+
+// SnLTE applies the LTE predicate on the "sn" field.
+func SnLTE(v string) predicate.AssetMaintenanceDetails {
+	return predicate.AssetMaintenanceDetails(sql.FieldLTE(FieldSn, v))
+}
+
+// SnContains applies the Contains predicate on the "sn" field.
+func SnContains(v string) predicate.AssetMaintenanceDetails {
+	return predicate.AssetMaintenanceDetails(sql.FieldContains(FieldSn, v))
+}
+
+// SnHasPrefix applies the HasPrefix predicate on the "sn" field.
+func SnHasPrefix(v string) predicate.AssetMaintenanceDetails {
+	return predicate.AssetMaintenanceDetails(sql.FieldHasPrefix(FieldSn, v))
+}
+
+// SnHasSuffix applies the HasSuffix predicate on the "sn" field.
+func SnHasSuffix(v string) predicate.AssetMaintenanceDetails {
+	return predicate.AssetMaintenanceDetails(sql.FieldHasSuffix(FieldSn, v))
+}
+
+// SnIsNil applies the IsNil predicate on the "sn" field.
+func SnIsNil() predicate.AssetMaintenanceDetails {
+	return predicate.AssetMaintenanceDetails(sql.FieldIsNull(FieldSn))
+}
+
+// SnNotNil applies the NotNil predicate on the "sn" field.
+func SnNotNil() predicate.AssetMaintenanceDetails {
+	return predicate.AssetMaintenanceDetails(sql.FieldNotNull(FieldSn))
+}
+
+// SnEqualFold applies the EqualFold predicate on the "sn" field.
+func SnEqualFold(v string) predicate.AssetMaintenanceDetails {
+	return predicate.AssetMaintenanceDetails(sql.FieldEqualFold(FieldSn, v))
+}
+
+// SnContainsFold applies the ContainsFold predicate on the "sn" field.
+func SnContainsFold(v string) predicate.AssetMaintenanceDetails {
+	return predicate.AssetMaintenanceDetails(sql.FieldContainsFold(FieldSn, v))
 }
 
 // AssetIDEQ applies the EQ predicate on the "asset_id" field.

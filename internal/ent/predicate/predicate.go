@@ -33,6 +33,9 @@ type AssetCheck func(*sql.Selector)
 // AssetCheckDetails is the predicate function for assetcheckdetails builders.
 type AssetCheckDetails func(*sql.Selector)
 
+// AssetExport is the predicate function for assetexport builders.
+type AssetExport func(*sql.Selector)
+
 // AssetMaintenance is the predicate function for assetmaintenance builders.
 type AssetMaintenance func(*sql.Selector)
 
@@ -245,6 +248,15 @@ type PromotionSetting func(*sql.Selector)
 
 // PromotionWithdrawal is the predicate function for promotionwithdrawal builders.
 type PromotionWithdrawal func(*sql.Selector)
+
+// PurchaseFollow is the predicate function for purchasefollow builders.
+type PurchaseFollow func(*sql.Selector)
+
+// PurchaseOrder is the predicate function for purchaseorder builders.
+type PurchaseOrder func(*sql.Selector)
+
+// PurchasePayment is the predicate function for purchasepayment builders.
+type PurchasePayment func(*sql.Selector)
 
 // Question is the predicate function for question builders.
 type Question func(*sql.Selector)

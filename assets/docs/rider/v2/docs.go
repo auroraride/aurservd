@@ -4411,6 +4411,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "description": "商品ID",
                     "type": "integer"
                 },
                 "intro": {
@@ -4430,6 +4431,16 @@ const docTemplate = `{
                 "name": {
                     "description": "商品名称",
                     "type": "string"
+                },
+                "paymentPlans": {
+                    "description": "付款方案",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    }
                 },
                 "photos": {
                     "description": "商品图片",
@@ -5082,6 +5093,14 @@ const docTemplate = `{
                 "phone": {
                     "description": "电话",
                     "type": "string"
+                },
+                "purchase": {
+                    "description": "待支付购车订单",
+                    "type": "boolean"
+                },
+                "purchaseOrderId": {
+                    "description": "待支付订单ID",
+                    "type": "integer"
                 },
                 "qrcode": {
                     "description": "二维码",

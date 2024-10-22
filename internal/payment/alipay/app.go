@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/auroraride/adapter/log"
 	"github.com/golang-module/carbon/v2"
 	"github.com/smartwalle/alipay/v3"
+	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
@@ -82,4 +84,20 @@ func (c *appClient) Native(pc *model.PaymentCache) (string, error) {
 	}
 
 	return res.QRCode, nil
+}
+
+// AppPayPurchase 购买商品
+func (c *appClient) AppPayPurchase(req *model.PurchasePayReq) (string, error) {
+	notifyUrl := ar.Config.Payment.PurchaseAlipayNotifyUrl
+	trade := alipay.TradeAppPay{
+		Trade: alipay.Trade{
+			TotalAmount: fmt.Sprintf("%.2f", req.Amount),
+			NotifyURL:   notifyUrl,
+			Subject:     req.Subject,
+			OutTradeNo:  req.OutTradeNo,
+			TimeExpire:  time.Now().Add(10 * time.Minute).Format(carbon.DateTimeLayout),
+		},
+	}
+	zap.L().Info("支付宝支付", log.JsonData(trade))
+	return c.TradeAppPay(trade)
 }

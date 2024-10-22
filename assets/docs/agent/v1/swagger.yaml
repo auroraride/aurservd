@@ -394,6 +394,20 @@ definitions:
         description: 物资数量
         type: integer
     type: object
+  github_com_auroraride_aurservd_app_model.Payway:
+    enum:
+    - 0
+    - 1
+    - 2
+    type: integer
+    x-enum-comments:
+      PaywayAgentWxMiniprogram: 代理商小程序
+      PaywayCash: 现金支付
+      PaywayUnknown: 未知
+    x-enum-varnames:
+    - PaywayUnknown
+    - PaywayCash
+    - PaywayAgentWxMiniprogram
   model.AgentCabinet:
     properties:
       address:
@@ -1384,9 +1398,6 @@ definitions:
       model:
         description: 型号
         type: string
-      modelId:
-        description: 型号ID
-        type: integer
       sn:
         description: 编号
         type: string
@@ -1876,20 +1887,6 @@ definitions:
         - $ref: '#/definitions/model.Pagination'
         description: 分页属性
     type: object
-  model.Payway:
-    enum:
-    - 0
-    - 1
-    - 2
-    type: integer
-    x-enum-comments:
-      PaywayAgentWxMiniprogram: 代理商小程序
-      PaywayCash: 现金支付
-      PaywayUnknown: 未知
-    x-enum-varnames:
-    - PaywayUnknown
-    - PaywayCash
-    - PaywayAgentWxMiniprogram
   model.Plan:
     properties:
       days:
@@ -1936,7 +1933,7 @@ definitions:
         type: string
       payway:
         allOf:
-        - $ref: '#/definitions/model.Payway'
+        - $ref: '#/definitions/github_com_auroraride_aurservd_app_model.Payway'
         description: 支付方式 1:现金 2:微信
         enum:
         - 1

@@ -41,6 +41,8 @@ type AssetCheckDetails struct {
 	Remark string `json:"remark,omitempty"`
 	// MaintainerID holds the value of the "maintainer_id" field.
 	MaintainerID *uint64 `json:"maintainer_id,omitempty"`
+	// 资产SN
+	Sn string `json:"sn,omitempty"`
 	// 资产ID
 	AssetID uint64 `json:"asset_id,omitempty"`
 	// 盘点ID
@@ -278,7 +280,7 @@ func (*AssetCheckDetails) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case assetcheckdetails.FieldID, assetcheckdetails.FieldMaintainerID, assetcheckdetails.FieldAssetID, assetcheckdetails.FieldCheckID, assetcheckdetails.FieldRealLocationsID, assetcheckdetails.FieldRealLocationsType, assetcheckdetails.FieldLocationsID, assetcheckdetails.FieldLocationsType, assetcheckdetails.FieldStatus, assetcheckdetails.FieldResult, assetcheckdetails.FieldOperateID:
 			values[i] = new(sql.NullInt64)
-		case assetcheckdetails.FieldRemark:
+		case assetcheckdetails.FieldRemark, assetcheckdetails.FieldSn:
 			values[i] = new(sql.NullString)
 		case assetcheckdetails.FieldCreatedAt, assetcheckdetails.FieldUpdatedAt, assetcheckdetails.FieldDeletedAt, assetcheckdetails.FieldOperateAt:
 			values[i] = new(sql.NullTime)
@@ -350,6 +352,12 @@ func (acd *AssetCheckDetails) assignValues(columns []string, values []any) error
 			} else if value.Valid {
 				acd.MaintainerID = new(uint64)
 				*acd.MaintainerID = uint64(value.Int64)
+			}
+		case assetcheckdetails.FieldSn:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field sn", values[i])
+			} else if value.Valid {
+				acd.Sn = value.String
 			}
 		case assetcheckdetails.FieldAssetID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -547,6 +555,9 @@ func (acd *AssetCheckDetails) String() string {
 		builder.WriteString("maintainer_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("sn=")
+	builder.WriteString(acd.Sn)
 	builder.WriteString(", ")
 	builder.WriteString("asset_id=")
 	builder.WriteString(fmt.Sprintf("%v", acd.AssetID))

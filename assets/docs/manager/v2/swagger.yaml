@@ -85,12 +85,12 @@ definitions:
     type: object
   model.AssetLocationsType:
     enum:
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 6
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
     type: integer
     x-enum-comments:
       AssetLocationsTypeCabinet: 电柜
@@ -100,12 +100,12 @@ definitions:
       AssetLocationsTypeStore: 门店
       AssetLocationsTypeWarehouse: 仓库
     x-enum-varnames:
-      - AssetLocationsTypeWarehouse
-      - AssetLocationsTypeStore
-      - AssetLocationsTypeStation
-      - AssetLocationsTypeOperation
-      - AssetLocationsTypeCabinet
-      - AssetLocationsTypeRider
+    - AssetLocationsTypeWarehouse
+    - AssetLocationsTypeStore
+    - AssetLocationsTypeStation
+    - AssetLocationsTypeOperation
+    - AssetLocationsTypeCabinet
+    - AssetLocationsTypeRider
   model.AssetNumRes:
     properties:
       assetId:
@@ -113,7 +113,7 @@ definitions:
         type: integer
       assetType:
         allOf:
-          - $ref: '#/definitions/model.AssetType'
+        - $ref: '#/definitions/model.AssetType'
         description: 资产类型
       num:
         description: 有效数量
@@ -121,11 +121,11 @@ definitions:
     type: object
   model.AssetStatus:
     enum:
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
     type: integer
     x-enum-comments:
       AssetStatusDelivering: 配送中
@@ -134,19 +134,19 @@ definitions:
       AssetStatusStock: 库存中
       AssetStatusUsing: 使用中
     x-enum-varnames:
-      - AssetStatusStock
-      - AssetStatusDelivering
-      - AssetStatusUsing
-      - AssetStatusFault
-      - AssetStatusScrap
+    - AssetStatusStock
+    - AssetStatusDelivering
+    - AssetStatusUsing
+    - AssetStatusFault
+    - AssetStatusScrap
   model.AssetType:
     enum:
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 6
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
     type: integer
     x-enum-comments:
       AssetTypeCabinetAccessory: 电柜配件
@@ -156,12 +156,12 @@ definitions:
       AssetTypeOtherAccessory: 其它配件
       AssetTypeSmartBattery: 智能电池
     x-enum-varnames:
-      - AssetTypeEbike
-      - AssetTypeSmartBattery
-      - AssetTypeNonSmartBattery
-      - AssetTypeCabinetAccessory
-      - AssetTypeEbikeAccessory
-      - AssetTypeOtherAccessory
+    - AssetTypeEbike
+    - AssetTypeSmartBattery
+    - AssetTypeNonSmartBattery
+    - AssetTypeCabinetAccessory
+    - AssetTypeEbikeAccessory
+    - AssetTypeOtherAccessory
   model.ExportRes:
     properties:
       sn:
@@ -459,163 +459,163 @@ paths:
   /manager/v2/masset/count:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AssetCount
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 仓管人员ID
-          in: query
-          name: assetManagerId
-          type: integer
-        - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-          enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-          in: query
-          name: assetType
-          type: integer
-          x-enum-comments:
-            AssetTypeCabinetAccessory: 电柜配件
-            AssetTypeEbike: 电车
-            AssetTypeEbikeAccessory: 电车配件
-            AssetTypeNonSmartBattery: 非智能电池
-            AssetTypeOtherAccessory: 其它配件
-            AssetTypeSmartBattery: 智能电池
-          x-enum-varnames:
-            - AssetTypeEbike
-            - AssetTypeSmartBattery
-            - AssetTypeNonSmartBattery
-            - AssetTypeCabinetAccessory
-            - AssetTypeEbikeAccessory
-            - AssetTypeOtherAccessory
-        - description: 属性 id:value
-          in: query
-          name: attribute
-          type: string
-        - description: 电池是否统一查询
-          in: query
-          name: battery
-          type: boolean
-        - description: 电车品牌ID
-          in: query
-          name: brandId
-          type: integer
-        - description: 城市
-          in: query
-          name: cityId
-          type: integer
-        - description: 门店店员ID
-          in: query
-          name: employeeId
-          type: integer
-        - description: 是否启用
-          in: query
-          name: enable
-          type: boolean
-        - description: 团签企业ID
-          in: query
-          name: enterpriseId
-          type: integer
-        - description: 电车关键字
-          in: query
-          name: keyword
-          type: string
-        - description: 资产位置ID
-          in: query
-          name: locationsId
-          type: integer
-        - description: 资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效
-          in: query
-          name: locationsKeyword
-          type: string
-        - description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
-          enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-          in: query
-          name: locationsType
-          type: integer
-          x-enum-comments:
-            AssetLocationsTypeCabinet: 电柜
-            AssetLocationsTypeOperation: 运维
-            AssetLocationsTypeRider: 骑手
-            AssetLocationsTypeStation: 站点
-            AssetLocationsTypeStore: 门店
-            AssetLocationsTypeWarehouse: 仓库
-          x-enum-varnames:
-            - AssetLocationsTypeWarehouse
-            - AssetLocationsTypeStore
-            - AssetLocationsTypeStation
-            - AssetLocationsTypeOperation
-            - AssetLocationsTypeCabinet
-            - AssetLocationsTypeRider
-        - description: 其他物资ID
-          in: query
-          name: materialId
-          type: integer
-        - description: 型号
-          in: query
-          name: model
-          type: string
-        - description: 型号ID
-          in: query
-          name: modelId
-          type: integer
-        - description: 归属类型   1:平台 2:团签
-          enum:
-            - 1
-            - 2
-          in: query
-          name: ownerType
-          type: integer
-        - description: 电车是否赠送
-          in: query
-          name: rto
-          type: boolean
-        - description: 编号
-          in: query
-          name: sn
-          type: string
-        - description: 站点ID
-          in: query
-          name: stationId
-          type: integer
-        - description: 资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废
-          enum:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-          in: query
-          name: status
-          type: integer
-          x-enum-comments:
-            AssetStatusDelivering: 配送中
-            AssetStatusFault: 故障
-            AssetStatusScrap: 报废
-            AssetStatusStock: 库存中
-            AssetStatusUsing: 使用中
-          x-enum-varnames:
-            - AssetStatusStock
-            - AssetStatusDelivering
-            - AssetStatusUsing
-            - AssetStatusFault
-            - AssetStatusScrap
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 仓管人员ID
+        in: query
+        name: assetManagerId
+        type: integer
+      - description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        in: query
+        name: assetType
+        type: integer
+        x-enum-comments:
+          AssetTypeCabinetAccessory: 电柜配件
+          AssetTypeEbike: 电车
+          AssetTypeEbikeAccessory: 电车配件
+          AssetTypeNonSmartBattery: 非智能电池
+          AssetTypeOtherAccessory: 其它配件
+          AssetTypeSmartBattery: 智能电池
+        x-enum-varnames:
+        - AssetTypeEbike
+        - AssetTypeSmartBattery
+        - AssetTypeNonSmartBattery
+        - AssetTypeCabinetAccessory
+        - AssetTypeEbikeAccessory
+        - AssetTypeOtherAccessory
+      - description: 属性 id:value
+        in: query
+        name: attribute
+        type: string
+      - description: 电池是否统一查询
+        in: query
+        name: battery
+        type: boolean
+      - description: 电车品牌ID
+        in: query
+        name: brandId
+        type: integer
+      - description: 城市
+        in: query
+        name: cityId
+        type: integer
+      - description: 门店店员ID
+        in: query
+        name: employeeId
+        type: integer
+      - description: 是否启用
+        in: query
+        name: enable
+        type: boolean
+      - description: 团签企业ID
+        in: query
+        name: enterpriseId
+        type: integer
+      - description: 电车关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 资产位置ID
+        in: query
+        name: locationsId
+        type: integer
+      - description: 资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效
+        in: query
+        name: locationsKeyword
+        type: string
+      - description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        in: query
+        name: locationsType
+        type: integer
+        x-enum-comments:
+          AssetLocationsTypeCabinet: 电柜
+          AssetLocationsTypeOperation: 运维
+          AssetLocationsTypeRider: 骑手
+          AssetLocationsTypeStation: 站点
+          AssetLocationsTypeStore: 门店
+          AssetLocationsTypeWarehouse: 仓库
+        x-enum-varnames:
+        - AssetLocationsTypeWarehouse
+        - AssetLocationsTypeStore
+        - AssetLocationsTypeStation
+        - AssetLocationsTypeOperation
+        - AssetLocationsTypeCabinet
+        - AssetLocationsTypeRider
+      - description: 其他物资ID
+        in: query
+        name: materialId
+        type: integer
+      - description: 型号
+        in: query
+        name: model
+        type: string
+      - description: 型号ID
+        in: query
+        name: modelId
+        type: integer
+      - description: 归属类型   1:平台 2:团签
+        enum:
+        - 1
+        - 2
+        in: query
+        name: ownerType
+        type: integer
+      - description: 电车是否赠送
+        in: query
+        name: rto
+        type: boolean
+      - description: 编号
+        in: query
+        name: sn
+        type: string
+      - description: 站点ID
+        in: query
+        name: stationId
+        type: integer
+      - description: 资产状态 0:待入库 1:库存中 2:配送中 3:使用中 4:故障 5:报废
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        in: query
+        name: status
+        type: integer
+        x-enum-comments:
+          AssetStatusDelivering: 配送中
+          AssetStatusFault: 故障
+          AssetStatusScrap: 报废
+          AssetStatusStock: 库存中
+          AssetStatusUsing: 使用中
+        x-enum-varnames:
+        - AssetStatusStock
+        - AssetStatusDelivering
+        - AssetStatusUsing
+        - AssetStatusFault
+        - AssetStatusScrap
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -623,5 +623,5 @@ paths:
             $ref: '#/definitions/model.AssetNumRes'
       summary: 查询有效的资产数量
       tags:
-        - Asset - 资产
+      - Asset - 资产
 swagger: "2.0"

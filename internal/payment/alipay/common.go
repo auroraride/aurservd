@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/auroraride/adapter/log"
@@ -496,4 +497,33 @@ func (c *commonClient) AlipayFundAuthOperationCancel(authNo, outRequestNo string
 	}
 	zap.L().Info("取消预授权免押订单成功", log.JsonData(result))
 	return result, err
+}
+
+// PurchaseNotification 购买支付宝回调
+func (c *commonClient) PurchaseNotification(req *http.Request) *model.PurchaseNotificationRes {
+	err := req.ParseForm()
+	if err != nil {
+		zap.L().Error("支付宝回调失败", zap.Error(err))
+		return nil
+	}
+
+	var result *alipay.Notification
+	result, err = c.Client.DecodeNotification(req.Form)
+	zap.L().Info("支付宝回调", log.JsonData(result), zap.Error(err))
+	if err != nil {
+		zap.L().Error("支付宝回调解析失败", zap.Error(err))
+		return nil
+	}
+
+	amount, err := strconv.ParseFloat(result.TotalAmount, 64)
+	if err != nil {
+		zap.L().Error("转换金额失败", zap.Error(err))
+		return nil
+	}
+	return &model.PurchaseNotificationRes{
+		TradeNo:    result.TradeNo,
+		OutTradeNo: result.OutTradeNo,
+		Amount:     amount,
+		Payway:     "alipay",
+	}
 }

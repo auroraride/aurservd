@@ -46,3 +46,18 @@ func (*cabinet) AssetDetail(c echo.Context) (err error) {
 	ctx, req := app.AssetManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(biz.NewCabinetAsset().AssetDetail(req.ID))
 }
+
+// AssetsExport
+// @ID		CabinetAssetsExport
+// @Router	/manager/v2/asset/cabinet_assets/export [POST]
+// @Summary	电柜物资导出
+// @Tags	Cabinet - 电柜
+// @Accept	json
+// @Produce	json
+// @Param	X-Asset-Manager-Token	header		string							true	"管理员校验token"
+// @Param	body					body		definition.CabinetAssetListReq	true	"查询参数"
+// @Success	200						{object}	model.ExportRes					"成功"
+func (*cabinet) AssetsExport(c echo.Context) (err error) {
+	ctx, req := app.AssetManagerContextAndBinding[definition.CabinetAssetListReq](c)
+	return ctx.SendResponse(biz.NewCabinetAssetWithModifier(ctx.Modifier).AssetsExport(req))
+}

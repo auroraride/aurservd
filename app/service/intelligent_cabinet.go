@@ -318,24 +318,24 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
 	return nil
 }
 
-// BusinessCensorX 校验用户是否可以使用智能柜办理业务
+// BusinessCensorX 校验用户是否可以办理电柜业务
 func (s *intelligentCabinetService) BusinessCensorX(bus adapter.Business, sub *ent.Subscribe, cab *ent.Cabinet) (bat *ent.Asset) {
-	if !cab.Intelligent {
-		return
-	}
+	// if !cab.Intelligent {
+	// 	return
+	// }
 
 	// 判定电柜状态
 	if cab.Status == model.CabinetStatusMaintenance.Value() {
 		snag.Panic("电柜维护中，请联系客服")
 	}
 
-	// 判定是否智能电柜套餐
-	if !sub.Intelligent {
-		snag.Panic("套餐不匹配")
-	}
+	// // 判定是否智能电柜套餐
+	// if !sub.Intelligent {
+	// 	snag.Panic("套餐不匹配")
+	// }
 
 	// 获取电池
-	bat, _ = sub.QueryBattery().WithModel().Where(asset.Type(model.AssetTypeSmartBattery.Value())).First(s.ctx)
+	bat, _ = sub.QueryBattery().WithModel().Where(asset.TypeIn(model.AssetTypeSmartBattery.Value(), model.AssetTypeNonSmartBattery.Value())).First(s.ctx)
 
 	// 业务如果需要电池, 查找电池信息
 	if bus.BatteryNeed() {

@@ -23,6 +23,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
+	"github.com/auroraride/aurservd/pkg/tools"
 )
 
 type commonClient struct {
@@ -197,4 +198,36 @@ func (c *commonClient) RefundNotification(req *http.Request) *model.PaymentCache
 	zap.L().Info("微信支付缓存更新", zap.ByteString("transaction", b))
 
 	return pc
+}
+
+// PurchaseNotification 购买微信支付回调
+func (c *commonClient) PurchaseNotification(req *http.Request) *model.PurchaseNotificationRes {
+	transaction := new(payments.Transaction)
+	nq, err := c.notifyClient.ParseNotifyRequest(context.Background(), req, transaction)
+	if err != nil {
+		zap.L().Error("微信回调解析失败", zap.Error(err))
+		return nil
+	}
+
+	b, _ := jsoniter.Marshal(transaction)
+	nb, _ := jsoniter.Marshal(nq)
+	zap.L().Info("微信支付回调", zap.ByteString("transaction", b), zap.ByteString("notifiy", nb))
+	state := transaction.TradeState
+	if *state != "SUCCESS" {
+		return nil
+	}
+	out := transaction.OutTradeNo
+	if out == nil {
+		return nil
+	}
+	tranID := transaction.TransactionId
+	if tranID == nil {
+		return nil
+	}
+	return &model.PurchaseNotificationRes{
+		OutTradeNo: *out,
+		TradeNo:    *tranID,
+		Amount:     tools.NewDecimal().Mul(float64(*transaction.Amount.Total), 0.01),
+		Payway:     "wechat",
+	}
 }

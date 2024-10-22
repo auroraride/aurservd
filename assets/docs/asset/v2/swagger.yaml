@@ -190,6 +190,33 @@ definitions:
         - $ref: '#/definitions/definition.CabinetTotal'
         description: 电柜资产总计
     type: object
+  definition.CabinetAssetListReq:
+    properties:
+      cityId:
+        description: 城市ID
+        type: integer
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      end:
+        description: 结束时间
+        type: string
+      modelID:
+        description: 电池型号ID
+        type: integer
+      name:
+        description: 电柜名称
+        type: string
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      sn:
+        description: 电柜编号
+        type: string
+      start:
+        description: 开始时间
+        type: string
+    type: object
   definition.CabinetTotal:
     properties:
       nonSmartBatteryTotal:
@@ -377,6 +404,39 @@ definitions:
         - $ref: '#/definitions/definition.CommonAssetTotal'
         description: 资产统计
     type: object
+  definition.EnterpriseAssetListReq:
+    properties:
+      brandId:
+        description: 电车型号ID
+        type: integer
+      cityId:
+        description: 城市ID
+        type: integer
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      end:
+        description: 结束时间
+        type: string
+      enterpriseID:
+        description: 团签ID
+        type: integer
+      modelID:
+        description: 电池型号ID
+        type: integer
+      otherName:
+        description: 其他物资名称
+        type: string
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      start:
+        description: 开始时间
+        type: string
+      stationId:
+        description: 站点ID
+        type: integer
+    type: object
   definition.EnterpriseDetail:
     properties:
       id:
@@ -401,6 +461,27 @@ definitions:
         allOf:
         - $ref: '#/definitions/definition.CommonAssetTotal'
         description: 资产统计
+    type: object
+  definition.MaintainerAssetListReq:
+    properties:
+      brandId:
+        description: 电车型号ID
+        type: integer
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      keyword:
+        description: 关键字 姓名，手机号
+        type: string
+      modelId:
+        description: 电池型号ID
+        type: integer
+      otherName:
+        description: 其他物资名称
+        type: string
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
     type: object
   definition.MaterialCreateReq:
     properties:
@@ -488,6 +569,39 @@ definitions:
         - $ref: '#/definitions/definition.CommonAssetTotal'
         description: 资产统计
     type: object
+  definition.StoreAssetListReq:
+    properties:
+      brandId:
+        description: 电车型号ID
+        type: integer
+      cityId:
+        description: 城市ID
+        type: integer
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      end:
+        description: 结束时间
+        type: string
+      groupId:
+        description: 门店集合ID
+        type: integer
+      modelId:
+        description: 电池型号ID
+        type: integer
+      otherName:
+        description: 其他物资名称
+        type: string
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      start:
+        description: 开始时间
+        type: string
+      storeId:
+        description: 门店ID
+        type: integer
+    type: object
   definition.StoreGroup:
     properties:
       id:
@@ -545,6 +659,36 @@ definitions:
         allOf:
         - $ref: '#/definitions/definition.CommonAssetTotal'
         description: 资产统计
+    type: object
+  definition.WareHouseAssetListReq:
+    properties:
+      brandId:
+        description: 电车型号ID
+        type: integer
+      cityId:
+        description: 城市ID
+        type: integer
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      end:
+        description: 结束时间
+        type: string
+      modelID:
+        description: 电池型号ID
+        type: integer
+      name:
+        description: 仓库名称关键字
+        type: string
+      otherName:
+        description: 其他物资名称
+        type: string
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      start:
+        description: 开始时间
+        type: string
     type: object
   definition.WarehouseCreateReq:
     properties:
@@ -848,6 +992,39 @@ definitions:
         description: 实际位置名称
         type: string
     type: object
+  model.AssetCheckListReq:
+    properties:
+      checkResult:
+        description: 盘点结果 true:正常 false:异常
+        type: boolean
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      endAt:
+        description: 结束时间
+        type: string
+      keyword:
+        description: 关键字
+        type: string
+      locationsId:
+        description: 位置ID
+        type: integer
+      locationsIds:
+        description: 位置IDs
+        items:
+          type: integer
+        type: array
+      locationsType:
+        allOf:
+        - $ref: '#/definitions/model.AssetLocationsType'
+        description: 位置类型 1:仓库 2:门店 3:站点
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      startAt:
+        description: 开始时间
+        type: string
+    type: object
   model.AssetCheckListRes:
     properties:
       OperatorName:
@@ -949,6 +1126,37 @@ definitions:
         type: string
     required:
     - assetType
+    type: object
+  model.AssetExportListRes:
+    properties:
+      createdAt:
+        description: 创建时间
+        type: string
+      finishAt:
+        description: 完成时间, 可能不存在
+        type: string
+      info:
+        additionalProperties: true
+        description: 筛选条件, 可能不存在
+        type: object
+      message:
+        description: 错误信息, 可能不存在
+        type: string
+      operator:
+        description: 操作人
+        type: string
+      remark:
+        description: 备注
+        type: string
+      sn:
+        description: 编号
+        type: string
+      status:
+        description: 状态
+        type: string
+      taxonomy:
+        description: 类别
+        type: string
     type: object
   model.AssetListReq:
     properties:
@@ -1153,6 +1361,29 @@ definitions:
     - assetType
     - num
     type: object
+  model.AssetMaintenanceListReq:
+    properties:
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      end:
+        description: 结束时间
+        type: string
+      isUseAccessory:
+        description: 是否使用配件 true:已使用  false:未使用
+        type: boolean
+      keyword:
+        type: string
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      start:
+        description: 开始时间
+        type: string
+      status:
+        description: 状态 2:已维修 3:维修失败
+        type: integer
+    type: object
   model.AssetMaintenanceListRes:
     properties:
       cabinetName:
@@ -1257,7 +1488,7 @@ definitions:
         type: integer
       assetType:
         allOf:
-          - $ref: '#/definitions/model.AssetType'
+        - $ref: '#/definitions/model.AssetType'
         description: 资产类型
       num:
         description: 有效数量
@@ -1293,6 +1524,68 @@ definitions:
         type: string
     required:
     - assetType
+    type: object
+  model.AssetScrapListReq:
+    properties:
+      assetName:
+        description: 资产名称
+        type: string
+      assetType:
+        allOf:
+        - $ref: '#/definitions/model.AssetType'
+        description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+      attribute:
+        description: 属性 id:value
+        type: string
+      brandID:
+        description: 电车型号
+        type: integer
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      end:
+        description: 结束时间
+        type: string
+      modelId:
+        description: 电池型号
+        type: integer
+      operateName:
+        description: 操作人
+        type: string
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      scrapReason:
+        allOf:
+        - $ref: '#/definitions/model.ScrapReasonType'
+        description: 报废原因 1:丢失 2:损坏 3:其他
+        enum:
+        - 1
+        - 2
+        - 3
+      scrapType:
+        allOf:
+        - $ref: '#/definitions/model.ScrapType'
+        description: 报废列表类型, 报废列表类型 1:电车 2:智能电池 3:其它
+        enum:
+        - 1
+        - 2
+        - 3
+      sn:
+        description: 资产编号
+        type: string
+      start:
+        description: 开始时间
+        type: string
+    required:
+    - scrapType
     type: object
   model.AssetScrapListRes:
     properties:
@@ -1514,6 +1807,84 @@ definitions:
         description: 时间
         type: string
     type: object
+  model.AssetTransferDetailListReq:
+    properties:
+      agentID:
+        description: 代理员ID
+        type: integer
+      assetManagerID:
+        description: 仓库管理员ID
+        type: integer
+      assetTransferType:
+        allOf:
+        - $ref: '#/definitions/model.AssetTransferType'
+        description: 调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+      assetType:
+        allOf:
+        - $ref: '#/definitions/model.AssetType'
+        description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+      cabinetSN:
+        description: 电柜SN
+        type: string
+      cityId:
+        description: 城市ID
+        type: integer
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      employeeID:
+        description: 门店管理员ID
+        type: integer
+      end:
+        description: 结束时间
+        type: string
+      keyword:
+        description: 关键字
+        type: string
+      locationsId:
+        description: 资产位置ID
+        type: integer
+      locationsKeyword:
+        description: 资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效
+        type: string
+      locationsType:
+        allOf:
+        - $ref: '#/definitions/model.AssetLocationsType'
+        description: 资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+      maintainerID:
+        description: 运维ID
+        type: integer
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      sn:
+        description: 资产SN
+        type: string
+      start:
+        description: 开始时间
+        type: string
+    type: object
   model.AssetTransferDetailListRes:
     properties:
       assetName:
@@ -1569,6 +1940,97 @@ definitions:
       transferTypeName:
         description: 调拨类型名称
         type: string
+    type: object
+  model.AssetTransferListReq:
+    properties:
+      agentID:
+        description: 代理员ID
+        type: integer
+      assetManagerID:
+        description: 仓库管理员ID
+        type: integer
+      assetType:
+        allOf:
+        - $ref: '#/definitions/model.AssetType'
+        description: 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      employeeID:
+        description: 门店管理员ID
+        type: integer
+      fromLocationsId:
+        description: 调出位置ID
+        type: integer
+      fromLocationsType:
+        allOf:
+        - $ref: '#/definitions/model.AssetLocationsType'
+        description: 调出位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+      inEnd:
+        description: 入库结束时间
+        type: string
+      inStart:
+        description: 入库开始时间
+        type: string
+      keyword:
+        description: 关键字 (调拨单号，调拨事由、出库人、接收人)
+        type: string
+      mainPage:
+        allOf:
+        - $ref: '#/definitions/model.AssetTransferMainPage'
+        description: 是否首页跳转查询
+        enum:
+        - 1
+        - 2
+      maintainerID:
+        description: 运维ID
+        type: integer
+      outEnd:
+        description: 出库结束时间
+        type: string
+      outStart:
+        description: 出库开始时间
+        type: string
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      status:
+        allOf:
+        - $ref: '#/definitions/model.AssetTransferStatus'
+        description: 调拨状态 1:配送中 2:已入库 3:已取消
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+      toLocationsId:
+        description: 调入位置ID
+        type: integer
+      toLocationsType:
+        allOf:
+        - $ref: '#/definitions/model.AssetLocationsType'
+        description: 调入位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
     type: object
   model.AssetTransferListRes:
     properties:
@@ -3202,6 +3664,33 @@ paths:
       summary: 物资详情
       tags:
       - Cabinet - 电柜
+  /manager/v2/asset/cabinet_assets/export:
+    post:
+      consumes:
+      - application/json
+      operationId: CabinetAssetsExport
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 查询参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.CabinetAssetListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: 电柜物资导出
+      tags:
+      - Cabinet - 电柜
   /manager/v2/asset/check:
     get:
       consumes:
@@ -3486,6 +3975,33 @@ paths:
                   type: array
               type: object
       summary: 盘点资产明细
+      tags:
+      - AssetCheck - 盘点
+  /manager/v2/asset/check/export:
+    post:
+      consumes:
+      - application/json
+      operationId: AssetCheckExport
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 查询参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetCheckListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: 盘点列表导出
       tags:
       - AssetCheck - 盘点
   /manager/v2/asset/check/sn/{sn}:
@@ -4089,7 +4605,73 @@ paths:
       summary: 团签物资详情
       tags:
       - Enterprise - 团签
+  /manager/v2/asset/enterprise_assets/export:
+    post:
+      consumes:
+      - application/json
+      operationId: EnterpriseAssetsExport
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 查询参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.EnterpriseAssetListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: 团签物资导出
+      tags:
+      - Enterprise - 团签
   /manager/v2/asset/export:
+    get:
+      consumes:
+      - application/json
+      operationId: AssetManagerExportList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 导出编号
+        in: query
+        name: sn
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.AssetExportListRes'
+                  type: array
+              type: object
+      summary: 导出列表
+      tags:
+      - AssetExport - 导出
     post:
       consumes:
       - application/json
@@ -4116,6 +4698,32 @@ paths:
       summary: 导出资产
       tags:
       - Assets - 基础档案
+  /manager/v2/asset/export/download/{sn}:
+    get:
+      consumes:
+      - application/json
+      operationId: AssetManagerExportDownload
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 编号
+        in: path
+        name: sn
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 下载文件
+      tags:
+      - AssetExport - 导出
   /manager/v2/asset/maintainer_assets:
     get:
       consumes:
@@ -4192,6 +4800,33 @@ paths:
           schema:
             $ref: '#/definitions/definition.CommonAssetDetail'
       summary: 物资详情
+      tags:
+      - Maintainer - 运维
+  /manager/v2/asset/maintainer_assets/export:
+    post:
+      consumes:
+      - application/json
+      operationId: MaintainerAssetsExport
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 查询参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.MaintainerAssetListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: 运维物资导出
       tags:
       - Maintainer - 运维
   /manager/v2/asset/maintenance:
@@ -4279,6 +4914,33 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: 修改维修记录
+      tags:
+      - AssetMaintenance - 维修记录
+  /manager/v2/asset/maintenance/export:
+    post:
+      consumes:
+      - application/json
+      operationId: AssetMaintenanceExport
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 查询参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetMaintenanceListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: 维修记录列表导出
       tags:
       - AssetMaintenance - 维修记录
   /manager/v2/asset/material:
@@ -4642,13 +5304,14 @@ paths:
         - ScrapReasonLost
         - ScrapReasonDamage
         - ScrapReasonOther
-      - description: 报废列表类型 1:电车 2:智能电池 3:其它
+      - description: 报废列表类型, 报废列表类型 1:电车 2:智能电池 3:其它
         enum:
         - 1
         - 2
         - 3
         in: query
         name: scrapType
+        required: true
         type: integer
         x-enum-comments:
           ScrapTypeEbike: 报废电车
@@ -4734,6 +5397,33 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: 资产报废还原
+      tags:
+      - AssetScrap - 报废
+  /manager/v2/asset/scrap/export:
+    post:
+      consumes:
+      - application/json
+      operationId: AssetScrapExport
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 查询参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetScrapListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: 资产报废列表导出
       tags:
       - AssetScrap - 报废
   /manager/v2/asset/scrap/reason:
@@ -5137,6 +5827,33 @@ paths:
           schema:
             $ref: '#/definitions/definition.CommonAssetDetail'
       summary: 门店物资详情
+      tags:
+      - Store - 门店
+  /manager/v2/asset/store_assets/export:
+    post:
+      consumes:
+      - application/json
+      operationId: StoreAssetsExport
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 查询参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.StoreAssetListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: 门店物资导出
       tags:
       - Store - 门店
   /manager/v2/asset/store_group:
@@ -5675,6 +6392,10 @@ paths:
         in: query
         name: end
         type: string
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
       - description: 资产位置ID
         in: query
         name: locationsId
@@ -5739,6 +6460,60 @@ paths:
                   type: array
               type: object
       summary: 调拨详情列表(出入库明细)
+      tags:
+      - AssetTransfer - 调拨
+  /manager/v2/asset/transfer/details/export:
+    post:
+      consumes:
+      - application/json
+      operationId: AssetTransferDetailsListExport
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 查询参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetTransferDetailListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: 出入库明细导出
+      tags:
+      - AssetTransfer - 调拨
+  /manager/v2/asset/transfer/export:
+    post:
+      consumes:
+      - application/json
+      operationId: AssetTransferListExport
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: 查询参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetTransferListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: 资产调拨列表导出
       tags:
       - AssetTransfer - 调拨
   /manager/v2/asset/transfer/flow:
@@ -6255,6 +7030,33 @@ paths:
           schema:
             $ref: '#/definitions/definition.CommonAssetDetail'
       summary: 仓库物资详情
+      tags:
+      - Warehouse - 仓库
+  /manager/v2/asset/warehouse_assets/export:
+    post:
+      consumes:
+      - application/json
+      operationId: WarehouseAssetExport
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Asset-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.WareHouseAssetListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.ExportRes'
+      summary: 仓库物资导出
       tags:
       - Warehouse - 仓库
 swagger: "2.0"

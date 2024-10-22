@@ -32,6 +32,8 @@ type Tx struct {
 	AssetCheck *AssetCheckClient
 	// AssetCheckDetails is the client for interacting with the AssetCheckDetails builders.
 	AssetCheckDetails *AssetCheckDetailsClient
+	// AssetExport is the client for interacting with the AssetExport builders.
+	AssetExport *AssetExportClient
 	// AssetMaintenance is the client for interacting with the AssetMaintenance builders.
 	AssetMaintenance *AssetMaintenanceClient
 	// AssetMaintenanceDetails is the client for interacting with the AssetMaintenanceDetails builders.
@@ -174,6 +176,12 @@ type Tx struct {
 	PromotionSetting *PromotionSettingClient
 	// PromotionWithdrawal is the client for interacting with the PromotionWithdrawal builders.
 	PromotionWithdrawal *PromotionWithdrawalClient
+	// PurchaseFollow is the client for interacting with the PurchaseFollow builders.
+	PurchaseFollow *PurchaseFollowClient
+	// PurchaseOrder is the client for interacting with the PurchaseOrder builders.
+	PurchaseOrder *PurchaseOrderClient
+	// PurchasePayment is the client for interacting with the PurchasePayment builders.
+	PurchasePayment *PurchasePaymentClient
 	// Question is the client for interacting with the Question builders.
 	Question *QuestionClient
 	// QuestionCategory is the client for interacting with the QuestionCategory builders.
@@ -354,6 +362,7 @@ func (tx *Tx) init() {
 	tx.AssetAttributes = NewAssetAttributesClient(tx.config)
 	tx.AssetCheck = NewAssetCheckClient(tx.config)
 	tx.AssetCheckDetails = NewAssetCheckDetailsClient(tx.config)
+	tx.AssetExport = NewAssetExportClient(tx.config)
 	tx.AssetMaintenance = NewAssetMaintenanceClient(tx.config)
 	tx.AssetMaintenanceDetails = NewAssetMaintenanceDetailsClient(tx.config)
 	tx.AssetManager = NewAssetManagerClient(tx.config)
@@ -425,6 +434,9 @@ func (tx *Tx) init() {
 	tx.PromotionReferralsProgress = NewPromotionReferralsProgressClient(tx.config)
 	tx.PromotionSetting = NewPromotionSettingClient(tx.config)
 	tx.PromotionWithdrawal = NewPromotionWithdrawalClient(tx.config)
+	tx.PurchaseFollow = NewPurchaseFollowClient(tx.config)
+	tx.PurchaseOrder = NewPurchaseOrderClient(tx.config)
+	tx.PurchasePayment = NewPurchasePaymentClient(tx.config)
 	tx.Question = NewQuestionClient(tx.config)
 	tx.QuestionCategory = NewQuestionCategoryClient(tx.config)
 	tx.Reserve = NewReserveClient(tx.config)

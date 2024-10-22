@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"context"
+
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/entsql"
@@ -10,6 +12,7 @@ import (
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
 
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -20,7 +23,7 @@ type GoodsMixin struct {
 }
 
 func (m GoodsMixin) Fields() []ent.Field {
-	f := field.Uint64("goods_id").Comment("骑手ID")
+	f := field.Uint64("goods_id").Comment("商品ID")
 	if m.Optional {
 		f.Optional().Nillable()
 	}
@@ -68,6 +71,7 @@ func (Goods) Fields() []ent.Field {
 		field.Strings("photos").Comment("商品图片"),
 		field.Strings("intro").Comment("商品介绍"),
 		field.Uint8("status").Default(0).Comment("商品状态 0下架 1上架"),
+		field.JSON("payment_plans", model.GoodsPaymentPlans{}).Optional().Comment("付款方案"),
 	}
 }
 
@@ -101,5 +105,32 @@ func (Goods) Indexes() []ent.Index {
 			entsql.OpClass("gin_trgm_ops"),
 		),
 		index.Fields("status"),
+	}
+}
+
+type GoodsMutation interface {
+	PaymentPlans() (model.GoodsPaymentPlans, bool)
+	SetPaymentPlans(p model.GoodsPaymentPlans)
+}
+
+func (Goods) Hooks() []ent.Hook {
+	return []ent.Hook{
+		func(next ent.Mutator) ent.Mutator {
+			return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+				if m.Op().Is(ent.OpCreate | ent.OpUpdateOne | ent.OpUpdate) {
+					switch r := m.(type) {
+					case GoodsMutation:
+						p, ok := r.PaymentPlans()
+						if ok {
+							if err := p.Valid(); err != nil {
+								return nil, err
+							}
+							r.SetPaymentPlans(p)
+						}
+					}
+				}
+				return next.Mutate(ctx, m)
+			})
+		},
 	}
 }

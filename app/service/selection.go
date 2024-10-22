@@ -23,6 +23,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/questioncategory"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
@@ -620,6 +621,7 @@ func (s *selectionService) EbikeBrandByCity(req *model.SelectionBrandByCityReq) 
 
 // StoreGroup 筛选门店集合
 func (s *selectionService) StoreGroup() (items []model.SelectOption) {
+	items = make([]model.SelectOption, 0)
 	list, _ := ent.Database.StoreGroup.QueryNotDeleted().All(context.Background())
 	for _, v := range list {
 		items = append(items, model.SelectOption{
@@ -628,4 +630,38 @@ func (s *selectionService) StoreGroup() (items []model.SelectOption) {
 		})
 	}
 	return
+}
+
+// Goods 筛选商品
+func (s *selectionService) Goods() (items []model.SelectOptionGoods) {
+	items = make([]model.SelectOptionGoods, 0)
+	goods, _ := ent.Database.Goods.Query().All(s.ctx)
+	for _, g := range goods {
+		prices := make([]model.SelectOption, 0)
+		for k, p := range g.PaymentPlans {
+			prices = append(prices, model.SelectOption{
+				Value: uint64(k),
+				Label: fmt.Sprintf("%v期", len(p)),
+			})
+		}
+		items = append(items, model.SelectOptionGoods{
+			Value:  g.ID,
+			Label:  g.Name,
+			Prices: prices,
+		})
+	}
+	return
+}
+
+// GoodsStore 筛选购车门店
+func (s *selectionService) GoodsStore() (items []*model.CascaderOptionLevel2) {
+	res, _ := ent.Database.Store.QueryNotDeleted().WithCity().
+		Where(
+			store.EbikeSale(true),
+		).
+		All(s.ctx)
+
+	return cascaderLevel2IDName(res, func(r *ent.Store) model.IDName {
+		return s.nilableCity(r.Edges.City)
+	}, "未选择网点", true)
 }

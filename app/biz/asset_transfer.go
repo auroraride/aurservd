@@ -370,13 +370,14 @@ func (b *assetTransferBiz) GetTransferBySn(assetSignInfo definition.AssetSignInf
 // TransferDetailsList 出入库明细列表
 func (b *assetTransferBiz) TransferDetailsList(assetSignInfo definition.AssetSignInfo, req *definition.AssetTransferDetailListReq) (res *model.PaginationRes, err error) {
 	newReq := model.AssetTransferDetailListReq{
-		PaginationReq:     req.PaginationReq,
-		AssetTransferType: req.AssetTransferType,
-		Start:             req.Start,
-		End:               req.End,
-		AssetType:         req.AssetType,
-		CabinetSN:         req.Keyword,
-		SN:                req.Keyword,
+		PaginationReq: req.PaginationReq,
+		AssetTransferDetailListFilter: model.AssetTransferDetailListFilter{
+			AssetTransferType: req.AssetTransferType,
+			Start:             req.Start,
+			End:               req.End,
+			AssetType:         req.AssetType,
+			Keyword:           req.Keyword,
+		},
 	}
 	if assetSignInfo.AssetManager != nil {
 		newReq.AssetManagerID = assetSignInfo.AssetManager.ID

@@ -41,6 +41,10 @@ type WarehouseModifyReq struct {
 // WareHouseAssetListReq 仓库资产列表请求
 type WareHouseAssetListReq struct {
 	model.PaginationReq
+	WareHouseAssetListFilter
+}
+
+type WareHouseAssetListFilter struct {
 	Name      *string `json:"name" query:"name"`           // 仓库名称关键字
 	CityID    *uint64 `json:"cityId" query:"cityId"`       // 城市ID
 	ModelID   *uint64 `json:"modelID" query:"modelID"`     // 电池型号ID

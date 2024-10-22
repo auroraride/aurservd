@@ -163,3 +163,24 @@ type PaymentConfigure struct {
 	Coupons     []Coupon `json:"coupons"`     // 用户优惠券
 	MaxDiscount float64  `json:"maxDiscount"` // 最大优惠金额
 }
+
+// PurchasePayReq 购买支付请求
+type PurchasePayReq struct {
+	OutTradeNo string  `json:"outTradeNo"` // 订单号
+	Subject    string  `json:"subject"`    // 支付信息
+	Amount     float64 `json:"amount"`     // 支付金额
+}
+
+// PurchasePayRes  购买支付返回
+type PurchasePayRes struct {
+	Prepay     string `json:"prepay"`               // 预支付字符串
+	OutTradeNo string `json:"outTradeNo,omitempty"` // 交易编码
+}
+
+// PurchaseNotificationRes 购买支付回调
+type PurchaseNotificationRes struct {
+	OutTradeNo string  `json:"outTradeNo"` // 订单号
+	TradeNo    string  `json:"tradeNo"`    // 平台单号
+	Amount     float64 `json:"amount"`     // 金额
+	Payway     string  `json:"payway"`     // 支付方式 alipay, wechat
+}

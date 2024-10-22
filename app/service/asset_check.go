@@ -58,7 +58,9 @@ func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.Ass
 			SetLastModifier(modifier).
 			SetStatus(model.AssetCheckDetailsStatusUntreated.Value()).
 			SetLocationsID(v.LocationsID).
-			SetLocationsType(v.LocationsType))
+			SetLocationsType(v.LocationsType).
+			SetSn(v.Sn),
+		)
 		assetIDs = append(assetIDs, v.ID)
 	}
 	// 查询应盘电池资产
@@ -79,7 +81,9 @@ func (s *assetCheckService) CreateAssetCheck(ctx context.Context, req *model.Ass
 			SetLastModifier(modifier).
 			SetStatus(model.AssetCheckDetailsStatusUntreated.Value()).
 			SetLocationsID(v.LocationsID).
-			SetLocationsType(v.LocationsType))
+			SetLocationsType(v.LocationsType).
+			SetSn(v.Sn),
+		)
 		assetIDs = append(assetIDs, v.ID)
 	}
 	var realEbikeNum, realBatteryNum uint
@@ -912,4 +916,54 @@ func (s *assetCheckService) AssetCheckAbnormalOperate(ctx context.Context, req *
 		return err
 	}
 	return nil
+}
+
+// Export 导出
+func (s *assetCheckService) Export(req *model.AssetCheckListReq, md *model.Modifier) model.AssetExportRes {
+	q := ent.Database.AssetCheck.QueryNotDeleted().WithStore().WithStation().WithWarehouse().
+		WithOperateEmployee().WithOperateAssetManager().WithOperateAgent().WithCheckDetails(func(query *ent.AssetCheckDetailsQuery) {
+		query.WithAsset()
+	}).Order(ent.Desc(assetcheck.FieldID))
+
+	s.listFilter(q, req)
+
+	return NewAssetExportWithModifier(md).Start("盘点记录", req.AssetCheckListFilter, nil, "", func(path string) {
+		items, _ := q.All(context.Background())
+		var rows tools.ExcelItems
+		title := []any{
+			"盘点结果",
+			"应盘电池",
+			"应盘电车",
+			"实盘电池",
+			"实盘电车",
+			"盘点位置",
+			"盘点人员",
+			"开始时间",
+			"结束时间",
+			"状态",
+		}
+		rows = append(rows, title)
+		for _, item := range items {
+			d := s.detail(item)
+			checkRes := "异常"
+			if d.CheckResult {
+				checkRes = "正常"
+			}
+
+			row := []any{
+				checkRes,
+				d.BatteryNum,
+				d.EbikeNum,
+				d.BatteryNumReal,
+				d.EbikeNumReal,
+				d.LocationsName,
+				d.OperatorName,
+				d.StartAt,
+				d.EndAt,
+				d.Status,
+			}
+			rows = append(rows, row)
+		}
+		tools.NewExcel(path).AddValues(rows).Done()
+	})
 }

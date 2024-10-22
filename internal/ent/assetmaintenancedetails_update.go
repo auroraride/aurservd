@@ -111,6 +111,26 @@ func (amdu *AssetMaintenanceDetailsUpdate) ClearMaterialID() *AssetMaintenanceDe
 	return amdu
 }
 
+// SetSn sets the "sn" field.
+func (amdu *AssetMaintenanceDetailsUpdate) SetSn(s string) *AssetMaintenanceDetailsUpdate {
+	amdu.mutation.SetSn(s)
+	return amdu
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (amdu *AssetMaintenanceDetailsUpdate) SetNillableSn(s *string) *AssetMaintenanceDetailsUpdate {
+	if s != nil {
+		amdu.SetSn(*s)
+	}
+	return amdu
+}
+
+// ClearSn clears the value of the "sn" field.
+func (amdu *AssetMaintenanceDetailsUpdate) ClearSn() *AssetMaintenanceDetailsUpdate {
+	amdu.mutation.ClearSn()
+	return amdu
+}
+
 // SetAssetID sets the "asset_id" field.
 func (amdu *AssetMaintenanceDetailsUpdate) SetAssetID(u uint64) *AssetMaintenanceDetailsUpdate {
 	amdu.mutation.SetAssetID(u)
@@ -269,6 +289,12 @@ func (amdu *AssetMaintenanceDetailsUpdate) sqlSave(ctx context.Context) (n int, 
 	}
 	if amdu.mutation.RemarkCleared() {
 		_spec.ClearField(assetmaintenancedetails.FieldRemark, field.TypeString)
+	}
+	if value, ok := amdu.mutation.Sn(); ok {
+		_spec.SetField(assetmaintenancedetails.FieldSn, field.TypeString, value)
+	}
+	if amdu.mutation.SnCleared() {
+		_spec.ClearField(assetmaintenancedetails.FieldSn, field.TypeString)
 	}
 	if amdu.mutation.MaterialCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -454,6 +480,26 @@ func (amduo *AssetMaintenanceDetailsUpdateOne) SetNillableMaterialID(u *uint64) 
 // ClearMaterialID clears the value of the "material_id" field.
 func (amduo *AssetMaintenanceDetailsUpdateOne) ClearMaterialID() *AssetMaintenanceDetailsUpdateOne {
 	amduo.mutation.ClearMaterialID()
+	return amduo
+}
+
+// SetSn sets the "sn" field.
+func (amduo *AssetMaintenanceDetailsUpdateOne) SetSn(s string) *AssetMaintenanceDetailsUpdateOne {
+	amduo.mutation.SetSn(s)
+	return amduo
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (amduo *AssetMaintenanceDetailsUpdateOne) SetNillableSn(s *string) *AssetMaintenanceDetailsUpdateOne {
+	if s != nil {
+		amduo.SetSn(*s)
+	}
+	return amduo
+}
+
+// ClearSn clears the value of the "sn" field.
+func (amduo *AssetMaintenanceDetailsUpdateOne) ClearSn() *AssetMaintenanceDetailsUpdateOne {
+	amduo.mutation.ClearSn()
 	return amduo
 }
 
@@ -645,6 +691,12 @@ func (amduo *AssetMaintenanceDetailsUpdateOne) sqlSave(ctx context.Context) (_no
 	}
 	if amduo.mutation.RemarkCleared() {
 		_spec.ClearField(assetmaintenancedetails.FieldRemark, field.TypeString)
+	}
+	if value, ok := amduo.mutation.Sn(); ok {
+		_spec.SetField(assetmaintenancedetails.FieldSn, field.TypeString, value)
+	}
+	if amduo.mutation.SnCleared() {
+		_spec.ClearField(assetmaintenancedetails.FieldSn, field.TypeString)
 	}
 	if amduo.mutation.MaterialCleared() {
 		edge := &sqlgraph.EdgeSpec{

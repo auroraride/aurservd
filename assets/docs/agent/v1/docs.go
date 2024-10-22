@@ -4283,6 +4283,24 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_auroraride_aurservd_app_model.Payway": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "PaywayAgentWxMiniprogram": "代理商小程序",
+                "PaywayCash": "现金支付",
+                "PaywayUnknown": "未知"
+            },
+            "x-enum-varnames": [
+                "PaywayUnknown",
+                "PaywayCash",
+                "PaywayAgentWxMiniprogram"
+            ]
+        },
         "model.AgentCabinet": {
             "type": "object",
             "properties": {
@@ -5680,10 +5698,6 @@ const docTemplate = `{
                     "description": "型号",
                     "type": "string"
                 },
-                "modelId": {
-                    "description": "型号ID",
-                    "type": "integer"
-                },
                 "sn": {
                     "description": "编号",
                     "type": "string"
@@ -6416,24 +6430,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Payway": {
-            "type": "integer",
-            "enum": [
-                0,
-                1,
-                2
-            ],
-            "x-enum-comments": {
-                "PaywayAgentWxMiniprogram": "代理商小程序",
-                "PaywayCash": "现金支付",
-                "PaywayUnknown": "未知"
-            },
-            "x-enum-varnames": [
-                "PaywayUnknown",
-                "PaywayCash",
-                "PaywayAgentWxMiniprogram"
-            ]
-        },
         "model.Plan": {
             "type": "object",
             "properties": {
@@ -6506,7 +6502,7 @@ const docTemplate = `{
                     ],
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.Payway"
+                            "$ref": "#/definitions/github_com_auroraride_aurservd_app_model.Payway"
                         }
                     ]
                 },

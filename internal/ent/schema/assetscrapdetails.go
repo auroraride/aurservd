@@ -59,6 +59,7 @@ func (AssetScrapDetails) Annotations() []schema.Annotation {
 // Fields of the AssetScrapDetails.
 func (AssetScrapDetails) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("sn").Optional().Comment("资产SN"),
 		field.Uint64("asset_id").Comment("资产ID"),
 		field.Uint64("scrap_id").Optional().Comment("报废ID"),
 	}

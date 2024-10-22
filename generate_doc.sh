@@ -21,6 +21,8 @@ APIS=(
   'controller/v1/papi/papi.go'
   'controller/v2/amapi/amapi.go'
   'controller/v2/wapi/wapi.go'
+  'purchase/controller/mapi/mapi.go'
+  'purchase/controller/rapi/rapi.go'
 )
 
 OUTPUTS=(
@@ -35,6 +37,8 @@ OUTPUTS=(
   './assets/docs/promotion/v1'
   './assets/docs/asset/v2'
   './assets/docs/warestore/v2'
+  './assets/docs/manager/v2/purchase'
+  './assets/docs/rider/v2/purchase'
 )
 
 function exclude() {
@@ -53,5 +57,5 @@ for i in "${!APIS[@]}" ; do
   FOLDER_PATH=${API%/*}
   TARGET_FILE=${API##*/}
   eval "swag fmt $TARGET_FILE"
-  eval "swag init -g $TARGET_FILE -d ./app/$FOLDER_PATH,./app/model,./app/biz/definition,./app/permission,$ADAPTER -o ${OUTPUTS[i]} --md ./wiki"
+  eval "swag init -g $TARGET_FILE -d ./app/$FOLDER_PATH,./app/model,./app/biz/definition,./app/permission,./app/purchase/internal/model,$ADAPTER -o ${OUTPUTS[i]} --md ./wiki"
 done

@@ -114,6 +114,13 @@ func (c *AssetCheckDetailsClient) ModifyOne(old *AssetCheckDetails, data any) *A
 	return EntitySetAttributes[AssetCheckDetailsUpdateOne, AssetCheckDetails](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for AssetExport.
+func (c *AssetExportClient) ModifyOne(old *AssetExport, data any) *AssetExportUpdateOne {
+	mutation := newAssetExportMutation(c.config, OpUpdateOne, withAssetExport(old))
+	up := &AssetExportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssetExportUpdateOne, AssetExport](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for AssetMaintenance.
 func (c *AssetMaintenanceClient) ModifyOne(old *AssetMaintenance, data any) *AssetMaintenanceUpdateOne {
 	mutation := newAssetMaintenanceMutation(c.config, OpUpdateOne, withAssetMaintenance(old))
@@ -609,6 +616,27 @@ func (c *PromotionWithdrawalClient) ModifyOne(old *PromotionWithdrawal, data any
 	mutation := newPromotionWithdrawalMutation(c.config, OpUpdateOne, withPromotionWithdrawal(old))
 	up := &PromotionWithdrawalUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 	return EntitySetAttributes[PromotionWithdrawalUpdateOne, PromotionWithdrawal](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for PurchaseFollow.
+func (c *PurchaseFollowClient) ModifyOne(old *PurchaseFollow, data any) *PurchaseFollowUpdateOne {
+	mutation := newPurchaseFollowMutation(c.config, OpUpdateOne, withPurchaseFollow(old))
+	up := &PurchaseFollowUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PurchaseFollowUpdateOne, PurchaseFollow](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for PurchaseOrder.
+func (c *PurchaseOrderClient) ModifyOne(old *PurchaseOrder, data any) *PurchaseOrderUpdateOne {
+	mutation := newPurchaseOrderMutation(c.config, OpUpdateOne, withPurchaseOrder(old))
+	up := &PurchaseOrderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PurchaseOrderUpdateOne, PurchaseOrder](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for PurchasePayment.
+func (c *PurchasePaymentClient) ModifyOne(old *PurchasePayment, data any) *PurchasePaymentUpdateOne {
+	mutation := newPurchasePaymentMutation(c.config, OpUpdateOne, withPurchasePayment(old))
+	up := &PurchasePaymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PurchasePaymentUpdateOne, PurchasePayment](up, old, data)
 }
 
 // ModifyOne returns an update with pointer struct builder for Question.

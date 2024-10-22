@@ -586,13 +586,26 @@ func (s *assetService) downloadBatteryTemplate(ctx context.Context) (path string
 }
 
 // Export 导出资产
-func (s *assetService) Export(ctx context.Context, req *model.AssetListReq, m *model.Modifier) (model.ExportRes, error) {
-	q := s.orm.QueryNotDeleted().WithCabinet().WithCity().WithStation().WithModel().WithOperator().WithValues().WithStore().WithWarehouse().WithBrand().WithValues()
+func (s *assetService) Export(ctx context.Context, req *model.AssetListReq, m *model.Modifier) (model.AssetExportRes, error) {
+	q := s.orm.QueryNotDeleted().
+		WithCabinet().
+		WithCity().
+		WithStation(func(query *ent.EnterpriseStationQuery) {
+			query.WithEnterprise()
+		}).
+		WithModel().
+		WithOperator().
+		WithValues().
+		WithStore().
+		WithWarehouse().
+		WithBrand().
+		WithValues().
+		WithRider()
 	s.filter(q, &req.AssetFilter)
 	q.Order(ent.Desc(asset.FieldCreatedAt))
 
 	if req.AssetType == nil {
-		return model.ExportRes{}, errors.New("类型不能为空")
+		return model.AssetExportRes{}, errors.New("类型不能为空")
 	}
 	switch *req.AssetType {
 	case model.AssetTypeSmartBattery:
@@ -602,13 +615,13 @@ func (s *assetService) Export(ctx context.Context, req *model.AssetListReq, m *m
 		s.ebikeFilter(q, &req.AssetFilter)
 		return s.exportEbike(ctx, req, q, m), nil
 	default:
-		return model.ExportRes{}, errors.New("未知类型")
+		return model.AssetExportRes{}, errors.New("未知类型")
 	}
 }
 
 // 导出电池
-func (s *assetService) exportBattery(ctx context.Context, req *model.AssetListReq, q *ent.AssetQuery, m *model.Modifier) model.ExportRes {
-	return NewExportWithModifier(m).Start("电池列表", req.AssetFilter, nil, "", func(path string) {
+func (s *assetService) exportBattery(ctx context.Context, req *model.AssetListReq, q *ent.AssetQuery, m *model.Modifier) model.AssetExportRes {
+	return NewAssetExportWithModifier(m).Start("电池列表", req.AssetFilter, nil, "", func(path string) {
 		items, _ := q.All(context.Background())
 		var rows tools.ExcelItems
 		title := []any{
@@ -631,6 +644,9 @@ func (s *assetService) exportBattery(ctx context.Context, req *model.AssetListRe
 			belong = "平台"
 			if item.LocationsType == model.AssetLocationsTypeStation.Value() {
 				belong = "代理商"
+				if item.Edges.Station != nil && item.Edges.Station.Edges.Enterprise != nil {
+					belong = item.Edges.Station.Edges.Enterprise.Name
+				}
 			}
 			switch item.LocationsType {
 			case model.AssetLocationsTypeWarehouse.Value():
@@ -656,7 +672,7 @@ func (s *assetService) exportBattery(ctx context.Context, req *model.AssetListRe
 			case model.AssetLocationsTypeRider.Value():
 				assetLocations = "[骑手]"
 				if item.Edges.Rider != nil {
-					assetLocations += item.Edges.Rider.Name
+					assetLocations += item.Edges.Rider.Name + "-" + item.Edges.Rider.Phone
 				}
 			case model.AssetLocationsTypeOperation.Value():
 				assetLocations = "[运维]"
@@ -675,6 +691,11 @@ func (s *assetService) exportBattery(ctx context.Context, req *model.AssetListRe
 				brandName = item.BrandName
 			}
 
+			enable := "否"
+			if item.Enable {
+				enable = "是"
+			}
+
 			row := []any{
 				cityName,
 				belong,
@@ -683,7 +704,7 @@ func (s *assetService) exportBattery(ctx context.Context, req *model.AssetListRe
 				modelStr,
 				item.Sn,
 				model.AssetStatus(item.Status).String(),
-				item.Enable,
+				enable,
 				item.Remark,
 			}
 			rows = append(rows, row)
@@ -693,9 +714,9 @@ func (s *assetService) exportBattery(ctx context.Context, req *model.AssetListRe
 }
 
 // 导出电车
-func (s *assetService) exportEbike(ctx context.Context, req *model.AssetListReq, q *ent.AssetQuery, m *model.Modifier) model.ExportRes {
+func (s *assetService) exportEbike(ctx context.Context, req *model.AssetListReq, q *ent.AssetQuery, m *model.Modifier) model.AssetExportRes {
 	t, _ := ent.Database.AssetAttributes.Query().Where(assetattributes.AssetType((model.AssetTypeEbike).Value())).WithValues().All(ctx)
-	return NewExportWithModifier(m).Start("电车列表", req.AssetFilter, nil, "", func(path string) {
+	return NewAssetExportWithModifier(m).Start("电车列表", req.AssetFilter, nil, "", func(path string) {
 		items, _ := q.All(context.Background())
 		var rows tools.ExcelItems
 		title := []any{
@@ -718,6 +739,9 @@ func (s *assetService) exportEbike(ctx context.Context, req *model.AssetListReq,
 			belong = "平台"
 			if item.LocationsType == model.AssetLocationsTypeStation.Value() {
 				belong = "代理商"
+				if item.Edges.Station != nil && item.Edges.Station.Edges.Enterprise != nil {
+					belong = item.Edges.Station.Edges.Enterprise.Name
+				}
 			}
 			switch item.LocationsType {
 			case model.AssetLocationsTypeWarehouse.Value():
@@ -743,7 +767,7 @@ func (s *assetService) exportEbike(ctx context.Context, req *model.AssetListReq,
 			case model.AssetLocationsTypeRider.Value():
 				assetLocations = "[骑手]"
 				if item.Edges.Rider != nil {
-					assetLocations += item.Edges.Rider.Name
+					assetLocations += item.Edges.Rider.Name + "-" + item.Edges.Rider.Phone
 				}
 			case model.AssetLocationsTypeOperation.Value():
 				assetLocations = "[运维]"
@@ -795,7 +819,20 @@ func (s *assetService) exportEbike(ctx context.Context, req *model.AssetListReq,
 
 // List 资产列表
 func (s *assetService) List(ctx context.Context, req *model.AssetListReq) *model.PaginationRes {
-	q := s.orm.QueryNotDeleted().WithCabinet().WithCity().WithStation().WithModel().WithOperator().WithValues().WithStore().WithWarehouse().WithBrand().WithValues().WithRider()
+	q := s.orm.QueryNotDeleted().
+		WithCabinet().
+		WithCity().
+		WithStation(func(query *ent.EnterpriseStationQuery) {
+			query.WithEnterprise()
+		}).
+		WithModel().
+		WithOperator().
+		WithValues().
+		WithStore().
+		WithWarehouse().
+		WithBrand().
+		WithValues().
+		WithRider()
 	s.filter(q, &req.AssetFilter)
 	if req.AssetType != nil {
 		switch *req.AssetType {
@@ -823,6 +860,9 @@ func (s *assetService) DetailForList(item *ent.Asset) *model.AssetListRes {
 	belong = "平台"
 	if item.LocationsType == model.AssetLocationsTypeStation.Value() {
 		belong = "代理商"
+		if item.Edges.Station != nil && item.Edges.Station.Edges.Enterprise != nil {
+			belong = item.Edges.Station.Edges.Enterprise.Name
+		}
 	}
 	switch item.LocationsType {
 	case model.AssetLocationsTypeWarehouse.Value():
@@ -965,6 +1005,11 @@ func (s *assetService) filter(q *ent.AssetQuery, req *model.AssetFilter) {
 					asset.HasCabinetWith(
 						cabinet.NameContains(*req.LocationsKeyword),
 					),
+				)
+			}
+			if req.LocationsID != nil {
+				q.Where(
+					asset.LocationsID(*req.LocationsID),
 				)
 			}
 

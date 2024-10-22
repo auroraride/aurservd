@@ -36,6 +36,8 @@ type AssetMaintenanceDetails struct {
 	Remark string `json:"remark,omitempty"`
 	// 物资ID
 	MaterialID *uint64 `json:"material_id,omitempty"`
+	// 资产SN
+	Sn string `json:"sn,omitempty"`
 	// 资产ID
 	AssetID uint64 `json:"asset_id,omitempty"`
 	// 维修ID
@@ -101,7 +103,7 @@ func (*AssetMaintenanceDetails) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case assetmaintenancedetails.FieldID, assetmaintenancedetails.FieldMaterialID, assetmaintenancedetails.FieldAssetID, assetmaintenancedetails.FieldMaintenanceID:
 			values[i] = new(sql.NullInt64)
-		case assetmaintenancedetails.FieldRemark:
+		case assetmaintenancedetails.FieldRemark, assetmaintenancedetails.FieldSn:
 			values[i] = new(sql.NullString)
 		case assetmaintenancedetails.FieldCreatedAt, assetmaintenancedetails.FieldUpdatedAt, assetmaintenancedetails.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -173,6 +175,12 @@ func (amd *AssetMaintenanceDetails) assignValues(columns []string, values []any)
 			} else if value.Valid {
 				amd.MaterialID = new(uint64)
 				*amd.MaterialID = uint64(value.Int64)
+			}
+		case assetmaintenancedetails.FieldSn:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field sn", values[i])
+			} else if value.Valid {
+				amd.Sn = value.String
 			}
 		case assetmaintenancedetails.FieldAssetID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -261,6 +269,9 @@ func (amd *AssetMaintenanceDetails) String() string {
 		builder.WriteString("material_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("sn=")
+	builder.WriteString(amd.Sn)
 	builder.WriteString(", ")
 	builder.WriteString("asset_id=")
 	builder.WriteString(fmt.Sprintf("%v", amd.AssetID))

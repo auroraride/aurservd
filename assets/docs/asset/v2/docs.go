@@ -823,6 +823,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v2/asset/cabinet_assets/export": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cabinet - 电柜"
+                ],
+                "summary": "电柜物资导出",
+                "operationId": "CabinetAssetsExport",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "查询参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.CabinetAssetListReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExportRes"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v2/asset/cabinet_assets/{id}": {
             "get": {
                 "consumes": [
@@ -1241,6 +1282,47 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/check/export": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetCheck - 盘点"
+                ],
+                "summary": "盘点列表导出",
+                "operationId": "AssetCheckExport",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "查询参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetCheckListReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExportRes"
                         }
                     }
                 }
@@ -2140,6 +2222,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v2/asset/enterprise_assets/export": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Enterprise - 团签"
+                ],
+                "summary": "团签物资导出",
+                "operationId": "EnterpriseAssetsExport",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "查询参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.EnterpriseAssetListReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExportRes"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v2/asset/enterprise_assets/{id}": {
             "get": {
                 "consumes": [
@@ -2180,6 +2303,69 @@ const docTemplate = `{
             }
         },
         "/manager/v2/asset/export": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetExport - 导出"
+                ],
+                "summary": "导出列表",
+                "operationId": "AssetManagerExportList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "导出编号",
+                        "name": "sn",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.AssetExportListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -2215,6 +2401,45 @@ const docTemplate = `{
                         "description": "成功",
                         "schema": {
                             "$ref": "#/definitions/model.ExportRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/export/download/{sn}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetExport - 导出"
+                ],
+                "summary": "下载文件",
+                "operationId": "AssetManagerExportDownload",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "编号",
+                        "name": "sn",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -2298,6 +2523,47 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/maintainer_assets/export": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Maintainer - 运维"
+                ],
+                "summary": "运维物资导出",
+                "operationId": "MaintainerAssetsExport",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "查询参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.MaintainerAssetListReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExportRes"
                         }
                     }
                 }
@@ -2425,6 +2691,47 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/maintenance/export": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetMaintenance - 维修记录"
+                ],
+                "summary": "维修记录列表导出",
+                "operationId": "AssetMaintenanceExport",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "查询参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetMaintenanceListReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExportRes"
                         }
                     }
                 }
@@ -3028,9 +3335,10 @@ const docTemplate = `{
                             "ScrapTypeSmartBattery",
                             "ScrapTypeOther"
                         ],
-                        "description": "报废列表类型 1:电车 2:智能电池 3:其它",
+                        "description": "报废列表类型, 报废列表类型 1:电车 2:智能电池 3:其它",
                         "name": "scrapType",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "string",
@@ -3145,6 +3453,47 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/scrap/export": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetScrap - 报废"
+                ],
+                "summary": "资产报废列表导出",
+                "operationId": "AssetScrapExport",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "查询参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetScrapListReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExportRes"
                         }
                     }
                 }
@@ -3714,6 +4063,47 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/store_assets/export": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Store - 门店"
+                ],
+                "summary": "门店物资导出",
+                "operationId": "StoreAssetsExport",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "查询参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.StoreAssetListReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExportRes"
                         }
                     }
                 }
@@ -4434,6 +4824,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "关键字",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "资产位置ID",
                         "name": "locationsId",
@@ -4520,6 +4916,88 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/transfer/details/export": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetTransfer - 调拨"
+                ],
+                "summary": "出入库明细导出",
+                "operationId": "AssetTransferDetailsListExport",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "查询参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetTransferDetailListReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExportRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v2/asset/transfer/export": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AssetTransfer - 调拨"
+                ],
+                "summary": "资产调拨列表导出",
+                "operationId": "AssetTransferListExport",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "查询参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetTransferListReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExportRes"
                         }
                     }
                 }
@@ -5361,6 +5839,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v2/asset/warehouse_assets/export": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Warehouse - 仓库"
+                ],
+                "summary": "仓库物资导出",
+                "operationId": "WarehouseAssetExport",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Asset-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.WareHouseAssetListReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExportRes"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v2/asset/warehouse_assets/{id}": {
             "get": {
                 "consumes": [
@@ -5762,6 +6281,43 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.CabinetAssetListReq": {
+            "type": "object",
+            "properties": {
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
+                "current": {
+                    "description": "当前页, 从1开始, 默认1",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
+                "modelID": {
+                    "description": "电池型号ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "电柜名称",
+                    "type": "string"
+                },
+                "pageSize": {
+                    "description": "每页数据, 默认20",
+                    "type": "integer"
+                },
+                "sn": {
+                    "description": "电柜编号",
+                    "type": "string"
+                },
+                "start": {
+                    "description": "开始时间",
+                    "type": "string"
+                }
+            }
+        },
         "definition.CabinetTotal": {
             "type": "object",
             "properties": {
@@ -6040,6 +6596,51 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.EnterpriseAssetListReq": {
+            "type": "object",
+            "properties": {
+                "brandId": {
+                    "description": "电车型号ID",
+                    "type": "integer"
+                },
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
+                "current": {
+                    "description": "当前页, 从1开始, 默认1",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
+                "enterpriseID": {
+                    "description": "团签ID",
+                    "type": "integer"
+                },
+                "modelID": {
+                    "description": "电池型号ID",
+                    "type": "integer"
+                },
+                "otherName": {
+                    "description": "其他物资名称",
+                    "type": "string"
+                },
+                "pageSize": {
+                    "description": "每页数据, 默认20",
+                    "type": "integer"
+                },
+                "start": {
+                    "description": "开始时间",
+                    "type": "string"
+                },
+                "stationId": {
+                    "description": "站点ID",
+                    "type": "integer"
+                }
+            }
+        },
         "definition.EnterpriseDetail": {
             "type": "object",
             "properties": {
@@ -6075,6 +6676,35 @@ const docTemplate = `{
                             "$ref": "#/definitions/definition.CommonAssetTotal"
                         }
                     ]
+                }
+            }
+        },
+        "definition.MaintainerAssetListReq": {
+            "type": "object",
+            "properties": {
+                "brandId": {
+                    "description": "电车型号ID",
+                    "type": "integer"
+                },
+                "current": {
+                    "description": "当前页, 从1开始, 默认1",
+                    "type": "integer"
+                },
+                "keyword": {
+                    "description": "关键字 姓名，手机号",
+                    "type": "string"
+                },
+                "modelId": {
+                    "description": "电池型号ID",
+                    "type": "integer"
+                },
+                "otherName": {
+                    "description": "其他物资名称",
+                    "type": "string"
+                },
+                "pageSize": {
+                    "description": "每页数据, 默认20",
+                    "type": "integer"
                 }
             }
         },
@@ -6208,6 +6838,51 @@ const docTemplate = `{
                 }
             }
         },
+        "definition.StoreAssetListReq": {
+            "type": "object",
+            "properties": {
+                "brandId": {
+                    "description": "电车型号ID",
+                    "type": "integer"
+                },
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
+                "current": {
+                    "description": "当前页, 从1开始, 默认1",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
+                "groupId": {
+                    "description": "门店集合ID",
+                    "type": "integer"
+                },
+                "modelId": {
+                    "description": "电池型号ID",
+                    "type": "integer"
+                },
+                "otherName": {
+                    "description": "其他物资名称",
+                    "type": "string"
+                },
+                "pageSize": {
+                    "description": "每页数据, 默认20",
+                    "type": "integer"
+                },
+                "start": {
+                    "description": "开始时间",
+                    "type": "string"
+                },
+                "storeId": {
+                    "description": "门店ID",
+                    "type": "integer"
+                }
+            }
+        },
         "definition.StoreGroup": {
             "type": "object",
             "properties": {
@@ -6293,6 +6968,47 @@ const docTemplate = `{
                             "$ref": "#/definitions/definition.CommonAssetTotal"
                         }
                     ]
+                }
+            }
+        },
+        "definition.WareHouseAssetListReq": {
+            "type": "object",
+            "properties": {
+                "brandId": {
+                    "description": "电车型号ID",
+                    "type": "integer"
+                },
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
+                "current": {
+                    "description": "当前页, 从1开始, 默认1",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
+                "modelID": {
+                    "description": "电池型号ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "仓库名称关键字",
+                    "type": "string"
+                },
+                "otherName": {
+                    "description": "其他物资名称",
+                    "type": "string"
+                },
+                "pageSize": {
+                    "description": "每页数据, 默认20",
+                    "type": "integer"
+                },
+                "start": {
+                    "description": "开始时间",
+                    "type": "string"
                 }
             }
         },
@@ -6729,6 +7445,54 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AssetCheckListReq": {
+            "type": "object",
+            "properties": {
+                "checkResult": {
+                    "description": "盘点结果 true:正常 false:异常",
+                    "type": "boolean"
+                },
+                "current": {
+                    "description": "当前页, 从1开始, 默认1",
+                    "type": "integer"
+                },
+                "endAt": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
+                "keyword": {
+                    "description": "关键字",
+                    "type": "string"
+                },
+                "locationsId": {
+                    "description": "位置ID",
+                    "type": "integer"
+                },
+                "locationsIds": {
+                    "description": "位置IDs",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "locationsType": {
+                    "description": "位置类型 1:仓库 2:门店 3:站点",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetLocationsType"
+                        }
+                    ]
+                },
+                "pageSize": {
+                    "description": "每页数据, 默认20",
+                    "type": "integer"
+                },
+                "startAt": {
+                    "description": "开始时间",
+                    "type": "string"
+                }
+            }
+        },
         "model.AssetCheckListRes": {
             "type": "object",
             "properties": {
@@ -6868,6 +7632,48 @@ const docTemplate = `{
                 },
                 "sn": {
                     "description": "资产编号",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssetExportListRes": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "finishAt": {
+                    "description": "完成时间, 可能不存在",
+                    "type": "string"
+                },
+                "info": {
+                    "description": "筛选条件, 可能不存在",
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "message": {
+                    "description": "错误信息, 可能不存在",
+                    "type": "string"
+                },
+                "operator": {
+                    "description": "操作人",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "编号",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态",
+                    "type": "string"
+                },
+                "taxonomy": {
+                    "description": "类别",
                     "type": "string"
                 }
             }
@@ -7150,6 +7956,38 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AssetMaintenanceListReq": {
+            "type": "object",
+            "properties": {
+                "current": {
+                    "description": "当前页, 从1开始, 默认1",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
+                "isUseAccessory": {
+                    "description": "是否使用配件 true:已使用  false:未使用",
+                    "type": "boolean"
+                },
+                "keyword": {
+                    "type": "string"
+                },
+                "pageSize": {
+                    "description": "每页数据, 默认20",
+                    "type": "integer"
+                },
+                "start": {
+                    "description": "开始时间",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态 2:已维修 3:维修失败",
+                    "type": "integer"
+                }
+            }
+        },
         "model.AssetMaintenanceListRes": {
             "type": "object",
             "properties": {
@@ -7347,6 +8185,96 @@ const docTemplate = `{
                 },
                 "sn": {
                     "description": "资产Sn (当AssetType = 1:电车 2:智能电池  必传)",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssetScrapListReq": {
+            "type": "object",
+            "required": [
+                "scrapType"
+            ],
+            "properties": {
+                "assetName": {
+                    "description": "资产名称",
+                    "type": "string"
+                },
+                "assetType": {
+                    "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetType"
+                        }
+                    ]
+                },
+                "attribute": {
+                    "description": "属性 id:value",
+                    "type": "string"
+                },
+                "brandID": {
+                    "description": "电车型号",
+                    "type": "integer"
+                },
+                "current": {
+                    "description": "当前页, 从1开始, 默认1",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
+                "modelId": {
+                    "description": "电池型号",
+                    "type": "integer"
+                },
+                "operateName": {
+                    "description": "操作人",
+                    "type": "string"
+                },
+                "pageSize": {
+                    "description": "每页数据, 默认20",
+                    "type": "integer"
+                },
+                "scrapReason": {
+                    "description": "报废原因 1:丢失 2:损坏 3:其他",
+                    "enum": [
+                        1,
+                        2,
+                        3
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.ScrapReasonType"
+                        }
+                    ]
+                },
+                "scrapType": {
+                    "description": "报废列表类型, 报废列表类型 1:电车 2:智能电池 3:其它",
+                    "enum": [
+                        1,
+                        2,
+                        3
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.ScrapType"
+                        }
+                    ]
+                },
+                "sn": {
+                    "description": "资产编号",
+                    "type": "string"
+                },
+                "start": {
+                    "description": "开始时间",
                     "type": "string"
                 }
             }
@@ -7669,6 +8597,115 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AssetTransferDetailListReq": {
+            "type": "object",
+            "properties": {
+                "agentID": {
+                    "description": "代理员ID",
+                    "type": "integer"
+                },
+                "assetManagerID": {
+                    "description": "仓库管理员ID",
+                    "type": "integer"
+                },
+                "assetTransferType": {
+                    "description": "调拨类型 1:初始入库 2:调拨 3:激活 4:寄存 5:取消寄存 6:退租",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetTransferType"
+                        }
+                    ]
+                },
+                "assetType": {
+                    "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetType"
+                        }
+                    ]
+                },
+                "cabinetSN": {
+                    "description": "电柜SN",
+                    "type": "string"
+                },
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
+                "current": {
+                    "description": "当前页, 从1开始, 默认1",
+                    "type": "integer"
+                },
+                "employeeID": {
+                    "description": "门店管理员ID",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
+                "keyword": {
+                    "description": "关键字",
+                    "type": "string"
+                },
+                "locationsId": {
+                    "description": "资产位置ID",
+                    "type": "integer"
+                },
+                "locationsKeyword": {
+                    "description": "资产位置关键词 只有LocationsType =（5:电柜 6:骑手）有效",
+                    "type": "string"
+                },
+                "locationsType": {
+                    "description": "资产位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetLocationsType"
+                        }
+                    ]
+                },
+                "maintainerID": {
+                    "description": "运维ID",
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "description": "每页数据, 默认20",
+                    "type": "integer"
+                },
+                "sn": {
+                    "description": "资产SN",
+                    "type": "string"
+                },
+                "start": {
+                    "description": "开始时间",
+                    "type": "string"
+                }
+            }
+        },
         "model.AssetTransferDetailListRes": {
             "type": "object",
             "properties": {
@@ -7757,6 +8794,137 @@ const docTemplate = `{
                 "transferTypeName": {
                     "description": "调拨类型名称",
                     "type": "string"
+                }
+            }
+        },
+        "model.AssetTransferListReq": {
+            "type": "object",
+            "properties": {
+                "agentID": {
+                    "description": "代理员ID",
+                    "type": "integer"
+                },
+                "assetManagerID": {
+                    "description": "仓库管理员ID",
+                    "type": "integer"
+                },
+                "assetType": {
+                    "description": "资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetType"
+                        }
+                    ]
+                },
+                "current": {
+                    "description": "当前页, 从1开始, 默认1",
+                    "type": "integer"
+                },
+                "employeeID": {
+                    "description": "门店管理员ID",
+                    "type": "integer"
+                },
+                "fromLocationsId": {
+                    "description": "调出位置ID",
+                    "type": "integer"
+                },
+                "fromLocationsType": {
+                    "description": "调出位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetLocationsType"
+                        }
+                    ]
+                },
+                "inEnd": {
+                    "description": "入库结束时间",
+                    "type": "string"
+                },
+                "inStart": {
+                    "description": "入库开始时间",
+                    "type": "string"
+                },
+                "keyword": {
+                    "description": "关键字 (调拨单号，调拨事由、出库人、接收人)",
+                    "type": "string"
+                },
+                "mainPage": {
+                    "description": "是否首页跳转查询",
+                    "enum": [
+                        1,
+                        2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetTransferMainPage"
+                        }
+                    ]
+                },
+                "maintainerID": {
+                    "description": "运维ID",
+                    "type": "integer"
+                },
+                "outEnd": {
+                    "description": "出库结束时间",
+                    "type": "string"
+                },
+                "outStart": {
+                    "description": "出库开始时间",
+                    "type": "string"
+                },
+                "pageSize": {
+                    "description": "每页数据, 默认20",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "调拨状态 1:配送中 2:已入库 3:已取消",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetTransferStatus"
+                        }
+                    ]
+                },
+                "toLocationsId": {
+                    "description": "调入位置ID",
+                    "type": "integer"
+                },
+                "toLocationsType": {
+                    "description": "调入位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetLocationsType"
+                        }
+                    ]
                 }
             }
         },

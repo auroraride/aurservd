@@ -310,6 +310,7 @@ definitions:
         description: 商品头图
         type: string
       id:
+        description: 商品ID
         type: integer
       intro:
         description: 商品介绍
@@ -324,6 +325,13 @@ definitions:
       name:
         description: 商品名称
         type: string
+      paymentPlans:
+        description: 付款方案
+        items:
+          items:
+            type: number
+          type: array
+        type: array
       photos:
         description: 商品图片
         items:
@@ -775,6 +783,12 @@ definitions:
       phone:
         description: 电话
         type: string
+      purchase:
+        description: 待支付购车订单
+        type: boolean
+      purchaseOrderId:
+        description: 待支付订单ID
+        type: integer
       qrcode:
         description: 二维码
         type: string

@@ -69,17 +69,17 @@ type AssetScrapListReq struct {
 
 // ScrapFilter 报废筛选条件
 type ScrapFilter struct {
-	AssetType       *AssetType       `json:"assetType" query:"assetType" enums:"1,2,3,4,5,6"` // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
-	SN              *string          `json:"sn" query:"sn"`                                   // 资产编号
-	ModelID         *uint64          `json:"modelId" query:"modelId"`                         // 电池型号
-	BrandID         *uint64          `json:"brandID" query:"brandID"`                         // 电车型号
-	ScrapReasonType *ScrapReasonType `json:"scrapReason" query:"scrapReason" enums:"1,2,3"`   // 报废原因 1:丢失 2:损坏 3:其他
-	OperateName     *string          `json:"operateName" query:"operateName"`                 // 操作人
-	Start           *string          `json:"start" query:"start"`                             // 开始时间
-	End             *string          `json:"end" query:"end"`                                 // 结束时间
-	Attribute       *string          `json:"attribute" query:"attribute"`                     // 属性 id:value
-	AssetName       *string          `json:"assetName" query:"assetName"`                     // 资产名称
-	ScrapType       *ScrapType       `json:"scrapType" query:"scrapType" enums:"1,2,3"`       // 报废列表类型 1:电车 2:智能电池 3:其它
+	AssetType       *AssetType       `json:"assetType" query:"assetType" enums:"1,2,3,4,5,6"`                              // 资产类型 1:电车 2:智能电池 3:非智能电池 4:电柜配件 5:电车配件 6:其它
+	SN              *string          `json:"sn" query:"sn"`                                                                // 资产编号
+	ModelID         *uint64          `json:"modelId" query:"modelId"`                                                      // 电池型号
+	BrandID         *uint64          `json:"brandID" query:"brandID"`                                                      // 电车型号
+	ScrapReasonType *ScrapReasonType `json:"scrapReason" query:"scrapReason" enums:"1,2,3"`                                // 报废原因 1:丢失 2:损坏 3:其他
+	OperateName     *string          `json:"operateName" query:"operateName"`                                              // 操作人
+	Start           *string          `json:"start" query:"start"`                                                          // 开始时间
+	End             *string          `json:"end" query:"end"`                                                              // 结束时间
+	Attribute       *string          `json:"attribute" query:"attribute"`                                                  // 属性 id:value
+	AssetName       *string          `json:"assetName" query:"assetName"`                                                  // 资产名称
+	ScrapType       *ScrapType       `json:"scrapType" query:"scrapType" validate:"required" trans:"报废列表类型" enums:"1,2,3"` // 报废列表类型 1:电车 2:智能电池 3:其它
 }
 
 // AssetScrapListRes 资产报废列表返回
