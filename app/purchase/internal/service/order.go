@@ -133,12 +133,12 @@ func (s *orderService) listFilter(q *ent.PurchaseOrderQuery, req pm.PurchaseOrde
 	if req.BillStatus != nil {
 		switch *req.BillStatus {
 		case pm.BillStatusNormal:
-			// 正常：订单未激活，订单已激活未超过付款日
+			// 正常：订单未激活、订单已取消、订单已完成，或者订单分期中且分期订单未逾期
 			q.Where(
 				purchaseorder.Or(
-					purchaseorder.StartDateIsNil(),
+					purchaseorder.StatusIn(purchaseorder.StatusPending, purchaseorder.StatusCancelled, purchaseorder.StatusEnded),
 					purchaseorder.And(
-						purchaseorder.StartDateNotNil(),
+						purchaseorder.StatusEQ(purchaseorder.StatusStaging),
 						purchaseorder.HasPaymentsWith(
 							purchasepayment.StatusEQ(purchasepayment.Status(pm.PaymentStatusObligation)),
 							purchasepayment.BillingDateGTE(carbon.Now().StartOfDay().StdTime()),
@@ -146,12 +146,10 @@ func (s *orderService) listFilter(q *ent.PurchaseOrderQuery, req pm.PurchaseOrde
 					),
 				),
 			)
-
 		case pm.BillStatusOverdue:
-			// 逾期：订单已激活且处于待支付、分期中状态且代付款的分期订单已超过付款日
+			// 逾期：订单分期中且分期订单未逾期
 			q.Where(
-				purchaseorder.StartDateNotNil(),
-				purchaseorder.StatusIn(purchaseorder.Status(pm.OrderStatusPending), purchaseorder.Status(pm.OrderStatusStaging)),
+				purchaseorder.StatusEQ(purchaseorder.StatusStaging),
 				purchaseorder.HasPaymentsWith(
 					purchasepayment.StatusEQ(purchasepayment.Status(pm.PaymentStatusObligation)),
 					purchasepayment.BillingDateLT(carbon.Now().StartOfDay().StdTime()),
@@ -448,6 +446,7 @@ func (s *orderService) Cancel(ctx context.Context, id uint64, md *model.Modifier
 	if order.Status.String() == pm.OrderStatusCancelled.Value() {
 		return errors.New("订单已取消")
 	}
+
 	// 更新订单
 	err = s.orm.Update().Where(purchaseorder.ID(order.ID)).
 		SetStatus(purchaseorder.Status(pm.OrderStatusCancelled)).
@@ -456,12 +455,12 @@ func (s *orderService) Cancel(ctx context.Context, id uint64, md *model.Modifier
 	if err != nil {
 		return
 	}
-	// 更新分期订单
-	ent.Database.PurchasePayment.Update().
-		Where(purchasepayment.OrderID(order.ID)).
-		SetStatus(purchasepayment.Status(pm.PaymentStatusCanceled)).SetLastModifier(md)
 
-	return
+	// 更新分期订单
+	return ent.Database.PurchasePayment.Update().
+		Where(purchasepayment.OrderID(order.ID)).
+		SetStatus(purchasepayment.Status(pm.PaymentStatusCanceled)).
+		SetLastModifier(md).Exec(context.Background())
 
 }
 
