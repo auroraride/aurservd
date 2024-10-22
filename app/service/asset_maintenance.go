@@ -182,16 +182,6 @@ func (s *assetMaintenanceService) List(ctx context.Context, req *model.AssetMain
 	})
 }
 
-// QueryMaintenanceByCabinetID 通过电柜ID查询维护中的数据
-func (s *assetMaintenanceService) QueryMaintenanceByCabinetID(cabId uint64) *ent.AssetMaintenance {
-	res, _ := s.orm.QueryNotDeleted().
-		Where(
-			assetmaintenance.CabinetID(cabId),
-			assetmaintenance.Status(model.AssetMaintenanceStatusUnder.Value()),
-		).First(context.Background())
-	return res
-}
-
 // QueryByID 通过电柜ID查询维保
 func (s *assetMaintenanceService) QueryByID(cabId uint64) (res model.AssetMaintenanceRes) {
 	mt, _ := s.orm.QueryNotDeleted().Where(assetmaintenance.CabinetID(cabId)).Order(ent.Desc(assetmaintenance.FieldID)).First(context.Background())
@@ -304,4 +294,14 @@ func (s *assetMaintenanceService) Export(ctx context.Context, req *model.AssetMa
 		}
 		tools.NewExcel(path).AddValues(rows).Done()
 	})
+}
+
+// QueryByStatusCabinetID 通过电柜ID查询具体状态的维保数据
+func (s *assetMaintenanceService) QueryByStatusCabinetID(cabId uint64, status model.AssetMaintenanceStatus) *ent.AssetMaintenance {
+	res, _ := s.orm.QueryNotDeleted().
+		Where(
+			assetmaintenance.CabinetID(cabId),
+			assetmaintenance.Status(status.Value()),
+		).First(context.Background())
+	return res
 }
