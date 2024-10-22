@@ -181,8 +181,8 @@ func (s *maintainerCabinetService) Operate(m any, cities []uint64, req *model.Ma
 				snag.Panic("无效维保状态")
 			}
 
-			// 查询维保单
-			mt := NewAssetMaintenance().QueryMaintenanceByCabinetID(cab.ID)
+			// 查询维修中的维保单
+			mt := NewAssetMaintenance().QueryByStatusCabinetID(cab.ID, model.AssetMaintenanceStatusUnder)
 			if mt == nil {
 				snag.Panic("维保数据不存在")
 				return
@@ -260,19 +260,21 @@ func (s *maintainerCabinetService) Pause(m any, cities []uint64, req *model.Main
 	// 校验权限并获取操作人
 	cab, operator := s.OperatableX(m, cities, req.Serial, req.Lng, req.Lat, false)
 
-	// 查询维保单
-	mt := NewAssetMaintenance().QueryMaintenanceByCabinetID(cab.ID)
-	if mt == nil {
-		snag.Panic("维保数据不存在")
-		return
-	}
 	switch req.Status {
 	case model.AssetMaintenanceStatusPause:
+		// 查询维修中的的维保单
+		mt := NewAssetMaintenance().QueryByStatusCabinetID(cab.ID, model.AssetMaintenanceStatusUnder)
+		if mt == nil {
+			snag.Panic("维保数据不存在")
+			return
+		}
+
 		// 更新维保数据
 		err := mt.Update().SetStatus(model.AssetMaintenanceStatusPause.Value()).Exec(context.Background())
 		if err != nil {
 			snag.Panic(err)
 		}
+
 		// 暂停维护
 		NewCabinetMgr().Maintain(operator, &model.CabinetMaintainReq{
 			ID:       cab.ID,
@@ -280,6 +282,13 @@ func (s *maintainerCabinetService) Pause(m any, cities []uint64, req *model.Main
 		})
 
 	case model.AssetMaintenanceStatusUnder:
+		// 查询已暂停的维保单
+		mt := NewAssetMaintenance().QueryByStatusCabinetID(cab.ID, model.AssetMaintenanceStatusPause)
+		if mt == nil {
+			snag.Panic("维保数据不存在")
+			return
+		}
+
 		// 更新维保数据
 		err := mt.Update().SetStatus(model.AssetMaintenanceStatusUnder.Value()).Exec(context.Background())
 		if err != nil {
