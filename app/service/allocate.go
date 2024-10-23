@@ -260,17 +260,17 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 			Keyword:   params.EbikeParam.Keyword,
 		})
 
-		if sub.StationID != nil && bike.StationID != nil && *sub.StationID != *bike.StationID {
+		if bike == nil {
+			snag.Panic("未找到车辆信息")
+		}
+
+		if sub.StationID != nil && bike.LocationID != nil && bike.LocationType == model.AssetLocationsTypeStore && *sub.StationID != *bike.LocationID {
 			snag.Panic("车辆站点归属不一致")
 		}
 
 		// 判定电池是不是在同一个门店 或者站点
-		if bike.StoreID != nil && bat.LocationsID != *bike.StoreID || bike.StationID != nil && bat.LocationsID != *bike.StationID {
+		if (bike.LocationType == model.AssetLocationsTypeStore || bike.LocationType == model.AssetLocationsTypeStation) && bike.LocationID != nil && bat.LocationsID != *bike.LocationID {
 			snag.Panic("电池与车辆不在同一位置")
-		}
-
-		if bike == nil {
-			snag.Panic("未找到车辆信息")
 		}
 
 		// 比对型号
@@ -281,10 +281,12 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 		bikeID = silk.UInt64(bike.ID)
 		brandID = silk.UInt64(bike.Brand.ID)
 		bikeInfo = &model.EbikeBusinessInfo{
-			ID:        bike.ID,
-			BrandID:   bike.Brand.ID,
-			BrandName: bike.Brand.Name,
-			Sn:        bike.SN,
+			ID:           bike.ID,
+			BrandID:      bike.Brand.ID,
+			BrandName:    bike.Brand.Name,
+			Sn:           bike.SN,
+			LocationType: bike.LocationType,
+			LocationID:   bike.LocationID,
 		}
 	}
 

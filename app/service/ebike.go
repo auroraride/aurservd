@@ -424,15 +424,6 @@ func (s *ebikeService) SearchUnallocated(params *model.EbikeUnallocatedParams) (
 		if len(bike.Edges.EbikeAllocates) > 0 {
 			continue
 		}
-		var stationID, enterpriseID, storeID *uint64
-		if bike.Edges.Store != nil {
-			storeID = &bike.Edges.Store.ID
-		}
-		if bike.Edges.Station != nil && bike.Edges.Station.Edges.Enterprise != nil {
-			stationID = &bike.Edges.Station.ID
-			enterpriseID = &bike.Edges.Station.Edges.Enterprise.ID
-		}
-
 		brand := bike.Edges.Brand
 		res[i] = &model.Ebike{
 			EbikeInfo: model.EbikeInfo{
@@ -444,9 +435,8 @@ func (s *ebikeService) SearchUnallocated(params *model.EbikeUnallocatedParams) (
 				Name:  brand.Name,
 				Cover: brand.Cover,
 			},
-			StationID:    stationID,
-			EnterpriseID: enterpriseID,
-			StoreID:      storeID,
+			LocationType: model.AssetLocationsType(bike.LocationsType),
+			LocationID:   &bike.LocationsID,
 		}
 		// 查询电车属性
 		ab, _ := ent.Database.AssetAttributes.Query().Where(assetattributes.AssetType(model.AssetTypeEbike.Value())).All(s.ctx)

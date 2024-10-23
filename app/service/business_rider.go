@@ -169,10 +169,12 @@ func (s *businessRiderService) SetEbikeID(id *uint64) *businessRiderService {
 	}
 	brand := bike.Edges.Brand
 	s.ebikeInfo = &model.EbikeBusinessInfo{
-		ID:        bike.ID,
-		BrandID:   brand.ID,
-		BrandName: brand.Name,
-		Sn:        bike.Sn,
+		ID:           bike.ID,
+		BrandID:      brand.ID,
+		BrandName:    brand.Name,
+		Sn:           bike.Sn,
+		LocationType: model.AssetLocationsType(bike.LocationsType),
+		LocationID:   &bike.LocationsID,
 	}
 
 	return s
@@ -790,6 +792,18 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 				return
 			}
 		}
+		// 更新出租位置 查询当前资产是否在骑手
+		if s.ebikeInfo != nil {
+			as, _ := ent.Database.Asset.QueryNotDeleted().
+				Where(
+					asset.Sn(s.ebikeInfo.Sn),
+					asset.LocationsType(model.AssetLocationsTypeRider.Value()),
+					asset.LocationsID(sub.RiderID),
+				).First(s.ctx)
+			if as != nil {
+				_ = as.Update().SetRentLocationsType(s.ebikeInfo.LocationType.Value()).SetRentLocationsID(*s.ebikeInfo.LocationID).Exec(s.ctx)
+			}
+		}
 	})
 
 	if sub.EnterpriseID != nil {
@@ -927,6 +941,10 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 		snag.Panic(err)
 	}
 
+	// 清除电车出租位置
+	if s.ebikeInfo != nil {
+		_ = ent.Database.Asset.UpdateOneID(s.ebikeInfo.ID).ClearRentLocationsID().ClearRentLocationsType().Exec(s.ctx)
+	}
 }
 
 // Pause 寄存
