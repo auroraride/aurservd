@@ -226,6 +226,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "出租门店ID",
+                        "name": "rentStoreID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "站点ID",
                         "name": "stationID",
                         "in": "query"
@@ -3071,6 +3077,14 @@ const docTemplate = `{
                 "remark": {
                     "description": "备注",
                     "type": "string"
+                },
+                "rentLocations": {
+                    "description": "出租位置",
+                    "type": "string"
+                },
+                "rentLocationsID": {
+                    "description": "出租位置ID",
+                    "type": "integer"
                 },
                 "rto": {
                     "description": "电车是否赠送",

@@ -155,6 +155,16 @@ func Ordinal(v int) predicate.Asset {
 	return predicate.Asset(sql.FieldEQ(FieldOrdinal, v))
 }
 
+// RentLocationsType applies equality check predicate on the "rent_locations_type" field. It's identical to RentLocationsTypeEQ.
+func RentLocationsType(v uint8) predicate.Asset {
+	return predicate.Asset(sql.FieldEQ(FieldRentLocationsType, v))
+}
+
+// RentLocationsID applies equality check predicate on the "rent_locations_id" field. It's identical to RentLocationsIDEQ.
+func RentLocationsID(v uint64) predicate.Asset {
+	return predicate.Asset(sql.FieldEQ(FieldRentLocationsID, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Asset {
 	return predicate.Asset(sql.FieldEQ(FieldCreatedAt, v))
@@ -1045,6 +1055,86 @@ func OrdinalNotNil() predicate.Asset {
 	return predicate.Asset(sql.FieldNotNull(FieldOrdinal))
 }
 
+// RentLocationsTypeEQ applies the EQ predicate on the "rent_locations_type" field.
+func RentLocationsTypeEQ(v uint8) predicate.Asset {
+	return predicate.Asset(sql.FieldEQ(FieldRentLocationsType, v))
+}
+
+// RentLocationsTypeNEQ applies the NEQ predicate on the "rent_locations_type" field.
+func RentLocationsTypeNEQ(v uint8) predicate.Asset {
+	return predicate.Asset(sql.FieldNEQ(FieldRentLocationsType, v))
+}
+
+// RentLocationsTypeIn applies the In predicate on the "rent_locations_type" field.
+func RentLocationsTypeIn(vs ...uint8) predicate.Asset {
+	return predicate.Asset(sql.FieldIn(FieldRentLocationsType, vs...))
+}
+
+// RentLocationsTypeNotIn applies the NotIn predicate on the "rent_locations_type" field.
+func RentLocationsTypeNotIn(vs ...uint8) predicate.Asset {
+	return predicate.Asset(sql.FieldNotIn(FieldRentLocationsType, vs...))
+}
+
+// RentLocationsTypeGT applies the GT predicate on the "rent_locations_type" field.
+func RentLocationsTypeGT(v uint8) predicate.Asset {
+	return predicate.Asset(sql.FieldGT(FieldRentLocationsType, v))
+}
+
+// RentLocationsTypeGTE applies the GTE predicate on the "rent_locations_type" field.
+func RentLocationsTypeGTE(v uint8) predicate.Asset {
+	return predicate.Asset(sql.FieldGTE(FieldRentLocationsType, v))
+}
+
+// RentLocationsTypeLT applies the LT predicate on the "rent_locations_type" field.
+func RentLocationsTypeLT(v uint8) predicate.Asset {
+	return predicate.Asset(sql.FieldLT(FieldRentLocationsType, v))
+}
+
+// RentLocationsTypeLTE applies the LTE predicate on the "rent_locations_type" field.
+func RentLocationsTypeLTE(v uint8) predicate.Asset {
+	return predicate.Asset(sql.FieldLTE(FieldRentLocationsType, v))
+}
+
+// RentLocationsTypeIsNil applies the IsNil predicate on the "rent_locations_type" field.
+func RentLocationsTypeIsNil() predicate.Asset {
+	return predicate.Asset(sql.FieldIsNull(FieldRentLocationsType))
+}
+
+// RentLocationsTypeNotNil applies the NotNil predicate on the "rent_locations_type" field.
+func RentLocationsTypeNotNil() predicate.Asset {
+	return predicate.Asset(sql.FieldNotNull(FieldRentLocationsType))
+}
+
+// RentLocationsIDEQ applies the EQ predicate on the "rent_locations_id" field.
+func RentLocationsIDEQ(v uint64) predicate.Asset {
+	return predicate.Asset(sql.FieldEQ(FieldRentLocationsID, v))
+}
+
+// RentLocationsIDNEQ applies the NEQ predicate on the "rent_locations_id" field.
+func RentLocationsIDNEQ(v uint64) predicate.Asset {
+	return predicate.Asset(sql.FieldNEQ(FieldRentLocationsID, v))
+}
+
+// RentLocationsIDIn applies the In predicate on the "rent_locations_id" field.
+func RentLocationsIDIn(vs ...uint64) predicate.Asset {
+	return predicate.Asset(sql.FieldIn(FieldRentLocationsID, vs...))
+}
+
+// RentLocationsIDNotIn applies the NotIn predicate on the "rent_locations_id" field.
+func RentLocationsIDNotIn(vs ...uint64) predicate.Asset {
+	return predicate.Asset(sql.FieldNotIn(FieldRentLocationsID, vs...))
+}
+
+// RentLocationsIDIsNil applies the IsNil predicate on the "rent_locations_id" field.
+func RentLocationsIDIsNil() predicate.Asset {
+	return predicate.Asset(sql.FieldIsNull(FieldRentLocationsID))
+}
+
+// RentLocationsIDNotNil applies the NotNil predicate on the "rent_locations_id" field.
+func RentLocationsIDNotNil() predicate.Asset {
+	return predicate.Asset(sql.FieldNotNull(FieldRentLocationsID))
+}
+
 // HasBrand applies the HasEdge predicate on the "brand" edge.
 func HasBrand() predicate.Asset {
 	return predicate.Asset(func(s *sql.Selector) {
@@ -1497,6 +1587,52 @@ func HasBatteryRider() predicate.Asset {
 func HasBatteryRiderWith(preds ...predicate.Rider) predicate.Asset {
 	return predicate.Asset(func(s *sql.Selector) {
 		step := newBatteryRiderStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRentStore applies the HasEdge predicate on the "rent_store" edge.
+func HasRentStore() predicate.Asset {
+	return predicate.Asset(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, RentStoreTable, RentStoreColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRentStoreWith applies the HasEdge predicate on the "rent_store" edge with a given conditions (other predicates).
+func HasRentStoreWith(preds ...predicate.Store) predicate.Asset {
+	return predicate.Asset(func(s *sql.Selector) {
+		step := newRentStoreStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRentStation applies the HasEdge predicate on the "rent_station" edge.
+func HasRentStation() predicate.Asset {
+	return predicate.Asset(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, RentStationTable, RentStationColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRentStationWith applies the HasEdge predicate on the "rent_station" edge with a given conditions (other predicates).
+func HasRentStationWith(preds ...predicate.EnterpriseStation) predicate.Asset {
+	return predicate.Asset(func(s *sql.Selector) {
+		step := newRentStationStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

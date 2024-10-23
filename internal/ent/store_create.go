@@ -413,6 +413,21 @@ func (sc *StoreCreate) AddStocks(s ...*Stock) *StoreCreate {
 	return sc.AddStockIDs(ids...)
 }
 
+// AddRentAssetIDs adds the "rent_asset" edge to the Asset entity by IDs.
+func (sc *StoreCreate) AddRentAssetIDs(ids ...uint64) *StoreCreate {
+	sc.mutation.AddRentAssetIDs(ids...)
+	return sc
+}
+
+// AddRentAsset adds the "rent_asset" edges to the Asset entity.
+func (sc *StoreCreate) AddRentAsset(a ...*Asset) *StoreCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return sc.AddRentAssetIDs(ids...)
+}
+
 // Mutation returns the StoreMutation object of the builder.
 func (sc *StoreCreate) Mutation() *StoreMutation {
 	return sc.mutation
@@ -836,6 +851,22 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.RentAssetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.RentAssetTable,
+			Columns: []string{store.RentAssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

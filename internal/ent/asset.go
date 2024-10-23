@@ -74,6 +74,10 @@ type Asset struct {
 	SubscribeID *uint64 `json:"subscribe_id,omitempty"`
 	// 仓位号
 	Ordinal *int `json:"ordinal,omitempty"`
+	// 出租位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手
+	RentLocationsType uint8 `json:"rent_locations_type,omitempty"`
+	// 出租位置ID
+	RentLocationsID uint64 `json:"rent_locations_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssetQuery when eager-loading is set.
 	Edges        AssetEdges `json:"edges"`
@@ -122,9 +126,13 @@ type AssetEdges struct {
 	RtoRider *Rider `json:"rto_rider,omitempty"`
 	// 所属骑手
 	BatteryRider *Rider `json:"battery_rider,omitempty"`
+	// RentStore holds the value of the rent_store edge.
+	RentStore *Store `json:"rent_store,omitempty"`
+	// RentStation holds the value of the rent_station edge.
+	RentStation *EnterpriseStation `json:"rent_station,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [20]bool
+	loadedTypes [22]bool
 }
 
 // BrandOrErr returns the Brand value or an error if the edge
@@ -333,6 +341,28 @@ func (e AssetEdges) BatteryRiderOrErr() (*Rider, error) {
 	return nil, &NotLoadedError{edge: "battery_rider"}
 }
 
+// RentStoreOrErr returns the RentStore value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetEdges) RentStoreOrErr() (*Store, error) {
+	if e.RentStore != nil {
+		return e.RentStore, nil
+	} else if e.loadedTypes[20] {
+		return nil, &NotFoundError{label: store.Label}
+	}
+	return nil, &NotLoadedError{edge: "rent_store"}
+}
+
+// RentStationOrErr returns the RentStation value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssetEdges) RentStationOrErr() (*EnterpriseStation, error) {
+	if e.RentStation != nil {
+		return e.RentStation, nil
+	} else if e.loadedTypes[21] {
+		return nil, &NotFoundError{label: enterprisestation.Label}
+	}
+	return nil, &NotLoadedError{edge: "rent_station"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Asset) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -342,7 +372,7 @@ func (*Asset) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case asset.FieldEnable:
 			values[i] = new(sql.NullBool)
-		case asset.FieldID, asset.FieldBrandID, asset.FieldModelID, asset.FieldCityID, asset.FieldMaterialID, asset.FieldType, asset.FieldStatus, asset.FieldLocationsType, asset.FieldLocationsID, asset.FieldRtoRiderID, asset.FieldSubscribeID, asset.FieldOrdinal:
+		case asset.FieldID, asset.FieldBrandID, asset.FieldModelID, asset.FieldCityID, asset.FieldMaterialID, asset.FieldType, asset.FieldStatus, asset.FieldLocationsType, asset.FieldLocationsID, asset.FieldRtoRiderID, asset.FieldSubscribeID, asset.FieldOrdinal, asset.FieldRentLocationsType, asset.FieldRentLocationsID:
 			values[i] = new(sql.NullInt64)
 		case asset.FieldRemark, asset.FieldName, asset.FieldSn, asset.FieldBrandName:
 			values[i] = new(sql.NullString)
@@ -514,6 +544,18 @@ func (a *Asset) assignValues(columns []string, values []any) error {
 				a.Ordinal = new(int)
 				*a.Ordinal = int(value.Int64)
 			}
+		case asset.FieldRentLocationsType:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field rent_locations_type", values[i])
+			} else if value.Valid {
+				a.RentLocationsType = uint8(value.Int64)
+			}
+		case asset.FieldRentLocationsID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field rent_locations_id", values[i])
+			} else if value.Valid {
+				a.RentLocationsID = uint64(value.Int64)
+			}
 		default:
 			a.selectValues.Set(columns[i], values[i])
 		}
@@ -627,6 +669,16 @@ func (a *Asset) QueryBatteryRider() *RiderQuery {
 	return NewAssetClient(a.config).QueryBatteryRider(a)
 }
 
+// QueryRentStore queries the "rent_store" edge of the Asset entity.
+func (a *Asset) QueryRentStore() *StoreQuery {
+	return NewAssetClient(a.config).QueryRentStore(a)
+}
+
+// QueryRentStation queries the "rent_station" edge of the Asset entity.
+func (a *Asset) QueryRentStation() *EnterpriseStationQuery {
+	return NewAssetClient(a.config).QueryRentStation(a)
+}
+
 // Update returns a builder for updating this Asset.
 // Note that you need to call Asset.Unwrap() before calling this method if this Asset
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -733,6 +785,12 @@ func (a *Asset) String() string {
 		builder.WriteString("ordinal=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("rent_locations_type=")
+	builder.WriteString(fmt.Sprintf("%v", a.RentLocationsType))
+	builder.WriteString(", ")
+	builder.WriteString("rent_locations_id=")
+	builder.WriteString(fmt.Sprintf("%v", a.RentLocationsID))
 	builder.WriteByte(')')
 	return builder.String()
 }

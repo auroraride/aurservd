@@ -132,6 +132,7 @@ type WarestoreAssetsCommonReq struct {
 	EbikeKeyword   *string            `json:"ebikeKeyword" query:"ebikeKeyword"`                 // 电车车牌/车架号关键字
 	StationID      *uint64            `json:"stationID" query:"stationID"`                       // 站点ID
 	MaintainerID   *uint64            `json:"maintainerID" query:"maintainerID"`                 // 运维ID
+	RentStoreID    *uint64            `json:"rentStoreID" query:"rentStoreID"`                   // 出租门店ID
 }
 
 // AssetSignInfo 小程序用户登录信息

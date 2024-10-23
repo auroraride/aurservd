@@ -351,6 +351,12 @@ definitions:
       remark:
         description: 备注
         type: string
+      rentLocations:
+        description: 出租位置
+        type: string
+      rentLocationsID:
+        description: 出租位置ID
+        type: integer
       rto:
         description: 电车是否赠送
         type: string
@@ -1488,6 +1494,10 @@ paths:
       - description: 每页数据, 默认20
         in: query
         name: pageSize
+        type: integer
+      - description: 出租门店ID
+        in: query
+        name: rentStoreID
         type: integer
       - description: 站点ID
         in: query

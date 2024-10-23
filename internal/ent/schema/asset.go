@@ -72,6 +72,8 @@ func (Asset) Fields() []ent.Field {
 		field.String("brand_name").Optional().Comment("品牌名称"),
 		field.Uint64("subscribe_id").Optional().Nillable().Comment("订阅ID"),
 		field.Int("ordinal").Optional().Nillable().Comment("仓位号"),
+		field.Uint8("rent_locations_type").Optional().Comment("出租位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手"),
+		field.Uint64("rent_locations_id").Optional().Comment("出租位置ID"),
 	}
 }
 
@@ -99,6 +101,9 @@ func (Asset) Edges() []ent.Edge {
 		edge.To("rto_rider", Rider.Type).Unique().Field("rto_rider_id"),
 
 		edge.From("battery_rider", Rider.Type).Ref("battery").Unique().Field("locations_id").Comment("所属骑手"),
+
+		edge.From("rent_store", Store.Type).Unique().Ref("rent_asset").Field("rent_locations_id"),               // 出租位置关联门店
+		edge.From("rent_station", EnterpriseStation.Type).Ref("rent_asset").Unique().Field("rent_locations_id"), // 出租位置关联站点
 	}
 }
 

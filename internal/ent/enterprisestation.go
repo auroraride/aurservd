@@ -63,9 +63,11 @@ type EnterpriseStationEdges struct {
 	Asset []*Asset `json:"asset,omitempty"`
 	// Stocks holds the value of the stocks edge.
 	Stocks []*Stock `json:"stocks,omitempty"`
+	// RentAsset holds the value of the rent_asset edge.
+	RentAsset []*Asset `json:"rent_asset,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [9]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -142,6 +144,15 @@ func (e EnterpriseStationEdges) StocksOrErr() ([]*Stock, error) {
 		return e.Stocks, nil
 	}
 	return nil, &NotLoadedError{edge: "stocks"}
+}
+
+// RentAssetOrErr returns the RentAsset value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseStationEdges) RentAssetOrErr() ([]*Asset, error) {
+	if e.loadedTypes[8] {
+		return e.RentAsset, nil
+	}
+	return nil, &NotLoadedError{edge: "rent_asset"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -289,6 +300,11 @@ func (es *EnterpriseStation) QueryAsset() *AssetQuery {
 // QueryStocks queries the "stocks" edge of the EnterpriseStation entity.
 func (es *EnterpriseStation) QueryStocks() *StockQuery {
 	return NewEnterpriseStationClient(es.config).QueryStocks(es)
+}
+
+// QueryRentAsset queries the "rent_asset" edge of the EnterpriseStation entity.
+func (es *EnterpriseStation) QueryRentAsset() *AssetQuery {
+	return NewEnterpriseStationClient(es.config).QueryRentAsset(es)
 }
 
 // Update returns a builder for updating this EnterpriseStation.

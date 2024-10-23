@@ -43,6 +43,7 @@ type StoreQuery struct {
 	withEmployees     *EmployeeQuery
 	withDutyEmployees *EmployeeQuery
 	withStocks        *StockQuery
+	withRentAsset     *AssetQuery
 	modifiers         []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -322,6 +323,28 @@ func (sq *StoreQuery) QueryStocks() *StockQuery {
 	return query
 }
 
+// QueryRentAsset chains the current query on the "rent_asset" edge.
+func (sq *StoreQuery) QueryRentAsset() *AssetQuery {
+	query := (&AssetClient{config: sq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, selector),
+			sqlgraph.To(asset.Table, asset.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, store.RentAssetTable, store.RentAssetColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Store entity from the query.
 // Returns a *NotFoundError when no Store was found.
 func (sq *StoreQuery) First(ctx context.Context) (*Store, error) {
@@ -525,6 +548,7 @@ func (sq *StoreQuery) Clone() *StoreQuery {
 		withEmployees:     sq.withEmployees.Clone(),
 		withDutyEmployees: sq.withDutyEmployees.Clone(),
 		withStocks:        sq.withStocks.Clone(),
+		withRentAsset:     sq.withRentAsset.Clone(),
 		// clone intermediate query.
 		sql:       sq.sql.Clone(),
 		path:      sq.path,
@@ -653,6 +677,17 @@ func (sq *StoreQuery) WithStocks(opts ...func(*StockQuery)) *StoreQuery {
 	return sq
 }
 
+// WithRentAsset tells the query-builder to eager-load the nodes that are connected to
+// the "rent_asset" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StoreQuery) WithRentAsset(opts ...func(*AssetQuery)) *StoreQuery {
+	query := (&AssetClient{config: sq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withRentAsset = query
+	return sq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -731,7 +766,7 @@ func (sq *StoreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Store,
 	var (
 		nodes       = []*Store{}
 		_spec       = sq.querySpec()
-		loadedTypes = [11]bool{
+		loadedTypes = [12]bool{
 			sq.withCity != nil,
 			sq.withGroup != nil,
 			sq.withBranch != nil,
@@ -743,6 +778,7 @@ func (sq *StoreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Store,
 			sq.withEmployees != nil,
 			sq.withDutyEmployees != nil,
 			sq.withStocks != nil,
+			sq.withRentAsset != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -836,6 +872,13 @@ func (sq *StoreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Store,
 		if err := sq.loadStocks(ctx, query, nodes,
 			func(n *Store) { n.Edges.Stocks = []*Stock{} },
 			func(n *Store, e *Stock) { n.Edges.Stocks = append(n.Edges.Stocks, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := sq.withRentAsset; query != nil {
+		if err := sq.loadRentAsset(ctx, query, nodes,
+			func(n *Store) { n.Edges.RentAsset = []*Asset{} },
+			func(n *Store, e *Asset) { n.Edges.RentAsset = append(n.Edges.RentAsset, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1212,6 +1255,36 @@ func (sq *StoreQuery) loadStocks(ctx context.Context, query *StockQuery, nodes [
 	}
 	return nil
 }
+func (sq *StoreQuery) loadRentAsset(ctx context.Context, query *AssetQuery, nodes []*Store, init func(*Store), assign func(*Store, *Asset)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Store)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(asset.FieldRentLocationsID)
+	}
+	query.Where(predicate.Asset(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(store.RentAssetColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.RentLocationsID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "rent_locations_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (sq *StoreQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := sq.querySpec()
@@ -1332,6 +1405,7 @@ var (
 	StoreQueryWithEmployees     StoreQueryWith = "Employees"
 	StoreQueryWithDutyEmployees StoreQueryWith = "DutyEmployees"
 	StoreQueryWithStocks        StoreQueryWith = "Stocks"
+	StoreQueryWithRentAsset     StoreQueryWith = "RentAsset"
 )
 
 func (sq *StoreQuery) With(withEdges ...StoreQueryWith) *StoreQuery {
@@ -1359,6 +1433,8 @@ func (sq *StoreQuery) With(withEdges ...StoreQueryWith) *StoreQuery {
 			sq.WithDutyEmployees()
 		case StoreQueryWithStocks:
 			sq.WithStocks()
+		case StoreQueryWithRentAsset:
+			sq.WithRentAsset()
 		}
 	}
 	return sq
