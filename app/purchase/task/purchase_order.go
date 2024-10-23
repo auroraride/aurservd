@@ -40,7 +40,9 @@ func (*purchaseOrderTask) Do() {
 		purchasepayment.BillingDateEQ(now),
 	).All(context.Background())
 	for _, v := range payments {
-		// 逾期金额
+		if v.Forfeit != 0 {
+			continue
+		}
 		err := v.Update().
 			SetForfeit(v.Amount * 0.2).
 			SetTotal(v.Amount * 1.2).
