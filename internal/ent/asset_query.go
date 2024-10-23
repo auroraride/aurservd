@@ -60,6 +60,8 @@ type AssetQuery struct {
 	withBatteryAllocates   *AllocateQuery
 	withRtoRider           *RiderQuery
 	withBatteryRider       *RiderQuery
+	withRentStore          *StoreQuery
+	withRentStation        *EnterpriseStationQuery
 	modifiers              []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -537,6 +539,50 @@ func (aq *AssetQuery) QueryBatteryRider() *RiderQuery {
 	return query
 }
 
+// QueryRentStore chains the current query on the "rent_store" edge.
+func (aq *AssetQuery) QueryRentStore() *StoreQuery {
+	query := (&StoreClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, selector),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, asset.RentStoreTable, asset.RentStoreColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRentStation chains the current query on the "rent_station" edge.
+func (aq *AssetQuery) QueryRentStation() *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, selector),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, asset.RentStationTable, asset.RentStationColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Asset entity from the query.
 // Returns a *NotFoundError when no Asset was found.
 func (aq *AssetQuery) First(ctx context.Context) (*Asset, error) {
@@ -749,6 +795,8 @@ func (aq *AssetQuery) Clone() *AssetQuery {
 		withBatteryAllocates:   aq.withBatteryAllocates.Clone(),
 		withRtoRider:           aq.withRtoRider.Clone(),
 		withBatteryRider:       aq.withBatteryRider.Clone(),
+		withRentStore:          aq.withRentStore.Clone(),
+		withRentStation:        aq.withRentStation.Clone(),
 		// clone intermediate query.
 		sql:       aq.sql.Clone(),
 		path:      aq.path,
@@ -976,6 +1024,28 @@ func (aq *AssetQuery) WithBatteryRider(opts ...func(*RiderQuery)) *AssetQuery {
 	return aq
 }
 
+// WithRentStore tells the query-builder to eager-load the nodes that are connected to
+// the "rent_store" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AssetQuery) WithRentStore(opts ...func(*StoreQuery)) *AssetQuery {
+	query := (&StoreClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withRentStore = query
+	return aq
+}
+
+// WithRentStation tells the query-builder to eager-load the nodes that are connected to
+// the "rent_station" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AssetQuery) WithRentStation(opts ...func(*EnterpriseStationQuery)) *AssetQuery {
+	query := (&EnterpriseStationClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withRentStation = query
+	return aq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -1054,7 +1124,7 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 	var (
 		nodes       = []*Asset{}
 		_spec       = aq.querySpec()
-		loadedTypes = [20]bool{
+		loadedTypes = [22]bool{
 			aq.withBrand != nil,
 			aq.withModel != nil,
 			aq.withCity != nil,
@@ -1075,6 +1145,8 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 			aq.withBatteryAllocates != nil,
 			aq.withRtoRider != nil,
 			aq.withBatteryRider != nil,
+			aq.withRentStore != nil,
+			aq.withRentStation != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -1224,6 +1296,18 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 	if query := aq.withBatteryRider; query != nil {
 		if err := aq.loadBatteryRider(ctx, query, nodes, nil,
 			func(n *Asset, e *Rider) { n.Edges.BatteryRider = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withRentStore; query != nil {
+		if err := aq.loadRentStore(ctx, query, nodes, nil,
+			func(n *Asset, e *Store) { n.Edges.RentStore = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withRentStation; query != nil {
+		if err := aq.loadRentStation(ctx, query, nodes, nil,
+			func(n *Asset, e *EnterpriseStation) { n.Edges.RentStation = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1843,6 +1927,64 @@ func (aq *AssetQuery) loadBatteryRider(ctx context.Context, query *RiderQuery, n
 	}
 	return nil
 }
+func (aq *AssetQuery) loadRentStore(ctx context.Context, query *StoreQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *Store)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Asset)
+	for i := range nodes {
+		fk := nodes[i].RentLocationsID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(store.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "rent_locations_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (aq *AssetQuery) loadRentStation(ctx context.Context, query *EnterpriseStationQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *EnterpriseStation)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Asset)
+	for i := range nodes {
+		fk := nodes[i].RentLocationsID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(enterprisestation.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "rent_locations_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (aq *AssetQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := aq.querySpec()
@@ -1910,6 +2052,12 @@ func (aq *AssetQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if aq.withBatteryRider != nil {
 			_spec.Node.AddColumnOnce(asset.FieldLocationsID)
+		}
+		if aq.withRentStore != nil {
+			_spec.Node.AddColumnOnce(asset.FieldRentLocationsID)
+		}
+		if aq.withRentStation != nil {
+			_spec.Node.AddColumnOnce(asset.FieldRentLocationsID)
 		}
 	}
 	if ps := aq.predicates; len(ps) > 0 {
@@ -1999,6 +2147,8 @@ var (
 	AssetQueryWithBatteryAllocates   AssetQueryWith = "BatteryAllocates"
 	AssetQueryWithRtoRider           AssetQueryWith = "RtoRider"
 	AssetQueryWithBatteryRider       AssetQueryWith = "BatteryRider"
+	AssetQueryWithRentStore          AssetQueryWith = "RentStore"
+	AssetQueryWithRentStation        AssetQueryWith = "RentStation"
 )
 
 func (aq *AssetQuery) With(withEdges ...AssetQueryWith) *AssetQuery {
@@ -2044,6 +2194,10 @@ func (aq *AssetQuery) With(withEdges ...AssetQueryWith) *AssetQuery {
 			aq.WithRtoRider()
 		case AssetQueryWithBatteryRider:
 			aq.WithBatteryRider()
+		case AssetQueryWithRentStore:
+			aq.WithRentStore()
+		case AssetQueryWithRentStation:
+			aq.WithRentStation()
 		}
 	}
 	return aq

@@ -105,6 +105,8 @@ func (Store) Edges() []ent.Edge {
 		edge.To("duty_employees", Employee.Type),
 
 		edge.To("stocks", Stock.Type),
+
+		edge.To("rent_asset", Asset.Type),
 	}
 }
 

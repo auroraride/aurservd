@@ -49,6 +49,8 @@ const (
 	EdgeAsset = "asset"
 	// EdgeStocks holds the string denoting the stocks edge name in mutations.
 	EdgeStocks = "stocks"
+	// EdgeRentAsset holds the string denoting the rent_asset edge name in mutations.
+	EdgeRentAsset = "rent_asset"
 	// Table holds the table name of the enterprisestation in the database.
 	Table = "enterprise_station"
 	// CityTable is the table that holds the city relation/edge.
@@ -105,6 +107,13 @@ const (
 	StocksInverseTable = "stock"
 	// StocksColumn is the table column denoting the stocks relation/edge.
 	StocksColumn = "station_id"
+	// RentAssetTable is the table that holds the rent_asset relation/edge.
+	RentAssetTable = "asset"
+	// RentAssetInverseTable is the table name for the Asset entity.
+	// It exists in this package in order to avoid circular dependency with the "asset" package.
+	RentAssetInverseTable = "asset"
+	// RentAssetColumn is the table column denoting the rent_asset relation/edge.
+	RentAssetColumn = "rent_locations_id"
 )
 
 // Columns holds all SQL columns for enterprisestation fields.
@@ -292,6 +301,20 @@ func ByStocks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newStocksStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByRentAssetCount orders the results by rent_asset count.
+func ByRentAssetCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newRentAssetStep(), opts...)
+	}
+}
+
+// ByRentAsset orders the results by rent_asset terms.
+func ByRentAsset(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRentAssetStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newCityStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -346,5 +369,12 @@ func newStocksStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(StocksInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
+	)
+}
+func newRentAssetStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RentAssetInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, RentAssetTable, RentAssetColumn),
 	)
 }
