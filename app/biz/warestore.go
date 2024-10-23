@@ -982,7 +982,17 @@ func (b *warestoreBiz) commonAssetTotalDetail(list []*ent.Asset) (res definition
 
 // AssetsCommon 物资数据
 func (b *warestoreBiz) AssetsCommon(assetSignInfo definition.AssetSignInfo, req *definition.WarestoreAssetsCommonReq) *model.PaginationRes {
-	q := ent.Database.Asset.QueryNotDeleted().WithCabinet().WithCity().WithStation().WithModel().WithOperator().WithValues().WithStore().WithWarehouse().WithBrand().WithValues()
+	q := ent.Database.Asset.QueryNotDeleted().
+		WithCabinet().
+		WithCity().
+		WithStation().
+		WithModel().
+		WithOperator().
+		WithValues().
+		WithStore().
+		WithWarehouse().
+		WithBrand().
+		WithValues()
 
 	b.assetsCommonFilter(assetSignInfo, q, req)
 
@@ -1052,41 +1062,15 @@ func (b *warestoreBiz) assetsCommonFilter(assetSignInfo definition.AssetSignInfo
 	switch {
 	case assetSignInfo.AssetManager != nil:
 		// 仓库管理查询
-
-		// 查询库管人员配置的仓库数据
-		wIds := make([]uint64, 0)
-		am, _ := ent.Database.AssetManager.QueryNotDeleted().WithBelongWarehouses().
-			Where(
-				assetmanager.ID(assetSignInfo.AssetManager.ID),
-				assetmanager.HasBelongWarehousesWith(warehouse.DeletedAtIsNil()),
-			).First(context.Background())
-		if am != nil {
-			for _, wh := range am.Edges.BelongWarehouses {
-				wIds = append(wIds, wh.ID)
-			}
-		}
 		q.Where(
 			asset.LocationsType(model.AssetLocationsTypeWarehouse.Value()),
-			asset.LocationsIDIn(wIds...),
+			asset.HasWarehouseWith(warehouse.HasBelongAssetManagersWith(assetmanager.ID(assetSignInfo.AssetManager.ID))),
 		)
 	case assetSignInfo.Employee != nil:
 		// 门店管理查询
-
-		// 查询门店人员配置的门店数据
-		sIds := make([]uint64, 0)
-		ep, _ := ent.Database.Employee.QueryNotDeleted().WithStores().
-			Where(
-				employee.ID(assetSignInfo.Employee.ID),
-				employee.HasStoresWith(store.DeletedAtIsNil()),
-			).First(context.Background())
-		if ep != nil {
-			for _, st := range ep.Edges.Stores {
-				sIds = append(sIds, st.ID)
-			}
-		}
 		q.Where(
 			asset.LocationsType(model.AssetLocationsTypeStore.Value()),
-			asset.LocationsIDIn(sIds...),
+			asset.HasStoreWith(store.HasEmployeesWith(employee.ID(assetSignInfo.Employee.ID))),
 		)
 	case assetSignInfo.Agent != nil:
 		// 查询代理人员配置的代理站点
@@ -1113,6 +1097,13 @@ func (b *warestoreBiz) assetsCommonFilter(assetSignInfo definition.AssetSignInfo
 			asset.LocationsID(assetSignInfo.Maintainer.ID),
 		)
 	default:
+	}
+
+	if req.RentStoreID != nil {
+		q.Where(
+			asset.RentLocationsType(model.AssetLocationsTypeStore.Value()),
+			asset.RentLocationsID(*req.RentStoreID),
+		)
 	}
 }
 

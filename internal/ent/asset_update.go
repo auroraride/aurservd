@@ -429,6 +429,53 @@ func (au *AssetUpdate) ClearOrdinal() *AssetUpdate {
 	return au
 }
 
+// SetRentLocationsType sets the "rent_locations_type" field.
+func (au *AssetUpdate) SetRentLocationsType(u uint8) *AssetUpdate {
+	au.mutation.ResetRentLocationsType()
+	au.mutation.SetRentLocationsType(u)
+	return au
+}
+
+// SetNillableRentLocationsType sets the "rent_locations_type" field if the given value is not nil.
+func (au *AssetUpdate) SetNillableRentLocationsType(u *uint8) *AssetUpdate {
+	if u != nil {
+		au.SetRentLocationsType(*u)
+	}
+	return au
+}
+
+// AddRentLocationsType adds u to the "rent_locations_type" field.
+func (au *AssetUpdate) AddRentLocationsType(u int8) *AssetUpdate {
+	au.mutation.AddRentLocationsType(u)
+	return au
+}
+
+// ClearRentLocationsType clears the value of the "rent_locations_type" field.
+func (au *AssetUpdate) ClearRentLocationsType() *AssetUpdate {
+	au.mutation.ClearRentLocationsType()
+	return au
+}
+
+// SetRentLocationsID sets the "rent_locations_id" field.
+func (au *AssetUpdate) SetRentLocationsID(u uint64) *AssetUpdate {
+	au.mutation.SetRentLocationsID(u)
+	return au
+}
+
+// SetNillableRentLocationsID sets the "rent_locations_id" field if the given value is not nil.
+func (au *AssetUpdate) SetNillableRentLocationsID(u *uint64) *AssetUpdate {
+	if u != nil {
+		au.SetRentLocationsID(*u)
+	}
+	return au
+}
+
+// ClearRentLocationsID clears the value of the "rent_locations_id" field.
+func (au *AssetUpdate) ClearRentLocationsID() *AssetUpdate {
+	au.mutation.ClearRentLocationsID()
+	return au
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (au *AssetUpdate) SetBrand(e *EbikeBrand) *AssetUpdate {
 	return au.SetBrandID(e.ID)
@@ -697,6 +744,44 @@ func (au *AssetUpdate) SetBatteryRider(r *Rider) *AssetUpdate {
 	return au.SetBatteryRiderID(r.ID)
 }
 
+// SetRentStoreID sets the "rent_store" edge to the Store entity by ID.
+func (au *AssetUpdate) SetRentStoreID(id uint64) *AssetUpdate {
+	au.mutation.SetRentStoreID(id)
+	return au
+}
+
+// SetNillableRentStoreID sets the "rent_store" edge to the Store entity by ID if the given value is not nil.
+func (au *AssetUpdate) SetNillableRentStoreID(id *uint64) *AssetUpdate {
+	if id != nil {
+		au = au.SetRentStoreID(*id)
+	}
+	return au
+}
+
+// SetRentStore sets the "rent_store" edge to the Store entity.
+func (au *AssetUpdate) SetRentStore(s *Store) *AssetUpdate {
+	return au.SetRentStoreID(s.ID)
+}
+
+// SetRentStationID sets the "rent_station" edge to the EnterpriseStation entity by ID.
+func (au *AssetUpdate) SetRentStationID(id uint64) *AssetUpdate {
+	au.mutation.SetRentStationID(id)
+	return au
+}
+
+// SetNillableRentStationID sets the "rent_station" edge to the EnterpriseStation entity by ID if the given value is not nil.
+func (au *AssetUpdate) SetNillableRentStationID(id *uint64) *AssetUpdate {
+	if id != nil {
+		au = au.SetRentStationID(*id)
+	}
+	return au
+}
+
+// SetRentStation sets the "rent_station" edge to the EnterpriseStation entity.
+func (au *AssetUpdate) SetRentStation(e *EnterpriseStation) *AssetUpdate {
+	return au.SetRentStationID(e.ID)
+}
+
 // Mutation returns the AssetMutation object of the builder.
 func (au *AssetUpdate) Mutation() *AssetMutation {
 	return au.mutation
@@ -927,6 +1012,18 @@ func (au *AssetUpdate) ClearBatteryRider() *AssetUpdate {
 	return au
 }
 
+// ClearRentStore clears the "rent_store" edge to the Store entity.
+func (au *AssetUpdate) ClearRentStore() *AssetUpdate {
+	au.mutation.ClearRentStore()
+	return au
+}
+
+// ClearRentStation clears the "rent_station" edge to the EnterpriseStation entity.
+func (au *AssetUpdate) ClearRentStation() *AssetUpdate {
+	au.mutation.ClearRentStation()
+	return au
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (au *AssetUpdate) Save(ctx context.Context) (int, error) {
 	if err := au.defaults(); err != nil {
@@ -1061,6 +1158,15 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if au.mutation.OrdinalCleared() {
 		_spec.ClearField(asset.FieldOrdinal, field.TypeInt)
+	}
+	if value, ok := au.mutation.RentLocationsType(); ok {
+		_spec.SetField(asset.FieldRentLocationsType, field.TypeUint8, value)
+	}
+	if value, ok := au.mutation.AddedRentLocationsType(); ok {
+		_spec.AddField(asset.FieldRentLocationsType, field.TypeUint8, value)
+	}
+	if au.mutation.RentLocationsTypeCleared() {
+		_spec.ClearField(asset.FieldRentLocationsType, field.TypeUint8)
 	}
 	if au.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1754,6 +1860,64 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if au.mutation.RentStoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.RentStoreTable,
+			Columns: []string{asset.RentStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RentStoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.RentStoreTable,
+			Columns: []string{asset.RentStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.RentStationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.RentStationTable,
+			Columns: []string{asset.RentStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RentStationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.RentStationTable,
+			Columns: []string{asset.RentStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(au.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -2158,6 +2322,53 @@ func (auo *AssetUpdateOne) ClearOrdinal() *AssetUpdateOne {
 	return auo
 }
 
+// SetRentLocationsType sets the "rent_locations_type" field.
+func (auo *AssetUpdateOne) SetRentLocationsType(u uint8) *AssetUpdateOne {
+	auo.mutation.ResetRentLocationsType()
+	auo.mutation.SetRentLocationsType(u)
+	return auo
+}
+
+// SetNillableRentLocationsType sets the "rent_locations_type" field if the given value is not nil.
+func (auo *AssetUpdateOne) SetNillableRentLocationsType(u *uint8) *AssetUpdateOne {
+	if u != nil {
+		auo.SetRentLocationsType(*u)
+	}
+	return auo
+}
+
+// AddRentLocationsType adds u to the "rent_locations_type" field.
+func (auo *AssetUpdateOne) AddRentLocationsType(u int8) *AssetUpdateOne {
+	auo.mutation.AddRentLocationsType(u)
+	return auo
+}
+
+// ClearRentLocationsType clears the value of the "rent_locations_type" field.
+func (auo *AssetUpdateOne) ClearRentLocationsType() *AssetUpdateOne {
+	auo.mutation.ClearRentLocationsType()
+	return auo
+}
+
+// SetRentLocationsID sets the "rent_locations_id" field.
+func (auo *AssetUpdateOne) SetRentLocationsID(u uint64) *AssetUpdateOne {
+	auo.mutation.SetRentLocationsID(u)
+	return auo
+}
+
+// SetNillableRentLocationsID sets the "rent_locations_id" field if the given value is not nil.
+func (auo *AssetUpdateOne) SetNillableRentLocationsID(u *uint64) *AssetUpdateOne {
+	if u != nil {
+		auo.SetRentLocationsID(*u)
+	}
+	return auo
+}
+
+// ClearRentLocationsID clears the value of the "rent_locations_id" field.
+func (auo *AssetUpdateOne) ClearRentLocationsID() *AssetUpdateOne {
+	auo.mutation.ClearRentLocationsID()
+	return auo
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (auo *AssetUpdateOne) SetBrand(e *EbikeBrand) *AssetUpdateOne {
 	return auo.SetBrandID(e.ID)
@@ -2426,6 +2637,44 @@ func (auo *AssetUpdateOne) SetBatteryRider(r *Rider) *AssetUpdateOne {
 	return auo.SetBatteryRiderID(r.ID)
 }
 
+// SetRentStoreID sets the "rent_store" edge to the Store entity by ID.
+func (auo *AssetUpdateOne) SetRentStoreID(id uint64) *AssetUpdateOne {
+	auo.mutation.SetRentStoreID(id)
+	return auo
+}
+
+// SetNillableRentStoreID sets the "rent_store" edge to the Store entity by ID if the given value is not nil.
+func (auo *AssetUpdateOne) SetNillableRentStoreID(id *uint64) *AssetUpdateOne {
+	if id != nil {
+		auo = auo.SetRentStoreID(*id)
+	}
+	return auo
+}
+
+// SetRentStore sets the "rent_store" edge to the Store entity.
+func (auo *AssetUpdateOne) SetRentStore(s *Store) *AssetUpdateOne {
+	return auo.SetRentStoreID(s.ID)
+}
+
+// SetRentStationID sets the "rent_station" edge to the EnterpriseStation entity by ID.
+func (auo *AssetUpdateOne) SetRentStationID(id uint64) *AssetUpdateOne {
+	auo.mutation.SetRentStationID(id)
+	return auo
+}
+
+// SetNillableRentStationID sets the "rent_station" edge to the EnterpriseStation entity by ID if the given value is not nil.
+func (auo *AssetUpdateOne) SetNillableRentStationID(id *uint64) *AssetUpdateOne {
+	if id != nil {
+		auo = auo.SetRentStationID(*id)
+	}
+	return auo
+}
+
+// SetRentStation sets the "rent_station" edge to the EnterpriseStation entity.
+func (auo *AssetUpdateOne) SetRentStation(e *EnterpriseStation) *AssetUpdateOne {
+	return auo.SetRentStationID(e.ID)
+}
+
 // Mutation returns the AssetMutation object of the builder.
 func (auo *AssetUpdateOne) Mutation() *AssetMutation {
 	return auo.mutation
@@ -2656,6 +2905,18 @@ func (auo *AssetUpdateOne) ClearBatteryRider() *AssetUpdateOne {
 	return auo
 }
 
+// ClearRentStore clears the "rent_store" edge to the Store entity.
+func (auo *AssetUpdateOne) ClearRentStore() *AssetUpdateOne {
+	auo.mutation.ClearRentStore()
+	return auo
+}
+
+// ClearRentStation clears the "rent_station" edge to the EnterpriseStation entity.
+func (auo *AssetUpdateOne) ClearRentStation() *AssetUpdateOne {
+	auo.mutation.ClearRentStation()
+	return auo
+}
+
 // Where appends a list predicates to the AssetUpdate builder.
 func (auo *AssetUpdateOne) Where(ps ...predicate.Asset) *AssetUpdateOne {
 	auo.mutation.Where(ps...)
@@ -2820,6 +3081,15 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 	}
 	if auo.mutation.OrdinalCleared() {
 		_spec.ClearField(asset.FieldOrdinal, field.TypeInt)
+	}
+	if value, ok := auo.mutation.RentLocationsType(); ok {
+		_spec.SetField(asset.FieldRentLocationsType, field.TypeUint8, value)
+	}
+	if value, ok := auo.mutation.AddedRentLocationsType(); ok {
+		_spec.AddField(asset.FieldRentLocationsType, field.TypeUint8, value)
+	}
+	if auo.mutation.RentLocationsTypeCleared() {
+		_spec.ClearField(asset.FieldRentLocationsType, field.TypeUint8)
 	}
 	if auo.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -3506,6 +3776,64 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.RentStoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.RentStoreTable,
+			Columns: []string{asset.RentStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RentStoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.RentStoreTable,
+			Columns: []string{asset.RentStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.RentStationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.RentStationTable,
+			Columns: []string{asset.RentStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RentStationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.RentStationTable,
+			Columns: []string{asset.RentStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -316,6 +316,34 @@ func (ac *AssetCreate) SetNillableOrdinal(i *int) *AssetCreate {
 	return ac
 }
 
+// SetRentLocationsType sets the "rent_locations_type" field.
+func (ac *AssetCreate) SetRentLocationsType(u uint8) *AssetCreate {
+	ac.mutation.SetRentLocationsType(u)
+	return ac
+}
+
+// SetNillableRentLocationsType sets the "rent_locations_type" field if the given value is not nil.
+func (ac *AssetCreate) SetNillableRentLocationsType(u *uint8) *AssetCreate {
+	if u != nil {
+		ac.SetRentLocationsType(*u)
+	}
+	return ac
+}
+
+// SetRentLocationsID sets the "rent_locations_id" field.
+func (ac *AssetCreate) SetRentLocationsID(u uint64) *AssetCreate {
+	ac.mutation.SetRentLocationsID(u)
+	return ac
+}
+
+// SetNillableRentLocationsID sets the "rent_locations_id" field if the given value is not nil.
+func (ac *AssetCreate) SetNillableRentLocationsID(u *uint64) *AssetCreate {
+	if u != nil {
+		ac.SetRentLocationsID(*u)
+	}
+	return ac
+}
+
 // SetID sets the "id" field.
 func (ac *AssetCreate) SetID(u uint64) *AssetCreate {
 	ac.mutation.SetID(u)
@@ -590,6 +618,44 @@ func (ac *AssetCreate) SetBatteryRider(r *Rider) *AssetCreate {
 	return ac.SetBatteryRiderID(r.ID)
 }
 
+// SetRentStoreID sets the "rent_store" edge to the Store entity by ID.
+func (ac *AssetCreate) SetRentStoreID(id uint64) *AssetCreate {
+	ac.mutation.SetRentStoreID(id)
+	return ac
+}
+
+// SetNillableRentStoreID sets the "rent_store" edge to the Store entity by ID if the given value is not nil.
+func (ac *AssetCreate) SetNillableRentStoreID(id *uint64) *AssetCreate {
+	if id != nil {
+		ac = ac.SetRentStoreID(*id)
+	}
+	return ac
+}
+
+// SetRentStore sets the "rent_store" edge to the Store entity.
+func (ac *AssetCreate) SetRentStore(s *Store) *AssetCreate {
+	return ac.SetRentStoreID(s.ID)
+}
+
+// SetRentStationID sets the "rent_station" edge to the EnterpriseStation entity by ID.
+func (ac *AssetCreate) SetRentStationID(id uint64) *AssetCreate {
+	ac.mutation.SetRentStationID(id)
+	return ac
+}
+
+// SetNillableRentStationID sets the "rent_station" edge to the EnterpriseStation entity by ID if the given value is not nil.
+func (ac *AssetCreate) SetNillableRentStationID(id *uint64) *AssetCreate {
+	if id != nil {
+		ac = ac.SetRentStationID(*id)
+	}
+	return ac
+}
+
+// SetRentStation sets the "rent_station" edge to the EnterpriseStation entity.
+func (ac *AssetCreate) SetRentStation(e *EnterpriseStation) *AssetCreate {
+	return ac.SetRentStationID(e.ID)
+}
+
 // Mutation returns the AssetMutation object of the builder.
 func (ac *AssetCreate) Mutation() *AssetMutation {
 	return ac.mutation
@@ -764,6 +830,10 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 	if value, ok := ac.mutation.Ordinal(); ok {
 		_spec.SetField(asset.FieldOrdinal, field.TypeInt, value)
 		_node.Ordinal = &value
+	}
+	if value, ok := ac.mutation.RentLocationsType(); ok {
+		_spec.SetField(asset.FieldRentLocationsType, field.TypeUint8, value)
+		_node.RentLocationsType = value
 	}
 	if nodes := ac.mutation.BrandIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1096,6 +1166,40 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.LocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.RentStoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.RentStoreTable,
+			Columns: []string{asset.RentStoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RentLocationsID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.RentStationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.RentStationTable,
+			Columns: []string{asset.RentStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RentLocationsID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -1501,6 +1605,48 @@ func (u *AssetUpsert) AddOrdinal(v int) *AssetUpsert {
 // ClearOrdinal clears the value of the "ordinal" field.
 func (u *AssetUpsert) ClearOrdinal() *AssetUpsert {
 	u.SetNull(asset.FieldOrdinal)
+	return u
+}
+
+// SetRentLocationsType sets the "rent_locations_type" field.
+func (u *AssetUpsert) SetRentLocationsType(v uint8) *AssetUpsert {
+	u.Set(asset.FieldRentLocationsType, v)
+	return u
+}
+
+// UpdateRentLocationsType sets the "rent_locations_type" field to the value that was provided on create.
+func (u *AssetUpsert) UpdateRentLocationsType() *AssetUpsert {
+	u.SetExcluded(asset.FieldRentLocationsType)
+	return u
+}
+
+// AddRentLocationsType adds v to the "rent_locations_type" field.
+func (u *AssetUpsert) AddRentLocationsType(v uint8) *AssetUpsert {
+	u.Add(asset.FieldRentLocationsType, v)
+	return u
+}
+
+// ClearRentLocationsType clears the value of the "rent_locations_type" field.
+func (u *AssetUpsert) ClearRentLocationsType() *AssetUpsert {
+	u.SetNull(asset.FieldRentLocationsType)
+	return u
+}
+
+// SetRentLocationsID sets the "rent_locations_id" field.
+func (u *AssetUpsert) SetRentLocationsID(v uint64) *AssetUpsert {
+	u.Set(asset.FieldRentLocationsID, v)
+	return u
+}
+
+// UpdateRentLocationsID sets the "rent_locations_id" field to the value that was provided on create.
+func (u *AssetUpsert) UpdateRentLocationsID() *AssetUpsert {
+	u.SetExcluded(asset.FieldRentLocationsID)
+	return u
+}
+
+// ClearRentLocationsID clears the value of the "rent_locations_id" field.
+func (u *AssetUpsert) ClearRentLocationsID() *AssetUpsert {
+	u.SetNull(asset.FieldRentLocationsID)
 	return u
 }
 
@@ -1968,6 +2114,55 @@ func (u *AssetUpsertOne) UpdateOrdinal() *AssetUpsertOne {
 func (u *AssetUpsertOne) ClearOrdinal() *AssetUpsertOne {
 	return u.Update(func(s *AssetUpsert) {
 		s.ClearOrdinal()
+	})
+}
+
+// SetRentLocationsType sets the "rent_locations_type" field.
+func (u *AssetUpsertOne) SetRentLocationsType(v uint8) *AssetUpsertOne {
+	return u.Update(func(s *AssetUpsert) {
+		s.SetRentLocationsType(v)
+	})
+}
+
+// AddRentLocationsType adds v to the "rent_locations_type" field.
+func (u *AssetUpsertOne) AddRentLocationsType(v uint8) *AssetUpsertOne {
+	return u.Update(func(s *AssetUpsert) {
+		s.AddRentLocationsType(v)
+	})
+}
+
+// UpdateRentLocationsType sets the "rent_locations_type" field to the value that was provided on create.
+func (u *AssetUpsertOne) UpdateRentLocationsType() *AssetUpsertOne {
+	return u.Update(func(s *AssetUpsert) {
+		s.UpdateRentLocationsType()
+	})
+}
+
+// ClearRentLocationsType clears the value of the "rent_locations_type" field.
+func (u *AssetUpsertOne) ClearRentLocationsType() *AssetUpsertOne {
+	return u.Update(func(s *AssetUpsert) {
+		s.ClearRentLocationsType()
+	})
+}
+
+// SetRentLocationsID sets the "rent_locations_id" field.
+func (u *AssetUpsertOne) SetRentLocationsID(v uint64) *AssetUpsertOne {
+	return u.Update(func(s *AssetUpsert) {
+		s.SetRentLocationsID(v)
+	})
+}
+
+// UpdateRentLocationsID sets the "rent_locations_id" field to the value that was provided on create.
+func (u *AssetUpsertOne) UpdateRentLocationsID() *AssetUpsertOne {
+	return u.Update(func(s *AssetUpsert) {
+		s.UpdateRentLocationsID()
+	})
+}
+
+// ClearRentLocationsID clears the value of the "rent_locations_id" field.
+func (u *AssetUpsertOne) ClearRentLocationsID() *AssetUpsertOne {
+	return u.Update(func(s *AssetUpsert) {
+		s.ClearRentLocationsID()
 	})
 }
 
@@ -2601,6 +2796,55 @@ func (u *AssetUpsertBulk) UpdateOrdinal() *AssetUpsertBulk {
 func (u *AssetUpsertBulk) ClearOrdinal() *AssetUpsertBulk {
 	return u.Update(func(s *AssetUpsert) {
 		s.ClearOrdinal()
+	})
+}
+
+// SetRentLocationsType sets the "rent_locations_type" field.
+func (u *AssetUpsertBulk) SetRentLocationsType(v uint8) *AssetUpsertBulk {
+	return u.Update(func(s *AssetUpsert) {
+		s.SetRentLocationsType(v)
+	})
+}
+
+// AddRentLocationsType adds v to the "rent_locations_type" field.
+func (u *AssetUpsertBulk) AddRentLocationsType(v uint8) *AssetUpsertBulk {
+	return u.Update(func(s *AssetUpsert) {
+		s.AddRentLocationsType(v)
+	})
+}
+
+// UpdateRentLocationsType sets the "rent_locations_type" field to the value that was provided on create.
+func (u *AssetUpsertBulk) UpdateRentLocationsType() *AssetUpsertBulk {
+	return u.Update(func(s *AssetUpsert) {
+		s.UpdateRentLocationsType()
+	})
+}
+
+// ClearRentLocationsType clears the value of the "rent_locations_type" field.
+func (u *AssetUpsertBulk) ClearRentLocationsType() *AssetUpsertBulk {
+	return u.Update(func(s *AssetUpsert) {
+		s.ClearRentLocationsType()
+	})
+}
+
+// SetRentLocationsID sets the "rent_locations_id" field.
+func (u *AssetUpsertBulk) SetRentLocationsID(v uint64) *AssetUpsertBulk {
+	return u.Update(func(s *AssetUpsert) {
+		s.SetRentLocationsID(v)
+	})
+}
+
+// UpdateRentLocationsID sets the "rent_locations_id" field to the value that was provided on create.
+func (u *AssetUpsertBulk) UpdateRentLocationsID() *AssetUpsertBulk {
+	return u.Update(func(s *AssetUpsert) {
+		s.UpdateRentLocationsID()
+	})
+}
+
+// ClearRentLocationsID clears the value of the "rent_locations_id" field.
+func (u *AssetUpsertBulk) ClearRentLocationsID() *AssetUpsertBulk {
+	return u.Update(func(s *AssetUpsert) {
+		s.ClearRentLocationsID()
 	})
 }
 
