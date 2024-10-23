@@ -1308,6 +1308,29 @@ func HasStocksWith(preds ...predicate.Stock) predicate.Store {
 	})
 }
 
+// HasRentAsset applies the HasEdge predicate on the "rent_asset" edge.
+func HasRentAsset() predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, RentAssetTable, RentAssetColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRentAssetWith applies the HasEdge predicate on the "rent_asset" edge with a given conditions (other predicates).
+func HasRentAssetWith(preds ...predicate.Asset) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := newRentAssetStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Store) predicate.Store {
 	return predicate.Store(sql.AndPredicates(predicates...))

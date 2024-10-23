@@ -2246,6 +2246,38 @@ func (c *AssetClient) QueryBatteryRider(a *Asset) *RiderQuery {
 	return query
 }
 
+// QueryRentStore queries the rent_store edge of a Asset.
+func (c *AssetClient) QueryRentStore(a *Asset) *StoreQuery {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, asset.RentStoreTable, asset.RentStoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRentStation queries the rent_station edge of a Asset.
+func (c *AssetClient) QueryRentStation(a *Asset) *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asset.Table, asset.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, asset.RentStationTable, asset.RentStationColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *AssetClient) Hooks() []Hook {
 	hooks := c.hooks.Asset
@@ -11279,6 +11311,22 @@ func (c *EnterpriseStationClient) QueryStocks(es *EnterpriseStation) *StockQuery
 	return query
 }
 
+// QueryRentAsset queries the rent_asset edge of a EnterpriseStation.
+func (c *EnterpriseStationClient) QueryRentAsset(es *EnterpriseStation) *AssetQuery {
+	query := (&AssetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := es.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
+			sqlgraph.To(asset.Table, asset.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.RentAssetTable, enterprisestation.RentAssetColumn),
+		)
+		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EnterpriseStationClient) Hooks() []Hook {
 	hooks := c.hooks.EnterpriseStation
@@ -19863,6 +19911,22 @@ func (c *StoreClient) QueryStocks(s *Store) *StockQuery {
 			sqlgraph.From(store.Table, store.FieldID, id),
 			sqlgraph.To(stock.Table, stock.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, store.StocksTable, store.StocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRentAsset queries the rent_asset edge of a Store.
+func (c *StoreClient) QueryRentAsset(s *Store) *AssetQuery {
+	query := (&AssetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, id),
+			sqlgraph.To(asset.Table, asset.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, store.RentAssetTable, store.RentAssetColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

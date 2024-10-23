@@ -59,6 +59,10 @@ const (
 	FieldSubscribeID = "subscribe_id"
 	// FieldOrdinal holds the string denoting the ordinal field in the database.
 	FieldOrdinal = "ordinal"
+	// FieldRentLocationsType holds the string denoting the rent_locations_type field in the database.
+	FieldRentLocationsType = "rent_locations_type"
+	// FieldRentLocationsID holds the string denoting the rent_locations_id field in the database.
+	FieldRentLocationsID = "rent_locations_id"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
 	EdgeBrand = "brand"
 	// EdgeModel holds the string denoting the model edge name in mutations.
@@ -99,6 +103,10 @@ const (
 	EdgeRtoRider = "rto_rider"
 	// EdgeBatteryRider holds the string denoting the battery_rider edge name in mutations.
 	EdgeBatteryRider = "battery_rider"
+	// EdgeRentStore holds the string denoting the rent_store edge name in mutations.
+	EdgeRentStore = "rent_store"
+	// EdgeRentStation holds the string denoting the rent_station edge name in mutations.
+	EdgeRentStation = "rent_station"
 	// Table holds the table name of the asset in the database.
 	Table = "asset"
 	// BrandTable is the table that holds the brand relation/edge.
@@ -241,6 +249,20 @@ const (
 	BatteryRiderInverseTable = "rider"
 	// BatteryRiderColumn is the table column denoting the battery_rider relation/edge.
 	BatteryRiderColumn = "locations_id"
+	// RentStoreTable is the table that holds the rent_store relation/edge.
+	RentStoreTable = "asset"
+	// RentStoreInverseTable is the table name for the Store entity.
+	// It exists in this package in order to avoid circular dependency with the "store" package.
+	RentStoreInverseTable = "store"
+	// RentStoreColumn is the table column denoting the rent_store relation/edge.
+	RentStoreColumn = "rent_locations_id"
+	// RentStationTable is the table that holds the rent_station relation/edge.
+	RentStationTable = "asset"
+	// RentStationInverseTable is the table name for the EnterpriseStation entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisestation" package.
+	RentStationInverseTable = "enterprise_station"
+	// RentStationColumn is the table column denoting the rent_station relation/edge.
+	RentStationColumn = "rent_locations_id"
 )
 
 // Columns holds all SQL columns for asset fields.
@@ -268,6 +290,8 @@ var Columns = []string{
 	FieldBrandName,
 	FieldSubscribeID,
 	FieldOrdinal,
+	FieldRentLocationsType,
+	FieldRentLocationsID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -405,6 +429,16 @@ func BySubscribeID(opts ...sql.OrderTermOption) OrderOption {
 // ByOrdinal orders the results by the ordinal field.
 func ByOrdinal(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldOrdinal, opts...).ToFunc()
+}
+
+// ByRentLocationsType orders the results by the rent_locations_type field.
+func ByRentLocationsType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRentLocationsType, opts...).ToFunc()
+}
+
+// ByRentLocationsID orders the results by the rent_locations_id field.
+func ByRentLocationsID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRentLocationsID, opts...).ToFunc()
 }
 
 // ByBrandField orders the results by brand field.
@@ -595,6 +629,20 @@ func ByBatteryRiderField(field string, opts ...sql.OrderTermOption) OrderOption 
 		sqlgraph.OrderByNeighborTerms(s, newBatteryRiderStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByRentStoreField orders the results by rent_store field.
+func ByRentStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRentStoreStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByRentStationField orders the results by rent_station field.
+func ByRentStationField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRentStationStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newBrandStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -733,5 +781,19 @@ func newBatteryRiderStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(BatteryRiderInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2O, true, BatteryRiderTable, BatteryRiderColumn),
+	)
+}
+func newRentStoreStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RentStoreInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, RentStoreTable, RentStoreColumn),
+	)
+}
+func newRentStationStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RentStationInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, RentStationTable, RentStationColumn),
 	)
 }

@@ -224,6 +224,21 @@ func (esc *EnterpriseStationCreate) AddStocks(s ...*Stock) *EnterpriseStationCre
 	return esc.AddStockIDs(ids...)
 }
 
+// AddRentAssetIDs adds the "rent_asset" edge to the Asset entity by IDs.
+func (esc *EnterpriseStationCreate) AddRentAssetIDs(ids ...uint64) *EnterpriseStationCreate {
+	esc.mutation.AddRentAssetIDs(ids...)
+	return esc
+}
+
+// AddRentAsset adds the "rent_asset" edges to the Asset entity.
+func (esc *EnterpriseStationCreate) AddRentAsset(a ...*Asset) *EnterpriseStationCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return esc.AddRentAssetIDs(ids...)
+}
+
 // Mutation returns the EnterpriseStationMutation object of the builder.
 func (esc *EnterpriseStationCreate) Mutation() *EnterpriseStationMutation {
 	return esc.mutation
@@ -473,6 +488,22 @@ func (esc *EnterpriseStationCreate) createSpec() (*EnterpriseStation, *sqlgraph.
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := esc.mutation.RentAssetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.RentAssetTable,
+			Columns: []string{enterprisestation.RentAssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
