@@ -203,6 +203,42 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "出租位置ID",
+                        "name": "rentLocationsID",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetLocationsTypeCabinet": "电柜",
+                            "AssetLocationsTypeOperation": "运维",
+                            "AssetLocationsTypeRider": "骑手",
+                            "AssetLocationsTypeStation": "站点",
+                            "AssetLocationsTypeStore": "门店",
+                            "AssetLocationsTypeWarehouse": "仓库"
+                        },
+                        "x-enum-varnames": [
+                            "AssetLocationsTypeWarehouse",
+                            "AssetLocationsTypeStore",
+                            "AssetLocationsTypeStation",
+                            "AssetLocationsTypeOperation",
+                            "AssetLocationsTypeCabinet",
+                            "AssetLocationsTypeRider"
+                        ],
+                        "description": "出租位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                        "name": "rentLocationsType",
+                        "in": "query"
+                    },
+                    {
                         "type": "boolean",
                         "description": "电车是否赠送",
                         "name": "rto",
@@ -1670,6 +1706,42 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "归属类型   1:平台 2:团签",
                         "name": "ownerType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "出租位置ID",
+                        "name": "rentLocationsID",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetLocationsTypeCabinet": "电柜",
+                            "AssetLocationsTypeOperation": "运维",
+                            "AssetLocationsTypeRider": "骑手",
+                            "AssetLocationsTypeStation": "站点",
+                            "AssetLocationsTypeStore": "门店",
+                            "AssetLocationsTypeWarehouse": "仓库"
+                        },
+                        "x-enum-varnames": [
+                            "AssetLocationsTypeWarehouse",
+                            "AssetLocationsTypeStore",
+                            "AssetLocationsTypeStation",
+                            "AssetLocationsTypeOperation",
+                            "AssetLocationsTypeCabinet",
+                            "AssetLocationsTypeRider"
+                        ],
+                        "description": "出租位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                        "name": "rentLocationsType",
                         "in": "query"
                     },
                     {
@@ -7785,6 +7857,26 @@ const docTemplate = `{
                     "description": "每页数据, 默认20",
                     "type": "integer"
                 },
+                "rentLocationsID": {
+                    "description": "出租位置ID",
+                    "type": "integer"
+                },
+                "rentLocationsType": {
+                    "description": "出租位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetLocationsType"
+                        }
+                    ]
+                },
                 "rto": {
                     "description": "电车是否赠送",
                     "type": "boolean"
@@ -7871,6 +7963,14 @@ const docTemplate = `{
                 "remark": {
                     "description": "备注",
                     "type": "string"
+                },
+                "rentLocations": {
+                    "description": "出租位置",
+                    "type": "string"
+                },
+                "rentLocationsID": {
+                    "description": "出租位置ID",
+                    "type": "integer"
                 },
                 "rto": {
                     "description": "电车是否赠送",

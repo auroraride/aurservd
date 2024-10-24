@@ -126,17 +126,18 @@ type EbikeInfo struct {
 
 type Ebike struct {
 	EbikeInfo
-	Brand        *EbikeBrand `json:"brand,omitempty" bson:"brand,omitempty"` // 品牌信息
-	EnterpriseID *uint64     `json:"enterpriseId,omitempty"`                 // 团签ID
-	StationID    *uint64     `json:"stationId,omitempty"`                    // 站点ID
-	StoreID      *uint64     `json:"storeId,omitempty"`                      // 门店ID
+	Brand        *EbikeBrand        `json:"brand,omitempty" bson:"brand,omitempty"` // 品牌信息
+	LocationType AssetLocationsType `json:"locationType"`
+	LocationID   *uint64            `json:"locationId"`
 }
 
 type EbikeBusinessInfo struct {
-	ID        uint64 `json:"id"`
-	BrandID   uint64 `json:"brandId"`
-	BrandName string `json:"brandName"`
-	Sn        string `json:"sn"`
+	ID           uint64             `json:"id"`
+	BrandID      uint64             `json:"brandId"`
+	BrandName    string             `json:"brandName"`
+	Sn           string             `json:"sn"`
+	LocationType AssetLocationsType `json:"locationType"`
+	LocationID   *uint64            `json:"locationId"`
 }
 
 type EbikeUnallocatedParams struct {

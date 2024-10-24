@@ -163,6 +163,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "出租门店ID",
+                        "name": "rentStoreID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "站点ID",
                         "name": "stationID",
                         "in": "query"
@@ -468,6 +474,42 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "出租位置ID",
+                        "name": "rentLocationsID",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AssetLocationsTypeCabinet": "电柜",
+                            "AssetLocationsTypeOperation": "运维",
+                            "AssetLocationsTypeRider": "骑手",
+                            "AssetLocationsTypeStation": "站点",
+                            "AssetLocationsTypeStore": "门店",
+                            "AssetLocationsTypeWarehouse": "仓库"
+                        },
+                        "x-enum-varnames": [
+                            "AssetLocationsTypeWarehouse",
+                            "AssetLocationsTypeStore",
+                            "AssetLocationsTypeStation",
+                            "AssetLocationsTypeOperation",
+                            "AssetLocationsTypeCabinet",
+                            "AssetLocationsTypeRider"
+                        ],
+                        "description": "出租位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手",
+                        "name": "rentLocationsType",
                         "in": "query"
                     },
                     {
@@ -5188,6 +5230,14 @@ const docTemplate = `{
                     "description": "备注",
                     "type": "string"
                 },
+                "rentLocations": {
+                    "description": "出租位置",
+                    "type": "string"
+                },
+                "rentLocationsID": {
+                    "description": "出租位置ID",
+                    "type": "integer"
+                },
                 "rto": {
                     "description": "电车是否赠送",
                     "type": "string"
@@ -5859,6 +5909,10 @@ const docTemplate = `{
                     "description": "以租代购备注",
                     "type": "string"
                 },
+                "stationId": {
+                    "description": "站点ID",
+                    "type": "integer"
+                },
                 "storeId": {
                     "description": "门店ID",
                     "type": "integer"
@@ -5946,16 +6000,18 @@ const docTemplate = `{
                     "description": "颜色",
                     "type": "string"
                 },
-                "enterpriseId": {
-                    "description": "团签ID",
-                    "type": "integer"
-                },
                 "exFactory": {
                     "description": "生产批次",
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
+                },
+                "locationId": {
+                    "type": "integer"
+                },
+                "locationType": {
+                    "$ref": "#/definitions/model.AssetLocationsType"
                 },
                 "plate": {
                     "description": "车牌号",
@@ -5964,14 +6020,6 @@ const docTemplate = `{
                 "sn": {
                     "description": "车架号",
                     "type": "string"
-                },
-                "stationId": {
-                    "description": "站点ID",
-                    "type": "integer"
-                },
-                "storeId": {
-                    "description": "门店ID",
-                    "type": "integer"
                 }
             }
         },
@@ -6452,6 +6500,10 @@ const docTemplate = `{
                 "price": {
                     "description": "售价",
                     "type": "number"
+                },
+                "rtoDays": {
+                    "description": "以租代购最小天数",
+                    "type": "integer"
                 },
                 "type": {
                     "description": "类别",

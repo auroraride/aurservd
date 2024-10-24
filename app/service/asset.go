@@ -851,7 +851,7 @@ func (s *assetService) List(ctx context.Context, req *model.AssetListReq) *model
 }
 
 func (s *assetService) DetailForList(item *ent.Asset) *model.AssetListRes {
-	var cityName, belong, assetLocations string
+	var cityName, belong, assetLocations, rentLocations string
 	var cityID uint64
 	if item.Edges.City != nil {
 		cityName = item.Edges.City.Name
@@ -912,21 +912,37 @@ func (s *assetService) DetailForList(item *ent.Asset) *model.AssetListRes {
 		brandName = item.BrandName
 	}
 
+	// 出租位置（当前只有门店、站点）
+	switch item.RentLocationsType {
+	case model.AssetLocationsTypeStore.Value():
+		rentLocations = "[门店]"
+		if item.Edges.Store != nil {
+			rentLocations += item.Edges.Store.Name
+		}
+	case model.AssetLocationsTypeStation.Value():
+		rentLocations = "[站点]"
+		if item.Edges.Station != nil {
+			rentLocations += item.Edges.Station.Name
+		}
+	}
+
 	res := &model.AssetListRes{
-		ID:             item.ID,
-		CityName:       cityName,
-		CityID:         cityID,
-		Belong:         belong,
-		AssetLocations: assetLocations,
-		LocationsID:    item.LocationsID,
-		Brand:          brandName,
-		BrandID:        brandID,
-		Model:          modelStr,
-		SN:             item.Sn,
-		AssetStatus:    model.AssetStatus(item.Status).String(),
-		Status:         model.AssetStatus(item.Status),
-		Enable:         item.Enable,
-		Remark:         item.Remark,
+		ID:              item.ID,
+		CityName:        cityName,
+		CityID:          cityID,
+		Belong:          belong,
+		AssetLocations:  assetLocations,
+		LocationsID:     item.LocationsID,
+		Brand:           brandName,
+		BrandID:         brandID,
+		Model:           modelStr,
+		SN:              item.Sn,
+		AssetStatus:     model.AssetStatus(item.Status).String(),
+		Status:          model.AssetStatus(item.Status),
+		Enable:          item.Enable,
+		Remark:          item.Remark,
+		RentLocations:   rentLocations,
+		RentLocationsID: item.RentLocationsID,
 	}
 
 	// 电车赠送状态
@@ -1141,6 +1157,19 @@ func (s *assetService) ebikeFilter(q *ent.AssetQuery, req *model.AssetFilter) *e
 			),
 		)
 	}
+
+	if req.RentLocationsType != nil {
+		q.Where(
+			asset.RentLocationsType(req.RentLocationsType.Value()),
+		)
+	}
+
+	if req.RentLocationsID != nil {
+		q.Where(
+			asset.RentLocationsID(*req.RentLocationsID),
+		)
+	}
+
 	return q
 }
 

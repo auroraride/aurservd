@@ -108,6 +108,7 @@ type RiderListFilter struct {
 	EbikeBrandID    *uint64           `json:"ebikeBrandId" query:"ebikeBrandId"`                                           // 电车型号筛选
 	BatteryID       *uint64           `json:"batteryId" query:"batteryId"`                                                 // 电池筛选
 	PlanType        *uint8            `json:"planType" query:"planType"`                                                   // 骑士卡类别 1:单电 2:车加电
+	EmployeeID      *uint64           `json:"employeeId" query:"employeeId"`                                               // 库管端店员ID
 }
 
 // RiderItemSubscribe 骑手骑士卡简单信息

@@ -47,6 +47,7 @@ type Plan struct {
 	Intelligent bool     `json:"intelligent"` // 是否智能电柜套餐
 	Price       float64  `json:"price"`       // 售价
 	Type        PlanType `json:"type"`        // 类别
+	RtoDays     *uint    `json:"rtoDays"`     // 以租代购最小天数
 }
 
 type PlanComplexes []PlanComplex

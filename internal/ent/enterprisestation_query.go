@@ -38,6 +38,7 @@ type EnterpriseStationQuery struct {
 	withCabinets            *CabinetQuery
 	withAsset               *AssetQuery
 	withStocks              *StockQuery
+	withRentAsset           *AssetQuery
 	modifiers               []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -251,6 +252,28 @@ func (esq *EnterpriseStationQuery) QueryStocks() *StockQuery {
 	return query
 }
 
+// QueryRentAsset chains the current query on the "rent_asset" edge.
+func (esq *EnterpriseStationQuery) QueryRentAsset() *AssetQuery {
+	query := (&AssetClient{config: esq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := esq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := esq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, selector),
+			sqlgraph.To(asset.Table, asset.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.RentAssetTable, enterprisestation.RentAssetColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(esq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first EnterpriseStation entity from the query.
 // Returns a *NotFoundError when no EnterpriseStation was found.
 func (esq *EnterpriseStationQuery) First(ctx context.Context) (*EnterpriseStation, error) {
@@ -451,6 +474,7 @@ func (esq *EnterpriseStationQuery) Clone() *EnterpriseStationQuery {
 		withCabinets:            esq.withCabinets.Clone(),
 		withAsset:               esq.withAsset.Clone(),
 		withStocks:              esq.withStocks.Clone(),
+		withRentAsset:           esq.withRentAsset.Clone(),
 		// clone intermediate query.
 		sql:       esq.sql.Clone(),
 		path:      esq.path,
@@ -546,6 +570,17 @@ func (esq *EnterpriseStationQuery) WithStocks(opts ...func(*StockQuery)) *Enterp
 	return esq
 }
 
+// WithRentAsset tells the query-builder to eager-load the nodes that are connected to
+// the "rent_asset" edge. The optional arguments are used to configure the query builder of the edge.
+func (esq *EnterpriseStationQuery) WithRentAsset(opts ...func(*AssetQuery)) *EnterpriseStationQuery {
+	query := (&AssetClient{config: esq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	esq.withRentAsset = query
+	return esq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -624,7 +659,7 @@ func (esq *EnterpriseStationQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 	var (
 		nodes       = []*EnterpriseStation{}
 		_spec       = esq.querySpec()
-		loadedTypes = [8]bool{
+		loadedTypes = [9]bool{
 			esq.withCity != nil,
 			esq.withEnterprise != nil,
 			esq.withAgents != nil,
@@ -633,6 +668,7 @@ func (esq *EnterpriseStationQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 			esq.withCabinets != nil,
 			esq.withAsset != nil,
 			esq.withStocks != nil,
+			esq.withRentAsset != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -711,6 +747,13 @@ func (esq *EnterpriseStationQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 		if err := esq.loadStocks(ctx, query, nodes,
 			func(n *EnterpriseStation) { n.Edges.Stocks = []*Stock{} },
 			func(n *EnterpriseStation, e *Stock) { n.Edges.Stocks = append(n.Edges.Stocks, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := esq.withRentAsset; query != nil {
+		if err := esq.loadRentAsset(ctx, query, nodes,
+			func(n *EnterpriseStation) { n.Edges.RentAsset = []*Asset{} },
+			func(n *EnterpriseStation, e *Asset) { n.Edges.RentAsset = append(n.Edges.RentAsset, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1002,6 +1045,36 @@ func (esq *EnterpriseStationQuery) loadStocks(ctx context.Context, query *StockQ
 	}
 	return nil
 }
+func (esq *EnterpriseStationQuery) loadRentAsset(ctx context.Context, query *AssetQuery, nodes []*EnterpriseStation, init func(*EnterpriseStation), assign func(*EnterpriseStation, *Asset)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*EnterpriseStation)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(asset.FieldRentLocationsID)
+	}
+	query.Where(predicate.Asset(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(enterprisestation.RentAssetColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.RentLocationsID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "rent_locations_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (esq *EnterpriseStationQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := esq.querySpec()
@@ -1113,6 +1186,7 @@ var (
 	EnterpriseStationQueryWithCabinets            EnterpriseStationQueryWith = "Cabinets"
 	EnterpriseStationQueryWithAsset               EnterpriseStationQueryWith = "Asset"
 	EnterpriseStationQueryWithStocks              EnterpriseStationQueryWith = "Stocks"
+	EnterpriseStationQueryWithRentAsset           EnterpriseStationQueryWith = "RentAsset"
 )
 
 func (esq *EnterpriseStationQuery) With(withEdges ...EnterpriseStationQueryWith) *EnterpriseStationQuery {
@@ -1134,6 +1208,8 @@ func (esq *EnterpriseStationQuery) With(withEdges ...EnterpriseStationQueryWith)
 			esq.WithAsset()
 		case EnterpriseStationQueryWithStocks:
 			esq.WithStocks()
+		case EnterpriseStationQueryWithRentAsset:
+			esq.WithRentAsset()
 		}
 	}
 	return esq

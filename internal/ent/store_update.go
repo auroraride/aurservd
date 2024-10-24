@@ -504,6 +504,21 @@ func (su *StoreUpdate) AddStocks(s ...*Stock) *StoreUpdate {
 	return su.AddStockIDs(ids...)
 }
 
+// AddRentAssetIDs adds the "rent_asset" edge to the Asset entity by IDs.
+func (su *StoreUpdate) AddRentAssetIDs(ids ...uint64) *StoreUpdate {
+	su.mutation.AddRentAssetIDs(ids...)
+	return su
+}
+
+// AddRentAsset adds the "rent_asset" edges to the Asset entity.
+func (su *StoreUpdate) AddRentAsset(a ...*Asset) *StoreUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return su.AddRentAssetIDs(ids...)
+}
+
 // Mutation returns the StoreMutation object of the builder.
 func (su *StoreUpdate) Mutation() *StoreMutation {
 	return su.mutation
@@ -678,6 +693,27 @@ func (su *StoreUpdate) RemoveStocks(s ...*Stock) *StoreUpdate {
 		ids[i] = s[i].ID
 	}
 	return su.RemoveStockIDs(ids...)
+}
+
+// ClearRentAsset clears all "rent_asset" edges to the Asset entity.
+func (su *StoreUpdate) ClearRentAsset() *StoreUpdate {
+	su.mutation.ClearRentAsset()
+	return su
+}
+
+// RemoveRentAssetIDs removes the "rent_asset" edge to Asset entities by IDs.
+func (su *StoreUpdate) RemoveRentAssetIDs(ids ...uint64) *StoreUpdate {
+	su.mutation.RemoveRentAssetIDs(ids...)
+	return su
+}
+
+// RemoveRentAsset removes "rent_asset" edges to Asset entities.
+func (su *StoreUpdate) RemoveRentAsset(a ...*Asset) *StoreUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return su.RemoveRentAssetIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1270,6 +1306,51 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if su.mutation.RentAssetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.RentAssetTable,
+			Columns: []string{store.RentAssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.RemovedRentAssetIDs(); len(nodes) > 0 && !su.mutation.RentAssetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.RentAssetTable,
+			Columns: []string{store.RentAssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.RentAssetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.RentAssetTable,
+			Columns: []string{store.RentAssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(su.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -1756,6 +1837,21 @@ func (suo *StoreUpdateOne) AddStocks(s ...*Stock) *StoreUpdateOne {
 	return suo.AddStockIDs(ids...)
 }
 
+// AddRentAssetIDs adds the "rent_asset" edge to the Asset entity by IDs.
+func (suo *StoreUpdateOne) AddRentAssetIDs(ids ...uint64) *StoreUpdateOne {
+	suo.mutation.AddRentAssetIDs(ids...)
+	return suo
+}
+
+// AddRentAsset adds the "rent_asset" edges to the Asset entity.
+func (suo *StoreUpdateOne) AddRentAsset(a ...*Asset) *StoreUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return suo.AddRentAssetIDs(ids...)
+}
+
 // Mutation returns the StoreMutation object of the builder.
 func (suo *StoreUpdateOne) Mutation() *StoreMutation {
 	return suo.mutation
@@ -1930,6 +2026,27 @@ func (suo *StoreUpdateOne) RemoveStocks(s ...*Stock) *StoreUpdateOne {
 		ids[i] = s[i].ID
 	}
 	return suo.RemoveStockIDs(ids...)
+}
+
+// ClearRentAsset clears all "rent_asset" edges to the Asset entity.
+func (suo *StoreUpdateOne) ClearRentAsset() *StoreUpdateOne {
+	suo.mutation.ClearRentAsset()
+	return suo
+}
+
+// RemoveRentAssetIDs removes the "rent_asset" edge to Asset entities by IDs.
+func (suo *StoreUpdateOne) RemoveRentAssetIDs(ids ...uint64) *StoreUpdateOne {
+	suo.mutation.RemoveRentAssetIDs(ids...)
+	return suo
+}
+
+// RemoveRentAsset removes "rent_asset" edges to Asset entities.
+func (suo *StoreUpdateOne) RemoveRentAsset(a ...*Asset) *StoreUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return suo.RemoveRentAssetIDs(ids...)
 }
 
 // Where appends a list predicates to the StoreUpdate builder.
@@ -2545,6 +2662,51 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.RentAssetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.RentAssetTable,
+			Columns: []string{store.RentAssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.RemovedRentAssetIDs(); len(nodes) > 0 && !suo.mutation.RentAssetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.RentAssetTable,
+			Columns: []string{store.RentAssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.RentAssetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.RentAssetTable,
+			Columns: []string{store.RentAssetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asset.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

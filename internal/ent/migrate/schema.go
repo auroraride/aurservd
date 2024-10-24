@@ -298,12 +298,14 @@ var (
 		{Name: "check_at", Type: field.TypeTime, Nullable: true, Comment: "盘点时间"},
 		{Name: "brand_name", Type: field.TypeString, Nullable: true, Comment: "品牌名称"},
 		{Name: "ordinal", Type: field.TypeInt, Nullable: true, Comment: "仓位号"},
+		{Name: "rent_locations_type", Type: field.TypeUint8, Nullable: true, Comment: "出租位置类型 1:仓库 2:门店 3:站点 4:运维 5:电柜 6:骑手"},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "model_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true, Comment: "城市ID"},
 		{Name: "material_id", Type: field.TypeUint64, Nullable: true, Comment: "物资ID"},
 		{Name: "rto_rider_id", Type: field.TypeUint64, Nullable: true, Comment: "以租代购骑手ID，生成后禁止修改"},
 		{Name: "locations_id", Type: field.TypeUint64, Nullable: true, Comment: "资产位置ID"},
+		{Name: "rent_locations_id", Type: field.TypeUint64, Nullable: true, Comment: "出租位置ID"},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true, Comment: "订阅ID"},
 	}
 	// AssetTable holds the schema information for the "asset" table.
@@ -314,79 +316,91 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "asset_ebike_brand_brand",
-				Columns:    []*schema.Column{AssetColumns[16]},
+				Columns:    []*schema.Column{AssetColumns[17]},
 				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_battery_model_model",
-				Columns:    []*schema.Column{AssetColumns[17]},
+				Columns:    []*schema.Column{AssetColumns[18]},
 				RefColumns: []*schema.Column{BatteryModelColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_city_city",
-				Columns:    []*schema.Column{AssetColumns[18]},
+				Columns:    []*schema.Column{AssetColumns[19]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_material_material",
-				Columns:    []*schema.Column{AssetColumns[19]},
+				Columns:    []*schema.Column{AssetColumns[20]},
 				RefColumns: []*schema.Column{MaterialColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_rider_rto_rider",
-				Columns:    []*schema.Column{AssetColumns[20]},
+				Columns:    []*schema.Column{AssetColumns[21]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_cabinet_asset",
-				Columns:    []*schema.Column{AssetColumns[21]},
+				Columns:    []*schema.Column{AssetColumns[22]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_enterprise_station_asset",
-				Columns:    []*schema.Column{AssetColumns[21]},
+				Columns:    []*schema.Column{AssetColumns[22]},
+				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_enterprise_station_rent_asset",
+				Columns:    []*schema.Column{AssetColumns[23]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_maintainer_asset",
-				Columns:    []*schema.Column{AssetColumns[21]},
+				Columns:    []*schema.Column{AssetColumns[22]},
 				RefColumns: []*schema.Column{MaintainerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_rider_asset",
-				Columns:    []*schema.Column{AssetColumns[21]},
+				Columns:    []*schema.Column{AssetColumns[22]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_rider_battery",
-				Columns:    []*schema.Column{AssetColumns[21]},
+				Columns:    []*schema.Column{AssetColumns[22]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_store_asset",
-				Columns:    []*schema.Column{AssetColumns[21]},
+				Columns:    []*schema.Column{AssetColumns[22]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "asset_store_rent_asset",
+				Columns:    []*schema.Column{AssetColumns[23]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_subscribe_battery",
-				Columns:    []*schema.Column{AssetColumns[22]},
+				Columns:    []*schema.Column{AssetColumns[24]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "asset_warehouse_asset",
-				Columns:    []*schema.Column{AssetColumns[21]},
+				Columns:    []*schema.Column{AssetColumns[22]},
 				RefColumns: []*schema.Column{WarehouseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -405,22 +419,22 @@ var (
 			{
 				Name:    "asset_brand_id",
 				Unique:  false,
-				Columns: []*schema.Column{AssetColumns[16]},
+				Columns: []*schema.Column{AssetColumns[17]},
 			},
 			{
 				Name:    "asset_model_id",
 				Unique:  false,
-				Columns: []*schema.Column{AssetColumns[17]},
+				Columns: []*schema.Column{AssetColumns[18]},
 			},
 			{
 				Name:    "asset_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{AssetColumns[18]},
+				Columns: []*schema.Column{AssetColumns[19]},
 			},
 			{
 				Name:    "asset_material_id",
 				Unique:  false,
-				Columns: []*schema.Column{AssetColumns[19]},
+				Columns: []*schema.Column{AssetColumns[20]},
 			},
 			{
 				Name:    "asset_type",
@@ -440,7 +454,7 @@ var (
 			{
 				Name:    "asset_locations_id",
 				Unique:  false,
-				Columns: []*schema.Column{AssetColumns[21]},
+				Columns: []*schema.Column{AssetColumns[22]},
 			},
 			{
 				Name:    "asset_locations_type",
@@ -450,7 +464,7 @@ var (
 			{
 				Name:    "asset_locations_type_locations_id",
 				Unique:  false,
-				Columns: []*schema.Column{AssetColumns[12], AssetColumns[21]},
+				Columns: []*schema.Column{AssetColumns[12], AssetColumns[22]},
 			},
 		},
 	}
@@ -7922,12 +7936,14 @@ func init() {
 	AssetTable.ForeignKeys[4].RefTable = RiderTable
 	AssetTable.ForeignKeys[5].RefTable = CabinetTable
 	AssetTable.ForeignKeys[6].RefTable = EnterpriseStationTable
-	AssetTable.ForeignKeys[7].RefTable = MaintainerTable
-	AssetTable.ForeignKeys[8].RefTable = RiderTable
+	AssetTable.ForeignKeys[7].RefTable = EnterpriseStationTable
+	AssetTable.ForeignKeys[8].RefTable = MaintainerTable
 	AssetTable.ForeignKeys[9].RefTable = RiderTable
-	AssetTable.ForeignKeys[10].RefTable = StoreTable
-	AssetTable.ForeignKeys[11].RefTable = SubscribeTable
-	AssetTable.ForeignKeys[12].RefTable = WarehouseTable
+	AssetTable.ForeignKeys[10].RefTable = RiderTable
+	AssetTable.ForeignKeys[11].RefTable = StoreTable
+	AssetTable.ForeignKeys[12].RefTable = StoreTable
+	AssetTable.ForeignKeys[13].RefTable = SubscribeTable
+	AssetTable.ForeignKeys[14].RefTable = WarehouseTable
 	AssetTable.Annotation = &entsql.Annotation{
 		Table: "asset",
 	}

@@ -235,28 +235,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Asset",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			asset.FieldCreatedAt:     {Type: field.TypeTime, Column: asset.FieldCreatedAt},
-			asset.FieldUpdatedAt:     {Type: field.TypeTime, Column: asset.FieldUpdatedAt},
-			asset.FieldDeletedAt:     {Type: field.TypeTime, Column: asset.FieldDeletedAt},
-			asset.FieldCreator:       {Type: field.TypeJSON, Column: asset.FieldCreator},
-			asset.FieldLastModifier:  {Type: field.TypeJSON, Column: asset.FieldLastModifier},
-			asset.FieldRemark:        {Type: field.TypeString, Column: asset.FieldRemark},
-			asset.FieldBrandID:       {Type: field.TypeUint64, Column: asset.FieldBrandID},
-			asset.FieldModelID:       {Type: field.TypeUint64, Column: asset.FieldModelID},
-			asset.FieldCityID:        {Type: field.TypeUint64, Column: asset.FieldCityID},
-			asset.FieldMaterialID:    {Type: field.TypeUint64, Column: asset.FieldMaterialID},
-			asset.FieldType:          {Type: field.TypeUint8, Column: asset.FieldType},
-			asset.FieldName:          {Type: field.TypeString, Column: asset.FieldName},
-			asset.FieldSn:            {Type: field.TypeString, Column: asset.FieldSn},
-			asset.FieldStatus:        {Type: field.TypeUint8, Column: asset.FieldStatus},
-			asset.FieldEnable:        {Type: field.TypeBool, Column: asset.FieldEnable},
-			asset.FieldLocationsType: {Type: field.TypeUint8, Column: asset.FieldLocationsType},
-			asset.FieldLocationsID:   {Type: field.TypeUint64, Column: asset.FieldLocationsID},
-			asset.FieldRtoRiderID:    {Type: field.TypeUint64, Column: asset.FieldRtoRiderID},
-			asset.FieldCheckAt:       {Type: field.TypeTime, Column: asset.FieldCheckAt},
-			asset.FieldBrandName:     {Type: field.TypeString, Column: asset.FieldBrandName},
-			asset.FieldSubscribeID:   {Type: field.TypeUint64, Column: asset.FieldSubscribeID},
-			asset.FieldOrdinal:       {Type: field.TypeInt, Column: asset.FieldOrdinal},
+			asset.FieldCreatedAt:         {Type: field.TypeTime, Column: asset.FieldCreatedAt},
+			asset.FieldUpdatedAt:         {Type: field.TypeTime, Column: asset.FieldUpdatedAt},
+			asset.FieldDeletedAt:         {Type: field.TypeTime, Column: asset.FieldDeletedAt},
+			asset.FieldCreator:           {Type: field.TypeJSON, Column: asset.FieldCreator},
+			asset.FieldLastModifier:      {Type: field.TypeJSON, Column: asset.FieldLastModifier},
+			asset.FieldRemark:            {Type: field.TypeString, Column: asset.FieldRemark},
+			asset.FieldBrandID:           {Type: field.TypeUint64, Column: asset.FieldBrandID},
+			asset.FieldModelID:           {Type: field.TypeUint64, Column: asset.FieldModelID},
+			asset.FieldCityID:            {Type: field.TypeUint64, Column: asset.FieldCityID},
+			asset.FieldMaterialID:        {Type: field.TypeUint64, Column: asset.FieldMaterialID},
+			asset.FieldType:              {Type: field.TypeUint8, Column: asset.FieldType},
+			asset.FieldName:              {Type: field.TypeString, Column: asset.FieldName},
+			asset.FieldSn:                {Type: field.TypeString, Column: asset.FieldSn},
+			asset.FieldStatus:            {Type: field.TypeUint8, Column: asset.FieldStatus},
+			asset.FieldEnable:            {Type: field.TypeBool, Column: asset.FieldEnable},
+			asset.FieldLocationsType:     {Type: field.TypeUint8, Column: asset.FieldLocationsType},
+			asset.FieldLocationsID:       {Type: field.TypeUint64, Column: asset.FieldLocationsID},
+			asset.FieldRtoRiderID:        {Type: field.TypeUint64, Column: asset.FieldRtoRiderID},
+			asset.FieldCheckAt:           {Type: field.TypeTime, Column: asset.FieldCheckAt},
+			asset.FieldBrandName:         {Type: field.TypeString, Column: asset.FieldBrandName},
+			asset.FieldSubscribeID:       {Type: field.TypeUint64, Column: asset.FieldSubscribeID},
+			asset.FieldOrdinal:           {Type: field.TypeInt, Column: asset.FieldOrdinal},
+			asset.FieldRentLocationsType: {Type: field.TypeUint8, Column: asset.FieldRentLocationsType},
+			asset.FieldRentLocationsID:   {Type: field.TypeUint64, Column: asset.FieldRentLocationsID},
 		},
 	}
 	graph.Nodes[5] = &sqlgraph.Node{
@@ -3322,6 +3324,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Rider",
 	)
 	graph.MustAddE(
+		"rent_store",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.RentStoreTable,
+			Columns: []string{asset.RentStoreColumn},
+			Bidi:    false,
+		},
+		"Asset",
+		"Store",
+	)
+	graph.MustAddE(
+		"rent_station",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   asset.RentStationTable,
+			Columns: []string{asset.RentStationColumn},
+			Bidi:    false,
+		},
+		"Asset",
+		"EnterpriseStation",
+	)
+	graph.MustAddE(
 		"attribute",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -5782,6 +5808,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Stock",
 	)
 	graph.MustAddE(
+		"rent_asset",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.RentAssetTable,
+			Columns: []string{enterprisestation.RentAssetColumn},
+			Bidi:    false,
+		},
+		"EnterpriseStation",
+		"Asset",
+	)
+	graph.MustAddE(
 		"city",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -7510,6 +7548,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Stock",
 	)
 	graph.MustAddE(
+		"rent_asset",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.RentAssetTable,
+			Columns: []string{store.RentAssetColumn},
+			Bidi:    false,
+		},
+		"Store",
+		"Asset",
+	)
+	graph.MustAddE(
 		"goods",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -8832,6 +8882,16 @@ func (f *AssetFilter) WhereOrdinal(p entql.IntP) {
 	f.Where(p.Field(asset.FieldOrdinal))
 }
 
+// WhereRentLocationsType applies the entql uint8 predicate on the rent_locations_type field.
+func (f *AssetFilter) WhereRentLocationsType(p entql.Uint8P) {
+	f.Where(p.Field(asset.FieldRentLocationsType))
+}
+
+// WhereRentLocationsID applies the entql uint64 predicate on the rent_locations_id field.
+func (f *AssetFilter) WhereRentLocationsID(p entql.Uint64P) {
+	f.Where(p.Field(asset.FieldRentLocationsID))
+}
+
 // WhereHasBrand applies a predicate to check if query has an edge brand.
 func (f *AssetFilter) WhereHasBrand() {
 	f.Where(entql.HasEdge("brand"))
@@ -9106,6 +9166,34 @@ func (f *AssetFilter) WhereHasBatteryRider() {
 // WhereHasBatteryRiderWith applies a predicate to check if query has an edge battery_rider with a given conditions (other predicates).
 func (f *AssetFilter) WhereHasBatteryRiderWith(preds ...predicate.Rider) {
 	f.Where(entql.HasEdgeWith("battery_rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRentStore applies a predicate to check if query has an edge rent_store.
+func (f *AssetFilter) WhereHasRentStore() {
+	f.Where(entql.HasEdge("rent_store"))
+}
+
+// WhereHasRentStoreWith applies a predicate to check if query has an edge rent_store with a given conditions (other predicates).
+func (f *AssetFilter) WhereHasRentStoreWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("rent_store", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRentStation applies a predicate to check if query has an edge rent_station.
+func (f *AssetFilter) WhereHasRentStation() {
+	f.Where(entql.HasEdge("rent_station"))
+}
+
+// WhereHasRentStationWith applies a predicate to check if query has an edge rent_station with a given conditions (other predicates).
+func (f *AssetFilter) WhereHasRentStationWith(preds ...predicate.EnterpriseStation) {
+	f.Where(entql.HasEdgeWith("rent_station", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -16712,6 +16800,20 @@ func (f *EnterpriseStationFilter) WhereHasStocksWith(preds ...predicate.Stock) {
 	})))
 }
 
+// WhereHasRentAsset applies a predicate to check if query has an edge rent_asset.
+func (f *EnterpriseStationFilter) WhereHasRentAsset() {
+	f.Where(entql.HasEdge("rent_asset"))
+}
+
+// WhereHasRentAssetWith applies a predicate to check if query has an edge rent_asset with a given conditions (other predicates).
+func (f *EnterpriseStationFilter) WhereHasRentAssetWith(preds ...predicate.Asset) {
+	f.Where(entql.HasEdgeWith("rent_asset", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (eq *ExceptionQuery) addPredicate(pred func(s *sql.Selector)) {
 	eq.predicates = append(eq.predicates, pred)
@@ -23792,6 +23894,20 @@ func (f *StoreFilter) WhereHasStocks() {
 // WhereHasStocksWith applies a predicate to check if query has an edge stocks with a given conditions (other predicates).
 func (f *StoreFilter) WhereHasStocksWith(preds ...predicate.Stock) {
 	f.Where(entql.HasEdgeWith("stocks", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRentAsset applies a predicate to check if query has an edge rent_asset.
+func (f *StoreFilter) WhereHasRentAsset() {
+	f.Where(entql.HasEdge("rent_asset"))
+}
+
+// WhereHasRentAssetWith applies a predicate to check if query has an edge rent_asset with a given conditions (other predicates).
+func (f *StoreFilter) WhereHasRentAssetWith(preds ...predicate.Asset) {
+	f.Where(entql.HasEdgeWith("rent_asset", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

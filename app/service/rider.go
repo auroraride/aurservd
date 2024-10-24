@@ -31,6 +31,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/person"
@@ -39,6 +40,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/purchaseorder"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
+	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
@@ -648,6 +650,20 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 
 	if len(subqs) > 0 {
 		q.Where(rider.HasSubscribesWith(subqs...))
+	}
+
+	// 库管端店员筛选
+	if req.EmployeeID != nil {
+		info["库管店员"] = req.EmployeeID
+		q.Where(
+			rider.HasSubscribesWith(
+				subscribe.StatusIn(model.SubscribeStatusUsing, model.SubscribeStatusOverdue),
+				subscribe.HasStoreWith(
+					store.HasEmployeesWith(
+						employee.ID(*req.EmployeeID)),
+				),
+			),
+		)
 	}
 	return
 }
@@ -1376,4 +1392,44 @@ func (s *riderService) GetRiderNameById(id uint64) *model.RiderSampleInfo {
 		Name:  ri.Name,
 		Phone: ri.Phone,
 	}
+}
+
+// GetRiderInfoByID 库管门店端通过ID查询骑手详细信息
+func (s *riderService) GetRiderInfoByID(id uint64) (res *model.RiderItem, err error) {
+	// 查询骑手相关信息
+	r, _ := s.orm.QueryNotDeleted().
+		Where(
+			rider.ID(id),
+		).WithPerson().
+		WithOrders(func(oq *ent.OrderQuery) {
+			oq.Where(
+				order.Type(model.OrderTypeDeposit),
+				order.Status(model.OrderStatusPaid),
+			)
+		}).
+		WithSubscribes(func(sq *ent.SubscribeQuery) {
+			sq.WithCity().Order(ent.Desc(subscribe.FieldCreatedAt)).WithEbike().WithBrand().WithPlan()
+		}).
+		WithContracts(func(cq *ent.ContractQuery) {
+			cq.Where(contract.DeletedAtIsNil(), contract.Status(model.ContractStatusSuccess.Value())).Order(ent.Desc(contract.FieldCreatedAt))
+		}).
+		WithEnterprise().
+		WithStation().
+		WithBattery(func(query *ent.AssetQuery) {
+			query.Where(asset.TypeIn(model.AssetTypeSmartBattery.Value(), model.AssetTypeNonSmartBattery.Value())).WithModel()
+		}).First(s.ctx)
+	if r == nil {
+		return nil, errors.New("骑手不存在")
+	}
+
+	// 判断团签
+	if r.EnterpriseID != nil {
+		return nil, errors.New("不允许操作团签骑手")
+	}
+
+	// 数据拼接
+	riderDetail := s.detailRiderItem(r)
+
+	res = &riderDetail
+	return
 }

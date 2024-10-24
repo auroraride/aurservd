@@ -2020,6 +2020,9 @@ definitions:
       rtoRemark:
         description: 以租代购备注
         type: string
+      stationId:
+        description: 站点ID
+        type: integer
       storeId:
         description: 门店ID
         type: integer
@@ -3151,26 +3154,21 @@ definitions:
       color:
         description: 颜色
         type: string
-      enterpriseId:
-        description: 团签ID
-        type: integer
       exFactory:
         description: 生产批次
         type: string
       id:
         type: integer
+      locationId:
+        type: integer
+      locationType:
+        $ref: '#/definitions/model.AssetLocationsType'
       plate:
         description: 车牌号
         type: string
       sn:
         description: 车架号
         type: string
-      stationId:
-        description: 站点ID
-        type: integer
-      storeId:
-        description: 门店ID
-        type: integer
     type: object
   model.EbikeBrand:
     properties:
@@ -4351,12 +4349,17 @@ definitions:
       id:
         description: 订阅ID
         type: integer
-      storeId:
-        description: 门店ID, 旧车入库至门店
+      toLocationId:
+        description: 目标位置ID
         type: integer
+      toLocationType:
+        allOf:
+        - $ref: '#/definitions/model.AssetLocationsType'
+        description: 目标位置类型
     required:
     - id
-    - storeId
+    - toLocationId
+    - toLocationType
     type: object
   model.Modifier:
     properties:
@@ -4610,6 +4613,9 @@ definitions:
       price:
         description: 售价
         type: number
+      rtoDays:
+        description: 以租代购最小天数
+        type: integer
       type:
         allOf:
         - $ref: '#/definitions/model.PlanType'
@@ -5378,6 +5384,9 @@ definitions:
         type: integer
       ebikeBrandId:
         description: 电车型号筛选
+        type: integer
+      employeeId:
+        description: 库管端店员ID
         type: integer
       end:
         description: '注册结束时间, 格式为: 2022-01-01'
@@ -7328,7 +7337,7 @@ info:
       }
     }
     ```
-  title: 极光出行API - 代理端api
+  title: 极光出行API - 后台api
   version: "1.0"
 paths:
   /manager/v1/{id}/contract:
@@ -13811,6 +13820,10 @@ paths:
       - description: 电车型号筛选
         in: query
         name: ebikeBrandId
+        type: integer
+      - description: 库管端店员ID
+        in: query
+        name: employeeId
         type: integer
       - description: '注册结束时间, 格式为: 2022-01-01'
         in: query

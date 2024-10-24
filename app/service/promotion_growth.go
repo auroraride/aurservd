@@ -24,7 +24,7 @@ func NewPromotionGrowthService() *promotionGrowthService {
 
 // List 会员成长值列表
 func (s *promotionGrowthService) List(req *promotion.GrowthReq) *model.PaginationRes {
-	q := ent.Database.PromotionGrowth.Query().WithTask().WithRider().Order(ent.Desc(promotiongrowth.FieldCreatedAt))
+	q := ent.Database.PromotionGrowth.QueryNotDeleted().WithTask().WithRider().Order(ent.Desc(promotiongrowth.FieldCreatedAt))
 
 	if req.ID != nil {
 		q.Where(promotiongrowth.MemberID(*req.ID))
