@@ -5,7 +5,7 @@
 
 package mapi
 
-// @title		极光出行API - 代理端api
+// @title		极光出行API - 后台api
 // @version		1.0
 // @BasePath	/
 // @description.markdown

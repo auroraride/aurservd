@@ -17469,16 +17469,18 @@ const docTemplate = `{
                     "description": "颜色",
                     "type": "string"
                 },
-                "enterpriseId": {
-                    "description": "团签ID",
-                    "type": "integer"
-                },
                 "exFactory": {
                     "description": "生产批次",
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
+                },
+                "locationId": {
+                    "type": "integer"
+                },
+                "locationType": {
+                    "$ref": "#/definitions/model.AssetLocationsType"
                 },
                 "plate": {
                     "description": "车牌号",
@@ -17487,14 +17489,6 @@ const docTemplate = `{
                 "sn": {
                     "description": "车架号",
                     "type": "string"
-                },
-                "stationId": {
-                    "description": "站点ID",
-                    "type": "integer"
-                },
-                "storeId": {
-                    "description": "门店ID",
-                    "type": "integer"
                 }
             }
         },
@@ -23305,7 +23299,7 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "极光出行API - 代理端api",
+	Title:            "极光出行API - 后台api",
 	Description:      "### 说明\n接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。\n<br>\n接口返回说明查看 **[返回](#返回)**\n<br>\n图片/附件前缀 `https://cdn.auroraride.com/`\n\n<br />\n\n<br />\n\n### 接口编号\n\n第一位代表接口端分类\n\n- M 管理端\n- R 骑手端\n- E 门店端\n- C 通用\n\n第二位代表子分类（36进制）\n\n后三位代表子编号（10进制）\n\n<br />\n\n<br />\n\n\n### 认证\n项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`\n|  header   |  类型  |  接口  |\n| :-----: | :----: | :--: |\n|  X-Rider-Token   |  string   |  骑手API  |\n| X-Manager-Token | string |  后台API  |\n|  X-Employee-Token   | string |  员工API  |\n\n<br />\n\n<br />\n\n### 返回\n\n一个标准的返回应包含以下结构\n\n|  字段   |  类型  |  必填  |  说明  |\n| :-----: | :----: | :--: | :--: |\n|  code   |  int   |  是  |  返回代码  |\n| message | string |  是  |  返回消息  |\n|  data   | object |  是  |  返回数据  |\n\n`code`代码取值说明\n\n| 十进制 | 十六进制 | 说明 |\n| :----: | :------: | :--: |\n| 0  |  0x000  | 请求成功 |\n| 256 |  0x100  | 请求失败 |\n| 512 |  0x200  | *需要认证(跳转登录) |\n| 768 |  0x300  | *用户被封禁 |\n| 1024 |  0x400  | 资源未获 |\n| 1280 |  0x500  | 未知错误 |\n| 1536 |  0x600  | *需要实名 |\n| 1792 |  0x700  | *需要验证 (更换设备, 需要人脸验证) |\n| 2048 |  0x800  | *需要联系人 |\n| 2304 |  0x900  | 请求过期 |\n\n> 当返回值是`1792(0x700)需要人脸验证`或`1536(0x600)需要实名`的时候`data`返回值为`{\"url\": \"string\"}`, 直接跳转url\n\n\n比如：\n> 默认成功返回\n```json\n{\n  \"code\": 0,\n  \"message\": \"OK\",\n  \"data\": {\n    \"status\": true\n  }\n}\n```\n",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

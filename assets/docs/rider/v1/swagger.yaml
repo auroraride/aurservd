@@ -40,6 +40,29 @@ definitions:
         description: 是否已分配
         type: boolean
     type: object
+  model.AssetLocationsType:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    type: integer
+    x-enum-comments:
+      AssetLocationsTypeCabinet: 电柜
+      AssetLocationsTypeOperation: 运维
+      AssetLocationsTypeRider: 骑手
+      AssetLocationsTypeStation: 站点
+      AssetLocationsTypeStore: 门店
+      AssetLocationsTypeWarehouse: 仓库
+    x-enum-varnames:
+    - AssetLocationsTypeWarehouse
+    - AssetLocationsTypeStore
+    - AssetLocationsTypeStation
+    - AssetLocationsTypeOperation
+    - AssetLocationsTypeCabinet
+    - AssetLocationsTypeRider
   model.AssistanceCancelReq:
     properties:
       desc:
@@ -616,26 +639,21 @@ definitions:
       color:
         description: 颜色
         type: string
-      enterpriseId:
-        description: 团签ID
-        type: integer
       exFactory:
         description: 生产批次
         type: string
       id:
         type: integer
+      locationId:
+        type: integer
+      locationType:
+        $ref: '#/definitions/model.AssetLocationsType'
       plate:
         description: 车牌号
         type: string
       sn:
         description: 车架号
         type: string
-      stationId:
-        description: 站点ID
-        type: integer
-      storeId:
-        description: 门店ID
-        type: integer
     type: object
   model.EbikeBrand:
     properties:

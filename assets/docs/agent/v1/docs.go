@@ -5996,16 +5996,18 @@ const docTemplate = `{
                     "description": "颜色",
                     "type": "string"
                 },
-                "enterpriseId": {
-                    "description": "团签ID",
-                    "type": "integer"
-                },
                 "exFactory": {
                     "description": "生产批次",
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
+                },
+                "locationId": {
+                    "type": "integer"
+                },
+                "locationType": {
+                    "$ref": "#/definitions/model.AssetLocationsType"
                 },
                 "plate": {
                     "description": "车牌号",
@@ -6014,14 +6016,6 @@ const docTemplate = `{
                 "sn": {
                     "description": "车架号",
                     "type": "string"
-                },
-                "stationId": {
-                    "description": "站点ID",
-                    "type": "integer"
-                },
-                "storeId": {
-                    "description": "门店ID",
-                    "type": "integer"
                 }
             }
         },
