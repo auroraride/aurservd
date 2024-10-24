@@ -1395,6 +1395,9 @@ func (s *assetService) RiderBusiness(req *model.StockBusinessReq) (err error) {
 		if req.EnterpriseID != nil && req.StationID != nil {
 			toLocationType = model.AssetLocationsTypeStation
 			toLocationID = *req.StationID
+			// 团签电车不用分开退
+			ebiketoLocationType = model.AssetLocationsTypeStation
+			ebiketoLocationID = *req.StationID
 		}
 		// 电车退租使用参数
 		if req.EbikeStoreID != nil {
