@@ -91,6 +91,7 @@ func (*subscribe) Halt(c echo.Context) (err error) {
 				Remark:        req.Remark,
 				Rto:           req.Rto,
 				RtoRemark:     req.RtoRemark,
+				StationID:     req.StationID,
 			},
 		)
 	return ctx.SendResponse()

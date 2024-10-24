@@ -88,8 +88,9 @@ func (*subscribe) AlterReivew(c echo.Context) (err error) {
 func (*subscribe) Halt(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.BusinessSubscribeReq](c)
 	service.NewBusinessRider(ctx.Operator).UnSubscribe(&model.BusinessSubscribeReq{
-		ID:      req.ID,
-		AgentID: &ctx.Agent.ID,
+		ID:        req.ID,
+		AgentID:   &ctx.Agent.ID,
+		StationID: req.StationID,
 	})
 	return ctx.SendResponse()
 }

@@ -11,7 +11,8 @@ type BusinessSubscribeReq struct {
 	ID        uint64  `json:"id" validate:"required" trans:"订阅ID"`
 	StoreID   *uint64 `json:"storeId" trans:"门店ID"`
 	CabinetID *uint64 `json:"cabinetId" trans:"电柜ID"`
-	AgentID   *uint64 `json:"agentId"` // 代理商ID
+	AgentID   *uint64 `json:"agentId" trans:"代理商ID"`
+	StationID *uint64 `json:"stationId" trans:"站点ID"`
 
 	RefundDeposit *bool    `json:"refundDeposit" trans:"是否退押金"` // 是否退押金(后台使用)
 	DepositAmount *float64 `json:"depositAmount"`               // 退押金金额(后台使用)

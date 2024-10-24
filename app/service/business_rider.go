@@ -48,7 +48,7 @@ type businessRiderService struct {
 
 	cabTask func() (*model.BinInfo, *model.Battery, error) // 电柜任务
 
-	storeID, employeeID, cabinetID, subscribeID, agentID, ebikeStoreID, batStoreID *uint64
+	storeID, employeeID, cabinetID, subscribeID, agentID, ebikeStoreID, batStoreID, stationID *uint64
 
 	// 电车信息
 	ebikeInfo *model.EbikeBusinessInfo
@@ -551,7 +551,7 @@ func (s *businessRiderService) do(doReq model.BusinessRiderServiceDoReq, cb func
 						CabinetID:   s.cabinetID,
 						SubscribeID: s.subscribeID,
 
-						StationID:    s.subscribe.StationID,
+						StationID:    s.stationID,
 						EnterpriseID: s.subscribe.EnterpriseID,
 						AgentID:      s.agentID,
 
@@ -822,7 +822,10 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 	}
 
 	// 代理商操作退租
-	s.agentID = req.AgentID
+	if req.AgentID != nil {
+		s.agentID = req.AgentID
+		s.stationID = req.StationID
+	}
 
 	// 查找电池
 	s.battery, _ = ent.Database.Asset.Query().Where(
