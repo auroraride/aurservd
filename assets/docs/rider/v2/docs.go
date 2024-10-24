@@ -4827,6 +4827,10 @@ const docTemplate = `{
                     "description": "售价",
                     "type": "number"
                 },
+                "rtoDays": {
+                    "description": "以租代购最小天数",
+                    "type": "integer"
+                },
                 "type": {
                     "description": "类别",
                     "allOf": [
@@ -7295,6 +7299,10 @@ const docTemplate = `{
                 "price": {
                     "description": "售价",
                     "type": "number"
+                },
+                "rtoDays": {
+                    "description": "以租代购最小天数",
+                    "type": "integer"
                 },
                 "type": {
                     "description": "类别",

@@ -65,4 +65,8 @@ func loadWarestoreRoutes() {
 	auth.POST("/cabinet/:serial", wapi.Cabinet.Operate)
 	auth.POST("/cabinet/:serial/:ordinal", wapi.Cabinet.BinOperate)
 
+	// 骑手
+	auth.GET("/rider", wapi.Rider.List)      // 骑手列表
+	auth.GET("/rider/info", wapi.Rider.Info) // 骑手信息
+
 }

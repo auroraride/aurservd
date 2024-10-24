@@ -17,6 +17,7 @@ func (pl *Plan) BasicInfo() *model.Plan {
 		Intelligent: pl.Intelligent,
 		Price:       pl.Price,
 		Type:        model.PlanType(pl.Type),
+		RtoDays:     pl.RtoDays,
 	}
 }
 

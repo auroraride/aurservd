@@ -9817,6 +9817,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "库管端店员ID",
+                        "name": "employeeId",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "注册结束时间, 格式为: 2022-01-01",
                         "name": "end",
@@ -15857,6 +15863,10 @@ const docTemplate = `{
                     "description": "以租代购备注",
                     "type": "string"
                 },
+                "stationId": {
+                    "description": "站点ID",
+                    "type": "integer"
+                },
                 "storeId": {
                     "description": "门店ID",
                     "type": "integer"
@@ -19153,16 +19163,25 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "id",
-                "storeId"
+                "toLocationId",
+                "toLocationType"
             ],
             "properties": {
                 "id": {
                     "description": "订阅ID",
                     "type": "integer"
                 },
-                "storeId": {
-                    "description": "门店ID, 旧车入库至门店",
+                "toLocationId": {
+                    "description": "目标位置ID",
                     "type": "integer"
+                },
+                "toLocationType": {
+                    "description": "目标位置类型",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AssetLocationsType"
+                        }
+                    ]
                 }
             }
         },
@@ -19532,6 +19551,10 @@ const docTemplate = `{
                 "price": {
                     "description": "售价",
                     "type": "number"
+                },
+                "rtoDays": {
+                    "description": "以租代购最小天数",
+                    "type": "integer"
                 },
                 "type": {
                     "description": "类别",
@@ -20642,6 +20665,10 @@ const docTemplate = `{
                 },
                 "ebikeBrandId": {
                     "description": "电车型号筛选",
+                    "type": "integer"
+                },
+                "employeeId": {
+                    "description": "库管端店员ID",
                     "type": "integer"
                 },
                 "end": {

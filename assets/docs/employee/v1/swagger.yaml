@@ -608,6 +608,9 @@ definitions:
       price:
         description: 售价
         type: number
+      rtoDays:
+        description: 以租代购最小天数
+        type: integer
       type:
         allOf:
         - $ref: '#/definitions/model.PlanType'

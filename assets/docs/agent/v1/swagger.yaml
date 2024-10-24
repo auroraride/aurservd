@@ -1508,6 +1508,9 @@ definitions:
       rtoRemark:
         description: 以租代购备注
         type: string
+      stationId:
+        description: 站点ID
+        type: integer
       storeId:
         description: 门店ID
         type: integer
@@ -1905,6 +1908,9 @@ definitions:
       price:
         description: 售价
         type: number
+      rtoDays:
+        description: 以租代购最小天数
+        type: integer
       type:
         allOf:
         - $ref: '#/definitions/model.PlanType'

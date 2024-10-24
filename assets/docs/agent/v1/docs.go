@@ -5909,6 +5909,10 @@ const docTemplate = `{
                     "description": "以租代购备注",
                     "type": "string"
                 },
+                "stationId": {
+                    "description": "站点ID",
+                    "type": "integer"
+                },
                 "storeId": {
                     "description": "门店ID",
                     "type": "integer"
@@ -6496,6 +6500,10 @@ const docTemplate = `{
                 "price": {
                     "description": "售价",
                     "type": "number"
+                },
+                "rtoDays": {
+                    "description": "以租代购最小天数",
+                    "type": "integer"
                 },
                 "type": {
                     "description": "类别",

@@ -954,6 +954,247 @@ const docTemplate = `{
                 }
             }
         },
+        "/warestore/v2/rider": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rider - 骑手"
+                ],
+                "summary": "骑手列表",
+                "operationId": "RiderList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "PersonAuthPending": "认证中",
+                            "PersonAuthenticated": "已认证",
+                            "PersonAuthenticationFailed": "认证失败",
+                            "PersonUnauthenticated": "未认证"
+                        },
+                        "x-enum-varnames": [
+                            "PersonUnauthenticated",
+                            "PersonAuthPending",
+                            "PersonAuthenticated",
+                            "PersonAuthenticationFailed"
+                        ],
+                        "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
+                        "name": "authStatus",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "电池筛选",
+                        "name": "batteryId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市筛选",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "电车型号筛选",
+                        "name": "ebikeBrandId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "库管端店员ID",
+                        "name": "employeeId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "注册结束时间, 格式为: 2022-01-01",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "是否团签, 0:全部 1:团签 2:个签",
+                        "name": "enterprise",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签企业ID, ` + "`" + `enterprise = 1` + "`" + `时才会生效",
+                        "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索关键词",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池型号筛选",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否被修改过",
+                        "name": "modified",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑士卡",
+                        "name": "planId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑士卡类别 1:单电 2:车加电",
+                        "name": "planType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "订阅剩余天数区间, 逗号分隔, 例如 ` + "`" + `0,7` + "`" + `",
+                        "name": "remaining",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "注册开始时间, 格式为: 2022-01-01",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4
+                        ],
+                        "type": "integer",
+                        "description": "用户状态 1:正常 2:已禁用 3:黑名单",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            11,
+                            99
+                        ],
+                        "type": "integer",
+                        "description": "业务状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期 99:未使用",
+                        "name": "subscribeStatus",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否筛选暂停扣费中, 不携带此参数获取全部, 携带此参数` + "`" + `true` + "`" + `暂停中 ` + "`" + `false` + "`" + `非暂停",
+                        "name": "suspend",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.RiderItem"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/warestore/v2/rider/info": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rider - 骑手"
+                ],
+                "summary": "根据二维码获取骑手信息",
+                "operationId": "RiderInfo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "仓管校验token",
+                        "name": "X-Warestore-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "二维码",
+                        "name": "qrcode",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderItem"
+                        }
+                    }
+                }
+            }
+        },
         "/warestore/v2/selection/city": {
             "get": {
                 "consumes": [
@@ -3672,6 +3913,22 @@ const docTemplate = `{
                 "AssetTypeOtherAccessory"
             ]
         },
+        "model.Battery": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "model": {
+                    "description": "型号",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "编号",
+                    "type": "string"
+                }
+            }
+        },
         "model.Branch": {
             "type": "object",
             "properties": {
@@ -3804,6 +4061,149 @@ const docTemplate = `{
                 "name": {
                     "description": "城市",
                     "type": "string"
+                }
+            }
+        },
+        "model.Ebike": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "description": "品牌信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EbikeBrand"
+                        }
+                    ]
+                },
+                "color": {
+                    "description": "颜色",
+                    "type": "string"
+                },
+                "exFactory": {
+                    "description": "生产批次",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "locationId": {
+                    "type": "integer"
+                },
+                "locationType": {
+                    "$ref": "#/definitions/model.AssetLocationsType"
+                },
+                "plate": {
+                    "description": "车牌号",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "车架号",
+                    "type": "string"
+                }
+            }
+        },
+        "model.EbikeBrand": {
+            "type": "object",
+            "properties": {
+                "brandAttribute": {
+                    "description": "品牌属性",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EbikeBrandAttribute"
+                    }
+                },
+                "cover": {
+                    "description": "封面图",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "mainPic": {
+                    "description": "主图",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                }
+            }
+        },
+        "model.EbikeBrandAttribute": {
+            "type": "object",
+            "required": [
+                "name",
+                "value"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Enterprise": {
+            "type": "object",
+            "properties": {
+                "agent": {
+                    "description": "是否代理商模式",
+                    "type": "boolean"
+                },
+                "id": {
+                    "description": "企业ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "企业名称",
+                    "type": "string"
+                }
+            }
+        },
+        "model.EnterpriseStation": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "站点ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "站点名称",
+                    "type": "string"
+                }
+            }
+        },
+        "model.ExchangeFrequency": {
+            "type": "object",
+            "properties": {
+                "hours": {
+                    "description": "时长",
+                    "type": "integer"
+                },
+                "minutes": {
+                    "description": "限制时间(分钟)",
+                    "type": "integer"
+                },
+                "times": {
+                    "description": "时长内次数",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.ExchangeLimit": {
+            "type": "object",
+            "properties": {
+                "hours": {
+                    "description": "时长",
+                    "type": "integer"
+                },
+                "times": {
+                    "description": "时长内允许次数",
+                    "type": "integer"
                 }
             }
         },
@@ -4147,6 +4547,48 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Person": {
+            "type": "object",
+            "properties": {
+                "authFace": {
+                    "description": "实名认证人脸照片",
+                    "type": "string"
+                },
+                "idCardNational": {
+                    "description": "证件国徽面",
+                    "type": "string"
+                },
+                "idCardNumber": {
+                    "description": "证件号码",
+                    "type": "string"
+                },
+                "idCardPortrait": {
+                    "description": "证件人像面",
+                    "type": "string"
+                }
+            }
+        },
+        "model.PersonAuthStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "PersonAuthPending": "认证中",
+                "PersonAuthenticated": "已认证",
+                "PersonAuthenticationFailed": "认证失败",
+                "PersonUnauthenticated": "未认证"
+            },
+            "x-enum-varnames": [
+                "PersonUnauthenticated",
+                "PersonAuthPending",
+                "PersonAuthenticated",
+                "PersonAuthenticationFailed"
+            ]
+        },
         "model.ReserveCabinetItem": {
             "type": "object",
             "properties": {
@@ -4170,6 +4612,215 @@ const docTemplate = `{
                 },
                 "time": {
                     "description": "预约时间",
+                    "type": "string"
+                }
+            }
+        },
+        "model.RiderContact": {
+            "type": "object",
+            "required": [
+                "name",
+                "phone",
+                "relation"
+            ],
+            "properties": {
+                "name": {
+                    "description": "联系人姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "联系人电话",
+                    "type": "string"
+                },
+                "relation": {
+                    "description": "关系",
+                    "type": "string"
+                }
+            }
+        },
+        "model.RiderItem": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "户籍地址",
+                    "type": "string"
+                },
+                "authStatus": {
+                    "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PersonAuthStatus"
+                        }
+                    ]
+                },
+                "balance": {
+                    "description": "余额",
+                    "type": "number"
+                },
+                "battery": {
+                    "description": "当前电池, 有可能不存在",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Battery"
+                        }
+                    ]
+                },
+                "city": {
+                    "description": "所在城市, 有可能不存在",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "contact": {
+                    "description": "紧急联系人, 有可能不存在",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RiderContact"
+                        }
+                    ]
+                },
+                "contract": {
+                    "description": "合同(有可能不存在)",
+                    "type": "string"
+                },
+                "deleteAt": {
+                    "description": "账户删除时间",
+                    "type": "string"
+                },
+                "deposit": {
+                    "description": "押金",
+                    "type": "number"
+                },
+                "enterprise": {
+                    "description": "团签企业信息, 若无此字段则为个签用户",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Enterprise"
+                        }
+                    ]
+                },
+                "exchangeFrequency": {
+                    "description": "换电频次, 有可能不存在",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ExchangeFrequency"
+                    }
+                },
+                "exchangeLimit": {
+                    "description": "换电限制, 有可能不存在",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ExchangeLimit"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "person": {
+                    "description": "认证信息, 有可能不存在, 内部字段也有可能不存在",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Person"
+                        }
+                    ]
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "planName": {
+                    "description": "骑士卡名称",
+                    "type": "string"
+                },
+                "points": {
+                    "description": "积分",
+                    "type": "integer"
+                },
+                "remark": {
+                    "description": "账户备注",
+                    "type": "string"
+                },
+                "station": {
+                    "description": "团签代理信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseStation"
+                        }
+                    ]
+                },
+                "status": {
+                    "description": "用户状态, 优先显示状态值大的 1:正常 2:已禁用 3:黑名单",
+                    "type": "integer"
+                },
+                "subscribe": {
+                    "description": "当前有效订阅信息, 若无此字段则代表当前无有效订阅 (订阅 = 骑手骑士卡)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RiderItemSubscribe"
+                        }
+                    ]
+                }
+            }
+        },
+        "model.RiderItemSubscribe": {
+            "type": "object",
+            "properties": {
+                "agentEndAt": {
+                    "description": "代理商处到期日期",
+                    "type": "string"
+                },
+                "ebike": {
+                    "description": "电车信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Ebike"
+                        }
+                    ]
+                },
+                "formula": {
+                    "description": "订阅天数计算公式",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "订阅ID",
+                    "type": "integer"
+                },
+                "intelligent": {
+                    "description": "是否智能电柜订阅",
+                    "type": "boolean"
+                },
+                "model": {
+                    "description": "骑士卡可用电池型号",
+                    "type": "string"
+                },
+                "pastDay": {
+                    "description": "骑手当前订阅已使用天数",
+                    "type": "integer"
+                },
+                "remaining": {
+                    "description": "剩余天数",
+                    "type": "integer"
+                },
+                "rtoDays": {
+                    "description": "已租代购天数条件",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "订阅状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期(计算状态) 当 status = 1 且 remaining \u003c= 3 的时候是即将到期",
+                    "type": "integer"
+                },
+                "suspend": {
+                    "description": "是否暂停中",
+                    "type": "boolean"
+                },
+                "type": {
+                    "description": "订阅类型 battery:单电 ebike:车电",
                     "type": "string"
                 }
             }
