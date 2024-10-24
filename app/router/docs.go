@@ -39,8 +39,8 @@ func loadDocRoutes() {
 		"/rider/v2":            "骑手接口 v2.0",
 		"/asset/v2":            "资产接口 v2.0",
 		"/warestore/v2":        "仓管接口 v2.0",
-		"/manager/v2/purchase": "管理接口 v2.0 购车",
-		"/rider/v2/purchase":   "骑手管理 v2.0 购车",
+		"/purchase/v2/manager": "管理接口 v2.0 购车",
+		"/purchase/v2/rider":   "骑手管理 v2.0 购车",
 	}
 
 	g.GET("", func(c echo.Context) error {
