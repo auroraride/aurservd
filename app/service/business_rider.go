@@ -840,9 +840,6 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 		s.agentID = req.AgentID
 	}
 	if sub.EnterpriseID != nil {
-		if req.StationID == nil {
-			snag.Panic("团签退租必须指定站点")
-		}
 		s.stationID = req.StationID
 	}
 
