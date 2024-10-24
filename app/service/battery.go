@@ -485,7 +485,9 @@ func (s *batteryService) Unbind(req *model.BatteryUnbindRequest) error {
 	if sub == nil {
 		return errors.New("未找到订阅")
 	}
-	r, _ := sub.QueryRider().WithBattery().First(s.ctx)
+	r, _ := sub.QueryRider().WithBattery(func(query *ent.AssetQuery) {
+		query.Where(asset.TypeIn(model.AssetTypeSmartBattery.Value(), model.AssetTypeNonSmartBattery.Value()))
+	}).First(s.ctx)
 	if r == nil {
 		return errors.New("未找到骑手")
 	}

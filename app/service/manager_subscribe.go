@@ -192,8 +192,8 @@ func (s *managerSubscribeService) UnbindEbike(req *model.ManagerSubscribeUnbindE
 	_, failed, err := NewAssetTransfer().Transfer(s.ctx, &model.AssetTransferCreateReq{
 		FromLocationType: &fromLocationType,
 		FromLocationID:   &oldEbike.LocationsID,
-		ToLocationType:   model.AssetLocationsTypeStore,
-		ToLocationID:     req.StoreID,
+		ToLocationType:   req.ToLocationType,
+		ToLocationID:     req.ToLocationID,
 		Details: []model.AssetTransferCreateDetail{
 			{
 				AssetType: model.AssetTypeEbike,
